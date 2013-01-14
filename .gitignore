@@ -1,0 +1,11 @@
+*.class
+
+# Eclipse Files #
+.project
+.classpath
+
+# target directory #
+target
+
+# backup files #
+*~
