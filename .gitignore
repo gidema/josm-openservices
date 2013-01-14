@@ -1,6 +1,8 @@
 *.class
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Eclipse Files #
+.package
+.classpart
+
+# target directory #
+target
