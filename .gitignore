@@ -3,9 +3,12 @@
 # Eclipse Files #
 .project
 .classpath
+.settings
 
 # target directory #
 target
+build
+dist
 
 # backup files #
 *~

@@ -203,8 +203,8 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
     protected void finish() {
       if (isFailed() || isCanceled())
         return;
-//      if (dataSet == null)
-//        return; // user canceled download or error occurred
+      if (features == null)
+        return; // user canceled download or error occurred
       if (features.isEmpty()) {
         rememberErrorMessage(tr("No data found in this area."));
         // TODO (see DownloadOsmTask)
