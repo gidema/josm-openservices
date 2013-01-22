@@ -102,7 +102,7 @@
         <attribute name="Plugin-Icon" value="images/wfs.png"/>
         <attribute name="Plugin-Link" value="http://fixme.com"/>
         <attribute name="Plugin-Mainversion" value="${plugin.main.version}"/>
-        <attribute name="Plugin-Version" value="0.1.0"/>
+        <attribute name="Plugin-Version" value="0.1.1"/>
         <attribute name="Plugin-Requires" value="geotools"/>
         <attribute name="Class-Path" value="lib/"/>
       </manifest>
