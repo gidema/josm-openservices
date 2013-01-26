@@ -4,7 +4,9 @@ package org.openstreetmap.josm.plugins.openservices.wfs;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.geotools.data.DataStore;
@@ -169,6 +171,10 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
           return;
         wfsHost.init();
         DataStore dataStore = wfsHost.getDataStore();
+        List<String> types = Arrays.asList(dataStore.getTypeNames());
+        if (!types.contains(wfsFeature)) {
+          throw new WfsException("Unavailable feature: " + wfsFeature);
+        }
         SimpleFeatureSource featureSource = dataStore.getFeatureSource(wfsFeature);
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
         // A bit complex way to find the CRS code, but at least it works.
@@ -214,7 +220,7 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
       }
 
       targetLayer = getTargetLayer();
-      WFSDataSet<?> dataSet = (WFSDataSet<?>) targetLayer.data;
+      WFSDataSet dataSet = (WFSDataSet) targetLayer.data;
       dataSet.addFeatures(features);
       rememberDownloadedData(dataSet);
       computeBboxAndCenterScale();

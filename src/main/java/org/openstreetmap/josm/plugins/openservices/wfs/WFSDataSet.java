@@ -1,15 +1,17 @@
 package org.openstreetmap.josm.plugins.openservices.wfs;
 
 
+import java.io.Serializable;
+
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.plugins.openservices.CustomDataSet;
 
-public abstract class WFSDataSet<T> extends CustomDataSet<T> {
-  private final WFSFeatureParser<T> featureParser;
+public abstract class WFSDataSet extends CustomDataSet {
+  private final WFSFeatureParser featureParser;
 
-  public WFSDataSet(WFSFeatureParser<T> featureParser) {
+  public WFSDataSet(WFSFeatureParser featureParser) {
     super();
     this.featureParser = featureParser;
   }
@@ -32,8 +34,12 @@ public abstract class WFSDataSet<T> extends CustomDataSet<T> {
   }
   
   public void addFeature(SimpleFeature feature) {
-    T object = featureParser.parse(feature);
+    Object object = featureParser.parse(feature);
     // TODO add possibility to filter non-existing objects (INGETROKKEN etc)
     add(object);
+  }
+
+  protected Serializable getId(SimpleFeature feature) {
+    return feature.getID();
   }
 }

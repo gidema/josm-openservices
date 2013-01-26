@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.Future;
 
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openstreetmap.josm.Main;
@@ -165,7 +164,7 @@ public abstract class DownloadArcgisRestTask extends CustomDownloadTask {
       }
       features = (JSONArray) downloadedJSON.get("features");
       targetLayer = getTargetLayer();
-      ArggisRestDataSet<?> dataSet = (ArggisRestDataSet<?>) targetLayer.data;
+      ArggisRestDataSet dataSet = (ArggisRestDataSet) targetLayer.data;
       if (features.size() == 0) {
         rememberErrorMessage(tr("No data found in this area."));
         // need to synthesize a download bounds lest the visual indication of

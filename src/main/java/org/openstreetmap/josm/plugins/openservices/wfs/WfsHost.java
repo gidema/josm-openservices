@@ -5,8 +5,6 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.geotools.data.DataStore;
@@ -22,7 +20,6 @@ public class WfsHost {
   private boolean initialized = false;
   private final String uri;
   private DataStore dataStore;
-  private final List<WfsFeature> features = new LinkedList<WfsFeature>();
   
   /**
    * Create a new WFS host for the given uri.
@@ -30,10 +27,6 @@ public class WfsHost {
    */
   public WfsHost(String uri) {
     this.uri = uri;
-  }
-  
-  protected void addFeature(String featureName) {
-    features.add(new WfsFeature(this, featureName));
   }
   
   /**

@@ -2,6 +2,6 @@ package org.openstreetmap.josm.plugins.openservices.wfs;
 
 import org.opengis.feature.simple.SimpleFeature;
 
-public interface WFSFeatureParser<T> {
-  public T parse(SimpleFeature feature);
+public interface WFSFeatureParser {
+  public Object parse(SimpleFeature feature);
 }

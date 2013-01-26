@@ -6,12 +6,12 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 
-public abstract class CustomDataSet<T> extends DataSet {
-  private final Map<Class<?>, Map<Serializable, T>> data = 
-      new HashMap<Class<?>, Map<Serializable, T>>();
-  private ObjectToJosmMapper<T> mapper;
+public abstract class CustomDataSet extends DataSet {
+  private final Map<Class<?>, Map<Serializable, Object>> data = 
+      new HashMap<Class<?>, Map<Serializable, Object>>();
+  private ObjectToJosmMapper mapper;
   
-  protected void setMapper(ObjectToJosmMapper<T> mapper) {
+  protected void setMapper(ObjectToJosmMapper mapper) {
     this.mapper = mapper;
   }
 
@@ -25,7 +25,7 @@ public abstract class CustomDataSet<T> extends DataSet {
    * @param key
    * @param object
    */
-  public final void add(T object) {
+  public final void add(Object object) {
     if (addIfNew(object)) {
       toJosm(object);
     }
@@ -38,8 +38,8 @@ public abstract class CustomDataSet<T> extends DataSet {
    * @param id
    * @return true if the object didn't exist
    */
-  protected boolean addIfNew(T object) {
-    Map<Serializable, T> classData = getClassData(object.getClass());
+  protected boolean addIfNew(Object object) {
+    Map<Serializable, Object> classData = getClassData(object.getClass());
     Serializable id = getId(object);
     if (classData.get(id) != null) {
       return false;
@@ -48,18 +48,18 @@ public abstract class CustomDataSet<T> extends DataSet {
     return true;
   }
   
-  private Map<Serializable, T> getClassData(Class<?> clazz) {
-    Map<Serializable, T> result = data.get(clazz);
+  private Map<Serializable, Object> getClassData(Class<?> clazz) {
+    Map<Serializable, Object> result = data.get(clazz);
     if (result == null) {
-      result = new HashMap<Serializable, T>();
+      result = new HashMap<Serializable, Object>();
       data.put(clazz, result);
     }
     return result;
   }
   
-  protected void toJosm(T o) {
+  protected void toJosm(Object o) {
     mapper.create(o);
   }
   
-  protected abstract Serializable getId(T o);
+  protected abstract Serializable getId(Object o);
 }

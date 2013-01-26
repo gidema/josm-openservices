@@ -9,6 +9,6 @@ package org.openstreetmap.josm.plugins.openservices;
  * @author Gertjan Idema
  *
  */
-public interface ObjectToJosmMapper<T> {
-  public void create(T o);
+public interface ObjectToJosmMapper {
+  public void create(Object o);
 }

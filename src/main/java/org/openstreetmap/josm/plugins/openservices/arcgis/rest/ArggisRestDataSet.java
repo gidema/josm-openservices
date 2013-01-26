@@ -2,15 +2,14 @@ package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
 import java.util.Iterator;
 
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openstreetmap.josm.plugins.openservices.CustomDataSet;
 
-public abstract class ArggisRestDataSet<T> extends CustomDataSet<T> {
-  private final ArcgisJsonParser<T> jsonParser;
+public abstract class ArggisRestDataSet extends CustomDataSet {
+  private final ArcgisJsonParser jsonParser;
 
-  public ArggisRestDataSet(ArcgisJsonParser<T> jsonParser) {
+  public ArggisRestDataSet(ArcgisJsonParser jsonParser) {
     super();
     this.jsonParser = jsonParser;
   }
