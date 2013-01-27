@@ -50,18 +50,9 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
   DataSet downloadedData;
   
   private WfsHost wfsHost;
+  private String hostURL;
   private String wfsFeature;
   private CustomDataLayer targetLayer;
-
-  /**
-   * Create a new WFSDownload task with the given wfshost and dataSetManager
-   * @param wfsHost
-   * @param dataSetManager
-   */
-  public DownloadWFSTask(WfsHost wfsHost) {
-    super();
-    this.wfsHost = wfsHost;
-  }
 
   protected void rememberDownloadedData(DataSet ds) {
     this.downloadedData = ds;
@@ -113,11 +104,8 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
     }
   }
   
-  /**
-   * @param wfsHost the wfsHost to set
-   */
-  protected void setWfsHost(WfsHost wfsHost) {
-    this.wfsHost = wfsHost;
+  public void setHostURL(String hostURL) {
+    this.hostURL = hostURL;
   }
 
   /**
@@ -169,7 +157,10 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
       try {
         if (isCanceled())
           return;
-        wfsHost.init();
+        if (wfsHost == null) {
+          wfsHost = WFSHostFactory.get(hostURL);
+        }
+//        wfsHost.init();
         DataStore dataStore = wfsHost.getDataStore();
         List<String> types = Arrays.asList(dataStore.getTypeNames());
         if (!types.contains(wfsFeature)) {
