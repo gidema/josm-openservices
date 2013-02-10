@@ -27,65 +27,48 @@
 **
 **
 -->
-<project name="openservices" default="dist" basedir=".">
+<project name="openservices" default="dist" basedir="."
+	xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+    <artifact:pom id="mypom" file="pom.xml" />
     <!-- enter the SVN commit message -->
     <property name="commit.message" value="Commit message"/>
     <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
     <property name="plugin.main.version" value="5531"/>
-    <!-- should not be necessary to change the following properties -->
-    <!--<property name="josm" location="../../JOSM/dist/josm-custom.jar"/>-->
+	  <property name="plugin.class" value="org.openstreetmap.josm.plugins.openservices.OpenServicesPlugin"/>
+    <property name="plugin.version" value="${mypom.version}"/>
     <property name="plugin.build.dir" value="build"/>
-    <property name="plugin.src.dir" value="src"/>
+	  <property name="maven.target.dir" value="${mypom.build.directory}"/>
+    <property name="plugin.src.dir" value="src/main/java"/>
+    <property name="plugin.resources.dir" value="src/main/resources"/>
     <!-- this is the directory where the plugin jar is copied to -->
     <property name="plugin.dist.dir" value="dist"/>
     <property name="ant.build.javac.target" value="1.6"/>
     <property name="ant.build.javac.source" value="1.6"/>
     <property name="plugin.jar" value="${plugin.dist.dir}/${ant.project.name}.jar"/>
+    <property name="plugin.debug.jar" value="${plugin.dist.dir}/debug/${ant.project.name}.jar"/>	
     <!--
     **********************************************************
     ** init - initializes the build
     **********************************************************
     -->
     <target name="init">
-        <mkdir dir="${plugin.build.dir}"/>
+      <mkdir dir="${plugin.build.dir}"/>
     </target>
-    <!--
-    **********************************************************
-    ** compile - compiles the source tree
-    **********************************************************
-    -->
-    <target name="compile" depends="init">
-        <echo message="compiling sources for  ${plugin.jar} ... "/>
-        <javac srcdir="src" debug="true" destdir="${plugin.build.dir}" includeantruntime="false">
-            <classpath>
-                <fileset dir="lib">
-                    <include name="**/*.jar"/>
-                </fileset>
-            </classpath>
-            <compilerarg value="-Xlint:deprecation"/>
-            <compilerarg value="-Xlint:unchecked"/>
-        </javac>
-    </target>
-    <!--
+
+	  <!--
     **********************************************************
     ** dist - creates the plugin jar
     **********************************************************
     -->
-    <target name="dist" depends="compile">
+    <target name="dist">
       <echo message="creating ${ant.project.name}.jar ... "/>
-      <copy todir="${plugin.build.dir}/images">
-          <fileset dir="images"/>
-      </copy>
       <copy todir="${plugin.build.dir}">
-        <fileset dir=".">
-          <include name="README"/>
-          <include name="GPL-v3.0.txt"/>
-        </fileset>
+          <fileset dir="${plugin.resources.dir}"/>
       </copy>
       <unjar dest="${plugin.build.dir}">
          <fileset dir="lib" includes="*.jar" />
       </unjar>
-      <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
+      <jar destfile="${plugin.dist.dir}/${plugin.jar}" basedir="${plugin.build.dir}">
       <!--
         ************************************************
         ** configure these properties. Most of them will be copied to the plugins
@@ -96,7 +79,7 @@
         -->
       <manifest>
         <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;"/>
-        <attribute name="Plugin-Class" value="org.openstreetmap.josm.plugins.openservices.OpenServicesPlugin"/>
+        <attribute name="Plugin-Class" value="${plugin.class}"/>
         <attribute name="Plugin-Date" value="${version.entry.commit.date}"/>
         <attribute name="Plugin-Description" value="FIXME"/>
         <attribute name="Plugin-Icon" value="images/wfs.png"/>
@@ -104,18 +87,55 @@
         <attribute name="Plugin-Mainversion" value="${plugin.main.version}"/>
         <attribute name="Plugin-Version" value="0.1.2-SNAPSHOT"/>
         <attribute name="Plugin-Requires" value="geotools"/>
+      	<attribute name="Plugin-Stage" value="40"/>
         <attribute name="Class-Path" value="lib/"/>
       </manifest>
         </jar>
     </target>
+	
+  <!--
+   **********************************************************
+   ** dist4debug - creates the debug plugin jar
+   **********************************************************
+   -->
+   <target name="dist4debug">
+     <echo message="creating ${ant.project.name}.jar ... "/>
+     <copy todir="${plugin.build.dir}/debug">
+         <fileset dir="${plugin.resources.dir}"/>
+     </copy>
+     <jar destfile="${plugin.debug.jar}" basedir="${plugin.build.dir}/debug">
+     <!--
+       ************************************************
+       ** configure these properties. Most of them will be copied to the plugins
+       ** manifest file. Property values will also show up in the list available
+       ** plugins: http://josm.openstreetmap.de/wiki/Plugins.
+       **
+       ************************************************
+       -->
+       <manifest>
+         <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;"/>
+         <attribute name="Plugin-Class" value="${plugin.class}"/>
+         <attribute name="Plugin-Date" value="${version.entry.commit.date}"/>
+         <attribute name="Plugin-Description" value="FIXME"/>
+         <attribute name="Plugin-Icon" value="images/wfs.png"/>
+         <attribute name="Plugin-Link" value="http://fixme.com"/>
+         <attribute name="Plugin-Mainversion" value="${plugin.main.version}"/>
+         <attribute name="Plugin-Version" value="${plugin.version}"/>
+         <attribute name="Plugin-Stage" value="40"/>
+         <!--<attribute name="Plugin-Requires" value="geotools"/>-->
+       </manifest>
+     </jar>
+   </target>
+
     <!--
     **********************************************************
     ** clean - clean up the build environment
     **********************************************************
     -->
     <target name="clean">
-        <delete dir="${plugin.build.dir}"/>
-        <delete file="${plugin.jar}"/>
+      <delete dir="${plugin.build.dir}"/>
+      <delete file="${plugin.jar}"/>
+      <delete file="${plugin.debug.jar}"/>
     </target>
     <!--
     **********************************************************
@@ -131,4 +151,19 @@
         </condition>
         <copy file="${plugin.jar}" todir="${josm.plugins.dir}"/>
     </target>
+	 
+	  <!--
+	  **********************************************************
+	  ** install4debug - install the debug plugin in the JOSM debug environment
+	  **********************************************************
+	  -->
+    <target name="install4debug" depends="dist4debug">
+      <property environment="env"/>
+      <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM_DEBUG/plugins" else="${user.home}/.josm_debug/plugins">
+        <and>
+          <os family="windows"/>
+        </and>
+      </condition>
+      <copy file="${plugin.debug.jar}" todir="${josm.plugins.dir}"/>
+  </target>
 </project>

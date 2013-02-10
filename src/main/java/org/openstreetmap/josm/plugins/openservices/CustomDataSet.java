@@ -4,14 +4,15 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.data.osm.DataSet;
 
-public abstract class CustomDataSet extends DataSet {
+public class CustomDataSet extends DataSet {
   private final Map<Class<?>, Map<Serializable, Object>> data = 
       new HashMap<Class<?>, Map<Serializable, Object>>();
   private ObjectToJosmMapper mapper;
   
-  protected void setMapper(ObjectToJosmMapper mapper) {
+  public void setMapper(ObjectToJosmMapper mapper) {
     this.mapper = mapper;
   }
 
@@ -58,8 +59,18 @@ public abstract class CustomDataSet extends DataSet {
   }
   
   protected void toJosm(Object o) {
-    mapper.create(o);
+    if (o instanceof SimpleFeature) {
+      mapper.create((SimpleFeature) o);
+    }
+    else {
+      mapper.create(o);
+    }
   }
   
-  protected abstract Serializable getId(Object o);
+  protected Serializable getId(Object o) {
+    if (o instanceof SimpleFeature) {
+      return ((SimpleFeature) o).getIdentifier().toString();
+    }
+    return null;
+  }
 }

@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.openservices;
 
+import org.opengis.feature.simple.SimpleFeature;
+
 
 
 /**
@@ -10,5 +12,7 @@ package org.openstreetmap.josm.plugins.openservices;
  *
  */
 public interface ObjectToJosmMapper {
+  public void create(SimpleFeature feature);
   public void create(Object o);
+  public void create(SimpleFeature feature, JosmObjectFactory objectFactory);
 }

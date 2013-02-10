@@ -7,6 +7,7 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
@@ -25,7 +26,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * The JosmObjectFactory provides methods to create josm objects from 
  * JTS geometries and add them to a josm dataset.
  * The methods take care of the coordinate transformation to the internal
- * josm CRS (epsg:4326), removal of duplicate nodes in ways, and merging
+ * josm crs (epsg:4326), removal of duplicate nodes in ways, and merging
  * of nodes that refer to the same point.
  * @author Gertjan Idema
  *
@@ -37,7 +38,7 @@ public class JosmObjectFactory {
   private final JTSCoordinateTransformFactory crsUtilFactory = new Proj4jCRSUtilFactory();
   
   /**
-   * Create a DataSetManager with the specified source CRS
+   * Create a DataSetManager with the specified source crs
    * @param dataSet 
    * @param sourceCrs
    */
@@ -48,6 +49,19 @@ public class JosmObjectFactory {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+  
+  /**
+   * Create a josm Object from a Polygon object
+   * The resulting Object depends on whether the input polygon has inner rings.
+   * If so, the result will be a Relation of type Multipolyon.
+   * Otherwise the result will be a Way
+   */
+  public OsmPrimitive buildPolygon(Polygon polygon) {
+    if (polygon.getNumInteriorRing() > 0) {
+      return buildMultiPolygon(polygon);
+    }
+    return buildWay(polygon);
   }
   
   /**

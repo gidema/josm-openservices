@@ -73,7 +73,7 @@ public abstract class JTSCoordinateTransform {
   }
 
   /**
-   * Get the Geometry factory for the target CRS
+   * Get the Geometry factory for the target crs
    * @return
    */
   public final GeometryFactory getTargetFactory() {
@@ -116,7 +116,7 @@ public abstract class JTSCoordinateTransform {
   //public abstract ReferencedEnvelope createBoundingBox(Bounds bounds);
 
   /**
-   * Transform a coordinate from the source CRS to the target CRS
+   * Transform a coordinate from the source crs to the target crs
    * @param coord
    * @return the transformed coordinate
    */

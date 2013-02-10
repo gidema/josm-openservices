@@ -31,6 +31,7 @@ import org.openstreetmap.josm.io.OsmTransferCanceledException;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.openservices.CustomDataLayer;
 import org.openstreetmap.josm.plugins.openservices.CustomDownloadTask;
+import org.openstreetmap.josm.plugins.openservices.OpenServices;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransform;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransformFactory;
 import org.openstreetmap.josm.plugins.openservices.crs.Proj4jCRSUtilFactory;
@@ -49,7 +50,7 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
   private DownloadTask downloadTask;
   DataSet downloadedData;
   
-  private WfsHost wfsHost;
+  private WFSHost wfsHost;
   private String hostURL;
   private String wfsFeature;
   private CustomDataLayer targetLayer;
@@ -104,7 +105,7 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
     }
   }
   
-  public void setHostURL(String hostURL) {
+  public void setHost(String hostURL) {
     this.hostURL = hostURL;
   }
 
@@ -158,7 +159,7 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
         if (isCanceled())
           return;
         if (wfsHost == null) {
-          wfsHost = WFSHostFactory.get(hostURL);
+          wfsHost = (WFSHost) OpenServices.getHost(hostURL);
         }
 //        wfsHost.init();
         DataStore dataStore = wfsHost.getDataStore();
@@ -168,7 +169,7 @@ public abstract class DownloadWFSTask extends CustomDownloadTask {
         }
         SimpleFeatureSource featureSource = dataStore.getFeatureSource(wfsFeature);
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-        // A bit complex way to find the CRS code, but at least it works.
+        // A bit complex way to find the crs code, but at least it works.
         CoordinateReferenceSystem crs = featureSource.getInfo().getCRS();
         ReferencedEnvelope bbox = createBoundingBox(crs, currentBounds);
         Filter filter = ff.bbox(ff.property(""), bbox);

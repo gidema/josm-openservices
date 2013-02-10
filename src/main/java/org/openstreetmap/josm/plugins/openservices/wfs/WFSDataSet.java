@@ -8,11 +8,14 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.plugins.openservices.CustomDataSet;
 
-public abstract class WFSDataSet extends CustomDataSet {
-  private final WFSFeatureParser featureParser;
+public class WFSDataSet extends CustomDataSet {
+  private WFSFeatureParser featureParser;
 
-  public WFSDataSet(WFSFeatureParser featureParser) {
+  public WFSDataSet() {
     super();
+  }
+  
+  public void setFeatureParser(WFSFeatureParser featureParser) {
     this.featureParser = featureParser;
   }
 
@@ -28,15 +31,29 @@ public abstract class WFSDataSet extends CustomDataSet {
         addFeature(feature);
       }
     }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
     finally {
       i.close();
     }
   }
   
   public void addFeature(SimpleFeature feature) {
-    Object object = featureParser.parse(feature);
-    // TODO add possibility to filter non-existing objects (INGETROKKEN etc)
-    add(object);
+    if (featureParser != null) {
+      add(featureParser.parse(feature));
+    }
+    else {
+      add(feature);
+    }
+  }
+
+  @Override
+  protected Serializable getId(Object o) {
+    if (o instanceof SimpleFeature) {
+      return getId((SimpleFeature) o);
+    }
+    return null;
   }
 
   protected Serializable getId(SimpleFeature feature) {

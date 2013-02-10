@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="target/classes" path="src/main/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry exported="true" kind="lib" path="lib/json-simple-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/proj4j-2244.jar"/>
-	<classpathentry kind="lib" path="lib/gt-wfs-8.4.jar"/>
-	<classpathentry kind="lib" path="lib/gt-xml-8.4.jar"/>
-	<classpathentry kind="lib" path="lib/gt-xsd-wfs-8.4.jar"/>
-	<classpathentry kind="lib" path="lib/gt-xsd-core-8.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/compile/geotools.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/compile/josm-tested.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/compile/jts.jar"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

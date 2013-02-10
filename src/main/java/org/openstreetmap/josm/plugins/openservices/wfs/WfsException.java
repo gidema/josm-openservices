@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.openservices.wfs;
 
-public class WfsException extends Exception {
+import org.openstreetmap.josm.plugins.openservices.ServiceException;
+
+public class WfsException extends ServiceException {
 
   /**
    * 

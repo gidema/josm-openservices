@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openservices>
+  <host-type name="WFS" class="org.openstreetmap.josm.plugins.openservices.wfs.WFSHost"/>
+</openservices>

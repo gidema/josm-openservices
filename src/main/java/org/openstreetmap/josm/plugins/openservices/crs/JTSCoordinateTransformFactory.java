@@ -20,7 +20,7 @@ public interface JTSCoordinateTransformFactory {
   public JTSCoordinateTransform createJTSCoordinateTransform(int sourceSRID, int targetSRID);
 
   /**
-   * Create a new JTSCoordinateTransform object for the given source and target CRS codes.
+   * Create a new JTSCoordinateTransform object for the given source and target crs codes.
    * @param sourceCRSCode
    * @param targetCRSCode
    * @param scale  
