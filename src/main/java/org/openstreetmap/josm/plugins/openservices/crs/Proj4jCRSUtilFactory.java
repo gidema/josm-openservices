@@ -25,12 +25,12 @@ public class Proj4jCRSUtilFactory implements JTSCoordinateTransformFactory {
   static Map<String, JTSCoordinateTransform> JTSCoordinateTransformCache = new HashMap<String, JTSCoordinateTransform>();
 
   @Override
-  public JTSCoordinateTransform createJTSCoordinateTransform(int sourceSRID, int targetSRID) {
+  public JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID) {
     return createJTSCoordinateTransform(sourceSRID, targetSRID, null);
   }
   
   @Override
-  public JTSCoordinateTransform createJTSCoordinateTransform(int sourceSRID, int targetSRID, Double scale) {
+  public JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID, Double scale) {
     String key = String.format("%d|%d|%f", sourceSRID, targetSRID, scale);
     JTSCoordinateTransform crsUtil = JTSCoordinateTransformCache.get(key);
     if (crsUtil == null) {
@@ -49,17 +49,17 @@ public class Proj4jCRSUtilFactory implements JTSCoordinateTransformFactory {
     private CoordinateReferenceSystem targetCrsProj4j;
     private CoordinateTransform ct;
 
-    public CRSUtilImpl(int sourceSRID, int targetSRID) {
+    public CRSUtilImpl(Long sourceSRID, Long targetSRID) {
       super(sourceSRID, targetSRID);
       init();
     }
 
-    public CRSUtilImpl(int sourceSRID, int targetSRID, Double scale) {
+    public CRSUtilImpl(Long sourceSRID, Long targetSRID, Double scale) {
       super(sourceSRID, targetSRID, scale);
       init();
     }
 
-    public CRSUtilImpl(int sourceSRID, int targetSRID,
+    public CRSUtilImpl(Long sourceSRID, Long targetSRID,
         PrecisionModel precisionModel) {
       super(sourceSRID, targetSRID, precisionModel);
       init();

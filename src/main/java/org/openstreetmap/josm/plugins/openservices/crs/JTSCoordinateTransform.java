@@ -20,8 +20,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  *
  */
 public abstract class JTSCoordinateTransform {
-  private int sourceSRID;
-  private int targetSRID;
+  private Long sourceSRID;
+  private Long targetSRID;
   private GeometryFactory targetFactory;
 
   
@@ -30,7 +30,7 @@ public abstract class JTSCoordinateTransform {
    * @param sourceSRID
    * @param targetSRID
    */
-  public JTSCoordinateTransform(int sourceSRID, int targetSRID) {
+  public JTSCoordinateTransform(Long sourceSRID, Long targetSRID) {
     this(sourceSRID, targetSRID, (Double)null);
   }
 
@@ -40,7 +40,7 @@ public abstract class JTSCoordinateTransform {
    * @param targetSRID
    * @param scale
    */
-  public JTSCoordinateTransform(int sourceSRID, int targetSRID, Double scale) {
+  public JTSCoordinateTransform(Long sourceSRID, Long targetSRID, Double scale) {
     this(sourceSRID, targetSRID, createPrecisionModel(scale));
   }
   
@@ -50,17 +50,17 @@ public abstract class JTSCoordinateTransform {
    * @param targetSRID
    * @param scale
    */
-  public JTSCoordinateTransform(int sourceSRID, int targetSRID, PrecisionModel precisionModel) {
+  public JTSCoordinateTransform(Long sourceSRID, Long targetSRID, PrecisionModel precisionModel) {
     this.sourceSRID = sourceSRID;
     this.targetSRID = targetSRID;
-    this.targetFactory = new GeometryFactory(precisionModel, targetSRID);
+    this.targetFactory = new GeometryFactory(precisionModel, targetSRID.intValue());
   }
   
   /**
    * Get the source coordinate system reference ID
    * @return
    */
-  public final int getSourceSRID() {
+  public final Long getSourceSRID() {
     return sourceSRID;
   }
 
@@ -68,7 +68,7 @@ public abstract class JTSCoordinateTransform {
    * Get the target coordinate system reference ID
    * @return
    */
-  public final int getTargetSRID() {
+  public final Long getTargetSRID() {
     return targetSRID;
   }
 
@@ -80,11 +80,11 @@ public abstract class JTSCoordinateTransform {
     return targetFactory;
   }
 
-  protected final void setSourceSRID(int sourceSRID) {
+  protected final void setSourceSRID(Long sourceSRID) {
     this.sourceSRID = sourceSRID;
   }
 
-  protected final void setTargetSRID(int targetSRID) {
+  protected final void setTargetSRID(Long targetSRID) {
     this.targetSRID = targetSRID;
   }
 

@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
-public class ArcgisServerRestException extends Exception {
+import org.openstreetmap.josm.plugins.openservices.ServiceException;
+
+public class ArcgisServerRestException extends ServiceException {
 
   /**
    * 

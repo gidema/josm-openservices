@@ -1,9 +1,21 @@
 package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import org.geotools.data.DataUtilities;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
+import org.openstreetmap.josm.plugins.openservices.Service;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -15,24 +27,60 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
-public abstract class ArcgisJsonParser<T> {
+public class AGRestFeatureParser {
   private final GeometryFactory geoFactory;
+  private final Service service;
+  private final GeometryDescriptor geometryDescriptor;
   
-  public ArcgisJsonParser(int srid) {
+  public AGRestFeatureParser(Service service) {
+    this.service = service;
+    this.geometryDescriptor = service.getFeatureType().getGeometryDescriptor();
     PrecisionModel precisionModel = new PrecisionModel();
-    this.geoFactory = new GeometryFactory(precisionModel, srid);
+    this.geoFactory = new GeometryFactory(precisionModel, service.getSRID().intValue());
   }
   
-  public abstract T parse(ArcgisRestLayer layer, JSONObject jsonObject);
+  public FeatureCollection parse(JSONObject json) {
+    JSONArray features = (JSONArray) json.get("features");
+    List<SimpleFeature> featureList = new ArrayList<SimpleFeature>(features.size());
+    for (int i=1; i < features.size(); i++) {
+      SimpleFeature feature = parseFeature((JSONObject) features.get(i));
+      featureList.add(feature);
+    }
+    return DataUtilities.collection(featureList);
+  }
   
-  protected Geometry parseGeometry(String geometryType, JSONObject jsonObject) {
-    if (geometryType.equals("esriGeometryPolyline")) {
+  private SimpleFeature parseFeature(JSONObject json) {
+    JSONObject geometryJson = (JSONObject) json.get("geometry");
+    JSONObject attributes = (JSONObject) json.get("attributes");
+    Class<?> geometryClass = geometryDescriptor.getType().getBinding();
+    Geometry geometry = parseGeometry(geometryClass, geometryJson);
+    Collection<PropertyDescriptor> propertyDescriptors = service.getFeatureType().getDescriptors();
+    Object[] values = new Object[propertyDescriptors.size()];
+    SimpleFeatureType featureType = (SimpleFeatureType) service.getFeatureType();
+    String id = null;
+    int i=0;
+    for (PropertyDescriptor descriptor : propertyDescriptors) {
+      Name name = descriptor.getName();
+      Object o = attributes.get(name.getLocalPart());
+      values[i++] = o;
+      if (descriptor.getType().getBinding() ==Serializable.class) {
+        id = o.toString();
+      }
+    }
+    SimpleFeature feature = SimpleFeatureBuilder.build(featureType, values, id);
+
+    feature.setDefaultGeometry(geometry);
+    return feature;
+  }
+
+  protected Geometry parseGeometry(Class<?> geometryClass, JSONObject jsonObject) {
+    if (geometryClass == MultiLineString.class) {
       return parsePolyLine(jsonObject);
     }
-    if (geometryType.equals("esriGeometryPolygon")) {
+    if (geometryClass == Polygon.class) {
       return parsePolygon(jsonObject);
     }
-    if (geometryType.equals("esriGeometryPoint")) {
+    if (geometryClass == Point.class) {
       return parsePoint(jsonObject);
     }
     return null;
@@ -94,5 +142,4 @@ public abstract class ArcgisJsonParser<T> {
     coordinate.y = ((Number) jsonPoint.get(1)).doubleValue();
     return coordinate;
   }
-
 }

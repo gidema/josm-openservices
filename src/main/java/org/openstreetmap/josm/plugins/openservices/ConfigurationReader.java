@@ -95,7 +95,11 @@ public class ConfigurationReader {
     String hostName = conf.getString("[@host]");
     String feature = conf.getString("[@feature]");
     Host host = OpenServices.getHost(hostName);
-    return host.getService(feature);
+    try {
+      return host.getService(feature);
+    } catch (ServiceException e) {
+      throw new ConfigurationException(e);
+    }
   }
   
   private static void configureLayers(HierarchicalConfiguration conf) throws ConfigurationException {
@@ -113,15 +117,6 @@ public class ConfigurationReader {
     DataSource dataSource = OpenServices.getDataSource(dsName);
     layer.setDataSource(dataSource);
     dataSource.addLayer(layer);
-    if (mapperName != null) {
-      ObjectToJosmMapper mapper;
-      try {
-        mapper = (ObjectToJosmMapper) Class.forName(mapperName).newInstance();
-        layer.setFeatureMapper(mapper);
-      } catch (Exception e) {
-        throw new ConfigurationException("Error creating mapper class: " + e.getMessage());
-      }
-    }
     OpenServices.registerLayer(layer);
   }
 

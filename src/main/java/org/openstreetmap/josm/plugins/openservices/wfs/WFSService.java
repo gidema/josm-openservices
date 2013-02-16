@@ -8,6 +8,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.ReferenceIdentifier;
@@ -20,10 +21,12 @@ import org.openstreetmap.josm.plugins.openservices.ServiceException;
 
 public class WFSService implements Service {
   final static String type = "WFS";
+  private boolean initialized = false;
   WFSHost host;
   String feature;
   FeatureSource<?, ?> featureSource;
   CoordinateReferenceSystem crs;
+
 
   @Override
   public void setHost(Host host) {
@@ -35,23 +38,37 @@ public class WFSService implements Service {
     this.feature = host.getName() + ":" + feature;
   }
 
-  FeatureSource<?, ?> getFeatureSource() throws ServiceException {
+  @Override
+  public void init() throws ServiceException {
+    if (initialized) return;
+    initialize();
+    initialized = true;
+  }
+  
+  private void initialize() throws ServiceException {
+    if (!host.hasFeatureType(feature)) {
+      throw new WfsException(String.format("Unknown feature type: '%s'", feature));
+    }
     try {
-      if (featureSource == null) {
-        if (!host.hasFeatureType(feature)) {
-          throw new WfsException(String.format("Unknown feature type: '%s'", feature));
-        }
-        featureSource = host.getDataStore().getFeatureSource(feature);
-      }
-      return featureSource;
+      featureSource = host.getDataStore().getFeatureSource(feature);
     } catch (IOException e) {
-      throw new WfsException(e.getMessage(), e);
+      throw new ServiceException(e);
     }
   }
   
-  CoordinateReferenceSystem getCrs() throws ServiceException {
+  FeatureSource<?, ?> getFeatureSource() {
+    return featureSource;
+  }
+  
+  @Override
+  public FeatureType getFeatureType() {
+    return getFeatureSource().getSchema();
+  }
+
+  @Override
+  public CoordinateReferenceSystem getCrs() {
     if (crs == null) {
-      crs = getFeatureSource().getInfo().getCRS();
+      crs = featureSource.getInfo().getCRS();
     }
     return crs;
   }
@@ -63,9 +80,9 @@ public class WFSService implements Service {
   }
   
   @Override
-  public int getSRID() {
+  public Long getSRID() {
     ReferenceIdentifier rid = crs.getIdentifiers().iterator().next();
-    return Integer.parseInt(rid.getCode());
+    return Long.parseLong(rid.getCode());
   }
   
   @Override
@@ -83,12 +100,12 @@ public class WFSService implements Service {
 
     @Override
     public FeatureCollection<?, ?> call() throws Exception {
+      init();
 //      DataStore dataStore = host.getDataStore();
       FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
       // Find faster solution for the following line
       ReferencedEnvelope bbox = BBoxUtil.createBoundingBox(getCrs(), bounds);
       Filter filter = ff.bbox(ff.property(""), bbox);
-      getFeatureSource().getInfo().getSchema();
       features = getFeatureSource().getFeatures(filter);
       return features;
     }

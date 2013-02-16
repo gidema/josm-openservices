@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
-public enum GeometryType {
+public enum EsriGeometryType {
   POINT("esriGeometryPoint"),
   MULTIPOINT("esriGeometryMultipoint"),
   POLYLINE("esriGeometryPolyline"),
@@ -9,11 +9,11 @@ public enum GeometryType {
   
   private String name;
 
-  private GeometryType(String name) {
+  private EsriGeometryType(String name) {
     this.name = name;
   }
   
-  public static GeometryType parse(String s) {
+  public static EsriGeometryType parse(String s) {
     if (s.equals("esriGeometryPoint")) return POINT;
     if (s.equals("esriGeometryMultipoint")) return MULTIPOINT;
     if (s.equals("esriGeometryPolyline")) return POLYLINE;

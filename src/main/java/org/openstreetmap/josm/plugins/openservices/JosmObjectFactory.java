@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class JosmObjectFactory {
-  private static final int JOSM_SRID = 4326; 
+  private static final Long JOSM_SRID = 4326L; 
   private JTSCoordinateTransform crsUtil;
   private final DataSet dataSet;
   private final JTSCoordinateTransformFactory crsUtilFactory = new Proj4jCRSUtilFactory();
@@ -42,7 +42,7 @@ public class JosmObjectFactory {
    * @param dataSet 
    * @param sourceCrs
    */
-  public JosmObjectFactory(DataSet dataSet, int sourceSRID) {
+  public JosmObjectFactory(DataSet dataSet, Long sourceSRID) {
     this.dataSet = dataSet;
     try {
       crsUtil = crsUtilFactory.createJTSCoordinateTransform(sourceSRID, JOSM_SRID, 10000000.0);

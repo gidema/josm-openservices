@@ -39,5 +39,5 @@ public abstract class Host {
 
   public abstract boolean hasFeatureType(String feature) throws ServiceException;
 
-  public abstract Service getService(String feature);
+  public abstract Service getService(String feature) throws ServiceException;
 }

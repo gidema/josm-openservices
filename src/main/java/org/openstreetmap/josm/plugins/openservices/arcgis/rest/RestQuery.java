@@ -5,12 +5,13 @@ import java.net.URLEncoder;
 
 public class RestQuery {
   private String host;
-  private String service;
+  private String serviceName;
+  private AGRestService service;
   private Long layer;
   private ReturnType format;
   private String text = "";
   private String geometry;
-  private GeometryType geometryType = GeometryType.ENVELOPE;
+  private EsriGeometryType geometryType = EsriGeometryType.ENVELOPE;
   private Long inSR = null;
   private Long outSR = null;
   private SpatialRel spatialRel = SpatialRel.INTERSECTS;
@@ -22,7 +23,11 @@ public class RestQuery {
     this.host = host;
   }
 
-  public void setService(String service) {
+  public void setService(String serviceName) {
+    this.serviceName = serviceName;
+  }
+
+  public void setService(AGRestService service) {
     this.service = service;
   }
 
@@ -46,7 +51,7 @@ public class RestQuery {
     this.geometry = geometry;
   }
   
-  public void setGeometryType(GeometryType geometryType) {
+  public void setGeometryType(EsriGeometryType geometryType) {
     this.geometryType = geometryType;
   }
 
@@ -74,10 +79,14 @@ public class RestQuery {
     return host;
   }
 
-  public String getService() {
-    return service;
+  public String getServiceName() {
+    return serviceName;
   }
 
+  public AGRestService getService() {
+    return service;
+  }
+  
   public Long getLayer() {
     return layer;
   }
@@ -87,7 +96,7 @@ public class RestQuery {
     return text;
   }
 
-  public GeometryType getGeometryType() {
+  public EsriGeometryType getGeometryType() {
     return geometryType;
   }
   
@@ -134,6 +143,7 @@ public class RestQuery {
       return "";
     }
   }
+
 
 //  public URL getUrl(ReturnType returnType) {
 //    try {

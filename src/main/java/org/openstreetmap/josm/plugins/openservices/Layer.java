@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -17,7 +16,7 @@ public class Layer {
   private OsmDataLayer osmLayer;
   private final Map<String, FeatureMapper> featureMappers = 
       new HashMap<String, FeatureMapper>();
-  private ObjectToJosmMapper featureMapper;
+//  private ObjectToJosmMapper featureMapper;
 
   protected String getName() {
     return name;
@@ -35,9 +34,9 @@ public class Layer {
     this.dataSource = dataSource;
   }
 
-  public final void setFeatureMapper(ObjectToJosmMapper featureMapper) {
-    this.featureMapper = featureMapper;
-  }
+//  public final void setFeatureMapper(ObjectToJosmMapper featureMapper) {
+//    this.featureMapper = featureMapper;
+//  }
 
   private FeatureMapper getFeatureMapper(String feature) {
     FeatureMapper mapper = featureMappers.get(feature);
@@ -54,9 +53,9 @@ public class Layer {
   
   public void addFeatures(Service service, List<Feature> newFeatures) {
     if (newFeatures.size() == 0) return;
-    int srid = service.getSRID();
+    Long srid = service.getSRID();
     DataSet dataSet = getOsmLayer().data;
-    String id = newFeatures.get(0).getName().getLocalPart();
+    String id = service.getFeatureType().getName().getLocalPart();
     FeatureMapper mapper = getFeatureMapper(id);
     JosmObjectFactory objectFactory = new JosmObjectFactory(dataSet, srid);
     for (Feature feature : newFeatures) {
@@ -64,9 +63,9 @@ public class Layer {
     }
   }
   
-  private void addFeature(SimpleFeature feature, JosmObjectFactory objectFactory) {
-    featureMapper.create(feature, objectFactory);
-  }
+//  private void addFeature(SimpleFeature feature, JosmObjectFactory objectFactory) {
+//    featureMapper.create(feature, objectFactory);
+//  }
 
   private OsmDataLayer getOsmLayer() {
     if (osmLayer == null) {

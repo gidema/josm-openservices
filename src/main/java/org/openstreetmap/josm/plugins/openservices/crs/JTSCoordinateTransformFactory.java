@@ -17,7 +17,7 @@ public interface JTSCoordinateTransformFactory {
    * @return 
    * @see createCRSUtil(int,int,Double)
    */
-  public JTSCoordinateTransform createJTSCoordinateTransform(int sourceSRID, int targetSRID);
+  public JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID);
 
   /**
    * Create a new JTSCoordinateTransform object for the given source and target crs codes.
@@ -26,5 +26,5 @@ public interface JTSCoordinateTransformFactory {
    * @param scale  
    * @return
    */
-  public JTSCoordinateTransform createJTSCoordinateTransform(int sourceSRID, int targetSRID, Double scale);
+  public JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID, Double scale);
 }

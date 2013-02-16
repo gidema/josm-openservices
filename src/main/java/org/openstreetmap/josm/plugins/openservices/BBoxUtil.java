@@ -12,7 +12,7 @@ import org.openstreetmap.josm.plugins.openservices.crs.Proj4jCRSUtilFactory;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class BBoxUtil {
-  private static final int JOSM_SRID = 4326; 
+  private static final Long JOSM_SRID = 4326L; 
   private final static JTSCoordinateTransformFactory crsTransformFactory = new Proj4jCRSUtilFactory();
   /**
    * Create a ReferencedEnvelope from a Josm bounds object, using the supplied CoordinateReferenceSystem
@@ -24,7 +24,7 @@ public class BBoxUtil {
   public static ReferencedEnvelope createBoundingBox(CoordinateReferenceSystem crs, Bounds bounds) {
     // A bit complex way to find the crs code, but at least it works.
     String crsCode = crs.getIdentifiers().toArray(new ReferenceIdentifier[0])[0].getCode();
-    int targetSRID = Integer.parseInt(crsCode);
+    Long targetSRID = Long.parseLong(crsCode);
     JTSCoordinateTransform transform = crsTransformFactory.createJTSCoordinateTransform(JOSM_SRID, targetSRID);
 
     Coordinate min = getCoordinate(bounds.getMin());
