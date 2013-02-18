@@ -12,14 +12,19 @@ import javax.swing.JPopupMenu;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.geotools.xml.Parser;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.MainMenu;
 
 public class ConfigurationReader {
+  private final ClassLoader classLoader;
  
-  public static void read(URL configFile) throws ConfigurationException {
+  public ConfigurationReader(ClassLoader classLoader) {
+    this.classLoader = classLoader;
+  }
+
+  public void read(URL configFile) throws ConfigurationException {
     try {
       HierarchicalConfiguration conf = new XMLConfiguration(configFile);
       configureHostTypes(conf);
@@ -33,14 +38,14 @@ public class ConfigurationReader {
     }
   }
   
-  private static void configureHostTypes(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureHostTypes(HierarchicalConfiguration conf) throws ConfigurationException {
     List<HierarchicalConfiguration> confs = conf.configurationsAt("host-type");
     for (HierarchicalConfiguration c : confs) {
       configureHostType(c);
     }
   }
   
-  private static void configureHostType(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureHostType(HierarchicalConfiguration conf) throws ConfigurationException {
     conf.setThrowExceptionOnMissing(true);
     String typeName = conf.getString("[@name]");
     String hostClass = conf.getString("[@class]");
@@ -48,14 +53,14 @@ public class ConfigurationReader {
     OpenServices.registerHostType(hostType);
   }
 
-  private static void configureHosts(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureHosts(HierarchicalConfiguration conf) throws ConfigurationException {
     List<HierarchicalConfiguration> confs = conf.configurationsAt("host");
     for (HierarchicalConfiguration c : confs) {
       configureHost(c);
     }
   }
   
-  private static void configureHost(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureHost(HierarchicalConfiguration conf) throws ConfigurationException {
     conf.setThrowExceptionOnMissing(true);
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
@@ -73,13 +78,13 @@ public class ConfigurationReader {
     }
   }
 
-  private static void configureDataSources(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureDataSources(HierarchicalConfiguration conf) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("datasource")) {
       configureDataSource(c);
     }
   }
 
-  private static void configureDataSource(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureDataSource(HierarchicalConfiguration conf) throws ConfigurationException {
     String name = conf.getString("[@name]");
     DataSource dataSource = new DataSource();
     dataSource.setName(name);
@@ -90,7 +95,7 @@ public class ConfigurationReader {
     OpenServices.registerDataSource(dataSource);
   }
 
-  private static Service configureService(HierarchicalConfiguration conf) throws ConfigurationException {
+  private Service configureService(HierarchicalConfiguration conf) throws ConfigurationException {
     conf.setThrowExceptionOnMissing(true);
     String hostName = conf.getString("[@host]");
     String feature = conf.getString("[@feature]");
@@ -102,13 +107,13 @@ public class ConfigurationReader {
     }
   }
   
-  private static void configureLayers(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureLayers(HierarchicalConfiguration conf) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("layer")) {
       configureLayer(c);
     }
   }
   
-  private static void configureLayer(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureLayer(HierarchicalConfiguration conf) throws ConfigurationException {
     String name = conf.getString("[@name]");
     String dsName = conf.getString("[@datasource]");
     String mapperName = conf.getString("[@mapper]");
@@ -120,13 +125,13 @@ public class ConfigurationReader {
     OpenServices.registerLayer(layer);
   }
 
-  private static void configureActions(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureActions(HierarchicalConfiguration conf) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("action")) {
       configureAction(c);
     }
   }
   
-  private static void configureAction(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureAction(HierarchicalConfiguration conf) throws ConfigurationException {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String menu = conf.getString("[@menu]");
@@ -137,7 +142,7 @@ public class ConfigurationReader {
     configureMenu(action, menu);
   }
   
-  private static synchronized void configureMenu(Action action, String menu) {
+  private synchronized void configureMenu(Action action, String menu) {
     String[] menuParts = menu.split("\\.");
     String baseMenuName = menuParts[0];
     JMenu parent = getBaseMenu(baseMenuName, 4);
@@ -147,16 +152,15 @@ public class ConfigurationReader {
     parent.add(action);
   }
 
-  private static void configureFeatureMappers(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureFeatureMappers(HierarchicalConfiguration conf) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("map")) {
       configureFeatureMapper(c);
     }
   }
   
-  private static void configureFeatureMapper(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureFeatureMapper(HierarchicalConfiguration conf) throws ConfigurationException {
     DefaultFeatureMapper mapper = new DefaultFeatureMapper();
     mapper.setFeatureName(conf.getString("[@feature]"));
-    mapper.setPrimitiveType(conf.getString("[@map-to]"));
     for (HierarchicalConfiguration c : conf.configurationsAt("tag")) {
       String value = c.getString("[@value]");
       String property = c.getString("[@property]");
@@ -170,13 +174,29 @@ public class ConfigurationReader {
         mapper.addPropertyMapper(key, property, format);
       }
     }
+    configureGeometryMapper(mapper, conf.configurationAt("geometry"));
     OpenServices.registerFeatureMapper(mapper);
   }
   
-  void test() {
-    Parser parser;
+  private void configureGeometryMapper(DefaultFeatureMapper mapper, SubnodeConfiguration conf) throws ConfigurationException {
+    String className = conf.getString("[@mapper]");
+    String mapTo = conf.getString("[@map-to]");
+    if (className == null) {
+      DefaultGeometryMapper geometryMapper = new DefaultGeometryMapper();
+      geometryMapper.setTargetPrimitive(mapTo);
+      mapper.setGeometryMapper(geometryMapper);
+    }
+    else {
+      try {
+        DefaultGeometryMapper geometryMapper = (DefaultGeometryMapper) classLoader.loadClass(className).newInstance();
+        geometryMapper.setTargetPrimitive(mapTo);
+        mapper.setGeometryMapper(geometryMapper);
+      } catch (Exception e) {
+        throw new ConfigurationException("Could not configure Geometry mapper", e);
+      }
+    }
   }
-  
+
   // TODO move the following 2 functions to a more logical place (Plugin class ?)
   private static JMenu getBaseMenu(String name, int position) {
     MainMenu mainMenu = Main.main.menu;

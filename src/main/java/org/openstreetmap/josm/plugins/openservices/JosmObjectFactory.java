@@ -33,7 +33,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class JosmObjectFactory {
   private static final Long JOSM_SRID = 4326L; 
-  private JTSCoordinateTransform crsUtil;
+  private JTSCoordinateTransform crsTransform;
   private final DataSet dataSet;
   private final JTSCoordinateTransformFactory crsUtilFactory = new Proj4jCRSUtilFactory();
   
@@ -45,7 +45,7 @@ public class JosmObjectFactory {
   public JosmObjectFactory(DataSet dataSet, Long sourceSRID) {
     this.dataSet = dataSet;
     try {
-      crsUtil = crsUtilFactory.createJTSCoordinateTransform(sourceSRID, JOSM_SRID, 10000000.0);
+      crsTransform = crsUtilFactory.createJTSCoordinateTransform(sourceSRID, JOSM_SRID, 10000000.0);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -138,7 +138,7 @@ public class JosmObjectFactory {
    * @return the node
    */
   public Node buildNode(Coordinate coordinate, boolean merge) {
-    Coordinate coordWgs84 = crsUtil.transform(coordinate);
+    Coordinate coordWgs84 = crsTransform.transform(coordinate);
     LatLon latlon = new LatLon(coordWgs84.y, coordWgs84.x);
     Node node = new Node(latlon);
     if (merge) {

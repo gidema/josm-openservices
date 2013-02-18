@@ -27,9 +27,11 @@ public class OpenServicesPlugin extends Plugin {
   
   public OpenServicesPlugin(PluginInformation info) {
     super(info);
-    URL config = this.getClass().getClassLoader().getResource("config.xml");
+    ClassLoader classLoader = getClass().getClassLoader();
+    URL configFile = classLoader.getResource("config.xml");
     try {
-      OpenServices.configure(config);
+      ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
+      configurationReader.read(configFile);
     } catch (ConfigurationException e) {
       Main.info("An error occured trying to registrate the service types.");
     }
@@ -41,7 +43,7 @@ public class OpenServicesPlugin extends Plugin {
     configureJarSources(pluginDir);
   }
   
-  private static void configureJarSources(File pluginDir) {
+  private void configureJarSources(File pluginDir) {
     FilenameFilter jarFileFilter = new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
@@ -53,7 +55,7 @@ public class OpenServicesPlugin extends Plugin {
     }
   }
   
-  public static void configureJarSource(File jarFile) {
+  public void configureJarSource(File jarFile) {
     try {
       URL url = jarFile.toURI().toURL();
       ClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
@@ -62,7 +64,9 @@ public class OpenServicesPlugin extends Plugin {
         Main.warn("Warning: {0} should contain a config.xml file", jarFile);
         return;
       }
-      ConfigurationReader.read(configFile);
+      classLoader = new URLClassLoader(new URL[] {url}, getClass().getClassLoader());
+      ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
+      configurationReader.read(configFile);
     }
     catch (MalformedURLException e) {
       throw new RuntimeException("An unexpected exception occurred", e);

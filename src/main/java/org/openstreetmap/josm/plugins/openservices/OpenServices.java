@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.openservices;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,9 +13,9 @@ public class OpenServices {
   private static Map<String, Layer> layers = new HashMap<String, Layer>();
   private static Map<String, FeatureMapper> featureMappers = new HashMap<String, FeatureMapper>();
   
-  public static void configure(URL configFile) throws ConfigurationException {
-    ConfigurationReader.read(configFile);
-  }
+//  public static void configure(URL configFile) throws ConfigurationException {
+//    ConfigurationReader.read(configFile);
+//  }
 
   public static void registerHostType(HostType hostType) throws ConfigurationException {
     String name = hostType.getName();

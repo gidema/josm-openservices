@@ -8,6 +8,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 
 public class Layer {
@@ -16,8 +17,8 @@ public class Layer {
   private OsmDataLayer osmLayer;
   private final Map<String, FeatureMapper> featureMappers = 
       new HashMap<String, FeatureMapper>();
-//  private ObjectToJosmMapper featureMapper;
-
+  private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
+ 
   protected String getName() {
     return name;
   }
@@ -34,15 +35,13 @@ public class Layer {
     this.dataSource = dataSource;
   }
 
-//  public final void setFeatureMapper(ObjectToJosmMapper featureMapper) {
-//    this.featureMapper = featureMapper;
-//  }
-
-  private FeatureMapper getFeatureMapper(String feature) {
-    FeatureMapper mapper = featureMappers.get(feature);
+  private FeatureMapper getFeatureMapper(String featureName) {
+    FeatureMapper mapper = featureMappers.get(featureName);
     if (mapper == null) {
       try {
-        mapper = OpenServices.getFeatureMapper(feature);
+        Service service = getDataSource().getService(featureName);
+        mapper = OpenServices.getFeatureMapper(featureName);
+        mapper.setObjectFactory(new JosmObjectFactory(getOsmLayer().data, service.getSRID()));
       } catch (ConfigurationException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -53,20 +52,20 @@ public class Layer {
   
   public void addFeatures(Service service, List<Feature> newFeatures) {
     if (newFeatures.size() == 0) return;
-    Long srid = service.getSRID();
-    DataSet dataSet = getOsmLayer().data;
     String id = service.getFeatureType().getName().getLocalPart();
     FeatureMapper mapper = getFeatureMapper(id);
-    JosmObjectFactory objectFactory = new JosmObjectFactory(dataSet, srid);
     for (Feature feature : newFeatures) {
-      mapper.mapFeature(feature, objectFactory);
+      List<OsmPrimitive> primitives = mapper.mapFeature(feature);
+      for (OsmPrimitive primitive : primitives) {
+        relatedFeatures.put(primitive, feature);
+      }
     }
   }
   
-//  private void addFeature(SimpleFeature feature, JosmObjectFactory objectFactory) {
-//    featureMapper.create(feature, objectFactory);
-//  }
-
+  public Feature getRelatedFeature(OsmPrimitive primitive) {
+    return relatedFeatures.get(primitive);
+  }
+  
   private OsmDataLayer getOsmLayer() {
     if (osmLayer == null) {
       osmLayer = new OsmDataLayer(new DataSet(), name, null);

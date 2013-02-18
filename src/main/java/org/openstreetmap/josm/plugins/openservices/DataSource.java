@@ -34,6 +34,15 @@ public class DataSource {
   public void addLayer(Layer layer) {
     layers.add(layer);
   }
+  
+  public Service getService(String featureName) {
+    for (Service service : services) {
+      if (service.getFeatureType().getName().getLocalPart().equals(featureName)) {
+        return service;
+      }
+    }
+    return null;
+  }
 
   public void download(Bounds bounds) {
     ExecutorService executor = Executors.newFixedThreadPool(services.size());
