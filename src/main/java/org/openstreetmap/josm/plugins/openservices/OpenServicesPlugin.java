@@ -40,7 +40,9 @@ public class OpenServicesPlugin extends Plugin {
   
   private void configureSources() {
     File pluginDir = new File(getPluginDir());
-    configureJarSources(pluginDir);
+    if (pluginDir.isDirectory()) {
+      configureJarSources(pluginDir);
+    }
   }
   
   private void configureJarSources(File pluginDir) {

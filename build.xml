@@ -29,29 +29,43 @@
 -->
 <project name="openservices" default="dist" basedir="."
 	xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-    <artifact:pom id="mypom" file="pom.xml" />
+  <artifact:pom id="mypom" file="pom.xml" />
+	<artifact:dependencies filesetId="dependency.fileset" useScope="runtime">
+	  <dependency groupId="org.geotools" artifactId="gt-wfs" version="8.4"/>
+    <dependency groupId="org.geotools" artifactId="gt-xml" version="8.4"/>
+    <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="8.4"/>
+    <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="8.4"/>
+		<dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
+    <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
+    <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
+    <dependency groupId="commons-collections" artifactId="commons-collections" version="3.1"/>
+    <dependency groupId="com.googlecode.json-simple" artifactId="json-simple" version="1.1"/>
+  </artifact:dependencies>
+
     <!-- enter the SVN commit message -->
     <property name="commit.message" value="Commit message"/>
     <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
     <property name="plugin.main.version" value="5531"/>
 	  <property name="plugin.class" value="org.openstreetmap.josm.plugins.openservices.OpenServicesPlugin"/>
     <property name="plugin.version" value="${mypom.version}"/>
-    <property name="plugin.build.dir" value="build"/>
+    <property name="plugin.build.dir" value="build/deploy"/>
 	  <property name="maven.target.dir" value="${mypom.build.directory}"/>
     <property name="plugin.src.dir" value="src/main/java"/>
-    <property name="plugin.resources.dir" value="src/main/resources"/>
     <!-- this is the directory where the plugin jar is copied to -->
-    <property name="plugin.dist.dir" value="dist"/>
+    <property name="plugin.dist.dir" value="dist/deploy"/>
     <property name="ant.build.javac.target" value="1.6"/>
     <property name="ant.build.javac.source" value="1.6"/>
     <property name="plugin.jar" value="${plugin.dist.dir}/${ant.project.name}.jar"/>
-    <property name="plugin.debug.jar" value="${plugin.dist.dir}/debug/${ant.project.name}.jar"/>	
+	  <!-- Debugging -->
+    <property name="plugin.debug.build.dir" value="build/debug"/>
+    <property name="plugin.debug.dist.dir" value="dist/debug"/>
+    <property name="plugin.debug.jar" value="${plugin.debug.dist.dir}/${ant.project.name}.jar"/>
     <!--
     **********************************************************
     ** init - initializes the build
     **********************************************************
     -->
-    <target name="init">
+    <target name="init" depends="clean">
       <mkdir dir="${plugin.build.dir}"/>
     </target>
 
@@ -61,14 +75,26 @@
     **********************************************************
     -->
     <target name="dist">
+    	<tstamp>
+    	  <format property="time" pattern="yyyy-MM-dd'T'hh:mm:ss'Z'"/>
+    	</tstamp>
       <echo message="creating ${ant.project.name}.jar ... "/>
       <copy todir="${plugin.build.dir}">
-          <fileset dir="${plugin.resources.dir}"/>
+        <fileset dir="${maven.target.dir}/classes"/>
       </copy>
       <unjar dest="${plugin.build.dir}">
-         <fileset dir="lib" includes="*.jar" />
+        <fileset file="repo/proj4j/proj4j/2244/proj4j-2244.jar" />
+        <fileset file="${org.geotools:gt-wfs:jar}"/>
+        <fileset file="${org.geotools:gt-xml:jar}"/>
+        <fileset file="${org.geotools.xsd:gt-xsd-core:jar}"/>
+        <fileset file="${org.geotools.xsd:gt-xsd-wfs:jar}"/>
+      	<fileset file="${commons-configuration:commons-configuration:jar}"/>
+        <fileset file="${commons-lang:commons-lang:jar}"/>
+        <fileset file="${commons-logging:commons-logging:jar}"/>
+        <fileset file="${commons-collections:commons-collections:jar}"/>
+        <fileset file="${com.googlecode.json-simple:json-simple:jar}"/>
       </unjar>
-      <jar destfile="${plugin.dist.dir}/${plugin.jar}" basedir="${plugin.build.dir}">
+      <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
       <!--
         ************************************************
         ** configure these properties. Most of them will be copied to the plugins
@@ -80,12 +106,12 @@
       <manifest>
         <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;"/>
         <attribute name="Plugin-Class" value="${plugin.class}"/>
-        <attribute name="Plugin-Date" value="${version.entry.commit.date}"/>
-        <attribute name="Plugin-Description" value="FIXME"/>
+        <attribute name="Plugin-Date" value="${time}"/>
+        <attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS"/>
         <attribute name="Plugin-Icon" value="images/wfs.png"/>
-        <attribute name="Plugin-Link" value="http://fixme.com"/>
+        <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
         <attribute name="Plugin-Mainversion" value="${plugin.main.version}"/>
-        <attribute name="Plugin-Version" value="0.1.2-SNAPSHOT"/>
+        <attribute name="Plugin-Version" value="${plugin.version}"/>
         <attribute name="Plugin-Requires" value="geotools"/>
       	<attribute name="Plugin-Stage" value="40"/>
         <attribute name="Class-Path" value="lib/"/>
@@ -100,10 +126,10 @@
    -->
    <target name="dist4debug">
      <echo message="creating ${ant.project.name}.jar ... "/>
-     <copy todir="${plugin.build.dir}/debug">
+     <copy todir="${plugin.debug.build.dir}">
          <fileset dir="${plugin.resources.dir}"/>
      </copy>
-     <jar destfile="${plugin.debug.jar}" basedir="${plugin.build.dir}/debug">
+     <jar destfile="${plugin.debug.jar}" basedir="${plugin.debug.build.dir}">
      <!--
        ************************************************
        ** configure these properties. Most of them will be copied to the plugins
@@ -118,7 +144,7 @@
          <attribute name="Plugin-Date" value="${version.entry.commit.date}"/>
          <attribute name="Plugin-Description" value="FIXME"/>
          <attribute name="Plugin-Icon" value="images/wfs.png"/>
-         <attribute name="Plugin-Link" value="http://fixme.com"/>
+         <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
          <attribute name="Plugin-Mainversion" value="${plugin.main.version}"/>
          <attribute name="Plugin-Version" value="${plugin.version}"/>
          <attribute name="Plugin-Stage" value="40"/>
