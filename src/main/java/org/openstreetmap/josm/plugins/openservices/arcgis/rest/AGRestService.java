@@ -68,7 +68,6 @@ public class AGRestService implements Service {
     }
   }
   
-  @Override
   public FutureTask<FeatureCollection<?, ?>> getDownloadTask(Bounds bounds) {
     RestQuery query = getQuery(bounds);
     return new FutureTask<FeatureCollection<?, ?>>(new AGRestDownloadTask(query));

@@ -10,7 +10,7 @@ public class OpenServices {
       new HashMap<String, HostType>();
   private static Map<String, Host> hosts = new HashMap<String, Host>();
   private static Map<String, DataSource> dataSources = new HashMap<String, DataSource>();
-  private static Map<String, Layer> layers = new HashMap<String, Layer>();
+  private static Map<String, ServiceLayer> layers = new HashMap<String, ServiceLayer>();
   private static Map<String, FeatureMapper> featureMappers = new HashMap<String, FeatureMapper>();
   
 //  public static void configure(URL configFile) throws ConfigurationException {
@@ -45,7 +45,7 @@ public class OpenServices {
     dataSources.put(dataSource.getName(), dataSource);
   }
   
-  public static void registerLayer(Layer layer) throws ConfigurationException {
+  public static void registerLayer(ServiceLayer layer) throws ConfigurationException {
     if (layers.get(layer.getName()) != null) {
       throw new ConfigurationException(String.format(
           "A layer named '%s' already exists", layer.getName()));
@@ -85,11 +85,11 @@ public class OpenServices {
     return dataSource;
   }
 
-  public static Layer getLayer(String name) throws ConfigurationException {
-    Layer layer = layers.get(name);
+  public static ServiceLayer getLayer(String name) throws ConfigurationException {
+    ServiceLayer layer = layers.get(name);
     if (layer == null) {
       throw new ConfigurationException(String.format(
-          "Layer '%s' does not exist", name));
+          "ServiceLayer '%s' does not exist", name));
     }
     return layer;
   }

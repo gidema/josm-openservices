@@ -5,18 +5,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
-import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.plugins.openservices.wfs.WFSDownloadTask;
+import org.openstreetmap.josm.plugins.openservices.wfs.WFSService;
 
 public class DataSource {
   private final FeatureStore store = new FeatureStore();
   private final List<Service> services = new LinkedList<Service>();
-  private final Set<Layer> layers = new HashSet<Layer>();
+  private final Set<ServiceLayer> layers = new HashSet<ServiceLayer>();
+  private final List<FutureTask<?>> tasks = new LinkedList<FutureTask<?>>();
+
   private String name;
 
   protected void setName(String name) {
@@ -31,7 +32,7 @@ public class DataSource {
     services.add(service);
   }
   
-  public void addLayer(Layer layer) {
+  public void addLayer(ServiceLayer layer) {
     layers.add(layer);
   }
   
@@ -44,28 +45,47 @@ public class DataSource {
     return null;
   }
 
-  public void download(Bounds bounds) {
-    ExecutorService executor = Executors.newFixedThreadPool(services.size());
-    FutureTask<FeatureCollection<?, ?>>[] tasks = new FutureTask[(services.size())];
+  public List<Feature> addFeatures(FeatureCollection<?, ?> features, Service service) {
+    List<Feature> newFeatures = store.addFeatures(features);
+    for (ServiceLayer layer: layers) {
+      layer.addFeatures(service, newFeatures);
+    }
+
+    return store.addFeatures(features);
+  }
+
+  public List<WFSDownloadTask> getTasks() {
+    List<WFSDownloadTask> tasks = new LinkedList<WFSDownloadTask>();
     for (int i = 0; i < services.size(); i++) {
       Service service = services.get(i);
-      tasks[i] = service.getDownloadTask(bounds);
-      executor.execute(tasks[i]);
+      tasks.add(new WFSDownloadTask((WFSService) service, this));
     }
-    for (int i=0; i< services.size(); i++) {
-      try {
-        FeatureCollection<?, ?> featureCollection = tasks[i].get();
-        List<Feature> newFeatures = store.addFeatures(featureCollection);
-        for (Layer layer: layers) {
-          layer.addFeatures(services.get(i), newFeatures);
+    return tasks;
+  }
+  
+  
+  public void postDownload() {
+    if (tasks == null) {
+      return;
+    }
+    for (int i = 0; i < services.size(); i++) {
+      @SuppressWarnings("unchecked")
+      FutureTask<FeatureCollection<?, ?>> task = (FutureTask<FeatureCollection<?, ?>>) tasks.get(i);
+      if (!task.isCancelled()) {
+        try {
+          FeatureCollection<?, ?> featureCollection = task.get();
+          List<Feature> newFeatures = store.addFeatures(featureCollection);
+          for (ServiceLayer layer: layers) {
+            layer.addFeatures(services.get(i), newFeatures);
+          }
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (ExecutionException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
         }
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (ExecutionException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      } 
     }
   }
 }

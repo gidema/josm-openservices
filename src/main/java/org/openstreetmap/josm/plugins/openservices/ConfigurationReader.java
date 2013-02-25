@@ -117,7 +117,7 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String dsName = conf.getString("[@datasource]");
     String mapperName = conf.getString("[@mapper]");
-    Layer layer = new Layer();
+    ServiceLayer layer = new ServiceLayer();
     layer.setName(name);
     DataSource dataSource = OpenServices.getDataSource(dsName);
     layer.setDataSource(dataSource);
@@ -135,7 +135,7 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String menu = conf.getString("[@menu]");
-    Layer layer = OpenServices.getLayer(name);
+    ServiceLayer layer = OpenServices.getLayer(name);
     DownloadAction action = new DownloadAction();
     action.setName(name);
     action.setLayer(layer);

@@ -11,7 +11,7 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 
-public class Layer {
+public class ServiceLayer {
   private String name;
   private DataSource dataSource;
   private OsmDataLayer osmLayer;
@@ -66,7 +66,7 @@ public class Layer {
     return relatedFeatures.get(primitive);
   }
   
-  private OsmDataLayer getOsmLayer() {
+  OsmDataLayer getOsmLayer() {
     if (osmLayer == null) {
       osmLayer = new OsmDataLayer(new DataSet(), name, null);
       Main.main.addLayer(osmLayer);
