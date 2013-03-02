@@ -113,8 +113,9 @@ public class OpenServicesPlugin extends Plugin {
         else if (activeLayer instanceof OsmDataLayer) {
           return;
         }
-        activeLayer = new OsmDataLayer(new DataSet(), OsmDataLayer.createNewName(), null);
-        Main.map.mapView.setActiveLayer(activeLayer);
+        Layer newLayer = new OsmDataLayer(new DataSet(), OsmDataLayer.createNewName(), null);
+        Main.map.mapView.addLayer(newLayer);
+        Main.map.mapView.setActiveLayer(newLayer);
       }
     });
   }
