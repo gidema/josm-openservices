@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class DefaultGeometryMapper implements GeometryMapper {
   private JosmObjectFactory objectFactory;
   private String targetPrimitive;
-  
+  private final Boolean merge = false;
   
   @Override
   public final void setObjectFactory(JosmObjectFactory objectFactory) {
@@ -60,7 +60,7 @@ public class DefaultGeometryMapper implements GeometryMapper {
         }
       }
     } else if (targetPrimitive.equals("NODE")) {
-      primitive = objectFactory.buildNode((Point)geometry, false);
+      primitive = objectFactory.buildNode((Point)geometry, merge);
     } else if (targetPrimitive.equals("POLYGON")) {
       primitive = objectFactory.buildPolygon((Polygon)geometry);
     }
@@ -79,6 +79,11 @@ public class DefaultGeometryMapper implements GeometryMapper {
       primitives.add(createPrimitive(gc.getGeometryN(i), tags));
     }
     return primitives;
+  }
+
+  public void setMerge(Boolean merge) {
+    // TODO Auto-generated method stub
+    
   }
 
 }

@@ -80,6 +80,8 @@ public class WFSDownloadTask extends AbstractDownloadTask {
       try {
           if (isCanceled())
               return;
+          ProgressMonitor subTaskMonitor = progressMonitor.createSubTaskMonitor(ProgressMonitor.ALL_TICKS, false);
+          subTaskMonitor.beginTask(tr("Contacting Server..."), 10);
           FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
           service.init();
           // Find faster solution for the following line

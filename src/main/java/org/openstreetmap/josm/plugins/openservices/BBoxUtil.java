@@ -7,13 +7,13 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransform;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransformFactory;
-import org.openstreetmap.josm.plugins.openservices.crs.Proj4jCRSUtilFactory;
+import org.openstreetmap.josm.plugins.openservices.crs.Proj4jCRSTransformFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class BBoxUtil {
   private static final Long JOSM_SRID = 4326L; 
-  private final static JTSCoordinateTransformFactory crsTransformFactory = new Proj4jCRSUtilFactory();
+  private final static JTSCoordinateTransformFactory crsTransformFactory = new Proj4jCRSTransformFactory();
   /**
    * Create a ReferencedEnvelope from a Josm bounds object, using the supplied CoordinateReferenceSystem
    * 

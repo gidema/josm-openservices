@@ -26,8 +26,8 @@ public class DownloadAction extends AbstractAction {
   }
 
   public void setName(String name) {
-    this.
-    putValue(Action.NAME, name);
+    this.putValue(Action.NAME, name);
+    this.putValue("toolbar", name);
   }
   
   public final void setLayer(ServiceLayer layer) {
@@ -49,15 +49,25 @@ public class DownloadAction extends AbstractAction {
     if (Main.isDisplayingMapView()) {
       activeLayer = Main.map.mapView.getActiveLayer();
     }
+    Future<?> future1 = null;
+    DownloadOsmTask task;
     if (dialog.isDownloadOsmData()) {
       activateOsmLayer();
-      DownloadOsmTask task = new DownloadOsmTask();
-      Future<?> future = task.download(dialog.isNewLayerRequired(), area, null);
-      Main.worker.submit(new org.openstreetmap.josm.actions.downloadtasks.PostDownloadHandler(task, future));
+      String osmQuery = layer.getOsmQuery();
+      if (osmQuery != null) {
+        String url = getOverpassUrl(osmQuery, area);
+        task = new DownloadOsmTask();
+        future1 = task.loadUrl(dialog.isNewLayerRequired(), url, null);
+      }
+      else {
+        task = new DownloadOsmTask();
+        future1 = task.download(dialog.isNewLayerRequired(), area, null);
+      }
+      Main.worker.submit(new org.openstreetmap.josm.actions.downloadtasks.PostDownloadHandler(task, future1));
     }
     for (WFSDownloadTask downloadTask : layer.getDataSource().getTasks()) {
-      Future<?> future = downloadTask.download(false, area, null);
-      Main.worker.submit(new PostDownloadHandler(future));
+      Future<?> future2 = downloadTask.download(false, area, null);
+      Main.worker.submit(new PostDownloadHandler(future2));
     }
   }
   
@@ -78,5 +88,12 @@ public class DownloadAction extends AbstractAction {
     Layer osmLayer = new OsmDataLayer(new DataSet(), "osmData", null);
     Main.main.addLayer(osmLayer);
     return osmLayer;
+  }
+  
+  private static String getOverpassUrl(String query, Bounds bounds) {
+    String host = "http://overpass-api.de/api";
+    return String.format("%s/interpreter?data=node(%f,%f,%f,%f);%s;out meta;", 
+      host, bounds.getMin().getY(), bounds.getMin().getX(), 
+      bounds.getMax().getY(), bounds.getMax().getX(), query);
   }
 }

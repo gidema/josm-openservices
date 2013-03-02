@@ -8,6 +8,8 @@ package org.openstreetmap.josm.plugins.openservices;
 import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
 import static org.openstreetmap.josm.tools.I18n.marktr;
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -19,6 +21,9 @@ import javax.swing.JMenu;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 
@@ -36,6 +41,7 @@ public class OpenServicesPlugin extends Plugin {
       Main.info("An error occured trying to registrate the service types.");
     }
     configureSources();
+    addDownloadDialogListener();
   }
   
   private void configureSources() {
@@ -80,8 +86,36 @@ public class OpenServicesPlugin extends Plugin {
 
   public static JMenu getMenu() {
     if (menu == null) {
-      menu = Main.main.menu.addMenu(marktr("NlGeo"), KeyEvent.VK_UNDEFINED, 4, ht("/Plugin/Bag"));
+      menu = Main.main.menu.addMenu(marktr("Open Services"), KeyEvent.VK_UNDEFINED, 4, ht("/Plugin/Open Services"));
     }
     return menu;
+  }
+  
+  /*
+   * When Josm's default download is called, the results shouldn't end up in one
+   * of the OpenService layers. To achieve this, we intercept the DownloadDialog and
+   * make sure an OsmData layer is active before continuing; 
+   */
+  private void addDownloadDialogListener() {
+    org.openstreetmap.josm.gui.download.DownloadDialog.getInstance().addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentShown(ComponentEvent e) {
+        if (!Main.isDisplayingMapView()) return;
+        Layer activeLayer = Main.main.getActiveLayer();
+        if (activeLayer instanceof ServiceDataLayer) {
+          for (Layer layer : Main.map.mapView.getAllLayersAsList()) {
+            if (layer instanceof OsmDataLayer && !(layer instanceof ServiceDataLayer)) {
+              Main.map.mapView.setActiveLayer(layer);
+              return;
+            }
+          }
+        }
+        else if (activeLayer instanceof OsmDataLayer) {
+          return;
+        }
+        activeLayer = new OsmDataLayer(new DataSet(), OsmDataLayer.createNewName(), null);
+        Main.map.mapView.setActiveLayer(activeLayer);
+      }
+    });
   }
 }

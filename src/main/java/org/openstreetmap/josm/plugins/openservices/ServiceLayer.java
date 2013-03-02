@@ -7,14 +7,17 @@ import java.util.Map;
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
+import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 
 public class ServiceLayer {
   private String name;
   private DataSource dataSource;
-  private OsmDataLayer osmLayer;
+  OsmDataLayer osmLayer;
+  String osmQuery;
   private final Map<String, FeatureMapper> featureMappers = 
       new HashMap<String, FeatureMapper>();
   private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
@@ -35,13 +38,26 @@ public class ServiceLayer {
     this.dataSource = dataSource;
   }
 
+  public void setOsmQuery(String osmQuery) {
+    this.osmQuery = osmQuery;
+  }
+  
+  
+
+
+  public final String getOsmQuery() {
+    return osmQuery;
+  }
+
   private FeatureMapper getFeatureMapper(String featureName) {
     FeatureMapper mapper = featureMappers.get(featureName);
-    if (mapper == null) {
+    if (mapper == null || osmLayer==null) {
       try {
         Service service = getDataSource().getService(featureName);
         mapper = OpenServices.getFeatureMapper(featureName);
-        mapper.setObjectFactory(new JosmObjectFactory(getOsmLayer().data, service.getSRID()));
+        mapper.setObjectFactory(new JosmObjectFactory(service.getSRID()));
+        mapper.setDataSet(getOsmLayer().data);
+        featureMappers.put(featureName, mapper);
       } catch (ConfigurationException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -68,7 +84,25 @@ public class ServiceLayer {
   
   OsmDataLayer getOsmLayer() {
     if (osmLayer == null) {
-      osmLayer = new OsmDataLayer(new DataSet(), name, null);
+      osmLayer = new ServiceDataLayer(name);
+      MapView.addLayerChangeListener(new LayerChangeListener() {
+        @Override
+        public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+          // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void layerAdded(Layer newLayer) {
+          // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void layerRemoved(Layer oldLayer) {
+          if (oldLayer == osmLayer) {
+            osmLayer = null;
+          }
+        }
+      });
       Main.main.addLayer(osmLayer);
     }
     return osmLayer;

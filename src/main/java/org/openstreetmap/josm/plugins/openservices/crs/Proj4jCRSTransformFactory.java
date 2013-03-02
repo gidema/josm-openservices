@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  * @author Gertjan Idema
  * 
  */
-public class Proj4jCRSUtilFactory implements JTSCoordinateTransformFactory {
+public class Proj4jCRSTransformFactory implements JTSCoordinateTransformFactory {
   static CRSCache crsCache = new CRSCache();
   static CoordinateTransformFactory CTFactory = new CoordinateTransformFactory();
   static Map<String, JTSCoordinateTransform> JTSCoordinateTransformCache = new HashMap<String, JTSCoordinateTransform>();

@@ -45,6 +45,11 @@
   		<artifactId>josm</artifactId>
   		<version>5608</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.geotools</groupId>
+  		<artifactId>gt-cql</artifactId>
+  		<version>8.4</version>
+  	</dependency>
   </dependencies>
   <repositories>
     <repository>

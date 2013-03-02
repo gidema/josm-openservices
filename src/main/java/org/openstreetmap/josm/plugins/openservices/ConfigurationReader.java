@@ -26,7 +26,9 @@ public class ConfigurationReader {
 
   public void read(URL configFile) throws ConfigurationException {
     try {
-      HierarchicalConfiguration conf = new XMLConfiguration(configFile);
+      XMLConfiguration conf = new XMLConfiguration();
+      conf.setDelimiterParsingDisabled(true);
+      conf.load(configFile);
       configureHostTypes(conf);
       configureHosts(conf);
       configureDataSources(conf);
@@ -122,6 +124,8 @@ public class ConfigurationReader {
     DataSource dataSource = OpenServices.getDataSource(dsName);
     layer.setDataSource(dataSource);
     dataSource.addLayer(layer);
+    String osmQuery = conf.getString("osm[@query]");
+    layer.setOsmQuery(osmQuery);
     OpenServices.registerLayer(layer);
   }
 
@@ -165,13 +169,17 @@ public class ConfigurationReader {
       String value = c.getString("[@value]");
       String property = c.getString("[@property]");
       String format = c.getString("[@format]");
+      String expression = c.getString("[@expression]");
       c.setThrowExceptionOnMissing(true);
       String key = c.getString("[@key]");
       if (value != null) {
-        mapper.addFixedTag(key, value);
+        mapper.addTagBuilder(new FixedTagBuilder(key, value));
       }
       else if (property != null) {
-        mapper.addPropertyMapper(key, property, format);
+        mapper.addTagBuilder(new PropertyTagBuilder(key, property, format));
+      }
+      else if (expression != null) {
+        mapper.addTagBuilder(new ExpressionTagBuilder(key, expression));
       }
     }
     configureGeometryMapper(mapper, conf.configurationAt("geometry"));
@@ -181,6 +189,7 @@ public class ConfigurationReader {
   private void configureGeometryMapper(DefaultFeatureMapper mapper, SubnodeConfiguration conf) throws ConfigurationException {
     String className = conf.getString("[@mapper]");
     String mapTo = conf.getString("[@map-to]");
+    Boolean merge = Boolean.valueOf(conf.getString("[@merge]", "false"));
     if (className == null) {
       DefaultGeometryMapper geometryMapper = new DefaultGeometryMapper();
       geometryMapper.setTargetPrimitive(mapTo);
@@ -190,6 +199,7 @@ public class ConfigurationReader {
       try {
         DefaultGeometryMapper geometryMapper = (DefaultGeometryMapper) classLoader.loadClass(className).newInstance();
         geometryMapper.setTargetPrimitive(mapTo);
+        geometryMapper.setMerge(merge);
         mapper.setGeometryMapper(geometryMapper);
       } catch (Exception e) {
         throw new ConfigurationException("Could not configure Geometry mapper", e);

@@ -33,6 +33,7 @@
 	<artifact:dependencies filesetId="dependency.fileset" useScope="runtime">
 	  <dependency groupId="org.geotools" artifactId="gt-wfs" version="8.4"/>
     <dependency groupId="org.geotools" artifactId="gt-xml" version="8.4"/>
+    <dependency groupId="org.geotools" artifactId="gt-cql" version="8.4"/>
     <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="8.4"/>
     <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="8.4"/>
 		<dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
@@ -86,6 +87,7 @@
         <fileset file="repo/proj4j/proj4j/2244/proj4j-2244.jar" />
         <fileset file="${org.geotools:gt-wfs:jar}"/>
         <fileset file="${org.geotools:gt-xml:jar}"/>
+        <fileset file="${org.geotools:gt-cql:jar}"/>
         <fileset file="${org.geotools.xsd:gt-xsd-core:jar}"/>
         <fileset file="${org.geotools.xsd:gt-xsd-wfs:jar}"/>
       	<fileset file="${commons-configuration:commons-configuration:jar}"/>

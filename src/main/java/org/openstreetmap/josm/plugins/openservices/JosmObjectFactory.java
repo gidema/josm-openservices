@@ -13,7 +13,7 @@ import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransform;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransformFactory;
-import org.openstreetmap.josm.plugins.openservices.crs.Proj4jCRSUtilFactory;
+import org.openstreetmap.josm.plugins.openservices.crs.Proj4jCRSTransformFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -34,21 +34,23 @@ import com.vividsolutions.jts.geom.Polygon;
 public class JosmObjectFactory {
   private static final Long JOSM_SRID = 4326L; 
   private JTSCoordinateTransform crsTransform;
-  private final DataSet dataSet;
-  private final JTSCoordinateTransformFactory crsUtilFactory = new Proj4jCRSUtilFactory();
+  private final JTSCoordinateTransformFactory crsTransformFactory = new Proj4jCRSTransformFactory();
+  private DataSet dataSet;
   
   /**
-   * Create a DataSetManager with the specified source crs
-   * @param dataSet 
+   * Create a JosmSourceManager with the specified source crs
    * @param sourceCrs
    */
-  public JosmObjectFactory(DataSet dataSet, Long sourceSRID) {
-    this.dataSet = dataSet;
+  public JosmObjectFactory(Long sourceSRID) {
     try {
-      crsTransform = crsUtilFactory.createJTSCoordinateTransform(sourceSRID, JOSM_SRID, 10000000.0);
+      crsTransform = crsTransformFactory.createJTSCoordinateTransform(sourceSRID, JOSM_SRID, 10000000.0);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+  
+  public void setDataSet(DataSet dataSet) {
+    this.dataSet = dataSet;
   }
   
   /**
