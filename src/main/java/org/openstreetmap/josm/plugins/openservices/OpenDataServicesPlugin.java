@@ -40,6 +40,7 @@ public class OpenDataServicesPlugin extends Plugin {
     } catch (ConfigurationException e) {
       Main.info("An error occured trying to registrate the service types.");
     }
+    getMenu();
     configureSources();
     addDownloadDialogListener();
   }
@@ -86,7 +87,7 @@ public class OpenDataServicesPlugin extends Plugin {
 
   public static JMenu getMenu() {
     if (menu == null) {
-      menu = Main.main.menu.addMenu(marktr("Open Services"), KeyEvent.VK_UNDEFINED, 4, ht("/Plugin/Open Services"));
+      menu = Main.main.menu.addMenu(marktr("ODS"), KeyEvent.VK_UNDEFINED, 4, ht("/Plugin/ODS"));
     }
     return menu;
   }
