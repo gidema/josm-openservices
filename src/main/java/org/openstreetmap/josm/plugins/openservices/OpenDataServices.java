@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 
-public class OpenServices {
+public class OpenDataServices {
   private static Map<String, HostType> hostTypes =
       new HashMap<String, HostType>();
   private static Map<String, Host> hosts = new HashMap<String, Host>();

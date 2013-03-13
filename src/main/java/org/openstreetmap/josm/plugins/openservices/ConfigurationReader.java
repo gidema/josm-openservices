@@ -51,7 +51,7 @@ public class ConfigurationReader {
     String typeName = conf.getString("[@name]");
     String hostClass = conf.getString("[@class]");
     HostType hostType = new HostType(typeName, hostClass);
-    OpenServices.registerHostType(hostType);
+    OpenDataServices.registerHostType(hostType);
   }
 
   private void configureHosts(HierarchicalConfiguration conf) throws ConfigurationException {
@@ -66,13 +66,13 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String url = conf.getString("[@url]");
-    HostType hostType = OpenServices.getHostType(type);
+    HostType hostType = OpenDataServices.getHostType(type);
     try {
       Host host = hostType.newHost();
       host.setHostType(hostType);
       host.setName(name);
       host.setUrl(url);
-      OpenServices.registerHost(host);
+      OpenDataServices.registerHost(host);
     }
     catch (ServiceException e) {
       throw new ConfigurationException(e);
@@ -97,7 +97,7 @@ public class ConfigurationReader {
     conf.setThrowExceptionOnMissing(true);
     String hostName = conf.getString("[@host]");
     String feature = conf.getString("[@feature]");
-    Host host = OpenServices.getHost(hostName);
+    Host host = OpenDataServices.getHost(hostName);
     try {
       return host.getService(feature);
     } catch (ServiceException e) {
@@ -118,7 +118,7 @@ public class ConfigurationReader {
     configureDataSources(conf, layer);
     String osmQuery = conf.getString("osm_query");
     layer.setOsmQuery(osmQuery);
-    OpenServices.registerLayer(layer);
+    OpenDataServices.registerLayer(layer);
   }
 
   private void configureActions(HierarchicalConfiguration conf) throws ConfigurationException {
@@ -131,7 +131,7 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String menu = conf.getString("[@menu]");
-    OdsLayer layer = OpenServices.getLayer(name);
+    OdsLayer layer = OpenDataServices.getLayer(name);
     DownloadAction action = new DownloadAction();
     action.setName(name);
     action.setLayer(layer);
@@ -175,7 +175,7 @@ public class ConfigurationReader {
       }
     }
     configureGeometryMapper(mapper, conf.configurationAt("geometry"));
-    OpenServices.registerFeatureMapper(mapper);
+    OpenDataServices.registerFeatureMapper(mapper);
   }
   
   private void configureGeometryMapper(DefaultFeatureMapper mapper, SubnodeConfiguration conf) throws ConfigurationException {

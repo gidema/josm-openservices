@@ -47,7 +47,7 @@
     <property name="commit.message" value="Commit message"/>
     <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
     <property name="plugin.main.version" value="5531"/>
-	  <property name="plugin.class" value="org.openstreetmap.josm.plugins.openservices.OpenServicesPlugin"/>
+	  <property name="plugin.class" value="org.openstreetmap.josm.plugins.openservices.OpenDataServicesPlugin"/>
     <property name="plugin.version" value="${mypom.version}"/>
     <property name="plugin.build.dir" value="build/deploy"/>
 	  <property name="maven.target.dir" value="${mypom.build.directory}"/>
@@ -129,7 +129,7 @@
    <target name="dist4debug">
      <echo message="creating ${ant.project.name}.jar ... "/>
      <copy todir="${plugin.debug.build.dir}">
-         <fileset dir="${plugin.resources.dir}"/>
+       <fileset dir="${maven.target.dir}/classes"/>
      </copy>
      <jar destfile="${plugin.debug.jar}" basedir="${plugin.debug.build.dir}">
      <!--

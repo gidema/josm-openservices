@@ -8,11 +8,11 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.openstreetmap.josm.plugins.openservices.BBoxUtil;
-import org.openstreetmap.josm.plugins.openservices.ODSDownloadTask;
+import org.openstreetmap.josm.plugins.openservices.OdsDownloadTask;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 
-public class GtDownloadTask extends ODSDownloadTask {
+public class GtDownloadTask extends OdsDownloadTask {
   public GtDownloadTask(GtService service, OdsDataSource dataSource) {
     super(service, dataSource);
   }

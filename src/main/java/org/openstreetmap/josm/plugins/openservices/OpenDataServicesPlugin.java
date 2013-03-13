@@ -27,10 +27,10 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 
-public class OpenServicesPlugin extends Plugin {
+public class OpenDataServicesPlugin extends Plugin {
   private static JMenu menu;
   
-  public OpenServicesPlugin(PluginInformation info) {
+  public OpenDataServicesPlugin(PluginInformation info) {
     super(info);
     ClassLoader classLoader = getClass().getClassLoader();
     URL configFile = classLoader.getResource("config.xml");
@@ -102,9 +102,12 @@ public class OpenServicesPlugin extends Plugin {
       public void componentShown(ComponentEvent e) {
         if (!Main.isDisplayingMapView()) return;
         Layer activeLayer = Main.main.getActiveLayer();
-        if (activeLayer instanceof ServiceDataLayer) {
+        if (activeLayer instanceof OdsDataLayer
+            || activeLayer instanceof OdsOsmDataLayer) {
           for (Layer layer : Main.map.mapView.getAllLayersAsList()) {
-            if (layer instanceof OsmDataLayer && !(layer instanceof ServiceDataLayer)) {
+            if (layer instanceof OsmDataLayer 
+                && !(layer instanceof OdsDataLayer)
+                && !(layer instanceof OdsOsmDataLayer)) {
               Main.map.mapView.setActiveLayer(layer);
               return;
             }

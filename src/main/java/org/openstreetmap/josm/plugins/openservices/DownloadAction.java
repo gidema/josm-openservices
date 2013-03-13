@@ -11,9 +11,7 @@ import javax.swing.Action;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.downloadtasks.DownloadOsmTask;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 
 public class DownloadAction extends AbstractAction {
   private final boolean enabled = true;
@@ -66,7 +64,7 @@ public class DownloadAction extends AbstractAction {
       Main.worker.submit(new org.openstreetmap.josm.actions.downloadtasks.PostDownloadHandler(task, future1));
     }
     for (OdsDataSource dataSource : layer.getDataSources().values()) {
-      ODSDownloadTask downloadTask = dataSource.getDownloadTask();
+      OdsDownloadTask downloadTask = dataSource.getDownloadTask();
       Future<?> future2 = downloadTask.download(false, area, null);
       Main.worker.submit(new PostDownloadHandler(future2));
     }
@@ -86,7 +84,7 @@ public class DownloadAction extends AbstractAction {
         }
       }
     }
-    Layer osmLayer = new OsmDataLayer(new DataSet(), "osmData", null);
+    Layer osmLayer = new OdsOsmDataLayer("osmData");
     Main.main.addLayer(osmLayer);
     return osmLayer;
   }

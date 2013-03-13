@@ -6,7 +6,7 @@ import org.opengis.feature.simple.SimpleFeature;
 public interface OdsDataSource {
   public String getFeatureType();
   public FeatureMapper getFeatureMapper();
-  public ODSDownloadTask getDownloadTask();
+  public OdsDownloadTask getDownloadTask();
   public void addFeatures(FeatureCollection<?, SimpleFeature> features);
   public void setService(Service service);
   public void addFeatureListener(FeatureListener featureListener);

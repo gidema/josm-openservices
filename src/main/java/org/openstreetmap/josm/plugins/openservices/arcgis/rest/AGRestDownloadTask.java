@@ -4,12 +4,12 @@ import org.geotools.feature.FeatureCollection;
 import org.json.simple.JSONObject;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.openservices.ODSDownloadTask;
+import org.openstreetmap.josm.plugins.openservices.OdsDownloadTask;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
 import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 
-public class AGRestDownloadTask extends ODSDownloadTask {
+public class AGRestDownloadTask extends OdsDownloadTask {
 
   public AGRestDownloadTask(Service service, OdsDataSource dataSource) {
     super(service, dataSource);

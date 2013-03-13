@@ -1,12 +1,12 @@
 package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
 import org.openstreetmap.josm.plugins.openservices.AbstractOdsDataSource;
-import org.openstreetmap.josm.plugins.openservices.ODSDownloadTask;
+import org.openstreetmap.josm.plugins.openservices.OdsDownloadTask;
 
 public class AGRestDataSource extends AbstractOdsDataSource {
 
   @Override
-  public ODSDownloadTask getDownloadTask() {
+  public OdsDownloadTask getDownloadTask() {
     return new AGRestDownloadTask(service, this);
   }
 }

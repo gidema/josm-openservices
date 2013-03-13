@@ -16,13 +16,13 @@ import org.openstreetmap.josm.io.OsmTransferCanceledException;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.xml.sax.SAXException;
 
-public abstract class ODSDownloadTask extends AbstractDownloadTask {
+public abstract class OdsDownloadTask extends AbstractDownloadTask {
   protected Bounds currentBounds;
   private DownloadTask downloadTask;
   protected Service service;
   OdsDataSource dataSource;
 
-  public ODSDownloadTask(Service service, OdsDataSource dataSource) {
+  public OdsDownloadTask(Service service, OdsDataSource dataSource) {
     super();
     this.service = service;
     this.dataSource = dataSource;

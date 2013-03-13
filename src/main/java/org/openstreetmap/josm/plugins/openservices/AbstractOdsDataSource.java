@@ -44,7 +44,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
     if (mapper == null) {
       try {
         String typeName = service.getFeatureType().getName().getLocalPart();
-        mapper = OpenServices.getFeatureMapper(typeName);
+        mapper = OpenDataServices.getFeatureMapper(typeName);
         mapper.setObjectFactory(new JosmObjectFactory(service.getSRID()));
       } catch (ConfigurationException e) {
         // TODO Auto-generated catch block

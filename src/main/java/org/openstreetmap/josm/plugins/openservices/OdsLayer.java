@@ -58,7 +58,7 @@ public class OdsLayer implements FeatureListener {
   
   OsmDataLayer getOsmLayer() {
     if (osmLayer == null) {
-      osmLayer = new ServiceDataLayer(name);
+      osmLayer = new OdsDataLayer(name);
       MapView.addLayerChangeListener(new LayerChangeListener() {
         @Override
         public void activeLayerChange(Layer oldLayer, Layer newLayer) {
