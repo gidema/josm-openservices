@@ -8,7 +8,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 
 public interface FeatureMapper {
   public String getFeatureName();
-  public List<OsmPrimitive> mapFeature(Feature feature);
+  //public List<OsmPrimitive> mapFeature(Feature featureName);
+  public List<OsmPrimitive> mapFeature(Feature feature, DataSet dataSet);
   public void setObjectFactory(JosmObjectFactory josmObjectFactory);
-  public void setDataSet(DataSet dataSet);
 }

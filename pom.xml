@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>openservices</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2-SNAPSHOT</version>
   <dependencies>
   	<dependency>
   		<groupId>com.vividsolutions</groupId>
@@ -12,7 +12,7 @@
   	<dependency>
   		<groupId>org.geotools</groupId>
   		<artifactId>gt-wfs</artifactId>
-  		<version>8.4</version>
+  		<version>8.5</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>commons-codec</artifactId>
@@ -23,7 +23,7 @@
   	<dependency>
   	  <groupId>org.geotools</groupId>
   	  <artifactId>gt-epsg-hsql</artifactId>
-  	  <version>8.4</version>
+  	  <version>8.5</version>
   	</dependency>
   	<dependency>
   		<groupId>proj4j</groupId>
@@ -48,7 +48,12 @@
   	<dependency>
   		<groupId>org.geotools</groupId>
   		<artifactId>gt-cql</artifactId>
-  		<version>8.4</version>
+  		<version>8.5</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.geotools.xsd</groupId>
+  		<artifactId>gt-xsd-kml</artifactId>
+  		<version>8.5</version>
   	</dependency>
   </dependencies>
   <repositories>

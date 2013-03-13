@@ -1,32 +1,38 @@
-package org.openstreetmap.josm.plugins.openservices.wfs;
+package org.openstreetmap.josm.plugins.openservices.geotools;
 
 import java.io.IOException;
 
 import org.geotools.data.FeatureSource;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.openservices.Host;
+import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
 import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 
-public class WFSService implements Service {
-  final static String type = "WFS";
+public class GtService implements Service {
   private boolean initialized = false;
-  WFSHost host;
-  String feature;
-  FeatureSource<?, ?> featureSource;
+  GtHost host;
+  String featureName;
+  FeatureSource<?, SimpleFeature> featureSource;
   CoordinateReferenceSystem crs;
 
 
   @Override
   public void setHost(Host host) {
-    this.host = (WFSHost) host;
+    this.host = (GtHost)host;
   }
   
   @Override
-  public void setFeature(String feature) {
-    this.feature = host.getName() + ":" + feature;
+  public void setFeatureName(String feature) {
+    this.featureName = host.getName() + ":" + feature;
+  }
+
+  @Override
+  public final String getFeatureName() {
+    return featureName;
   }
 
   @Override
@@ -37,17 +43,17 @@ public class WFSService implements Service {
   }
   
   private void initialize() throws ServiceException {
-    if (!host.hasFeatureType(feature)) {
-      throw new WfsException(String.format("Unknown feature type: '%s'", feature));
+    if (!host.hasFeatureType(featureName)) {
+      throw new GtException(String.format("Unknown featureName type: '%s'", featureName));
     }
     try {
-      featureSource = host.getDataStore().getFeatureSource(feature);
+      featureSource = host.getDataStore().getFeatureSource(featureName);
     } catch (IOException e) {
       throw new ServiceException(e);
     }
   }
   
-  public FeatureSource<?, ?> getFeatureSource() {
+  public FeatureSource<?, SimpleFeature> getFeatureSource() {
     return featureSource;
   }
   
@@ -74,5 +80,10 @@ public class WFSService implements Service {
   public Long getSRID() {
     ReferenceIdentifier rid = crs.getIdentifiers().iterator().next();
     return Long.parseLong(rid.getCode());
+  }
+
+  @Override
+  public OdsDataSource newDataSource() {
+    return new GtDataSource();
   }
 }

@@ -33,6 +33,7 @@ public class DownloadDialog extends
 
   public DownloadDialog(Component parent) {
     super(parent);
+    this.setTitle(tr("Download OpenDataServices"));
   }
 
   @Override

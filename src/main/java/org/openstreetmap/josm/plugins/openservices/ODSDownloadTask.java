@@ -1,15 +1,12 @@
-package org.openstreetmap.josm.plugins.openservices.wfs;
+package org.openstreetmap.josm.plugins.openservices;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
+import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.downloadtasks.AbstractDownloadTask;
 import org.openstreetmap.josm.data.Bounds;
@@ -17,17 +14,15 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.io.OsmTransferCanceledException;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.openservices.BBoxUtil;
-import org.openstreetmap.josm.plugins.openservices.DataSource;
 import org.xml.sax.SAXException;
 
-public class WFSDownloadTask extends AbstractDownloadTask {
+public abstract class ODSDownloadTask extends AbstractDownloadTask {
   protected Bounds currentBounds;
   private DownloadTask downloadTask;
-  WFSService service;
-  DataSource dataSource;
+  protected Service service;
+  OdsDataSource dataSource;
 
-  public WFSDownloadTask(WFSService service, DataSource dataSource) {
+  public ODSDownloadTask(Service service, OdsDataSource dataSource) {
     super();
     this.service = service;
     this.dataSource = dataSource;
@@ -65,8 +60,10 @@ public class WFSDownloadTask extends AbstractDownloadTask {
     }
   }
 
+  abstract protected FeatureCollection<?, SimpleFeature> getFeatures() throws ServiceException;
+  
   class DownloadTask extends PleaseWaitRunnable {
-    private FeatureCollection<?, ?> features;
+    private FeatureCollection<?, SimpleFeature> features;
     
     public DownloadTask(ProgressMonitor progressMonitor) {
       super(tr("Downloading data"), progressMonitor, false);
@@ -82,12 +79,7 @@ public class WFSDownloadTask extends AbstractDownloadTask {
               return;
           ProgressMonitor subTaskMonitor = progressMonitor.createSubTaskMonitor(ProgressMonitor.ALL_TICKS, false);
           subTaskMonitor.beginTask(tr("Contacting Server..."), 10);
-          FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-          service.init();
-          // Find faster solution for the following line
-          ReferencedEnvelope bbox = BBoxUtil.createBoundingBox(service.getCrs(), currentBounds);
-          Filter filter = ff.bbox(ff.property(""), bbox);
-          features = service.getFeatureSource().getFeatures(filter);
+          features = getFeatures();
       } catch(Exception e) {
           if (isCanceled()) {
               System.out.println(tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
@@ -98,8 +90,10 @@ public class WFSDownloadTask extends AbstractDownloadTask {
               return;
           } else if (e instanceof OsmTransferException) {
               rememberException(e);
+              e.printStackTrace();
           } else {
               rememberException(new OsmTransferException(e));
+              e.printStackTrace();
           }
           setFailed(true);
       }
@@ -108,10 +102,13 @@ public class WFSDownloadTask extends AbstractDownloadTask {
 
     @Override
     protected void finish() {
+      if (isFailed()) {
+        return;
+      }
       if (features.size() == 0) {
         rememberErrorMessage(tr("No data found in this area."));
       }
-      dataSource.addFeatures(features, service);
+      dataSource.addFeatures(features);
     }
   }
 }

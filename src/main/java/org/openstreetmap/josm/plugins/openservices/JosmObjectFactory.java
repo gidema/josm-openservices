@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.openservices;
 
 import java.util.List;
-import java.util.Map;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
@@ -35,7 +34,6 @@ public class JosmObjectFactory {
   private static final Long JOSM_SRID = 4326L; 
   private JTSCoordinateTransform crsTransform;
   private final JTSCoordinateTransformFactory crsTransformFactory = new Proj4jCRSTransformFactory();
-  private DataSet dataSet;
   
   /**
    * Create a JosmSourceManager with the specified source crs
@@ -49,21 +47,18 @@ public class JosmObjectFactory {
     }
   }
   
-  public void setDataSet(DataSet dataSet) {
-    this.dataSet = dataSet;
-  }
-  
   /**
    * Create a josm Object from a Polygon object
    * The resulting Object depends on whether the input polygon has inner rings.
    * If so, the result will be a Relation of type Multipolyon.
    * Otherwise the result will be a Way
    */
-  public OsmPrimitive buildPolygon(Polygon polygon) {
+  public OsmPrimitive buildPolygon(Polygon polygon, DataSet dataSet) {
     if (polygon.getNumInteriorRing() > 0) {
-      return buildMultiPolygon(polygon);
+      OsmPrimitive primitive = buildMultiPolygon(polygon, dataSet);
+      primitive.put("type", "multipolygon");
     }
-    return buildWay(polygon);
+    return buildWay(polygon, dataSet);
   }
   
   /**
@@ -71,9 +66,9 @@ public class JosmObjectFactory {
    * @param polygon
    * @return the relation
    */
-  public Relation buildMultiPolygon(Polygon polygon) {
+  public Relation buildMultiPolygon(Polygon polygon, DataSet dataSet) {
     MultiPolygon multiPolygon = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
-    return buildMultiPolygon(multiPolygon);
+    return buildMultiPolygon(multiPolygon, dataSet);
   }
   
   /**
@@ -81,17 +76,14 @@ public class JosmObjectFactory {
    * @param mpg
    * @return the relation
    */
-  public Relation buildMultiPolygon(MultiPolygon mpg) {
+  public Relation buildMultiPolygon(MultiPolygon mpg, DataSet dataSet) {
     Relation relation = new Relation();
-    Map<String, String> keys = relation.getKeys();
-    keys.put("type", "multipolygon");
-    relation.setKeys(keys);
     for (int i=0; i<mpg.getNumGeometries(); i++) {
       Polygon polygon = (Polygon) mpg.getGeometryN(i);
-      Way way = buildWay(polygon.getExteriorRing());
+      Way way = buildWay(polygon.getExteriorRing(), dataSet);
       relation.addMember(new RelationMember("outer", way));
       for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
-        way = buildWay(polygon.getInteriorRingN(i));
+        way = buildWay(polygon.getInteriorRingN(j), dataSet);
         relation.addMember(new RelationMember("inner", way));
       }
     }
@@ -104,8 +96,8 @@ public class JosmObjectFactory {
    * @param polygon
    * @return the way
    */
-  public Way buildWay(Polygon polygon) {
-    return buildWay(polygon.getExteriorRing());
+  public Way buildWay(Polygon polygon, DataSet dataSet) {
+    return buildWay(polygon.getExteriorRing(), dataSet);
   }
   
   /**
@@ -113,15 +105,15 @@ public class JosmObjectFactory {
    * @param line
    * @return
    */
-  public Way buildWay(LineString line) {
-    return buildWay(line.getCoordinateSequence());
+  public Way buildWay(LineString line, DataSet dataSet) {
+    return buildWay(line.getCoordinateSequence(), dataSet);
   }
 
-  private Way buildWay(CoordinateSequence points) {
+  private Way buildWay(CoordinateSequence points, DataSet dataSet) {
     Way way = new Way();
     Node previousNode = null;
     for (int i=0; i<points.size(); i++) {
-      Node node = buildNode(points.getCoordinate(i), true);
+      Node node = buildNode(points.getCoordinate(i), dataSet, true);
       // Remove duplicate nodes in ways
       if (node != previousNode) {
         way.addNode(node);
@@ -139,7 +131,7 @@ public class JosmObjectFactory {
    * @param merge if true, merge this node with an existing node
    * @return the node
    */
-  public Node buildNode(Coordinate coordinate, boolean merge) {
+  public Node buildNode(Coordinate coordinate, DataSet dataSet, boolean merge) {
     Coordinate coordWgs84 = crsTransform.transform(coordinate);
     LatLon latlon = new LatLon(coordWgs84.y, coordWgs84.x);
     Node node = new Node(latlon);
@@ -156,22 +148,13 @@ public class JosmObjectFactory {
   }
 
   /**
-   * Return the created DataSet object
-   * @param features
-   * @return
-   */
-  public DataSet getDataSet() {
-    return dataSet;
-  }
-
-  /**
    * Create a josm Node from a Point object. Optionally merge with
    * existing nodes.
    * @param point
    * @param merge
    * @return
    */
-  public Node buildNode(Point point, boolean merge) {
-    return buildNode(point.getCoordinate(), merge);
+  public Node buildNode(Point point, DataSet dataSet, boolean merge) {
+    return buildNode(point.getCoordinate(), dataSet, merge);
   }
 }

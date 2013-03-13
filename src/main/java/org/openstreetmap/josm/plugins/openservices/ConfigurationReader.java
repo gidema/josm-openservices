@@ -31,7 +31,6 @@ public class ConfigurationReader {
       conf.load(configFile);
       configureHostTypes(conf);
       configureHosts(conf);
-      configureDataSources(conf);
       configureLayers(conf);
       configureActions(conf);
       configureFeatureMappers(conf);
@@ -80,21 +79,18 @@ public class ConfigurationReader {
     }
   }
 
-  private void configureDataSources(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureDataSources(HierarchicalConfiguration conf, OdsLayer layer) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("datasource")) {
-      configureDataSource(c);
+      configureDataSource(c, layer);
     }
   }
 
-  private void configureDataSource(HierarchicalConfiguration conf) throws ConfigurationException {
-    String name = conf.getString("[@name]");
-    DataSource dataSource = new DataSource();
-    dataSource.setName(name);
-    for (HierarchicalConfiguration c : conf.configurationsAt("service")) {
-      Service service = configureService(c);
-      dataSource.addService(service);
-    }
-    OpenServices.registerDataSource(dataSource);
+  private void configureDataSource(HierarchicalConfiguration conf, OdsLayer layer) throws ConfigurationException {
+    //String name = conf.getString("[@name]");
+    Service service = configureService(conf);
+    OdsDataSource dataSource = service.newDataSource();
+    dataSource.setService(service);
+    layer.addDataSource(dataSource);
   }
 
   private Service configureService(HierarchicalConfiguration conf) throws ConfigurationException {
@@ -117,14 +113,10 @@ public class ConfigurationReader {
   
   private void configureLayer(HierarchicalConfiguration conf) throws ConfigurationException {
     String name = conf.getString("[@name]");
-    String dsName = conf.getString("[@datasource]");
-    String mapperName = conf.getString("[@mapper]");
-    ServiceLayer layer = new ServiceLayer();
+    OdsLayer layer = new OdsLayer();
     layer.setName(name);
-    DataSource dataSource = OpenServices.getDataSource(dsName);
-    layer.setDataSource(dataSource);
-    dataSource.addLayer(layer);
-    String osmQuery = conf.getString("osm[@query]");
+    configureDataSources(conf, layer);
+    String osmQuery = conf.getString("osm_query");
     layer.setOsmQuery(osmQuery);
     OpenServices.registerLayer(layer);
   }
@@ -139,7 +131,7 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String menu = conf.getString("[@menu]");
-    ServiceLayer layer = OpenServices.getLayer(name);
+    OdsLayer layer = OpenServices.getLayer(name);
     DownloadAction action = new DownloadAction();
     action.setName(name);
     action.setLayer(layer);
@@ -199,7 +191,6 @@ public class ConfigurationReader {
       try {
         DefaultGeometryMapper geometryMapper = (DefaultGeometryMapper) classLoader.loadClass(className).newInstance();
         geometryMapper.setTargetPrimitive(mapTo);
-        geometryMapper.setMerge(merge);
         mapper.setGeometryMapper(geometryMapper);
       } catch (Exception e) {
         throw new ConfigurationException("Could not configure Geometry mapper", e);

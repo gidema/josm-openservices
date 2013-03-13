@@ -20,6 +20,7 @@ import org.openstreetmap.josm.plugins.openservices.Host;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class AGRestFeatureTypeFactory {
   //private static NameFactory nameFactory = BasicFactories.getDefault().getNameFactory();
@@ -34,6 +35,7 @@ public class AGRestFeatureTypeFactory {
     esriTypeMap.put("esriFieldTypeOID", Serializable.class);
     esriTypeMap.put("esriFieldTypeGeometry", Geometry.class);
     esriTypeMap.put("esriGeometryPolyline", MultiLineString.class);
+    esriTypeMap.put("esriGeometryPolygon", Polygon.class);
   }
 
   public SimpleFeatureType createFeatureType(JSONObject json, Host host) throws FactoryException {

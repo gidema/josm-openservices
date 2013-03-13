@@ -47,7 +47,7 @@ public class AGRestHost extends Host {
   public Service getService(String feature) throws ServiceException {
     AGRestService service = new AGRestService();
     service.setHost(this);
-    service.setFeature(feature);
+    service.setFeatureName(feature);
     return service;
   }
 

@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.openservices;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.concurrent.Future;
 
 import javax.swing.AbstractAction;
@@ -13,11 +14,10 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.openservices.wfs.WFSDownloadTask;
 
 public class DownloadAction extends AbstractAction {
   private final boolean enabled = true;
-  private ServiceLayer layer;
+  private OdsLayer layer;
 
   public DownloadAction() {
     super();
@@ -30,7 +30,7 @@ public class DownloadAction extends AbstractAction {
     this.putValue("toolbar", name);
   }
   
-  public final void setLayer(ServiceLayer layer) {
+  public final void setLayer(OdsLayer layer) {
     this.layer = layer;
   }
 
@@ -65,7 +65,8 @@ public class DownloadAction extends AbstractAction {
       }
       Main.worker.submit(new org.openstreetmap.josm.actions.downloadtasks.PostDownloadHandler(task, future1));
     }
-    for (WFSDownloadTask downloadTask : layer.getDataSource().getTasks()) {
+    for (OdsDataSource dataSource : layer.getDataSources().values()) {
+      ODSDownloadTask downloadTask = dataSource.getDownloadTask();
       Future<?> future2 = downloadTask.download(false, area, null);
       Main.worker.submit(new PostDownloadHandler(future2));
     }
@@ -90,10 +91,14 @@ public class DownloadAction extends AbstractAction {
     return osmLayer;
   }
   
+  // TODO Move this functionality out of this class
   private static String getOverpassUrl(String query, Bounds bounds) {
     String host = "http://overpass-api.de/api";
-    return String.format("%s/interpreter?data=node(%f,%f,%f,%f);%s;out meta;", 
-      host, bounds.getMin().getY(), bounds.getMin().getX(), 
-      bounds.getMax().getY(), bounds.getMax().getX(), query);
+    String bbox = String.format(Locale.ENGLISH, "%f,%f,%f,%f", bounds.getMin().getY(), bounds.getMin().getX(), 
+        bounds.getMax().getY(), bounds.getMax().getX());
+    String q = query.replaceAll("\\$bbox", bbox);
+    q = q.replaceAll("\\{\\{bbox\\}\\}", bbox);
+    q = q.replace(";$", "");
+    return String.format("%s/interpreter?data=%s;out meta;", host, q);
   }
 }
