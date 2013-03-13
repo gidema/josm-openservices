@@ -20,7 +20,7 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
   protected Bounds currentBounds;
   private DownloadTask downloadTask;
   protected Service service;
-  OdsDataSource dataSource;
+  protected OdsDataSource dataSource;
 
   public OdsDownloadTask(Service service, OdsDataSource dataSource) {
     super();

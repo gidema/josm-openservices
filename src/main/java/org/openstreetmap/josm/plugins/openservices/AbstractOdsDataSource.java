@@ -9,16 +9,28 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
 
 public abstract class AbstractOdsDataSource implements OdsDataSource {
   protected Service service;
   private MemoryFeatureCollection featureCollection;
   private FeatureMapper mapper;
   private final List<FeatureListener> listeners = new LinkedList<FeatureListener>();
+  private Filter filter;
   
   @Override
   public final void setService(Service service) {
     this.service = service;
+  }
+  
+  @Override
+  public void setFilter(Filter filter) throws ConfigurationException {
+    this.filter = filter;
+  }
+
+  @Override
+  public Filter getFilter() {
+    return filter;
   }
 
   @Override

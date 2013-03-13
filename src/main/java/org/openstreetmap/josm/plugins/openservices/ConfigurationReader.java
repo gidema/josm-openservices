@@ -14,6 +14,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.cql2.CQLException;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.MainMenu;
 
@@ -90,7 +92,21 @@ public class ConfigurationReader {
     Service service = configureService(conf);
     OdsDataSource dataSource = service.newDataSource();
     dataSource.setService(service);
+    String filter = conf.getString("filter", null);
+    if (filter != null) {
+      configureFilter(dataSource, filter);
+    }
     layer.addDataSource(dataSource);
+  }
+
+  private void configureFilter(OdsDataSource dataSource,
+      String filter) throws ConfigurationException {
+    try {
+      dataSource.setFilter(CQL.toFilter(filter));
+    } catch (CQLException e) {
+      throw new ConfigurationException("Error in filter", e);
+    }
+    
   }
 
   private Service configureService(HierarchicalConfiguration conf) throws ConfigurationException {
