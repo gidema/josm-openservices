@@ -10,12 +10,12 @@ import javax.swing.JPanel;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.gui.download.DownloadDialog;
 import org.openstreetmap.josm.tools.GBC;
 
-public class DownloadDialog extends
-    org.openstreetmap.josm.gui.download.DownloadDialog {
+public class OdsDownloadDialog extends DownloadDialog {
   /** the unique instance of the download dialog */
-  static private DownloadDialog instance;
+  static private OdsDownloadDialog instance;
 
   protected JCheckBox cbDownloadOSM;
 
@@ -24,14 +24,14 @@ public class DownloadDialog extends
    * 
    * @return the unique instance of the download dialog
    */
-  static public DownloadDialog getInstance() {
+  static public OdsDownloadDialog getInstance() {
     if (instance == null) {
-      instance = new DownloadDialog(Main.parent);
+      instance = new OdsDownloadDialog(Main.parent);
     }
     return instance;
   }
 
-  public DownloadDialog(Component parent) {
+  public OdsDownloadDialog(Component parent) {
     super(parent);
     this.setTitle(tr("Download OpenDataServices"));
   }

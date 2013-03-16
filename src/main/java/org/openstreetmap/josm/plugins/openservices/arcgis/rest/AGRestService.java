@@ -96,41 +96,6 @@ public class AGRestService implements Service {
     return Long.parseLong(rid.getCode());
   }
     
-//  private RestQuery getQuery(Bounds bounds) {
-//    RestQuery query = new RestQuery();  
-//    query.setService(this);
-//    query.setInSR(4326L);
-//    query.setGeometry(formatBounds(bounds));
-//    query.setOutFields("*");
-//    return query;
-//  }
-//  
-//  private static String formatBounds(Bounds bounds) {
-//    return String.format("%f,%f,%f,%f",
-//        bounds.getMin().getX(), bounds.getMin().getY(),
-//        bounds.getMax().getX(), bounds.getMax().getY());
-//  }
-
-
-//  class AGRestDownloadTask implements Callable<FeatureCollection<?, ?>> {
-//    private FeatureCollection<?, ?> features;
-//    private final RestQuery query;
-//    
-//    public AGRestDownloadTask(RestQuery query) {
-//      this.query = query;
-//    }
-//
-//    @Override
-//    public FeatureCollection<?, ?> call() throws Exception {
-//      init();
-//      AGRestReader reader = new AGRestReader(query);
-//      JSONObject json = reader.getJson();
-//      AGRestFeatureParser featureParser = new AGRestFeatureParser(AGRestService.this);
-//      return featureParser.parse(json);
-//    }
-//  }
-
-
   @Override
   public OdsDataSource newDataSource() {
     return new AGRestDataSource();

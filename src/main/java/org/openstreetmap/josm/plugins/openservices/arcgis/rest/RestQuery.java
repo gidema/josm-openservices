@@ -143,25 +143,4 @@ public class RestQuery {
       return "";
     }
   }
-
-
-//  public URL getUrl(ReturnType returnType) {
-//    try {
-//      String url = toString() + String.format("&f=%s", returnType.toString());
-//      return new URL(url);
-//    } catch (MalformedURLException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//      return null;
-//    }
-//  }
-//  
-//  @Override
-//  public String toString() {
-//    return String.format("%s/%d/query?text=%s&geometry=%s&geometryType=%s" +
-//      "&inSR=%s&spatialRef=%s&where=%s&outfields=%s&returnGeometry=%s&outSR=%s",
-//      host.getUrl().toString(), layer, encode(text), encode(geometry),
-//      geometryType.toString(), encode(inSR), spatialRel.toString(), encode(where),
-//      encode(outFields), returnGeometry.toString(), encode(outSR));
-//  }
 }

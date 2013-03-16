@@ -34,7 +34,7 @@ public class DownloadAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    DownloadDialog dialog = DownloadDialog.getInstance();
+    OdsDownloadDialog dialog = OdsDownloadDialog.getInstance();
     dialog.restoreSettings();
     dialog.setVisible(true);
     if (dialog.isCanceled()) {

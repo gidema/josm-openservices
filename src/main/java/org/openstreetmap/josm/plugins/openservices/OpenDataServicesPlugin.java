@@ -22,6 +22,7 @@ import javax.swing.JMenu;
 import org.apache.commons.configuration.ConfigurationException;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.gui.download.DownloadDialog;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
@@ -94,11 +95,11 @@ public class OpenDataServicesPlugin extends Plugin {
   
   /*
    * When Josm's default download is called, the results shouldn't end up in one
-   * of the OpenService layers. To achieve this, we intercept the DownloadDialog and
+   * of the OpenService layers. To achieve this, we intercept the OdsDownloadDialog and
    * make sure an OsmData layer is active before continuing; 
    */
   private void addDownloadDialogListener() {
-    org.openstreetmap.josm.gui.download.DownloadDialog.getInstance().addComponentListener(new ComponentAdapter() {
+    DownloadDialog.getInstance().addComponentListener(new ComponentAdapter() {
       @Override
       public void componentShown(ComponentEvent e) {
         if (!Main.isDisplayingMapView()) return;

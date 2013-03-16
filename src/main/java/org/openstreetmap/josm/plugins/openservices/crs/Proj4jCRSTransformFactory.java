@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.openservices.crs;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.osgeo.proj4j.CoordinateReferenceSystem;
@@ -31,7 +32,7 @@ public class Proj4jCRSTransformFactory implements JTSCoordinateTransformFactory 
   
   @Override
   public JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID, Double scale) {
-    String key = String.format("%d|%d|%f", sourceSRID, targetSRID, scale);
+    String key = String.format(Locale.UK, "%d|%d|%f", sourceSRID, targetSRID, scale);
     JTSCoordinateTransform crsUtil = JTSCoordinateTransformCache.get(key);
     if (crsUtil == null) {
         crsUtil = new CRSUtilImpl(sourceSRID, targetSRID, scale);

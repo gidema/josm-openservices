@@ -1,11 +1,13 @@
 package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
+import java.util.Locale;
+
 import org.geotools.feature.FeatureCollection;
 import org.json.simple.JSONObject;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.openservices.OdsDownloadTask;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
+import org.openstreetmap.josm.plugins.openservices.OdsDownloadTask;
 import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 
@@ -38,7 +40,7 @@ public class AGRestDownloadTask extends OdsDownloadTask {
   }
 
   private static String formatBounds(Bounds bounds) {
-    return String.format("%f,%f,%f,%f",
+    return String.format(Locale.UK, "%f,%f,%f,%f",
         bounds.getMin().getX(), bounds.getMin().getY(),
         bounds.getMax().getX(), bounds.getMax().getY());
   }
