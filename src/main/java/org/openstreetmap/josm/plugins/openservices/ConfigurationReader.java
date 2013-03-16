@@ -96,6 +96,8 @@ public class ConfigurationReader {
     if (filter != null) {
       configureFilter(dataSource, filter);
     }
+    String idAttribute = conf.getString("id[@attribute]", null);
+    configureIdFactory(dataSource, idAttribute);
     layer.addDataSource(dataSource);
   }
 
@@ -107,6 +109,13 @@ public class ConfigurationReader {
       throw new ConfigurationException("Error in filter", e);
     }
     
+  }
+
+  private void configureIdFactory(OdsDataSource dataSource,
+      String idAttribute) throws ConfigurationException {
+    DefaultIdFactory idFactory = new DefaultIdFactory();
+    idFactory.setKeyAttribute(idAttribute);
+    dataSource.setIdFactory(idFactory);
   }
 
   private Service configureService(HierarchicalConfiguration conf) throws ConfigurationException {

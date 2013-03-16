@@ -14,4 +14,5 @@ public interface OdsDataSource {
   public void addFeatureListener(FeatureListener featureListener);
   public void setFilter(Filter filter) throws ConfigurationException;
   public Filter getFilter();
+  public void setIdFactory(DefaultIdFactory idFactory);
 }
