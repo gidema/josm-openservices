@@ -22,6 +22,7 @@ public class OdsDataLayer extends OsmDataLayer {
    */
   public OdsDataLayer(String name) {
     super(new DataSet(), name, null);
+    data.setUploadDiscouraged(true);
   }
 
 }
