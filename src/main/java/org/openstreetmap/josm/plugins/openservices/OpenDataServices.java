@@ -9,7 +9,7 @@ public class OpenDataServices {
   private static Map<String, HostType> hostTypes =
       new HashMap<String, HostType>();
   private static Map<String, Host> hosts = new HashMap<String, Host>();
-  private static Map<String, OdsLayer> layers = new HashMap<String, OdsLayer>();
+  private static Map<String, OdsWorkingSet> layers = new HashMap<String, OdsWorkingSet>();
   private static Map<String, FeatureMapper> featureMappers = new HashMap<String, FeatureMapper>();
   
 //  public static void configure(URL configFile) throws ConfigurationException {
@@ -36,7 +36,7 @@ public class OpenDataServices {
     hosts.put(host.getName(), host); 
   }
 
-  public static void registerLayer(OdsLayer layer) throws ConfigurationException {
+  public static void registerLayer(OdsWorkingSet layer) throws ConfigurationException {
     if (layers.get(layer.getName()) != null) {
       throw new ConfigurationException(String.format(
           "A layer named '%s' already exists", layer.getName()));
@@ -68,11 +68,11 @@ public class OpenDataServices {
     return host;
   }
   
-  public static OdsLayer getLayer(String name) throws ConfigurationException {
-    OdsLayer layer = layers.get(name);
+  public static OdsWorkingSet getLayer(String name) throws ConfigurationException {
+    OdsWorkingSet layer = layers.get(name);
     if (layer == null) {
       throw new ConfigurationException(String.format(
-          "OdsLayer '%s' does not exist", name));
+          "OdsWorkingSet '%s' does not exist", name));
     }
     return layer;
   }

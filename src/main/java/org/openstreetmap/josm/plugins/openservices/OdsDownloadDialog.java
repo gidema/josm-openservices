@@ -3,14 +3,20 @@ package org.openstreetmap.josm.plugins.openservices;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagLayout;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.ExpertToggleAction;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.download.DownloadDialog;
+import org.openstreetmap.josm.gui.download.SlippyMapChooser;
 import org.openstreetmap.josm.tools.GBC;
 
 public class OdsDownloadDialog extends DownloadDialog {
@@ -18,6 +24,7 @@ public class OdsDownloadDialog extends DownloadDialog {
   static private OdsDownloadDialog instance;
 
   protected JCheckBox cbDownloadOSM;
+  private SlippyMapChooser slippyMapChooser;
 
   /**
    * Replies the unique instance of the download dialog
@@ -50,17 +57,46 @@ public class OdsDownloadDialog extends DownloadDialog {
 
   @Override
   protected JPanel buildMainPanel() {
-    JPanel pnl = super.buildMainPanel();
-    pnl.remove(this.cbDownloadOsmData);
-    pnl.remove(this.cbDownloadGpxData);
-    pnl.remove(this.cbNewLayer);
-    pnl.remove(this.cbStartup);
+    JPanel pnl = new JPanel();
+    pnl.setLayout(new GridBagLayout());
+
+    cbDownloadOsmData = new JCheckBox(tr("OpenStreetMap data"), true);
+
+    slippyMapChooser = new SlippyMapChooser();
+    slippyMapChooser.addGui(this);
+
+    pnl.add(tpDownloadAreaSelectors, GBC.eol().fill());
+
+    Font labelFont = sizeCheck.getFont();
+    sizeCheck.setFont(labelFont.deriveFont(Font.PLAIN, labelFont.getSize()));
+
+    // Create dummy checkboxes to prevent error in super class
+    cbDownloadGpxData = new JCheckBox();
+    cbNewLayer = new JCheckBox();
+    cbStartup = new JCheckBox();
+
     cbDownloadOSM = new JCheckBox(tr("Download OSM data"));
     cbDownloadOSM
         .setToolTipText(tr("<html>Select to download OSM data into a separate data layer.<br>"
             + "Unselect to skip downloading of OSM data.</html>"));
-    pnl.add(cbDownloadOSM, GBC.std().anchor(GBC.WEST).insets(5, 5, 5, 5));
+    pnl.add(cbDownloadOSM, GBC.std().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+
+    pnl.add(sizeCheck,  GBC.eol().anchor(GBC.SOUTHEAST).insets(5,5,5,2));
+    
+    if (!ExpertToggleAction.isExpert()) {
+        JLabel infoLabel  = new JLabel(tr("Use left click&drag to select area, arrows or right mouse button to scroll map, wheel or +/- to zoom."));
+        pnl.add(infoLabel,GBC.eol().anchor(GBC.SOUTH).insets(0,0,0,0));
+    }
+    pnl.revalidate();
+    pnl.repaint();
     return pnl;
+  }
+  
+  /* This should not be necessary, but if not here, repaint is not always correct in SlippyMap! */
+  @Override
+  public void paint(Graphics g) {
+      slippyMapChooser.paint(g);
+      super.paint(g);
   }
 
   /**

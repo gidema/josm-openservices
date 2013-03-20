@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.openservices;
 
+import javax.swing.JDialog;
+
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 
@@ -14,6 +16,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
  *
  */
 public class OdsDataLayer extends OsmDataLayer {
+  private JDialog toolbox;
 
   /**
    * Simple constructor providing a new (empty) dataset
@@ -24,5 +27,4 @@ public class OdsDataLayer extends OsmDataLayer {
     super(new DataSet(), name, null);
     data.setUploadDiscouraged(true);
   }
-
 }

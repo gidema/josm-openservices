@@ -81,13 +81,13 @@ public class ConfigurationReader {
     }
   }
 
-  private void configureDataSources(HierarchicalConfiguration conf, OdsLayer layer) throws ConfigurationException {
+  private void configureDataSources(HierarchicalConfiguration conf, OdsWorkingSet layer) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("datasource")) {
       configureDataSource(c, layer);
     }
   }
 
-  private void configureDataSource(HierarchicalConfiguration conf, OdsLayer layer) throws ConfigurationException {
+  private void configureDataSource(HierarchicalConfiguration conf, OdsWorkingSet layer) throws ConfigurationException {
     //String name = conf.getString("[@name]");
     Service service = configureService(conf);
     OdsDataSource dataSource = service.newDataSource();
@@ -138,7 +138,7 @@ public class ConfigurationReader {
   
   private void configureLayer(HierarchicalConfiguration conf) throws ConfigurationException {
     String name = conf.getString("[@name]");
-    OdsLayer layer = new OdsLayer();
+    OdsWorkingSet layer = new OdsWorkingSet();
     layer.setName(name);
     configureDataSources(conf, layer);
     String osmQuery = conf.getString("osm_query");
@@ -156,10 +156,9 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String menu = conf.getString("[@menu]");
-    OdsLayer layer = OpenDataServices.getLayer(name);
-    DownloadAction action = new DownloadAction();
+    OdsWorkingSet layer = OpenDataServices.getLayer(name);
+    OdsDownloadAction action = new OdsDownloadAction(layer);
     action.setName(name);
-    action.setLayer(layer);
     configureMenu(action, menu);
   }
   
