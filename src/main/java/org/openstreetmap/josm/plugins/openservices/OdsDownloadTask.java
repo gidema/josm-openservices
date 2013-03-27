@@ -79,7 +79,9 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
               return;
           ProgressMonitor subTaskMonitor = progressMonitor.createSubTaskMonitor(ProgressMonitor.ALL_TICKS, false);
           subTaskMonitor.beginTask(tr("Contacting Server..."), 10);
+
           features = getFeatures();
+          subTaskMonitor.worked(10);
       } catch(Exception e) {
           if (isCanceled()) {
               System.out.println(tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
@@ -108,7 +110,7 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
       if (features.size() == 0) {
         rememberErrorMessage(tr("No data found in this area."));
       }
-      dataSource.addFeatures(features);
+      dataSource.addFeatures(features, currentBounds);
     }
   }
 }

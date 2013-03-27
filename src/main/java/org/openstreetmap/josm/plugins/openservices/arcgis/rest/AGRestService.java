@@ -2,15 +2,14 @@ package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
 import java.io.IOException;
 
-import org.json.simple.JSONObject;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.openservices.Host;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
 import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
+import org.openstreetmap.josm.plugins.openservices.arcgis.rest.json.FeatureTypeParser;
 
 public class AGRestService implements Service {
   private boolean initialized = false;
@@ -55,17 +54,14 @@ public class AGRestService implements Service {
   }
   
   private void initialize() throws ServiceException {
-    JSONHttpRequest request = new JSONHttpRequest();
+    HttpRequest request = new HttpRequest();
     try {
       request.open("GET", host.getUrl() + "/" + featureId);
       request.addParameter("f", "json");
-      request.send();
-      JSONObject json = request.getJson();
-      AGRestFeatureTypeFactory featureTypeFactory = new AGRestFeatureTypeFactory();
-      featureType = featureTypeFactory.createFeatureType(json, host);
+      HttpResponse response = request.send();
+      FeatureTypeParser parser = new FeatureTypeParser();
+      featureType = parser.parse(response.getInputStream(), host.getName());
     } catch (IOException e) {
-      throw new ServiceException(e);
-    } catch (FactoryException e) {
       throw new ServiceException(e);
     }
   }

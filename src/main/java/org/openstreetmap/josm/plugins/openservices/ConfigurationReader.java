@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
@@ -18,6 +19,7 @@ import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.MainMenu;
+import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
   private final ClassLoader classLoader;
@@ -31,31 +33,36 @@ public class ConfigurationReader {
       XMLConfiguration conf = new XMLConfiguration();
       conf.setDelimiterParsingDisabled(true);
       conf.load(configFile);
-      configureHostTypes(conf);
+      configureImports(conf);
       configureHosts(conf);
       configureLayers(conf);
-      configureActions(conf);
       configureFeatureMappers(conf);
     } catch (NoSuchElementException e) {
       throw new ConfigurationException(e.getMessage(), e.getCause());
     }
   }
   
-  private void configureHostTypes(HierarchicalConfiguration conf) throws ConfigurationException {
-    List<HierarchicalConfiguration> confs = conf.configurationsAt("host-type");
+  private void configureImports(HierarchicalConfiguration conf) throws ConfigurationException {
+    List<HierarchicalConfiguration> confs = conf.configurationsAt("import");
     for (HierarchicalConfiguration c : confs) {
-      configureHostType(c);
+      configureImport(c);
     }
   }
   
-  private void configureHostType(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureImport(HierarchicalConfiguration conf) throws ConfigurationException {
     conf.setThrowExceptionOnMissing(true);
-    String typeName = conf.getString("[@name]");
-    String hostClass = conf.getString("[@class]");
-    HostType hostType = new HostType(typeName, hostClass);
-    OpenDataServices.registerHostType(hostType);
+    String type = conf.getString("[@type]");
+    String name = conf.getString("[@name]");
+    String className = conf.getString("[@class]");
+    Class<?> clazz;
+    try {
+      clazz = classLoader.loadClass(className);
+      OpenDataServices.registerImport(type, name, clazz);
+    } catch (ClassNotFoundException e) {
+      throw new ConfigurationException(e.getMessage());
+    }
   }
-
+  
   private void configureHosts(HierarchicalConfiguration conf) throws ConfigurationException {
     List<HierarchicalConfiguration> confs = conf.configurationsAt("host");
     for (HierarchicalConfiguration c : confs) {
@@ -68,17 +75,7 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String url = conf.getString("[@url]");
-    HostType hostType = OpenDataServices.getHostType(type);
-    try {
-      Host host = hostType.newHost();
-      host.setHostType(hostType);
-      host.setName(name);
-      host.setUrl(url);
-      OpenDataServices.registerHost(host);
-    }
-    catch (ServiceException e) {
-      throw new ConfigurationException(e);
-    }
+    OpenDataServices.registerHost(type, name, url);
   }
 
   private void configureDataSources(HierarchicalConfiguration conf, OdsWorkingSet layer) throws ConfigurationException {
@@ -143,23 +140,38 @@ public class ConfigurationReader {
     configureDataSources(conf, layer);
     String osmQuery = conf.getString("osm_query");
     layer.setOsmQuery(osmQuery);
+    configureActions(layer, conf);
     OpenDataServices.registerLayer(layer);
   }
 
-  private void configureActions(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureActions(OdsWorkingSet layer, HierarchicalConfiguration conf) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("action")) {
-      configureAction(c);
+      configureAction(layer, c);
     }
   }
   
-  private void configureAction(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureAction(OdsWorkingSet layer, HierarchicalConfiguration conf) throws ConfigurationException {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String menu = conf.getString("[@menu]");
-    OdsWorkingSet layer = OpenDataServices.getLayer(name);
-    OdsDownloadAction action = new OdsDownloadAction(layer);
-    action.setName(name);
-    configureMenu(action, menu);
+    String iconName = conf.getString("[@icon]");
+    try {
+      OdsAction action = (OdsAction) OpenDataServices.createObject("action", type);
+      action.setName(name);
+      if (iconName != null) {
+        ImageIcon icon = ImageProvider.getIfAvailable(iconName);
+        if (icon == null) {
+          throw new ConfigurationException("No icon found named " + iconName);
+        }
+        action.setIcon(icon);
+      }
+      layer.addAction(action);
+      if (menu != null) {
+        configureMenu(action, menu);
+      }
+    } catch (Exception e) {
+      throw new ConfigurationException(e);
+    }
   }
   
   private synchronized void configureMenu(Action action, String menu) {

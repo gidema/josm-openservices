@@ -3,11 +3,14 @@ package org.openstreetmap.josm.plugins.openservices;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Future;
 
+import javax.swing.Action;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
@@ -15,7 +18,10 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.downloadtasks.DownloadOsmTask;
+import org.openstreetmap.josm.actions.downloadtasks.DownloadTask;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
@@ -26,14 +32,20 @@ public class OdsWorkingSet implements FeatureListener, LayerChangeListener {
   private final Map<String, OdsDataSource> dataSources = new HashMap<String, OdsDataSource>();
   OdsDataLayer odsDataLayer;
   OdsOsmDataLayer odsOsmDataLayer;
-  private final OdsDownloadAction downloadAction;
+  //private final OdsDownloadAction downloadAction;
+  private Bounds lastDownloadArea;
   private JDialog toolbox;
+  private final List<OdsAction> actions = new LinkedList<OdsAction>();
   String osmQuery;
   private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
  
   public OdsWorkingSet() {
-    this.downloadAction = new OdsDownloadAction(this);
     MapView.addLayerChangeListener(this);
+  }
+  
+  public void addAction(OdsAction action) {
+    action.setWorkingSet(this);
+    actions.add(action);
   }
   
   protected String getName() {
@@ -69,7 +81,7 @@ public class OdsWorkingSet implements FeatureListener, LayerChangeListener {
     return relatedFeatures.get(primitive);
   }
   
-  private OdsDataLayer getOdsDataLayer() {
+  public OdsDataLayer getOdsDataLayer() {
     if (odsDataLayer == null) {
       odsDataLayer = new OdsDataLayer("ODS: " + name);
       MapView.addLayerChangeListener(new LayerChangeListener() {
@@ -103,48 +115,55 @@ public class OdsWorkingSet implements FeatureListener, LayerChangeListener {
   public JDialog getToolbox() {
     if (toolbox == null) {
         toolbox = new JDialog((Frame) Main.main.parent, "ODS");
-        toolbox.add(new JButton(downloadAction));
+        toolbox.setLayout(new BoxLayout(toolbox.getContentPane(), BoxLayout.Y_AXIS));
         toolbox.setLocation(300, 300);
         toolbox.setMinimumSize(new Dimension(110,0));
+        for (Action action : actions) {
+          toolbox.add(new JButton(action));
+        }
         toolbox.pack();
     }
     return toolbox;
   }
 
   public void download(Bounds area, boolean downloadOsmData) {
-    Layer activeLayer = null;
-    if (Main.isDisplayingMapView()) {
-      activeLayer = Main.map.mapView.getActiveLayer();
-    }
+    lastDownloadArea = area;
+    List<Future<?>> futures = new LinkedList<Future<?>>();
+    List<DownloadTask> tasks = new LinkedList<DownloadTask>();
     if (downloadOsmData) {
-      downloadOsmData(area);
+      downloadOsmData(area, tasks, futures);
     }
-    downloadOdsData(area);
+    downloadOdsData(area, tasks, futures);
+    Main.worker.submit(new OdsPostDownloadHandler(tasks, futures));
   }
   
-  private void downloadOsmData(Bounds area) {
-    Future<?> future1 = null;
+  private void downloadOsmData(Bounds area, List<DownloadTask> tasks, List<Future<?>> futures) {
+    Future<?> future = null;
     DownloadOsmTask task;
     activateOsmLayer();
     String query = getOsmQuery();
     if (query != null) {
       String url = getOverpassUrl(query, area);
       task = new DownloadOsmTask();
-      future1 = task.loadUrl(false, url, null);
+      future = task.loadUrl(false, url, null);
     }
     else {
       task = new DownloadOsmTask();
-      future1 = task.download(false, area, null);
+      future = task.download(false, area, null);
     }
-    Main.worker.submit(new org.openstreetmap.josm.actions.downloadtasks.PostDownloadHandler(task, future1));
+    tasks.add(task);
+    futures.add(future);
+    return;
   }
   
-  private void downloadOdsData(Bounds area) {
+  private void downloadOdsData(Bounds area, List<DownloadTask> tasks, List<Future<?>> futures) {
     for (OdsDataSource dataSource : getDataSources().values()) {
       OdsDownloadTask downloadTask = dataSource.getDownloadTask();
-      Future<?> future2 = downloadTask.download(false, area, null);
-      Main.worker.submit(new PostDownloadHandler(future2));
+      tasks.add(downloadTask);
+      Future<?> future = downloadTask.download(false, area, null);
+      futures.add(future);
     }
+    return;
   }
   
   private void activateOsmLayer() {
@@ -152,7 +171,7 @@ public class OdsWorkingSet implements FeatureListener, LayerChangeListener {
     Main.map.mapView.setActiveLayer(osmLayer);
   }
   
-  private  OdsOsmDataLayer getOdsOsmDataLayer() {
+  public OdsOsmDataLayer getOdsOsmDataLayer() {
     if (odsOsmDataLayer == null) {
       odsOsmDataLayer = new OdsOsmDataLayer("OSM: " + name);
       Main.main.addLayer(odsOsmDataLayer);
@@ -183,17 +202,26 @@ public class OdsWorkingSet implements FeatureListener, LayerChangeListener {
   }
 
   @Override
-  public void featuresAdded(List<SimpleFeature> newFeatures) {
+  public void featuresAdded(List<SimpleFeature> newFeatures, Bounds bounds) {
     if (newFeatures.size() == 0) return;
     String typeName = newFeatures.get(0).getFeatureType().getTypeName();
     OdsDataSource ds = dataSources.get(typeName);
     FeatureMapper mapper = ds.getFeatureMapper();
+    DataSet dataSet = getOdsDataLayer().data;
+    dataSet.beginUpdate();
     for (SimpleFeature feature : newFeatures) {
-      List<OsmPrimitive> primitives = mapper.mapFeature(feature, getOdsDataLayer().data);
+      List<OsmPrimitive> primitives = mapper.mapFeature(feature, dataSet);
       for (OsmPrimitive primitive : primitives) {
         relatedFeatures.put(primitive,  feature);
       }
     }
+    dataSet.endUpdate();
+    for (DataSource dataSource : dataSet.dataSources) {
+      if (dataSource.bounds.equals(bounds)) {
+        return;
+      }
+    }
+    dataSet.dataSources.add(new DataSource(bounds, name));
   }
 
   // Implement LayerChangeListener

@@ -3,11 +3,10 @@ package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 import java.io.IOException;
 import java.util.List;
 
-import org.json.simple.JSONObject;
 import org.openstreetmap.josm.plugins.openservices.Host;
 import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
-import org.openstreetmap.josm.plugins.openservices.arcgis.rest.json.JsonParser;
+import org.openstreetmap.josm.plugins.openservices.arcgis.rest.json.HostDescriptionParser;
 
 public class AGRestHost extends Host {
   private boolean initialized = false;
@@ -20,14 +19,15 @@ public class AGRestHost extends Host {
     initialized = true;
   }
   
+  // TODO find neater way to setup a host like a host factory
   private void initialize() throws ServiceException {
-    JSONHttpRequest request = new JSONHttpRequest();
+    HttpRequest request = new HttpRequest();
     try {
       request.open("GET", getUrl());
       request.addParameter("f", "json");
-      request.send();
-      JSONObject json = request.getJson();
-      JsonParser.parseHostJson(this, json);
+      HttpResponse response = request.send();
+      HostDescriptionParser.parseHostJson(response.getInputStream(), this);
+      response.close();
     } catch (IOException e) {
       throw new ServiceException(e);
     }

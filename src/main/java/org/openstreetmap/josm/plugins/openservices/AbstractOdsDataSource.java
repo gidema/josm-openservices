@@ -11,6 +11,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
+import org.openstreetmap.josm.data.Bounds;
 
 public abstract class AbstractOdsDataSource implements OdsDataSource {
   protected Service service;
@@ -67,7 +68,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
   }
   
   @Override
-  public void addFeatures(FeatureCollection<?, SimpleFeature> features) {
+  public void addFeatures(FeatureCollection<?, SimpleFeature> features, Bounds bounds) {
     FeatureIterator<SimpleFeature> iterator = features.features();
     try {
       List<SimpleFeature> newFeatures = new LinkedList<SimpleFeature>();
@@ -80,7 +81,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
         }
       }
       for (FeatureListener listener : listeners) {
-        listener.featuresAdded(newFeatures);
+        listener.featuresAdded(newFeatures, bounds);
       }
     }
     finally {

@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.openservices;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -11,19 +12,23 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.downloadtasks.DownloadTask;
 import org.openstreetmap.josm.gui.ExceptionDialogUtil;
 
-public class PostDownloadHandler implements Runnable {
+public class OdsPostDownloadHandler implements Runnable {
+  private List<DownloadTask> tasks;
   private List<Future<?>> futures;
 
-  public PostDownloadHandler(Future<?> future) {
+  public OdsPostDownloadHandler(DownloadTask task, Future<?> future) {
+    tasks = Collections.singletonList(task);
     this.futures = new ArrayList<Future<?>>();
     if (future != null) {
       this.futures.add(future);
     }
   }
 
-  public PostDownloadHandler(List<Future<?>> futures) {
+  public OdsPostDownloadHandler(List<DownloadTask> tasks, List<Future<?>> futures) {
+    this.tasks = tasks;
     this.futures = new ArrayList<Future<?>>();
     if (futures == null)
       return;
@@ -49,7 +54,9 @@ public class PostDownloadHandler implements Runnable {
     // make sure errors are reported only once
     //
     LinkedHashSet<Object> errors = new LinkedHashSet<Object>();
-    // errors.addAll(task.getErrorObjects());
+    for (DownloadTask task : tasks) {
+      errors.addAll(task.getErrorObjects());
+    }
     if (errors.isEmpty())
       return;
 

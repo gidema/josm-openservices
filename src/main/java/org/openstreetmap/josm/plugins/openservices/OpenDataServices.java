@@ -6,36 +6,34 @@ import java.util.Map;
 import org.apache.commons.configuration.ConfigurationException;
 
 public class OpenDataServices {
-  private static Map<String, HostType> hostTypes =
-      new HashMap<String, HostType>();
   private static Map<String, Host> hosts = new HashMap<String, Host>();
   private static Map<String, OdsWorkingSet> layers = new HashMap<String, OdsWorkingSet>();
   private static Map<String, FeatureMapper> featureMappers = new HashMap<String, FeatureMapper>();
+  private static Map<String, Class<?>> imports = new HashMap<String, Class<?>>();
   
-//  public static void configure(URL configFile) throws ConfigurationException {
-//    ConfigurationReader.read(configFile);
-//  }
-
-  public static void registerHostType(HostType hostType) throws ConfigurationException {
-    String name = hostType.getName();
-    if (hostTypes.containsKey(name)) {
+  public static void registerImport(String type, String name, Class<?> clazz) throws ConfigurationException {
+    String key = type + ":" + name;
+    if (imports.containsKey(key)) {
       throw new ConfigurationException(
-        String.format("Host type '%s' already exists", name));
+          String.format("A '%s' import named '%s' already exists", type, name));
     }
-    hostTypes.put(name, hostType);
+    imports.put(key, clazz);
   }
-  
-  public static void registerHost(Host host) throws ConfigurationException {
-    Host existingHost = hosts.get(host.getName());
+
+  public static void registerHost(String type, String name, String url) throws ConfigurationException {
+    Host existingHost = hosts.get(name);
     if (existingHost != null) {
-      if (existingHost.equals(host)) return;
+      if (existingHost.getType().equals(type) &&
+          existingHost.getUrl().equals(url)) return;
       throw new ConfigurationException(
-          String.format("An other host named '%s' already exists",
-            host.getName()));
+          String.format("An other host named '%s' already exists", name));
     }
-    hosts.put(host.getName(), host); 
+    Host host = (Host)createObject("host", type);
+    host.setName(name);
+    host.setUrl(url);
+    hosts.put(name, host);
   }
-
+  
   public static void registerLayer(OdsWorkingSet layer) throws ConfigurationException {
     if (layers.get(layer.getName()) != null) {
       throw new ConfigurationException(String.format(
@@ -50,14 +48,6 @@ public class OpenDataServices {
           "A mapper for '%s' already exists", mapper.getFeatureName()));
     }
     featureMappers.put(mapper.getFeatureName(), mapper);
-  }
-  
-  public static HostType getHostType(String name) throws ConfigurationException {
-    HostType hostType = hostTypes.get(name);
-    if (hostType == null) {
-      throw new ConfigurationException("Unknown host type:" + name);
-    }
-    return hostType;
   }
   
   public static Host getHost(String name) throws ConfigurationException {
@@ -84,5 +74,18 @@ public class OpenDataServices {
           "No mapper for featureName '%s' exists", feature));
     }
     return mapper;
+  }
+  
+  public static Object createObject(String type, String name) throws ConfigurationException {
+    Class<?> clazz = imports.get(type + ":" + name);
+    if (clazz ==null) {
+      throw new ConfigurationException(String.format(
+          "A '%s' type named '%s' doesn't exist", type, name));
+    }
+    try {
+      return clazz.newInstance();
+    } catch (Exception e) {
+      throw new ConfigurationException(e);
+    }
   }
 }

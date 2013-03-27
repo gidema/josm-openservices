@@ -83,6 +83,9 @@ public class OpenDataServicesPlugin extends Plugin {
     } catch (ConfigurationException e) {
       Main.warn("A problem occurred when reading {0}", jarFile);
       Main.warn(e.getMessage());
+      if (e.getCause() instanceof NullPointerException) {
+        e.getCause().printStackTrace();
+      }
     }
   }
 

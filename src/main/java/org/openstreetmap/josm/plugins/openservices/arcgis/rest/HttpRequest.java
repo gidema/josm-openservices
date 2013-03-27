@@ -17,7 +17,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-public abstract class HttpRequest {
+public class HttpRequest {
   private String method = "GET";
   private String url;
   private final Map<String, String> parameters = new HashMap<String, String>();
@@ -28,6 +28,7 @@ public abstract class HttpRequest {
   private final String password = null;
   private boolean cancel;
   private HttpURLConnection connection;
+  private HttpResponse response;
 
   public HttpRequest() {
     super();
@@ -56,11 +57,11 @@ public abstract class HttpRequest {
     }
   }
   
-  public void send() throws IOException {
-    send(null);
+  public HttpResponse send() throws IOException {
+    return send(null);
   }
   
-  public void send(String postData) throws IOException {
+  public HttpResponse send(String postData) throws IOException {
     InputStream is = null;
     try {
       URL requestURL = buildUrl();
@@ -88,18 +89,20 @@ public abstract class HttpRequest {
         wr.flush ();
         wr.close ();
       }
-      is = getInputStream();
-      processResult(is);
-      is.close();
-      connection.disconnect();
+      return new HttpResponse(this);
     }
-    finally {
+    catch (Exception e) {
       if (connection != null) {
         connection.disconnect();
       }
-      if (is != null) {
-        is.close();
-      }
+      e.printStackTrace();
+      return null;
+    }
+  }
+  
+  public void close() {
+    if (connection != null) {
+      connection.disconnect();
     }
   }
   
@@ -125,7 +128,7 @@ public abstract class HttpRequest {
     }
   }
   
-  private InputStream getInputStream() throws IOException {
+  public InputStream getInputStream() throws IOException {
     connection.connect();
     if (connection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
       throw new IOException("Connection refused");
@@ -162,7 +165,7 @@ public abstract class HttpRequest {
     return errorBody.toString();
   }
 
-  protected abstract void processResult(InputStream is) throws IOException;
+//  protected abstract void processResult(InputStream is) throws IOException;
   
   private String encode(Object o) {
     if (o == null) return "";

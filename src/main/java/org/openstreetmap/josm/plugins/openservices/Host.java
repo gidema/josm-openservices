@@ -2,8 +2,8 @@ package org.openstreetmap.josm.plugins.openservices;
 
 public abstract class Host {
   private String name;
+  private String type;
   private String url;
-  private HostType hostType;
 
   public final String getName() {
     return name;
@@ -21,17 +21,17 @@ public abstract class Host {
     this.url = url;
   }
 
-  public final HostType getHostType() {
-    return hostType;
+  public final String getType() {
+    return type;
   }
 
-  public final void setHostType(HostType hostType) {
-    this.hostType = hostType;
+  public final void setType(String type) {
+    this.type = type;
   }
   
   public boolean equals(Host other) {
     return other.getName().equals(name)
-        && other.getHostType().equals(hostType)
+        && other.getType().equals(type)
         && other.getUrl().equals(url);
   }
 
