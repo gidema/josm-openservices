@@ -120,13 +120,13 @@ public class OdsDownloadDialog extends DownloadDialog {
           mv.getLatLon(0, mv.getHeight()),
           mv.getLatLon(mv.getWidth(), 0)
           );
-      boundingBoxChanged(currentBounds, null);
+      slippyMapChooser.setDownloadArea(currentBounds);
     }
     else if (!Main.pref.get("openservices.download.bounds").isEmpty()) {
       // read the bounding box from the preferences
       try {
         currentBounds = new Bounds(Main.pref.get("openservices.download.bounds"), ";");
-        boundingBoxChanged(currentBounds, null);
+        slippyMapChooser.setDownloadArea(currentBounds);
       } catch (Exception e) {
         e.printStackTrace();
       }

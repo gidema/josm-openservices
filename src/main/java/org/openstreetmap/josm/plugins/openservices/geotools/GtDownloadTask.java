@@ -2,9 +2,11 @@ package org.openstreetmap.josm.plugins.openservices.geotools;
 
 import java.io.IOException;
 
+import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.openstreetmap.josm.plugins.openservices.BBoxUtil;
@@ -13,15 +15,16 @@ import org.openstreetmap.josm.plugins.openservices.OdsDownloadTask;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 
 public class GtDownloadTask extends OdsDownloadTask {
-  public GtDownloadTask(GtService service, OdsDataSource dataSource) {
-    super(service, dataSource);
+  public GtDownloadTask(OdsDataSource dataSource) {
+    super(dataSource);
   }
 
   @Override
   protected FeatureCollection getFeatures() throws ServiceException {
+    // TODO check if selected boundaries overlap with featureSource boundaries; 
     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
     ((GtService)service).init();
-    // Find faster solution for the following line
+    // TODO Find faster solution for the following line
     ReferencedEnvelope bbox = BBoxUtil.createBoundingBox(service.getCrs(), currentBounds);
     Filter bboxFilter = ff.bbox(ff.property(""), bbox);
     Filter dataFilter = dataSource.getFilter();
@@ -30,7 +33,8 @@ public class GtDownloadTask extends OdsDownloadTask {
       filter = ff.and(filter, dataFilter);
     }
     try {
-      return ((GtService)service).getFeatureSource().getFeatures(filter);
+      FeatureSource<?, SimpleFeature> featureSource = ((GtService)service).getFeatureSource();
+      return featureSource.getFeatures(filter);
     } catch (IOException e) {
       throw new ServiceException(e);
     }

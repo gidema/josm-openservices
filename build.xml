@@ -30,18 +30,6 @@
 <project name="openservices" default="dist" basedir="."
 	xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   <artifact:pom id="mypom" file="pom.xml" />
-	<artifact:dependencies filesetId="dependency.fileset" useScope="runtime">
-	  <dependency groupId="org.geotools" artifactId="gt-wfs" version="8.4"/>
-    <dependency groupId="org.geotools" artifactId="gt-xml" version="8.4"/>
-    <dependency groupId="org.geotools" artifactId="gt-cql" version="8.4"/>
-    <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="8.4"/>
-    <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="8.4"/>
-		<dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
-    <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
-    <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
-    <dependency groupId="commons-collections" artifactId="commons-collections" version="3.1"/>
-    <dependency groupId="com.googlecode.json-simple" artifactId="json-simple" version="1.1"/>
-  </artifact:dependencies>
 
     <!-- enter the SVN commit message -->
     <property name="commit.message" value="Commit message"/>
@@ -68,6 +56,20 @@
     -->
     <target name="init" depends="clean">
       <mkdir dir="${plugin.build.dir}"/>
+      <artifact:dependencies filesetId="dependency.fileset">
+        <dependency groupId="org.geotools" artifactId="gt-wfs" version="8.4"/>
+        <dependency groupId="org.geotools" artifactId="gt-xml" version="8.4"/>
+        <dependency groupId="org.geotools" artifactId="gt-cql" version="8.4"/>
+        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="8.4"/>
+        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="8.4"/>
+        <dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
+        <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
+        <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
+        <!--<dependency groupId="commons-collections" artifactId="commons-collections" version="3.1"/>-->
+        <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-core" version="2.1.4"/>
+        <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-databind" version="2.1.4"/>
+        <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-annotations" version="2.1.4"/>
+      </artifact:dependencies>
     </target>
 
 	  <!--
@@ -75,7 +77,7 @@
     ** dist - creates the plugin jar
     **********************************************************
     -->
-    <target name="dist">
+    <target name="dist" depends="init">
     	<tstamp>
     	  <format property="time" pattern="yyyy-MM-dd'T'hh:mm:ss'Z'"/>
     	</tstamp>
@@ -84,6 +86,7 @@
         <fileset dir="${maven.target.dir}/classes"/>
       </copy>
       <unjar dest="${plugin.build.dir}">
+      	<!--<fileset refid="dependency.fileset"/>-->
         <fileset file="repo/proj4j/proj4j/2244/proj4j-2244.jar" />
         <fileset file="${org.geotools:gt-wfs:jar}"/>
         <fileset file="${org.geotools:gt-xml:jar}"/>
@@ -94,7 +97,9 @@
         <fileset file="${commons-lang:commons-lang:jar}"/>
         <fileset file="${commons-logging:commons-logging:jar}"/>
         <fileset file="${commons-collections:commons-collections:jar}"/>
-        <fileset file="${com.googlecode.json-simple:json-simple:jar}"/>
+      	<fileset file="${com.fasterxml.jackson.core:jackson-core:jar}"/>
+      	<fileset file="${com.fasterxml.jackson.core:jackson-databind:jar}"/>
+        <fileset file="${com.fasterxml.jackson.core:jackson-annotations:jar}"/>
       </unjar>
       <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
       <!--

@@ -3,10 +3,14 @@ package org.openstreetmap.josm.plugins.openservices;
 import java.awt.event.ActionEvent;
 
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.tools.ImageProvider;
 
 public class OdsDownloadAction extends OdsAction {
   public OdsDownloadAction() {
     super();
+    this.setName("Download");
+    this.setIcon(ImageProvider.get("download"));
+    
   }
 
   @Override

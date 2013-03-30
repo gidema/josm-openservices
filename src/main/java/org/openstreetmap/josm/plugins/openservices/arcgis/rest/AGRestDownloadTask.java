@@ -8,7 +8,6 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
 import org.openstreetmap.josm.plugins.openservices.OdsDownloadTask;
-import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransform;
 import org.openstreetmap.josm.plugins.openservices.crs.JTSCoordinateTransformFactory;
@@ -18,8 +17,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class AGRestDownloadTask extends OdsDownloadTask {
 
-  public AGRestDownloadTask(Service service, OdsDataSource dataSource) {
-    super(service, dataSource);
+  public AGRestDownloadTask(OdsDataSource dataSource) {
+    super(dataSource);
   }
 
   @Override

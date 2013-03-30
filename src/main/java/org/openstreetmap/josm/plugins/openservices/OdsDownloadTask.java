@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.concurrent.Future;
 
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureCollections;
+import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.downloadtasks.AbstractDownloadTask;
@@ -21,10 +23,10 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
   private DownloadTask downloadTask;
   protected Service service;
   protected OdsDataSource dataSource;
+  protected boolean hasFeatures = true;
 
-  public OdsDownloadTask(Service service, OdsDataSource dataSource) {
+  public OdsDownloadTask(OdsDataSource dataSource) {
     super();
-    this.service = service;
     this.dataSource = dataSource;
   }
 
@@ -62,9 +64,7 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
 
   abstract protected FeatureCollection<?, SimpleFeature> getFeatures() throws ServiceException;
   
-  class DownloadTask extends PleaseWaitRunnable {
-    private FeatureCollection<?, SimpleFeature> features;
-    
+  class DownloadTask extends PleaseWaitRunnable {    
     public DownloadTask(ProgressMonitor progressMonitor) {
       super(tr("Downloading data"), progressMonitor, false);
     }
@@ -79,8 +79,19 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
               return;
           ProgressMonitor subTaskMonitor = progressMonitor.createSubTaskMonitor(ProgressMonitor.ALL_TICKS, false);
           subTaskMonitor.beginTask(tr("Contacting Server..."), 10);
-
-          features = getFeatures();
+          FeatureCollection<?, SimpleFeature> features = getFeatures();
+          subTaskMonitor.indeterminateSubTask(tr("Downloading Data..."));
+          FeatureCollection<?, SimpleFeature> featureCollection = FeatureCollections.newCollection();
+          if (features == null) {
+            // TODO Do something
+          } else {
+            FeatureIterator<SimpleFeature> it = features.features();
+            hasFeatures = it.hasNext();
+            while (it.hasNext()) {
+              featureCollection.add(it.next());
+            }
+            dataSource.addFeatures(featureCollection, currentBounds);           
+          }
           subTaskMonitor.worked(10);
       } catch(Exception e) {
           if (isCanceled()) {
@@ -97,7 +108,8 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
               rememberException(new OsmTransferException(e));
               e.printStackTrace();
           }
-          setFailed(true);
+          System.out.println("failed");
+          OdsDownloadTask.this.setFailed(true);
       }
   }
 
@@ -107,10 +119,6 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
       if (isFailed()) {
         return;
       }
-      if (features.size() == 0) {
-        rememberErrorMessage(tr("No data found in this area."));
-      }
-      dataSource.addFeatures(features, currentBounds);
     }
   }
 }

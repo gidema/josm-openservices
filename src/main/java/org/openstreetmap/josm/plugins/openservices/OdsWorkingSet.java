@@ -38,9 +38,11 @@ public class OdsWorkingSet implements FeatureListener, LayerChangeListener {
   private final List<OdsAction> actions = new LinkedList<OdsAction>();
   String osmQuery;
   private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
+  private OdsDownloadAction downloadAction;
  
   public OdsWorkingSet() {
     MapView.addLayerChangeListener(this);
+    addAction(getDownloadAction());
   }
   
   public void addAction(OdsAction action) {
@@ -246,5 +248,13 @@ public class OdsWorkingSet implements FeatureListener, LayerChangeListener {
     if (oldLayer == odsDataLayer) {
       toolbox.setVisible(false);
     }
+  }
+
+  public OdsDownloadAction getDownloadAction() {
+    if (downloadAction == null) {
+      downloadAction = new OdsDownloadAction();
+      downloadAction.setWorkingSet(this);
+    }
+    return downloadAction;
   }
 }

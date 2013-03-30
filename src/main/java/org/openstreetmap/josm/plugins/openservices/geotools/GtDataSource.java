@@ -8,6 +8,6 @@ public class GtDataSource extends AbstractOdsDataSource {
   @Override
   public OdsDownloadTask getDownloadTask() {
     // TODO Can we cache this object instead of recreating it?
-    return new GtDownloadTask((GtService) service, this);
+    return new GtDownloadTask(this);
   }
 }

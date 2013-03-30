@@ -7,6 +7,6 @@ public class AGRestDataSource extends AbstractOdsDataSource {
 
   @Override
   public OdsDownloadTask getDownloadTask() {
-    return new AGRestDownloadTask(service, this);
+    return new AGRestDownloadTask(this);
   }
 }

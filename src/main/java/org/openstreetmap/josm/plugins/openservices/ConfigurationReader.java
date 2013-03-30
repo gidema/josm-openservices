@@ -135,13 +135,16 @@ public class ConfigurationReader {
   
   private void configureLayer(HierarchicalConfiguration conf) throws ConfigurationException {
     String name = conf.getString("[@name]");
-    OdsWorkingSet layer = new OdsWorkingSet();
-    layer.setName(name);
-    configureDataSources(conf, layer);
+    OdsWorkingSet workingSet = new OdsWorkingSet();
+    workingSet.setName(name);
+    configureDataSources(conf, workingSet);
     String osmQuery = conf.getString("osm_query");
-    layer.setOsmQuery(osmQuery);
-    configureActions(layer, conf);
-    OpenDataServices.registerLayer(layer);
+    workingSet.setOsmQuery(osmQuery);
+    configureActions(workingSet, conf);
+    JMenu odsMenu = OpenDataServicesPlugin.getMenu();
+    Action action = new OdsWorkingSetAction(workingSet);
+    odsMenu.add(action);
+//    OpenDataServices.registerLayer(layer);
   }
 
   private void configureActions(OdsWorkingSet layer, HierarchicalConfiguration conf) throws ConfigurationException {
@@ -151,13 +154,14 @@ public class ConfigurationReader {
   }
   
   private void configureAction(OdsWorkingSet layer, HierarchicalConfiguration conf) throws ConfigurationException {
-    String name = conf.getString("[@name]");
+    String name = conf.getString("[@name]", null);
     String type = conf.getString("[@type]");
-    String menu = conf.getString("[@menu]");
     String iconName = conf.getString("[@icon]");
     try {
       OdsAction action = (OdsAction) OpenDataServices.createObject("action", type);
-      action.setName(name);
+      if (name != null) {
+        action.setName(name);
+      }
       if (iconName != null) {
         ImageIcon icon = ImageProvider.getIfAvailable(iconName);
         if (icon == null) {
@@ -166,9 +170,9 @@ public class ConfigurationReader {
         action.setIcon(icon);
       }
       layer.addAction(action);
-      if (menu != null) {
-        configureMenu(action, menu);
-      }
+//      if (menu != null) {
+//        configureMenu(action, menu);
+//      }
     } catch (Exception e) {
       throw new ConfigurationException(e);
     }
