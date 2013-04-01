@@ -1,23 +1,11 @@
 package org.openstreetmap.josm.plugins.openservices;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.configuration.ConfigurationException;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
-import org.openstreetmap.josm.data.Bounds;
 
 public abstract class AbstractOdsDataSource implements OdsDataSource {
   protected Service service;
-  private final Map<Serializable, SimpleFeature> featureCollection = new HashMap<Serializable, SimpleFeature>();
   private FeatureMapper mapper;
-  private final List<FeatureListener> listeners = new LinkedList<FeatureListener>();
   private Filter filter;
   private IdFactory idFactory;
   
@@ -26,6 +14,11 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
     this.service = service;
   }
   
+  @Override
+  public Service getService() {
+    return service;
+  }
+
   @Override
   public void setFilter(Filter filter) throws ConfigurationException {
     this.filter = filter;
@@ -43,8 +36,11 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
   }
 
   @Override
-  public void addFeatureListener(FeatureListener featureListener) {
-    listeners.add(featureListener);
+  public IdFactory getIdFactory() {
+    if (idFactory == null) {
+      idFactory = new DefaultIdFactory(this);
+    }
+    return idFactory;
   }
 
   @Override
@@ -65,27 +61,5 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
       }
     }
     return mapper;
-  }
-  
-  @Override
-  public void addFeatures(FeatureCollection<?, SimpleFeature> features, Bounds bounds) {
-    FeatureIterator<SimpleFeature> iterator = features.features();
-    try {
-      List<SimpleFeature> newFeatures = new LinkedList<SimpleFeature>();
-      while( iterator.hasNext() ){
-        SimpleFeature feature = iterator.next();
-        Serializable id = idFactory.getId(feature);
-        if (featureCollection.get(id) == null) {
-          featureCollection.put(id,  feature);
-          newFeatures.add(feature);
-        }
-      }
-      for (FeatureListener listener : listeners) {
-        listener.featuresAdded(newFeatures, bounds);
-      }
-    }
-    finally {
-       iterator.close();
-    }
   }
 }

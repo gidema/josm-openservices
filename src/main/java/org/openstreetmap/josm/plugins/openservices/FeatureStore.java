@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.openservices;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,15 +8,21 @@ import java.util.Map;
 
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.filter.identity.FeatureId;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 public class FeatureStore {
-  private final Map<FeatureId, Object> featureStore = 
-      new HashMap<FeatureId, Object>();
+  private final Map<Serializable, SimpleFeature> featureStore = 
+      new HashMap<Serializable, SimpleFeature>();
+  private final List<FeatureListener> featureListeners = new LinkedList<FeatureListener>();
+  private final Map<SimpleFeatureType, IdFactory> idFactories = new HashMap<SimpleFeatureType, IdFactory>();
 
-  public boolean contains(Feature feature) {
-    return featureStore.containsKey(feature.getIdentifier());
+  public void addFeatureListener(FeatureListener listener) {
+    featureListeners.add(listener);
+  }
+  
+  public void addIdFactory(IdFactory idFactory) {
+    idFactories.put(idFactory.getFeatureType(), idFactory);
   }
   
   /**
@@ -23,25 +30,28 @@ public class FeatureStore {
    * @param features the features to add
    * @return A list of all features that were added
    */
-  public List<Feature> addFeatures(FeatureCollection<?, ?> features) {
-    List<Feature> newFeatures = new LinkedList<Feature>();
-    SimpleFeatureIterator i = (SimpleFeatureIterator) features.features();
-    try {
-      while (i.hasNext()) {
-        Feature feature = i.next();
-        if (!this.contains(feature)) {
-          featureStore.put(feature.getIdentifier(), feature);
-          newFeatures.add(feature);
-        }
+  public void addFeature(SimpleFeature feature) {
+    IdFactory idFactory = idFactories.get(feature.getType());
+    Serializable id = idFactory.getId(feature);
+
+    if (!featureStore.containsKey(id)) {
+      featureStore.put(id, feature);
+      for (FeatureListener listener : featureListeners) {
+        listener.featureAdded(feature);
       }
     }
-    catch (Exception e) {
-      e.printStackTrace();
-    }
-    finally {
-      //i.close();
-    }
-    return newFeatures;
   }
 
+  /**
+   * Add features to the featureStore
+   * @param features the features to add
+   * @return A list of all features that were added
+   */
+  public void addFeatures(FeatureCollection<?, SimpleFeature> features) {
+    SimpleFeatureIterator i = (SimpleFeatureIterator) features.features();
+    while (i.hasNext()) {
+      SimpleFeature feature = i.next();
+      addFeature(feature);
+    }
+  }
 }

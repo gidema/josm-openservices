@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.openservices.arcgis.rest;
 
+import java.util.Collection;
 import java.util.Locale;
 
 import org.geotools.feature.FeatureCollection;
@@ -17,24 +18,28 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class AGRestDownloadTask extends OdsDownloadTask {
 
-  public AGRestDownloadTask(OdsDataSource dataSource) {
-    super(dataSource);
+  public AGRestDownloadTask(OdsDataSource dataSource, Collection<SimpleFeature> featureCollection) {
+    super(dataSource, featureCollection);
   }
 
+  private AGRestService getService() {
+    return (AGRestService) dataSource.getService();
+  }
+  
   @Override
   protected FeatureCollection<?, SimpleFeature> getFeatures()
       throws ServiceException {
-    service.init();
+    getService().init();
     RestQuery query = getQuery();
-    AGRestReader reader = new AGRestReader(query, service.getFeatureType());
+    AGRestReader reader = new AGRestReader(query, getService().getFeatureType());
     return reader.getFeatures();
   }
 
   private RestQuery getQuery() {
     RestQuery query = new RestQuery();  
-    query.setService((AGRestService)service);
-    query.setInSR(service.getSRID());
-    query.setOutSR(service.getSRID());
+    query.setService(getService());
+    query.setInSR(getService().getSRID());
+    query.setOutSR(getService().getSRID());
     query.setGeometry(formatBounds(currentBounds, query.getInSR()));
     query.setOutFields("*");
     return query;
@@ -57,7 +62,4 @@ public class AGRestDownloadTask extends OdsDownloadTask {
         min.getX(), min.getY(),
         max.getX(), max.getY());
   }
-  
-  
-
 }

@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.openservices;
 
 
-import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -9,7 +8,6 @@ import java.util.NoSuchElementException;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -17,8 +15,6 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.gui.MainMenu;
 import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
@@ -85,7 +81,6 @@ public class ConfigurationReader {
   }
 
   private void configureDataSource(HierarchicalConfiguration conf, OdsWorkingSet layer) throws ConfigurationException {
-    //String name = conf.getString("[@name]");
     Service service = configureService(conf);
     OdsDataSource dataSource = service.newDataSource();
     dataSource.setService(service);
@@ -105,12 +100,11 @@ public class ConfigurationReader {
     } catch (CQLException e) {
       throw new ConfigurationException("Error in filter", e);
     }
-    
   }
 
   private void configureIdFactory(OdsDataSource dataSource,
       String idAttribute) throws ConfigurationException {
-    DefaultIdFactory idFactory = new DefaultIdFactory();
+    DefaultIdFactory idFactory = new DefaultIdFactory(dataSource);
     idFactory.setKeyAttribute(idAttribute);
     dataSource.setIdFactory(idFactory);
   }
@@ -144,7 +138,6 @@ public class ConfigurationReader {
     JMenu odsMenu = OpenDataServicesPlugin.getMenu();
     Action action = new OdsWorkingSetAction(workingSet);
     odsMenu.add(action);
-//    OpenDataServices.registerLayer(layer);
   }
 
   private void configureActions(OdsWorkingSet layer, HierarchicalConfiguration conf) throws ConfigurationException {
@@ -170,23 +163,20 @@ public class ConfigurationReader {
         action.setIcon(icon);
       }
       layer.addAction(action);
-//      if (menu != null) {
-//        configureMenu(action, menu);
-//      }
     } catch (Exception e) {
       throw new ConfigurationException(e);
     }
   }
   
-  private synchronized void configureMenu(Action action, String menu) {
-    String[] menuParts = menu.split("\\.");
-    String baseMenuName = menuParts[0];
-    JMenu parent = getBaseMenu(baseMenuName, 4);
-    for (int i=1; i<menuParts.length; i++) {
-      parent = getChildMenu(parent, menuParts[i]);
-    }
-    parent.add(action);
-  }
+//  private synchronized void configureMenu(Action action, String menu) {
+//    String[] menuParts = menu.split("\\.");
+//    String baseMenuName = menuParts[0];
+//    JMenu parent = getBaseMenu(baseMenuName, 4);
+//    for (int i=1; i<menuParts.length; i++) {
+//      parent = getChildMenu(parent, menuParts[i]);
+//    }
+//    parent.add(action);
+//  }
 
   private void configureFeatureMappers(HierarchicalConfiguration conf) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("map")) {
@@ -239,30 +229,30 @@ public class ConfigurationReader {
   }
 
   // TODO move the following 2 functions to a more logical place (Plugin class ?)
-  private static JMenu getBaseMenu(String name, int position) {
-    MainMenu mainMenu = Main.main.menu;
-    JMenu baseMenu = null;
-    for (int i=0; i<mainMenu.getMenuCount(); i++) {
-      baseMenu = mainMenu.getMenu(i);
-      if (baseMenu.getText().equals(name)) {
-        return baseMenu;
-      }
-    }
-    baseMenu = mainMenu.addMenu(name, KeyEvent.VK_UNDEFINED, position, null);
-    return baseMenu;
-  }
+//  private static JMenu getBaseMenu(String name, int position) {
+//    MainMenu mainMenu = Main.main.menu;
+//    JMenu baseMenu = null;
+//    for (int i=0; i<mainMenu.getMenuCount(); i++) {
+//      baseMenu = mainMenu.getMenu(i);
+//      if (baseMenu.getText().equals(name)) {
+//        return baseMenu;
+//      }
+//    }
+//    baseMenu = mainMenu.addMenu(name, KeyEvent.VK_UNDEFINED, position, null);
+//    return baseMenu;
+//  }
   
-  private static synchronized JMenu getChildMenu(JMenu parent, String name) {
-    JMenu child = null;
-    JPopupMenu popup = parent.getPopupMenu();
-    for (int i=0; i<popup.getComponentCount(); i++) {
-      child = (JMenu) popup.getComponent(i);
-      if (child.getText().equals(name)) {
-        return child;
-      }
-    }
-    child = new JMenu(name);
-    parent.add(child);
-    return child;
-  }
+//  private static synchronized JMenu getChildMenu(JMenu parent, String name) {
+//    JMenu child = null;
+//    JPopupMenu popup = parent.getPopupMenu();
+//    for (int i=0; i<popup.getComponentCount(); i++) {
+//      child = (JMenu) popup.getComponent(i);
+//      if (child.getText().equals(name)) {
+//        return child;
+//      }
+//    }
+//    child = new JMenu(name);
+//    parent.add(child);
+//    return child;
+//  }
 }

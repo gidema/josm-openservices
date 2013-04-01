@@ -35,6 +35,7 @@ public class WFSHost extends GtHost {
         dataStore = dataStoreFactory.createDataStore(connectionParameters);
       } catch (ConnectException e) {
         if (e.getMessage().equals("Connection refused")) {
+          // TODO Show proper error message to the user 
           throw new GtException("Connection refused; Make sure the wfs service is running");
         }
         throw new GtException(e);
