@@ -139,10 +139,11 @@ public class FeatureCollectionParser {
   }
 
   protected Polygon parsePolygon(JsonNode node) {
-    LinearRing shell = parseRing(node.get(0));
-    LinearRing[] holes = new LinearRing[node.size() - 1];
-    for (int i=1; i<node.size(); i++) {
-      holes[i - 1] = parseRing(node.get(i));
+    JsonNode rings = node.get("rings");
+    LinearRing shell = parseRing(rings.get(0));
+    LinearRing[] holes = new LinearRing[rings.size() - 1];
+    for (int i=1; i<rings.size(); i++) {
+      holes[i - 1] = parseRing(rings.get(i));
     }
     return geoFactory.createPolygon(shell, holes);
   }
