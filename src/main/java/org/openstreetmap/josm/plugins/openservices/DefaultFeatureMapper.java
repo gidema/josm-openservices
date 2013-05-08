@@ -8,14 +8,22 @@ import java.util.Map;
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public class DefaultFeatureMapper implements FeatureMapper {
+  private MetaData context;
   private final List<TagBuilder> tagBuilders = new LinkedList<TagBuilder>();
   private GeometryMapper geometryMapper;
   private String featureName;
   
+  
+  @Override
+  public void setContext(MetaData context) {
+    this.context = context;
+  }
+
   @Override
   public final String getFeatureName() {
     return featureName;

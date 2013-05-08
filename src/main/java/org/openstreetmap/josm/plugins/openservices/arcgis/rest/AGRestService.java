@@ -10,6 +10,7 @@ import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
 import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 import org.openstreetmap.josm.plugins.openservices.arcgis.rest.json.FeatureTypeParser;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
 public class AGRestService implements Service {
   private boolean initialized = false;
@@ -18,6 +19,7 @@ public class AGRestService implements Service {
 //  private String featureName;
   private Long featureId;
   private FeatureType featureType;
+  private MetaData metaData;
 
   @Override
   public void setHost(Host host) {
@@ -54,6 +56,7 @@ public class AGRestService implements Service {
   }
   
   private void initialize() throws ServiceException {
+    metaData = host.getMetaData();
     HttpRequest request = new HttpRequest();
     try {
       request.open("GET", host.getUrl() + "/" + featureId);
@@ -66,10 +69,11 @@ public class AGRestService implements Service {
     }
   }
   
-//  public FutureTask<FeatureCollection<?, ?>> getDownloadTask(Bounds bounds) {
-//    RestQuery query = getQuery(bounds);
-//    return new FutureTask<FeatureCollection<?, ?>>(new AGRestDownloadTask(query));
-//  }
+  @Override
+  public MetaData getMetaData() {
+    assert initialized;
+    return metaData;
+  }
 
   public Long getFeatureId(){
     return featureId;

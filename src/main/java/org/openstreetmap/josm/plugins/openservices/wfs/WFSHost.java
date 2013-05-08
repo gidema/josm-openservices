@@ -42,7 +42,6 @@ public class WFSHost extends GtHost {
       } catch (IOException e) {
         throw new GtException(e);
       }
-
     }
     return dataStore;
   }

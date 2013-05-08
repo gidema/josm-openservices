@@ -20,11 +20,11 @@ public class OpenDataServices {
     imports.put(key, clazz);
   }
 
-  public static void registerHost(String type, String name, String url) throws ConfigurationException {
+  public static Host registerHost(String type, String name, String url) throws ConfigurationException {
     Host existingHost = hosts.get(name);
     if (existingHost != null) {
       if (existingHost.getType().equals(type) &&
-          existingHost.getUrl().equals(url)) return;
+          existingHost.getUrl().equals(url)) return existingHost;
       throw new ConfigurationException(
           String.format("An other host named '%s' already exists", name));
     }
@@ -32,6 +32,7 @@ public class OpenDataServices {
     host.setName(name);
     host.setUrl(url);
     hosts.put(name, host);
+    return host;
   }
   
   public static void registerLayer(OdsWorkingSet layer) throws ConfigurationException {

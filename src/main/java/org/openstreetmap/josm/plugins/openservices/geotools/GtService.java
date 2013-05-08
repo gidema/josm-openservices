@@ -11,6 +11,7 @@ import org.openstreetmap.josm.plugins.openservices.Host;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
 import org.openstreetmap.josm.plugins.openservices.Service;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
 public class GtService implements Service {
   private boolean initialized = false;
@@ -18,7 +19,7 @@ public class GtService implements Service {
   String featureName;
   FeatureSource<?, SimpleFeature> featureSource;
   CoordinateReferenceSystem crs;
-
+  MetaData metaData;
 
   @Override
   public void setHost(Host host) {
@@ -43,6 +44,7 @@ public class GtService implements Service {
   }
   
   private void initialize() throws ServiceException {
+    metaData = new MetaData(host.getMetaData());
     if (!host.hasFeatureType(featureName)) {
       throw new GtException(String.format("Unknown featureName type: '%s'", featureName));
     }
@@ -53,6 +55,11 @@ public class GtService implements Service {
     }
   }
   
+  @Override
+  public MetaData getMetaData() {
+    return metaData;
+  }
+
   public FeatureSource<?, SimpleFeature> getFeatureSource() {
     return featureSource;
   }

@@ -2,12 +2,18 @@ package org.openstreetmap.josm.plugins.openservices;
 
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
+
+import nl.gertjanidema.conversion.valuemapper.ValueMapper;
+import nl.gertjanidema.conversion.valuemapper.ValueMapperException;
+import nl.gertjanidema.conversion.valuemapper.ValueMapperFactory;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
@@ -15,6 +21,9 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
+import org.openstreetmap.josm.plugins.openservices.metadata.HttpMetaDataLoader;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataAttribute;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataLoader;
 import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
@@ -28,6 +37,7 @@ public class ConfigurationReader {
     try {
       XMLConfiguration conf = new XMLConfiguration();
       conf.setDelimiterParsingDisabled(true);
+      conf.setAttributeSplittingDisabled(true);
       conf.load(configFile);
       configureImports(conf);
       configureHosts(conf);
@@ -71,7 +81,10 @@ public class ConfigurationReader {
     String name = conf.getString("[@name]");
     String type = conf.getString("[@type]");
     String url = conf.getString("[@url]");
-    OpenDataServices.registerHost(type, name, url);
+    Host host = OpenDataServices.registerHost(type, name, url);
+    for (MetaDataLoader metaDataLoader : parseMetaDataLoaders(conf)) {
+      host.addMetaDataLoader(metaDataLoader);
+    }
   }
 
   private void configureDataSources(HierarchicalConfiguration conf, OdsWorkingSet layer) throws ConfigurationException {
@@ -188,6 +201,7 @@ public class ConfigurationReader {
     DefaultFeatureMapper mapper = new DefaultFeatureMapper();
     mapper.setFeatureName(conf.getString("[@feature]"));
     for (HierarchicalConfiguration c : conf.configurationsAt("tag")) {
+      String type = c.getString("[@type]");
       String value = c.getString("[@value]");
       String property = c.getString("[@property]");
       String format = c.getString("[@format]");
@@ -196,6 +210,9 @@ public class ConfigurationReader {
       String key = c.getString("[@key]");
       if (value != null) {
         mapper.addTagBuilder(new FixedTagBuilder(key, value));
+      }
+      else if ("meta".equals(type)) {
+        mapper.addTagBuilder(new MetaTagBuilder(key, property, format));
       }
       else if (property != null) {
         mapper.addTagBuilder(new PropertyTagBuilder(key, property, format));
@@ -228,31 +245,50 @@ public class ConfigurationReader {
     }
   }
 
-  // TODO move the following 2 functions to a more logical place (Plugin class ?)
-//  private static JMenu getBaseMenu(String name, int position) {
-//    MainMenu mainMenu = Main.main.menu;
-//    JMenu baseMenu = null;
-//    for (int i=0; i<mainMenu.getMenuCount(); i++) {
-//      baseMenu = mainMenu.getMenu(i);
-//      if (baseMenu.getText().equals(name)) {
-//        return baseMenu;
-//      }
-//    }
-//    baseMenu = mainMenu.addMenu(name, KeyEvent.VK_UNDEFINED, position, null);
-//    return baseMenu;
-//  }
+  private List<MetaDataLoader> parseMetaDataLoaders(HierarchicalConfiguration conf) throws ConfigurationException {
+    List<MetaDataLoader> loaders = new LinkedList<MetaDataLoader>();
+    for (HierarchicalConfiguration c : conf.configurationsAt("meta")) {
+      loaders.add(parseMetaDataLoader(c));
+    }
+    return loaders;
+  }
   
-//  private static synchronized JMenu getChildMenu(JMenu parent, String name) {
-//    JMenu child = null;
-//    JPopupMenu popup = parent.getPopupMenu();
-//    for (int i=0; i<popup.getComponentCount(); i++) {
-//      child = (JMenu) popup.getComponent(i);
-//      if (child.getText().equals(name)) {
-//        return child;
-//      }
-//    }
-//    child = new JMenu(name);
-//    parent.add(child);
-//    return child;
-//  }
+  private MetaDataLoader parseMetaDataLoader(HierarchicalConfiguration conf) throws ConfigurationException {
+    String url = conf.getString("[@url]", null);
+    // TODO implement POST
+    // String method = c.getString("method", "GET");
+    if (url == null) {
+      throw new ConfigurationException("Required parameter 'url' is missing");
+    }
+    HttpMetaDataLoader metaDataLoader = new HttpMetaDataLoader(url);
+    configureMetaDataProperties(conf, metaDataLoader);
+    return metaDataLoader;
+  }
+  
+  private void configureMetaDataProperties(HierarchicalConfiguration conf, HttpMetaDataLoader metaDataLoader) throws ConfigurationException {
+    for (HierarchicalConfiguration c : conf.configurationsAt("property")) {
+      configureMetaDataProperty(c, metaDataLoader);
+    }
+  }
+
+  private void configureMetaDataProperty(HierarchicalConfiguration conf, HttpMetaDataLoader metaDataLoader) throws ConfigurationException {
+    String name = conf.getString("[@name]");
+    String type = conf.getString("[@type]", "string");
+    String query = conf.getString("[@query]", null);
+    String pattern = conf.getString("[@pattern]", null);
+    Properties properties = new Properties();
+    if (pattern != null) {
+      properties.put("pattern", pattern);
+    }
+    ValueMapperFactory vmFactory = new ValueMapperFactory();
+    ValueMapper valueMapper;
+    try {
+      valueMapper = vmFactory.createValueMapper(type, properties);
+      MetaDataAttribute attr = new MetaDataAttribute(name, query, valueMapper);
+      metaDataLoader.addAttribute(attr);
+    } catch (ValueMapperException e) {
+      throw new ConfigurationException(e);
+    }
+    
+  }
 }

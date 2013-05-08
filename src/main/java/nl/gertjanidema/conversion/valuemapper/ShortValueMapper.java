@@ -1,0 +1,30 @@
+package nl.gertjanidema.conversion.valuemapper;
+
+import java.text.ParseException;
+
+public class ShortValueMapper extends NumberValueMapper<Short> {
+
+  public Short parse(String source) throws ValueMapperException {
+    if (isNull(source)) {
+      return null;
+    }
+    try {
+      return format.parse(source).shortValue();
+    } catch (ParseException e) {
+      throw new ValueMapperException("Invalid number format", e);
+    }
+  }
+
+  @Override
+  protected String typedFormat(Short object) throws ValueMapperException {
+    if (object == null) {
+      return super.typedFormat(object);
+    }
+    return format.format(object);
+  }
+
+  public Class<Short> getType() {
+    return Short.class;
+  }
+  
+}

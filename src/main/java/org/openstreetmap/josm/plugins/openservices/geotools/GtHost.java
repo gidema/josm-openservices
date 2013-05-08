@@ -15,19 +15,7 @@ import org.openstreetmap.josm.plugins.openservices.ServiceException;
  *
  */
 public abstract class GtHost extends Host {
-  private final boolean initialized = false;
-  private DataStore dataStore;
   private List<String> featureTypes;
-  
-  /**
-   * Initialize the WFS host. This initializes the dataStoreFactory
-   * Must be synchronized.
-   * @throws GtException
-   */
-  @Override
-  public synchronized void init() throws GtException {
-    // No initialization needed
-  }
   
   protected List<String> getFeatureTypes() throws GtException {
     if (featureTypes == null) {

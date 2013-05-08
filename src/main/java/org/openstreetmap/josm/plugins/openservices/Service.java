@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.openservices;
 
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
 public interface Service {
   public void setHost(Host host);
@@ -13,4 +14,5 @@ public interface Service {
   public Long getSRID();
   public FeatureType getFeatureType();
   public OdsDataSource newDataSource();
+  public MetaData getMetaData();
 }
