@@ -17,6 +17,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.downloadtasks.DownloadOsmTask;
 import org.openstreetmap.josm.actions.downloadtasks.DownloadTask;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.ExceptionDialogUtil;
 
 /**
@@ -88,6 +89,15 @@ public class OdsWorkingSetDownloader {
     q = q.replace(";$", "");
     return String.format("%s/interpreter?data=%s;out meta;", host, q);
   }
+  
+  protected void computeBboxAndCenterScale() {
+    BoundingXYVisitor v = new BoundingXYVisitor();
+    if (boundingBox != null) {
+      v.visit(boundingBox);
+      Main.map.mapView.recalculateCenterScale(v);
+    }
+  }
+
 
   private class PostDownloadHandler implements Runnable {
 
@@ -112,8 +122,10 @@ public class OdsWorkingSetDownloader {
       for (DownloadTask task : tasks) {
         errors.addAll(task.getErrorObjects());
       }
-      if (errors.isEmpty())
+      if (errors.isEmpty()) {
+        computeBboxAndCenterScale();
         return;
+      }
 
       // just one error object?
       //
