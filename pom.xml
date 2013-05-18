@@ -36,11 +36,6 @@
   		<version>1.9</version>
   	</dependency>
   	<dependency>
-  		<groupId>josm</groupId>
-  		<artifactId>josm</artifactId>
-  		<version>5608</version>
-  	</dependency>
-  	<dependency>
   		<groupId>org.geotools</groupId>
   		<artifactId>gt-cql</artifactId>
   		<version>8.5</version>
@@ -65,6 +60,11 @@
   		<artifactId>jsoup</artifactId>
   		<version>1.7.2</version>
   	</dependency>
+  	<dependency>
+  		<groupId>josm</groupId>
+  		<artifactId>josm</artifactId>
+  		<version>5939</version>
+  	</dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -74,15 +74,19 @@
     </repository>
     <repository>
       <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>maven.gertjanidema.nl</id>
+      <name>maven.gertjanidema.nl</name>
+      <url>http://maven.gertjanidema.nl</url>
+    </repository>
+    <repository>
+      <snapshots>
         <enabled>true</enabled>
       </snapshots>
       <id>opengeo</id>
       <name>OpenGeo Maven Repository</name>
       <url>http://repo.opengeo.org</url>
-    </repository>
-    <repository>
-      <id>file.repo</id>
-      <url>file://${project.basedir}/repo</url>
     </repository>
   </repositories>
   <properties>

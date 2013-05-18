@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.openservices;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.concurrent.Future;
 
@@ -66,6 +67,12 @@ public abstract class OdsDownloadTask extends AbstractDownloadTask {
     if (downloadTask != null) {
         downloadTask.cancel();
     }
+  }
+
+  @Override
+  public String getConfirmationMessage(URL url) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   abstract protected FeatureCollection<?, SimpleFeature> getFeatures() throws ServiceException;
