@@ -60,11 +60,6 @@
   		<artifactId>jsoup</artifactId>
   		<version>1.7.2</version>
   	</dependency>
-  	<dependency>
-  		<groupId>josm</groupId>
-  		<artifactId>josm</artifactId>
-  		<version>5939</version>
-  	</dependency>
   </dependencies>
   <repositories>
     <repository>

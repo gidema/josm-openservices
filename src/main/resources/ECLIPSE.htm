@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ODS development in Eclipse</title>
+  </head>
+  <body>
+   <header>
+    <h1>Setup ODS development in Eclipse</h1>
+    <p>This document briefly describes how to setup a development environment in Eclipse for the Josm opendataservices plug-in. The process won't be much different for other IDE's like Netbeans.</p>
+   </header>
+    
+    <h2>Eclipse requirements</h2>
+    <h3>EGit plug-in</h3>
+    <p>We use git for version control. Therefore you need the Eclipse Egit plug-in</p>
+    <h3>M2e Maven plug-in</h3>
+    <p>The build process uses Maven. Therefore you need the Eclipse m2e plug-in from sonatype</p>
+
+    <h2>Download the openservices project</h2>
+    <p>Select 'File->Import->Git->Projects from Git'<br/>
+      Enter this URI: https://github.com/gidema/josm-openservices.git<br/>
+      Select the master branch and finish the import with the default options.</p>
+
+    <h2>Add the Josm dependency</h2>
+    <p>Because Josm gets new updates all the time, you'll have to add the latest
+  josm-tested.jar to the build dependencies.<br/>
+       First make sure you have the latest Josm tested version.<br/>
+       Select 'Project->Properties->Java Build Path->Libraries'<br/>
+       Select 'Add External jars...', select the josm-tested.jar from the Folder in which you installed it and click Ok twice.</p> 
+
+    <h2>Create the Josm debug environment</h2>
+    <p>Normally, when running Josm, it reads the plug-in code from the plug-in's jar file. When developing a plug-in Eclipse, this is not what you want. You'd have to rebuild the plug-in after each change and could break your normal Josm install.<br/>
+       This is why we create a seperate debug environment in $HOME/.josm_eclipse . To do this, run build.xml with the 'install4debug' task</p>
+
+    <h2>Install the submodules</h2>
+    <p>Put the submodule jar files (like 'bagviewer.jar') in the following folder:
+  $HOME/.josm_eclipse/plugins/</p>
+
+    <h2>Setup a new runtime configuration</h2>
+    <p>Now we need to create a new runtime configuration to run or debug Josm in the debug environment
+    <ul>
+    <li>Select Run->Run configurations from the main menu</li>
+    <li>Double-click Java Application</li>
+    <li>Fill in 'josm-debug' for the runtime congiguration name.</li>
+    <li>Fill in 'josm-openservices' for the Project name</li>
+    <li>Click search and select 'MainApplication' as main class</li>
+    <li>Select the 'Arguments' tab and put the following line in the VM arguments box:<br/>
+  -Djosm.home=${env_var:HOME}/.josm_eclipse
+    <li>Click 'Run' to start Josm
+    </ul>
+
+    <h2>Add the plugin in Josm</h2>
+    <p><ul>
+      <li>Run or debug Josm</li>
+      <li>Edit->Peferences->Plugins</li>
+      <li>Select 'openservices' and any other Josm plug-ins you might need</li>
+      <li>restart Josm</li>
+    </p>
+  </body>
+</html>
+
+
+
