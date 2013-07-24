@@ -1,10 +1,11 @@
-package org.openstreetmap.josm.plugins.openservices;
+package org.openstreetmap.josm.plugins.openservices.tags;
 
 import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.openservices.JosmObjectFactory;
 
 import com.vividsolutions.jts.geom.Geometry;
 

@@ -2,33 +2,29 @@ package org.openstreetmap.josm.plugins.openservices.geotools;
 
 import java.io.IOException;
 
-import org.geotools.data.FeatureSource;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openstreetmap.josm.plugins.openservices.Host;
+import org.openstreetmap.josm.plugins.openservices.InitializationException;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
-import org.openstreetmap.josm.plugins.openservices.Service;
-import org.openstreetmap.josm.plugins.openservices.ServiceException;
+import org.openstreetmap.josm.plugins.openservices.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
-public class GtService implements Service {
+public class GtFeatureSource implements OdsFeatureSource {
+  
   private boolean initialized = false;
   GtHost host;
   String featureName;
-  FeatureSource<?, SimpleFeature> featureSource;
+  SimpleFeatureSource featureSource;
   CoordinateReferenceSystem crs;
   MetaData metaData;
 
-  @Override
-  public void setHost(Host host) {
-    this.host = (GtHost)host;
-  }
   
-  @Override
-  public void setFeatureName(String feature) {
-    this.featureName = host.getName() + ":" + feature;
+  protected GtFeatureSource(GtHost host, String featureName) {
+    super();
+    this.host = host;
+    this.featureName = host.getName() + ":" + featureName;
   }
 
   @Override
@@ -37,22 +33,20 @@ public class GtService implements Service {
   }
 
   @Override
-  public void init() throws ServiceException {
+  public void initialize() throws InitializationException {
     if (initialized) return;
-    initialize();
-    initialized = true;
-  }
-  
-  private void initialize() throws ServiceException {
-    metaData = new MetaData(host.getMetaData());
+    host.initialize();
+    metaData = host.getMetaData();
     if (!host.hasFeatureType(featureName)) {
-      throw new GtException(String.format("Unknown featureName type: '%s'", featureName));
+      throw new InitializationException(String.format("Unknown featureName type: '%s'", featureName));
     }
     try {
       featureSource = host.getDataStore().getFeatureSource(featureName);
+       crs = featureSource.getInfo().getCRS();
     } catch (IOException e) {
-      throw new ServiceException(e);
+      throw new InitializationException(e);
     }
+    initialized = true;
   }
   
   @Override
@@ -60,25 +54,25 @@ public class GtService implements Service {
     return metaData;
   }
 
-  public FeatureSource<?, SimpleFeature> getFeatureSource() {
+  public SimpleFeatureSource getFeatureSource() {
     return featureSource;
   }
   
   @Override
   public FeatureType getFeatureType() {
+    assert initialized;
     return getFeatureSource().getSchema();
   }
 
   @Override
   public CoordinateReferenceSystem getCrs() {
-    if (crs == null) {
-      crs = featureSource.getInfo().getCRS();
-    }
+    assert initialized;
     return crs;
   }
-  
+
   @Override
   public String getSRS() {
+    assert initialized;
     ReferenceIdentifier rid = crs.getIdentifiers().iterator().next();
     return rid.toString();
   }
@@ -91,6 +85,6 @@ public class GtService implements Service {
 
   @Override
   public OdsDataSource newDataSource() {
-    return new GtDataSource();
+    return new GtDataSource(this);
   }
 }

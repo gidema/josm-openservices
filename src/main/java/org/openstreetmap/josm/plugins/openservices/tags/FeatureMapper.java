@@ -1,11 +1,13 @@
-package org.openstreetmap.josm.plugins.openservices;
+package org.openstreetmap.josm.plugins.openservices.tags;
 
 import java.util.List;
 
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.openservices.JosmObjectFactory;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataException;
 
 /**
  * A FeatureMapper maps GeoTools features to a Collection of Josm primitives.
@@ -20,8 +22,9 @@ public interface FeatureMapper {
    * Set the metaData context for this mapper
    * 
    * @param context
+   * @throws MetaDataException 
    */
-  public void setContext(MetaData context);
+  public void setContext(MetaData context) throws MetaDataException;
  
   /**
    * Get the name of the feature this mapper can handle.

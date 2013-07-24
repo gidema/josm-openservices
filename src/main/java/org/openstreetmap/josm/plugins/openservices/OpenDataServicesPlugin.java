@@ -33,17 +33,22 @@ public class OpenDataServicesPlugin extends Plugin {
   
   public OpenDataServicesPlugin(PluginInformation info) {
     super(info);
-    ClassLoader classLoader = getClass().getClassLoader();
-    URL configFile = classLoader.getResource("config.xml");
     try {
-      ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
-      configurationReader.read(configFile);
-    } catch (ConfigurationException e) {
-      Main.info("An error occured trying to registrate the service types.");
+      ClassLoader classLoader = getClass().getClassLoader();
+      URL configFile = classLoader.getResource("config.xml");
+      try {
+        ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
+        configurationReader.read(configFile);
+      } catch (ConfigurationException e) {
+        Main.info("An error occured trying to registrate the odsFeatureSource types.");
+      }
+      getMenu();
+      configureSources();
+      addDownloadDialogListener();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-    getMenu();
-    configureSources();
-    addDownloadDialogListener();
   }
   
   private void configureSources() {

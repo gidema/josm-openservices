@@ -33,6 +33,6 @@ public class DefaultIdFactory implements IdFactory {
 
   @Override
   public SimpleFeatureType getFeatureType() {
-    return (SimpleFeatureType) dataSource.getService().getFeatureType();
+    return (SimpleFeatureType) dataSource.getOdsFeatureSource().getFeatureType();
   }
 }

@@ -6,24 +6,32 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 
 public class FeatureStore {
+  private final IdFactory idFactory;
+  private final FeatureType featureType;
   private final Map<Serializable, SimpleFeature> featureStore = 
       new HashMap<Serializable, SimpleFeature>();
   private final List<FeatureListener> featureListeners = new LinkedList<FeatureListener>();
   private final Map<SimpleFeatureType, IdFactory> idFactories = new HashMap<SimpleFeatureType, IdFactory>();
 
+  
+  protected FeatureStore(IdFactory idFactory) {
+    super();
+    this.idFactory = idFactory;
+    this.featureType = idFactory.getFeatureType();
+  }
+
   public void addFeatureListener(FeatureListener listener) {
     featureListeners.add(listener);
   }
   
-  public void addIdFactory(IdFactory idFactory) {
-    idFactories.put(idFactory.getFeatureType(), idFactory);
-  }
+//  public void addIdFactory(IdFactory idFactory) {
+//    idFactories.put(idFactory.getFeatureType(), idFactory);
+//  }
   
   /**
    * Add features to the featureStore
@@ -31,7 +39,6 @@ public class FeatureStore {
    * @return A list of all features that were added
    */
   public void addFeature(SimpleFeature feature) {
-    IdFactory idFactory = idFactories.get(feature.getType());
     Serializable id = idFactory.getId(feature);
 
     if (!featureStore.containsKey(id)) {
@@ -47,11 +54,11 @@ public class FeatureStore {
    * @param features the features to add
    * @return A list of all features that were added
    */
-  public void addFeatures(FeatureCollection<?, SimpleFeature> features) {
-    SimpleFeatureIterator i = (SimpleFeatureIterator) features.features();
-    while (i.hasNext()) {
-      SimpleFeature feature = i.next();
-      addFeature(feature);
-    }
-  }
+//  public void addFeatures(FeatureCollection<?, SimpleFeature> features) {
+//    SimpleFeatureIterator i = (SimpleFeatureIterator) features.features();
+//    while (i.hasNext()) {
+//      SimpleFeature feature = i.next();
+//      addFeature(feature);
+//    }
+//  }
 }

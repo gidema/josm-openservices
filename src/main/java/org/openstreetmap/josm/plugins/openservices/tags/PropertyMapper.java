@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices;
+package org.openstreetmap.josm.plugins.openservices.tags;
 
 public class PropertyMapper {
   private String key;

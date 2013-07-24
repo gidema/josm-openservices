@@ -114,8 +114,8 @@ public class OdsDownloadDialog extends DownloadDialog {
   @Override
   public void restoreSettings() {
     cbDownloadOSM.setSelected(Main.pref.getBoolean("openservices.download.osm", true));
-    if (Main.isDisplayingMapView()) {
-      MapView mv = Main.map.mapView;
+    MapView mv = Main.map.mapView;
+    if (mv.getX() != 0 || mv.getY() != 0.0) {
       currentBounds = new Bounds(
           mv.getLatLon(0, mv.getHeight()),
           mv.getLatLon(mv.getWidth(), 0)

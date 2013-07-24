@@ -4,11 +4,14 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
-public interface Service {
-  public void setHost(Host host);
-  public void setFeatureName(String feature) throws ServiceException;
+/**
+ * 
+ * @author Gertjan Idema
+ *
+ */
+public interface OdsFeatureSource {
   public String getFeatureName();
-  public void init() throws ServiceException;
+  public void initialize() throws InitializationException;
   public CoordinateReferenceSystem getCrs();
   public String getSRS();
   public Long getSRID();

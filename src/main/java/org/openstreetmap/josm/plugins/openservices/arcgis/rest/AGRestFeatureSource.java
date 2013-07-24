@@ -5,29 +5,32 @@ import java.io.IOException;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openstreetmap.josm.plugins.openservices.Host;
+import org.openstreetmap.josm.plugins.openservices.InitializationException;
 import org.openstreetmap.josm.plugins.openservices.OdsDataSource;
-import org.openstreetmap.josm.plugins.openservices.Service;
-import org.openstreetmap.josm.plugins.openservices.ServiceException;
+import org.openstreetmap.josm.plugins.openservices.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.openservices.arcgis.rest.json.FeatureTypeParser;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
-public class AGRestService implements Service {
+public class AGRestFeatureSource implements OdsFeatureSource {
   private boolean initialized = false;
-  private Host host;
-  private String feature;
+  private final AGRestHost host;
+  private final String feature;
 //  private String featureName;
-  private Long featureId;
+  private final Long featureId;
   private FeatureType featureType;
   private MetaData metaData;
 
-  @Override
-  public void setHost(Host host) {
+  protected AGRestFeatureSource(AGRestHost host, String feature) {
+    super();
     this.host = host;
+    this.feature = feature;
+    String[] parts = feature.split("/");
+    //  this.featureName = parts[0];
+    this.featureId = Long.valueOf(parts[1]);
   }
 
   final AGRestHost getHost() {
-    return (AGRestHost) host;
+    return host;
   }
 
   @Override
@@ -36,26 +39,13 @@ public class AGRestService implements Service {
   }
   
   @Override
-  public void setFeatureName(String feature) throws ServiceException {
-    this.feature = feature;
-    String[] parts = feature.split("/");
-//    this.featureName = parts[0];
-    this.featureId = Long.valueOf(parts[1]);
-  }
-
-  @Override
   public final String getFeatureName() {
     return String.format("%s:%s", host.getName(), feature);
   }
 
   @Override
-  public void init() throws ServiceException {
+  public void initialize() throws InitializationException {
     if (initialized) return;
-    initialize();
-    initialized = true;
-  }
-  
-  private void initialize() throws ServiceException {
     metaData = host.getMetaData();
     HttpRequest request = new HttpRequest();
     try {
@@ -64,8 +54,9 @@ public class AGRestService implements Service {
       HttpResponse response = request.send();
       FeatureTypeParser parser = new FeatureTypeParser();
       featureType = parser.parse(response.getInputStream(), host.getName());
+      initialized = true;
     } catch (IOException e) {
-      throw new ServiceException(e);
+      throw new InitializationException(e);
     }
   }
   
@@ -98,6 +89,6 @@ public class AGRestService implements Service {
     
   @Override
   public OdsDataSource newDataSource() {
-    return new AGRestDataSource();
+    return new AGRestDataSource(this);
   }
 }

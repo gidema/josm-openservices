@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 
 public class OpenDataServices {
   private static Map<String, Host> hosts = new HashMap<String, Host>();

@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices;
+package org.openstreetmap.josm.plugins.openservices.tags;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -8,7 +8,9 @@ import java.util.Map;
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.openservices.JosmObjectFactory;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -20,7 +22,12 @@ public class DefaultFeatureMapper implements FeatureMapper {
   
   
   @Override
-  public void setContext(MetaData context) {
+  public void setContext(MetaData context) throws MetaDataException {
+    for (TagBuilder tagBuilder : tagBuilders) {
+      if (tagBuilder instanceof MetaTagBuilder) {
+        ((MetaTagBuilder)tagBuilder).setContext(context);
+      }
+    }
     this.context = context;
   }
 
@@ -43,7 +50,6 @@ public class DefaultFeatureMapper implements FeatureMapper {
 
   @Override
   public void setObjectFactory(JosmObjectFactory objectFactory) {
-    // TODO Use factory for FeatureMappers and GeometryMappers to achieve this
     geometryMapper.setObjectFactory(objectFactory);
   }
 

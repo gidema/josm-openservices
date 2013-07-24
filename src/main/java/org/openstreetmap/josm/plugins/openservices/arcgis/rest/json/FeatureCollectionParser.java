@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.geotools.data.DataUtilities;
-import org.geotools.feature.FeatureCollection;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,11 +54,20 @@ public class FeatureCollectionParser {
     this.geoFactory = new GeometryFactory(precisionModel, srid);
   }
   
-  public FeatureCollection<?, SimpleFeature> parse(InputStream is) throws JsonParseException, IOException {
+  public SimpleFeatureCollection parse(InputStream is) throws JsonParseException, IOException {
     JsonParser jp = factory.createJsonParser(is);
+    jp.nextToken();
+    jp.nextToken();
+    if ("error".equals(jp.getCurrentName())) {
+      JsonNode node = mapper.readTree(jp);
+      parseError(node);
+    }
     // Skip until the features attribute
-    while (jp.getCurrentName() != "features") {
+    while (!jp.isClosed() && !"features".equals(jp.getCurrentName())) {
       jp.nextToken();
+    }
+    if (jp.isClosed()) {
+      throw new IOException("No features found in json data");
     }
     JsonToken token = jp.nextToken(); // START_ARRAY
     if (token != JsonToken.START_ARRAY) {
@@ -66,7 +75,7 @@ public class FeatureCollectionParser {
     }
     List<SimpleFeature> featureList = new LinkedList<SimpleFeature>();
     token = jp.nextToken(); // START_OBJECT or END_ARRAY
-//    SimpleFeatureType featureType = (SimpleFeatureType)service.getFeatureType();
+//    SimpleFeatureType featureType = (SimpleFeatureType)odsFeatureSource.getFeatureType();
     while (token != JsonToken.END_ARRAY) {
       SimpleFeature feature = parseFeature(jp);
       featureList.add(feature);
@@ -170,6 +179,12 @@ public class FeatureCollectionParser {
   protected Point parsePoint(JsonNode node) {
     Coordinate coordinate = parseCoordinate(node);
     return geoFactory.createPoint(coordinate);
+  }
+  
+  private void parseError(JsonNode node) throws IOException {
+    JsonNode errorNode = node.get("error");
+    JsonNode details = errorNode.get("details");
+    throw new IOException(details.toString());
   }
   
   private static Coordinate parseCoordinate(JsonNode node) {

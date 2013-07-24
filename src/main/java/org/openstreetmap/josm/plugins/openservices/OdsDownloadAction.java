@@ -1,7 +1,13 @@
 package org.openstreetmap.josm.plugins.openservices;
 
-import java.awt.event.ActionEvent;
+import static org.openstreetmap.josm.tools.I18n.tr;
 
+import java.awt.event.ActionEvent;
+import java.util.concurrent.ExecutionException;
+
+import javax.swing.JOptionPane;
+
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.tools.ImageProvider;
 
@@ -23,6 +29,20 @@ public class OdsDownloadAction extends OdsAction {
     }
     dialog.rememberSettings();
     Bounds area = dialog.getSelectedDownloadArea();
-    workingSet.download(area, dialog.isDownloadOsmData());
+    try {
+      workingSet.download(area, dialog.isDownloadOsmData());
+    } catch (ExecutionException e1) {
+      JOptionPane.showMessageDialog(
+          Main.parent,
+          e1.getMessage(),
+          tr("Error during download"),
+          JOptionPane.ERROR_MESSAGE);
+    } catch (InterruptedException e1) {
+      JOptionPane.showMessageDialog(
+          Main.parent,
+          e1.getMessage(),
+          tr("Error during download"),
+          JOptionPane.ERROR_MESSAGE);
+    }
   }
 }

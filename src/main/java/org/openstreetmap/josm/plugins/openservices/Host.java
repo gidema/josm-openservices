@@ -56,22 +56,20 @@ public abstract class Host {
         && other.getUrl().equals(url);
   }
 
-  public void init() throws ServiceException {
-    if (!initialized) {
-      metaData = new MetaData();
-      for (MetaDataLoader loader : metaDataLoaders) {
-        try {
-          loader.populateMetaData(metaData);
-        } catch (MetaDataException e) {
-          throw new ServiceException(e);
-        }
+  public void initialize() throws InitializationException {
+    if (initialized) return;
+    metaData = new MetaData();
+    for (MetaDataLoader loader : metaDataLoaders) {
+      try {
+        loader.populateMetaData(metaData);
+      } catch (MetaDataException e) {
+        throw new InitializationException(e);
       }
-      initialized = true;
-    }    
-
+    }
+    initialized = true;
   }
 
   public abstract boolean hasFeatureType(String feature) throws ServiceException;
 
-  public abstract Service getService(String feature) throws ServiceException;
+  public abstract OdsFeatureSource getOdsFeatureSource(String feature) throws ServiceException;
 }

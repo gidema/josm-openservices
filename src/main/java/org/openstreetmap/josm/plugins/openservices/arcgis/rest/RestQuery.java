@@ -5,8 +5,7 @@ import java.net.URLEncoder;
 
 public class RestQuery {
   private String host;
-  private String serviceName;
-  private AGRestService service;
+  private AGRestFeatureSource featureSource;
   private Long layer;
   private ReturnType format;
   private String text = "";
@@ -23,12 +22,8 @@ public class RestQuery {
     this.host = host;
   }
 
-  public void setService(String serviceName) {
-    this.serviceName = serviceName;
-  }
-
-  public void setService(AGRestService service) {
-    this.service = service;
+  public void setFeatureSource(AGRestFeatureSource featureSource) {
+    this.featureSource = featureSource;
   }
 
   public void setLayer(Long layer) {
@@ -79,12 +74,12 @@ public class RestQuery {
     return host;
   }
 
-  public String getServiceName() {
-    return serviceName;
-  }
+//  public String getServiceName() {
+//    return serviceName;
+//  }
 
-  public AGRestService getService() {
-    return service;
+  public AGRestFeatureSource getFeatureSource() {
+    return featureSource;
   }
   
   public Long getLayer() {

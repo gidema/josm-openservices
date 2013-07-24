@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices;
+package org.openstreetmap.josm.plugins.openservices.tags;
 
 import java.util.List;
 import java.util.Map;

@@ -2,6 +2,8 @@ package org.openstreetmap.josm.plugins.openservices;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.Action;
+
 public class OdsWorkingSetAction extends OdsAction {
   
   
@@ -13,7 +15,7 @@ public class OdsWorkingSetAction extends OdsAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    OdsDownloadAction downloadAction = workingSet.getDownloadAction();
-    downloadAction.actionPerformed(e);
+    Action action = workingSet.getActivateAction();
+    action.actionPerformed(e);
   }  
 }

@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.openservices.Host;
-import org.openstreetmap.josm.plugins.openservices.Service;
+import org.openstreetmap.josm.plugins.openservices.InitializationException;
+import org.openstreetmap.josm.plugins.openservices.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.openservices.ServiceException;
 import org.openstreetmap.josm.plugins.openservices.arcgis.rest.json.HostDescriptionParser;
 
@@ -13,14 +14,8 @@ public class AGRestHost extends Host {
   private List<String> featureTypes;
 
   @Override
-  public void init() throws ServiceException {
+  public void initialize() throws InitializationException {
     if (initialized) return;
-    initialize();
-    initialized = true;
-  }
-  
-  // TODO find neater way to setup a host like a host factory
-  private void initialize() throws ServiceException {
     HttpRequest request = new HttpRequest();
     try {
       request.open("GET", getUrl());
@@ -28,8 +23,9 @@ public class AGRestHost extends Host {
       HttpResponse response = request.send();
       HostDescriptionParser.parseHostJson(response.getInputStream(), this);
       response.close();
+      initialized = true;
     } catch (IOException e) {
-      throw new ServiceException(e);
+      throw new InitializationException(e);
     }
   }
   
@@ -38,17 +34,12 @@ public class AGRestHost extends Host {
   }
 
   @Override
-  public boolean hasFeatureType(String feature) throws ServiceException {
-    init();
+  public boolean hasFeatureType(String feature) {
     return featureTypes.contains(feature);
   }
 
   @Override
-  public Service getService(String feature) throws ServiceException {
-    AGRestService service = new AGRestService();
-    service.setHost(this);
-    service.setFeatureName(feature);
-    return service;
+  public OdsFeatureSource getOdsFeatureSource(String feature) throws ServiceException {
+    return new AGRestFeatureSource(this, feature);
   }
-
 }

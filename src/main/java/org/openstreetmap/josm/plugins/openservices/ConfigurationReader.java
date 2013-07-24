@@ -24,6 +24,12 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.openstreetmap.josm.plugins.openservices.metadata.HttpMetaDataLoader;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataAttribute;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataLoader;
+import org.openstreetmap.josm.plugins.openservices.tags.DefaultFeatureMapper;
+import org.openstreetmap.josm.plugins.openservices.tags.DefaultGeometryMapper;
+import org.openstreetmap.josm.plugins.openservices.tags.ExpressionTagBuilder;
+import org.openstreetmap.josm.plugins.openservices.tags.FixedTagBuilder;
+import org.openstreetmap.josm.plugins.openservices.tags.MetaTagBuilder;
+import org.openstreetmap.josm.plugins.openservices.tags.PropertyTagBuilder;
 import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
@@ -94,9 +100,8 @@ public class ConfigurationReader {
   }
 
   private void configureDataSource(HierarchicalConfiguration conf, OdsWorkingSet layer) throws ConfigurationException {
-    Service service = configureService(conf);
-    OdsDataSource dataSource = service.newDataSource();
-    dataSource.setService(service);
+    OdsFeatureSource odsFeatureSource = configureOdsFeatureSource(conf);
+    OdsDataSource dataSource = odsFeatureSource.newDataSource();
     String filter = conf.getString("filter", null);
     if (filter != null) {
       configureFilter(dataSource, filter);
@@ -122,13 +127,13 @@ public class ConfigurationReader {
     dataSource.setIdFactory(idFactory);
   }
 
-  private Service configureService(HierarchicalConfiguration conf) throws ConfigurationException {
+  private OdsFeatureSource configureOdsFeatureSource(HierarchicalConfiguration conf) throws ConfigurationException {
     conf.setThrowExceptionOnMissing(true);
     String hostName = conf.getString("[@host]");
     String feature = conf.getString("[@feature]");
     Host host = OpenDataServices.getHost(hostName);
     try {
-      return host.getService(feature);
+      return host.getOdsFeatureSource(feature);
     } catch (ServiceException e) {
       throw new ConfigurationException(e);
     }
@@ -201,18 +206,18 @@ public class ConfigurationReader {
     DefaultFeatureMapper mapper = new DefaultFeatureMapper();
     mapper.setFeatureName(conf.getString("[@feature]"));
     for (HierarchicalConfiguration c : conf.configurationsAt("tag")) {
-      String type = c.getString("[@type]");
       String value = c.getString("[@value]");
       String property = c.getString("[@property]");
       String format = c.getString("[@format]");
       String expression = c.getString("[@expression]");
+      String meta = c.getString("[@meta]");
       c.setThrowExceptionOnMissing(true);
       String key = c.getString("[@key]");
       if (value != null) {
         mapper.addTagBuilder(new FixedTagBuilder(key, value));
       }
-      else if ("meta".equals(type)) {
-        mapper.addTagBuilder(new MetaTagBuilder(key, property, format));
+      else if (meta != null) {
+        mapper.addTagBuilder(new MetaTagBuilder(key, meta, format));
       }
       else if (property != null) {
         mapper.addTagBuilder(new PropertyTagBuilder(key, property, format));
