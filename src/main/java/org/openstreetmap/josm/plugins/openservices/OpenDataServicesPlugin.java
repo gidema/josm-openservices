@@ -13,6 +13,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -73,8 +74,9 @@ public class OpenDataServicesPlugin extends Plugin {
   public void configureJarSource(File jarFile) {
     try {
       URL url = jarFile.toURI().toURL();
-      ClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
+      URLClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
       URL configFile = classLoader.getResource("config.xml");
+      classLoader.close();
       if (configFile == null) {
         Main.warn("Warning: {0} should contain a config.xml file", jarFile);
         return;
@@ -82,6 +84,7 @@ public class OpenDataServicesPlugin extends Plugin {
       classLoader = new URLClassLoader(new URL[] {url}, getClass().getClassLoader());
       ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
       configurationReader.read(configFile);
+      classLoader.close();
     }
     catch (MalformedURLException e) {
       throw new RuntimeException("An unexpected exception occurred", e);
@@ -91,7 +94,9 @@ public class OpenDataServicesPlugin extends Plugin {
       if (e.getCause() instanceof NullPointerException) {
         e.getCause().printStackTrace();
       }
-    }
+    } catch (IOException e) {
+		// TODO Auto-generated catch block
+	}
   }
 
   public static JMenu getMenu() {
