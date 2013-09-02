@@ -69,6 +69,8 @@
         <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-core" version="2.1.4"/>
         <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-databind" version="2.1.4"/>
         <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-annotations" version="2.1.4"/>
+      	<dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>
+        <dependency groupId="proj4j" artifactId="proj4j" version="2244"/>
       </artifact:dependencies>
     </target>
 
@@ -87,7 +89,6 @@
       </copy>
       <unjar dest="${plugin.build.dir}">
       	<!--<fileset refid="dependency.fileset"/>-->
-        <fileset file="repo/proj4j/proj4j/2244/proj4j-2244.jar" />
         <fileset file="${org.geotools:gt-wfs:jar}"/>
         <fileset file="${org.geotools:gt-xml:jar}"/>
         <fileset file="${org.geotools:gt-cql:jar}"/>
@@ -100,6 +101,8 @@
       	<fileset file="${com.fasterxml.jackson.core:jackson-core:jar}"/>
       	<fileset file="${com.fasterxml.jackson.core:jackson-databind:jar}"/>
         <fileset file="${com.fasterxml.jackson.core:jackson-annotations:jar}"/>
+      	<fileset file="${org.jsoup:jsoup:jar}"/>
+        <fileset file="${proj4j:proj4j:jar}"/>
       </unjar>
       <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
       <!--
