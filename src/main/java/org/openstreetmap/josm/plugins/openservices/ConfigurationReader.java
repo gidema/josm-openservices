@@ -21,6 +21,7 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
+import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.HttpMetaDataLoader;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataAttribute;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataLoader;
@@ -47,6 +48,7 @@ public class ConfigurationReader {
       conf.load(configFile);
       configureImports(conf);
       configureHosts(conf);
+      configureEntityBuilders(conf);
       configureLayers(conf);
       configureFeatureMappers(conf);
     } catch (NoSuchElementException e) {
@@ -196,7 +198,26 @@ public class ConfigurationReader {
 //    parent.add(action);
 //  }
 
-  private void configureFeatureMappers(HierarchicalConfiguration conf) throws ConfigurationException {
+  private void configureEntityBuilders(HierarchicalConfiguration conf) throws ConfigurationException {
+	  for (HierarchicalConfiguration c : conf.configurationsAt("entity")) {
+		  configureEntityBuilder(c);
+	  }
+  }
+  
+  private void configureEntityBuilder(HierarchicalConfiguration conf) throws ConfigurationException {
+	    String className = conf.getString("[@builder]");
+	    if (className != null) {
+	        try {
+	            ImportEntityBuilder<?> builder = (ImportEntityBuilder<?>) classLoader.loadClass(className).newInstance();
+	            OpenDataServices.registerEntityBuilder(builder);
+	          } catch (Exception e) {
+	            throw new ConfigurationException("Could not configure Entity builder", e);
+	          }
+	    }
+  }
+
+
+private void configureFeatureMappers(HierarchicalConfiguration conf) throws ConfigurationException {
     for (HierarchicalConfiguration c : conf.configurationsAt("map")) {
       configureFeatureMapper(c);
     }

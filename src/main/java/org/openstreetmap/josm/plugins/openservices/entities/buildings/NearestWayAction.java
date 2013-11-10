@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.buildings;
+package org.openstreetmap.josm.plugins.openservices.entities.buildings;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;

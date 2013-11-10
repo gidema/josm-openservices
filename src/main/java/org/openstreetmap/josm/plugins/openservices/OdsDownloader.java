@@ -2,27 +2,29 @@ package org.openstreetmap.josm.plugins.openservices;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.actions.downloadtasks.DownloadOsmTask;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.plugins.openservices.entities.Entity;
+import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
+import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityAnalyzer;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.BuildingImportEntityAnalyzer;
 
 public class OdsDownloader {
   private static final int NTHREADS = 10;
 
   private final OdsWorkingSet workingSet;
   private final Collection<DownloadJob> downloadJobs = new LinkedList<DownloadJob>();
-  //private List<OdsFeatureSet> featureSets;
-  private final Future<?> osmFuture = null;
-  private DownloadOsmTask osmTask;
   private Bounds bounds;
 
   protected OdsDownloader(OdsWorkingSet workingSet) {
@@ -32,14 +34,15 @@ public class OdsDownloader {
 
   public void download(Bounds bounds) throws ExecutionException, InterruptedException {
     this.bounds = bounds;
-    // Make sure the Map frame exist beforehand
     // Create a download job for each dataSource
     downloadJobs.add(new DownloadOsmJob(workingSet, bounds));
+    Set<Entity> newEntities = new HashSet<Entity>();
     for (OdsDataSource dataSource : workingSet.getDataSources().values()) {
-      downloadJobs.add(dataSource.createDownloadJob(bounds));
+      downloadJobs.add(dataSource.createDownloadJob(workingSet.getImportDataLayer(), bounds, newEntities));
     }
     prepareJobs();
     download();
+    analyze(newEntities, bounds);
     computeBboxAndCenterScale();
   }
   
@@ -72,7 +75,6 @@ public class OdsDownloader {
     workingSet.activate();
     workingSet.activateOsmLayer();
     List<Future<?>> futures = new ArrayList<Future<?>>(downloadJobs.size());
-    List<OdsFeatureSet> featureSets = new ArrayList<OdsFeatureSet>(downloadJobs.size());
     
     ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
     for (DownloadJob job : downloadJobs) {
@@ -85,10 +87,11 @@ public class OdsDownloader {
       for (Future<?> future : futures) {
         future.get();
       }
+      workingSet.getImportDataLayer().getEntitySet().extendBoundary(bounds);
       // Retrieve the results
       for (DownloadJob job : downloadJobs) {
-        Exception e = job.getException();
-        if (e != null) {
+        List<Exception> exceptions = job.getExceptions();
+        if (exceptions.size() > 0) {
           // TODO do something
         }
 //        else {
@@ -128,5 +131,14 @@ public class OdsDownloader {
       v.visit(bounds);
       Main.map.mapView.recalculateCenterScale(v);
     }
+  }
+  
+  private void analyze(Set<Entity> newEntities, Bounds bounds) {
+      EntitySet entitySet = workingSet.getImportDataLayer().getEntitySet();
+      // TODO flexible configuration of analyzers
+      ImportEntityAnalyzer analyzer = new BuildingImportEntityAnalyzer();
+      analyzer.setEntitySet(entitySet);
+      analyzer.analyzeNewEntities(newEntities, bounds);
+      
   }
 }

@@ -28,10 +28,9 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 
 /**
- * The OdsWorkingSet is the main component of the ODS plugin.
- * It manages a pair of interrelated layers which are a normal OSM layer
- * and a ODS layer.
- * It also handles a toolbox containing a list of actions.
+ * The OdsWorkingSet is the main component of the ODS plugin. It manages a pair
+ * of interrelated layers which are a normal OSM layer and a ODS layer. It also
+ * handles a toolbox containing a list of actions.
  * 
  * The toolbox is available when either of the two layers is active. Otherwise
  * the toolbox is hidden.
@@ -41,243 +40,249 @@ import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
  * The data in the ODS layer is retrieved from 1 or more ODS dataSources.
  * 
  * @author Gertjan Idema
- *
+ * 
  */
-public class OdsWorkingSet implements LayerChangeListener, FeatureListener {
-  private String name;
-  private final Map<String, OdsDataSource> dataSources = new HashMap<String, OdsDataSource>();
-  OdsDataLayer odsDataLayer;
-  OdsOsmDataLayer odsOsmDataLayer;
-  private JDialog toolbox;
-  private final List<OdsAction> actions = new LinkedList<OdsAction>();
-  String osmQuery;
-  private FeatureStore featureStore;
-  private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
-  OdsDownloadAction downloadAction;
-  private boolean active = false;
+public class OdsWorkingSet implements LayerChangeListener {
+    private String name;
+    private final Map<String, OdsDataSource> dataSources = new HashMap<String, OdsDataSource>();
+    ImportDataLayer importDataLayer;
+    JosmDataLayer josmDataLayer;
+    private JDialog toolbox;
+    private final List<OdsAction> actions = new LinkedList<OdsAction>();
+    String osmQuery;
+    private FeatureStore featureStore;
+    private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
+    OdsDownloadAction downloadAction;
+    private boolean active = false;
 
-  public OdsWorkingSet() {
-    MapView.addLayerChangeListener(this);
-  }
-
-  public void addAction(OdsAction action) {
-    action.setWorkingSet(this);
-    actions.add(action);
-  }
-
-  protected String getName() {
-    return name;
-  }
-
-  protected void setName(String name) {
-    this.name = name;
-  }
-
-  public final Map<String, OdsDataSource> getDataSources() {
-    return dataSources;
-  }
-
-  public void setOsmQuery(String query) {
-    /**
-     * Currently, we pass the osm (overpass) query through http get. This
-     * doesn't allow linefeed or carriage return characters, so we need to strip
-     * them.
-     */
-    if (query == null) {
-      osmQuery = null;
-      return;
+    public OdsWorkingSet() {
+        MapView.addLayerChangeListener(this);
     }
-    this.osmQuery = query.replaceAll("\\s", "");
-  }
 
-  public final String getOsmQuery() {
-    return osmQuery;
-  }
+    public void addAction(OdsAction action) {
+        action.setWorkingSet(this);
+        actions.add(action);
+    }
 
-  public Feature getRelatedFeature(OsmPrimitive primitive) {
-    return relatedFeatures.get(primitive);
-  }
+    protected String getName() {
+        return name;
+    }
 
-  public OdsDataLayer getOdsDataLayer() {
-    if (odsDataLayer == null) {
-      odsDataLayer = new OdsDataLayer("ODS: " + name);
-      MapView.addLayerChangeListener(new LayerChangeListener() {
-        @Override
-        public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-          // TODO Auto-generated method stub
+    protected void setName(String name) {
+        this.name = name;
+    }
+
+    public final Map<String, OdsDataSource> getDataSources() {
+        return dataSources;
+    }
+
+    public void setOsmQuery(String query) {
+        /**
+         * Currently, we pass the osm (overpass) query through http get. This
+         * doesn't allow linefeed or carriage return characters, so we need to
+         * strip them.
+         */
+        if (query == null) {
+            osmQuery = null;
+            return;
         }
+        this.osmQuery = query.replaceAll("\\s", "");
+    }
 
-        @Override
-        public void layerAdded(Layer newLayer) {
-          // TODO Auto-generated method stub
+    public final String getOsmQuery() {
+        return osmQuery;
+    }
+
+    public Feature getRelatedFeature(OsmPrimitive primitive) {
+        return relatedFeatures.get(primitive);
+    }
+
+    public ImportDataLayer getImportDataLayer() {
+        if (importDataLayer == null) {
+            importDataLayer = new ImportDataLayer("ODS: " + name);
+            MapView.addLayerChangeListener(new LayerChangeListener() {
+                @Override
+                public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void layerAdded(Layer newLayer) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void layerRemoved(Layer oldLayer) {
+                    if (oldLayer == importDataLayer) {
+                        importDataLayer = null;
+                    }
+                }
+            });
+            Main.main.addLayer(importDataLayer);
         }
+        return importDataLayer;
+    }
 
-        @Override
-        public void layerRemoved(Layer oldLayer) {
-          if (oldLayer == odsDataLayer) {
-            odsDataLayer = null;
-          }
+    public void addDataSource(OdsDataSource dataSource) {
+        dataSources.put(dataSource.getFeatureType(), dataSource);
+//        dataSource.addFeatureListener(this);
+    }
+
+    void activate() {
+        if (!active) {
+            downloadAction = new OdsDownloadAction();
+            downloadAction.setWorkingSet(this);
+            initToolbox();
+            getImportDataLayer();
+            getOdsOsmDataLayer();
+            active = true;
         }
-      });
-      Main.main.addLayer(odsDataLayer);
     }
-    return odsDataLayer;
-  }
 
-  public void addDataSource(OdsDataSource dataSource) {
-    dataSources.put(dataSource.getFeatureType(), dataSource);
-    dataSource.addFeatureListener(this);
-  }
-  
-  void activate() {
-    if (!active) {
-      downloadAction = new OdsDownloadAction();
-      downloadAction.setWorkingSet(this);
-      initToolbox();
-      getOdsDataLayer();
-      getOdsOsmDataLayer();
-      active = true;
+    private void deActivate() {
+        josmDataLayer = null;
+        importDataLayer = null;
+        toolbox.setVisible(false);
+        toolbox = null;
+        active = false;
     }
-  }
-  
-  private void deActivate() {
-    odsOsmDataLayer = null;
-    odsDataLayer = null;
-    toolbox.setVisible(false);
-    toolbox = null;
-    active = false;
-  }
- 
-  public JDialog getToolbox() {
-    return toolbox;
-  }
-  
-  private void initToolbox() {
-    toolbox = new JDialog((Frame) Main.main.parent, "ODS");
-    toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
-      BoxLayout.Y_AXIS));
-    toolbox.setLocation(300, 300);
-    toolbox.setMinimumSize(new Dimension(110, 0));
-    toolbox.add(new JButton(downloadAction));
-    for (Action action : actions) {
-      toolbox.add(new JButton(action));
+
+    public JDialog getToolbox() {
+        return toolbox;
     }
-    toolbox.pack();
-  }
 
-  public void download(Bounds area, boolean downloadOsmData) throws ExecutionException, InterruptedException {
-    OdsDownloader downloader = new OdsDownloader(this);
-    downloader.download(area);
-  }
-
-  void activateOsmLayer() {
-    Layer osmLayer = getOdsOsmDataLayer();
-    Main.map.mapView.setActiveLayer(osmLayer);
-  }
-
-  public OdsOsmDataLayer getOdsOsmDataLayer() {
-    if (odsOsmDataLayer == null) {
-      odsOsmDataLayer = new OdsOsmDataLayer("OSM: " + name);
-      Main.main.addLayer(odsOsmDataLayer);
+    private void initToolbox() {
+        toolbox = new JDialog((Frame) Main.main.parent, "ODS");
+        toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
+                BoxLayout.Y_AXIS));
+        toolbox.setLocation(300, 300);
+        toolbox.setMinimumSize(new Dimension(110, 0));
+        toolbox.add(new JButton(downloadAction));
+        for (Action action : actions) {
+            toolbox.add(new JButton(action));
+        }
+        toolbox.pack();
     }
-    return odsOsmDataLayer;
-  }
 
-//  /**
-//   * @param featureSet
-//   * @param boundingBox
-//   */
-//  public void addFeatures(OdsFeatureSet featureSet, Bounds boundingBox) {
-//    DataSet dataSet = getOdsDataLayer().data;
-//    dataSet.beginUpdate();
-//    for (SimpleFeature feature : featureSet.getFeatures()) {
-//      getFeatureStore().addFeature(feature);
-//    }
-//    dataSet.endUpdate();
-//    dataSet.dataSources.add(new DataSource(boundingBox, name));
-//  }
-
-  @Override
-  public void featuresAdded(List<SimpleFeature> newFeatures, Bounds bounds) {
-    DataSet dataSet = getOdsDataLayer().data;
-    dataSet.beginUpdate();
-    for (SimpleFeature feature : newFeatures) {
-      featureAdded(feature);
+    public void download(Bounds area, boolean downloadOsmData)
+            throws ExecutionException, InterruptedException {
+        OdsDownloader downloader = new OdsDownloader(this);
+        downloader.download(area);
     }
-    dataSet.endUpdate();
-    dataSet.dataSources.add(new DataSource(bounds, name));
-  }
 
-  // Implement FeatureListener
-  @Override
-  public void featureAdded(Feature feature) {
-    String typeName = feature.getName().getLocalPart();
-    OdsDataSource ds = dataSources.get(typeName);
-    FeatureMapper mapper = ds.getFeatureMapper();
-    List<OsmPrimitive> primitives = mapper.mapFeature(feature,
-        getOdsDataLayer().data);
-    for (OsmPrimitive primitive : primitives) {
-      relatedFeatures.put(primitive, feature);
+    void activateOsmLayer() {
+        Layer osmLayer = getOdsOsmDataLayer();
+        Main.map.mapView.setActiveLayer(osmLayer);
     }
-  }
 
-  // Implement LayerChangeListener
-
-  @Override
-  public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-    if (newLayer != null && (newLayer == odsDataLayer || newLayer == odsOsmDataLayer)) {
-      getToolbox().setVisible(true);
+    public JosmDataLayer getOdsOsmDataLayer() {
+        if (josmDataLayer == null) {
+            josmDataLayer = new JosmDataLayer("OSM: " + name);
+            Main.main.addLayer(josmDataLayer);
+        }
+        return josmDataLayer;
     }
-    else if (active) {
-      getToolbox().setVisible(false);
-    }
-  }
 
-  @Override
-  public void layerAdded(Layer newLayer) {
-    // No action required
-  }
+    // /**
+    // * @param featureSet
+    // * @param boundingBox
+    // */
+    // public void addFeatures(OdsFeatureSet featureSet, Bounds boundingBox) {
+    // DataSet dataSet = getOdsDataLayer().data;
+    // dataSet.beginUpdate();
+    // for (SimpleFeature feature : featureSet.getFeatures()) {
+    // getFeatureStore().addFeature(feature);
+    // }
+    // dataSet.endUpdate();
+    // dataSet.dataSources.add(new DataSource(boundingBox, name));
+    // }
 
-  @Override
-  public void layerRemoved(Layer oldLayer) {
-    boolean deActivate = false;
-    if (oldLayer == odsDataLayer && Main.map.mapView.getAllLayers().contains(odsOsmDataLayer)) {
-      Main.map.mapView.removeLayer(odsOsmDataLayer);
-      deActivate = true;
-    } else if (oldLayer == odsOsmDataLayer && Main.map.mapView.getAllLayers().contains(odsDataLayer)) {
-      Main.map.mapView.removeLayer(odsDataLayer);
-      deActivate = true;
-    }
-    if (deActivate) {
-      deActivate();
-    }
-  }
-  
-  public Action getActivateAction() {
-    return new ActivateAction();
-  }
-  
-  public OdsDownloadAction getDownloadAction() {
-    return downloadAction;
-  }
+    // @Override
+    // public void featuresAdded(List<SimpleFeature> newFeatures, Bounds bounds)
+    // {
+    // DataSet dataSet = getOdsDataLayer().data;
+    // dataSet.beginUpdate();
+    // for (SimpleFeature feature : newFeatures) {
+    // featureAdded(feature);
+    // }
+    // dataSet.endUpdate();
+    // dataSet.dataSources.add(new DataSource(bounds, name));
+    // }
+    //
+    // // Implement FeatureListener
+    // @Override
+    // public void featureAdded(Feature feature) {
+    // String typeName = feature.getName().getLocalPart();
+    // OdsDataSource ds = dataSources.get(typeName);
+    // FeatureMapper mapper = ds.getFeatureMapper();
+    // List<OsmPrimitive> primitives = mapper.mapFeature(feature,
+    // getOdsDataLayer().data);
+    // for (OsmPrimitive primitive : primitives) {
+    // relatedFeatures.put(primitive, feature);
+    // }
+    // }
 
-//  private FeatureStore getFeatureStore() {
-//    if (featureStore == null) {
-//      featureStore = new FeatureStore();
-//      featureStore.addFeatureListener(this);
-//      for (OdsDataSource dataSource : dataSources.values()) {
-//        featureStore.addIdFactory(dataSource.getIdFactory());
-//      }
-//    }
-//    return featureStore;
-//  }
-  
-  private class ActivateAction extends AbstractAction {
+    // Implement LayerChangeListener
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-      activate();
-      downloadAction.actionPerformed(e);
+    public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+        if (newLayer != null
+                && (newLayer == importDataLayer || newLayer == josmDataLayer)) {
+            getToolbox().setVisible(true);
+        } else if (active) {
+            getToolbox().setVisible(false);
+        }
     }
-  }
+
+    @Override
+    public void layerAdded(Layer newLayer) {
+        // No action required
+    }
+
+    @Override
+    public void layerRemoved(Layer oldLayer) {
+        boolean deActivate = false;
+        if (oldLayer == importDataLayer
+                && Main.map.mapView.getAllLayers().contains(josmDataLayer)) {
+            Main.map.mapView.removeLayer(josmDataLayer);
+            deActivate = true;
+        } else if (oldLayer == josmDataLayer
+                && Main.map.mapView.getAllLayers().contains(importDataLayer)) {
+            Main.map.mapView.removeLayer(importDataLayer);
+            deActivate = true;
+        }
+        if (deActivate) {
+            deActivate();
+        }
+    }
+
+    public Action getActivateAction() {
+        return new ActivateAction();
+    }
+
+    public OdsDownloadAction getDownloadAction() {
+        return downloadAction;
+    }
+
+    // private FeatureStore getFeatureStore() {
+    // if (featureStore == null) {
+    // featureStore = new FeatureStore();
+    // featureStore.addFeatureListener(this);
+    // for (OdsDataSource dataSource : dataSources.values()) {
+    // featureStore.addIdFactory(dataSource.getIdFactory());
+    // }
+    // }
+    // return featureStore;
+    // }
+
+    private class ActivateAction extends AbstractAction {
+
+        private static final long serialVersionUID = -4943320068119307331L;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            activate();
+            downloadAction.actionPerformed(e);
+        }
+    }
 }

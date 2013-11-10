@@ -117,12 +117,12 @@ public class OpenDataServicesPlugin extends Plugin {
       public void componentShown(ComponentEvent e) {
         if (!Main.isDisplayingMapView()) return;
         Layer activeLayer = Main.main.getActiveLayer();
-        if (activeLayer instanceof OdsDataLayer
-            || activeLayer instanceof OdsOsmDataLayer) {
+        if (activeLayer instanceof ImportDataLayer
+            || activeLayer instanceof JosmDataLayer) {
           for (Layer layer : Main.map.mapView.getAllLayersAsList()) {
             if (layer instanceof OsmDataLayer 
-                && !(layer instanceof OdsDataLayer)
-                && !(layer instanceof OdsOsmDataLayer)) {
+                && !(layer instanceof ImportDataLayer)
+                && !(layer instanceof JosmDataLayer)) {
               Main.map.mapView.setActiveLayer(layer);
               return;
             }

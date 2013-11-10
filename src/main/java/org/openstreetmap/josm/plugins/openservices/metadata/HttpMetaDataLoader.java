@@ -8,6 +8,7 @@ import java.util.Map;
 import nl.gertjanidema.conversion.valuemapper.ValueMapperException;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -63,11 +64,13 @@ public class HttpMetaDataLoader implements MetaDataLoader {
   public void populateMetaData(MetaData metaData) throws MetaDataException {
     Document doc;
     try {
+  	  Connection conn = Jsoup.connect(url);
+  	  conn.timeout(30000);
       if (method.equals("GET")) {
-        doc = Jsoup.connect(url).get();
+          doc = conn.get();
       }
       else if (method.equals("POST")) {
-        doc = Jsoup.connect(url).data(requestData).post();
+        doc = conn.data(requestData).post();
       }
       else {
         throw new MetaDataException("Unsupported HTML access method: " + method);

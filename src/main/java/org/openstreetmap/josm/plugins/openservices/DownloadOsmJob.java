@@ -1,17 +1,20 @@
 package org.openstreetmap.josm.plugins.openservices;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.openstreetmap.josm.actions.downloadtasks.DownloadOsmTask;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 
 public class DownloadOsmJob implements DownloadJob {
   final OdsWorkingSet workingSet;
   final Bounds bounds;
   String overpassQuery;
-  Exception exception;
+  List<Exception> exceptions;
   
   protected DownloadOsmJob(OdsWorkingSet workingSet, Bounds bounds) {
     super();
@@ -72,7 +75,13 @@ public class DownloadOsmJob implements DownloadJob {
   }
 
   @Override
-  public Exception getException() {
-    return exception;
+  public List<Exception> getExceptions() {
+    return exceptions;
   }
+
+@Override
+public Set<Entity> getNewEntities() {
+    // TODO Auto-generated method stub
+    return null;
+}
 }
