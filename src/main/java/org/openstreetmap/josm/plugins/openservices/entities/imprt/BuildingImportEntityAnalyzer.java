@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.entities.buildings;
+package org.openstreetmap.josm.plugins.openservices.entities.imprt;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -10,6 +10,8 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
 import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityAnalyzer;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Building;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Street;
 
 /**
  * The BuildingImportEntityAnalyzer analyzes buildings, addresses and related

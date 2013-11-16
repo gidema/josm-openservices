@@ -1,11 +1,15 @@
-package org.openstreetmap.josm.plugins.openservices.entities.buildings;
+package org.openstreetmap.josm.plugins.openservices.entities.imprt;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
-import org.openstreetmap.josm.plugins.openservices.entities.imprt.ImportEntity;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Address;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Block;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Building;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Place;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Street;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -59,12 +63,16 @@ public abstract class ImportAddress extends ImportEntity implements Address {
 
 	@Override
 	public Street getStreet() {
-		return street;
+		if (street != null) {
+		    getEntitySet().getStreets().getByName(getStreetName());
+		}
+	    return street;
 	}
 	
 	@Override
 	public String getStreetName() {
-	    return street.getName();
+	    if (getStreet() == null) return null;
+        return getStreet().getName();
 	}
 
 	@Override
@@ -122,15 +130,20 @@ public abstract class ImportAddress extends ImportEntity implements Address {
 		if (getPostcode() != null) {
 			keys.put("addr:postcode", getPostcode());
 		}
-		if (getStreet() != null) {
-			keys.put("addr:street", getStreet().getName());
+		if (getStreetName() != null) {
+			keys.put("addr:street", getStreetName());
 		}
-		if (getPlace() != null) {
-			keys.put("addr:city", getPlace().getName());
+		if (getPlaceName() != null) {
+			keys.put("addr:city", getPlaceName());
 		}
 		return keys;
 	}
 	
+    public String getPlaceName() {
+        if (getPlace() == null) return null;
+        return getPlace().getName();
+    }
+
     @Override
     public void createPrimitives(PrimitiveBuilder builder) {
         if (getPrimitives() == null) {

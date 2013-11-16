@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.entities.buildings;
+package org.openstreetmap.josm.plugins.openservices.entities.imprt;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.openstreetmap.josm.plugins.openservices.entities.AbstractEntity;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Address;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Place;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Street;
 
 public class ImportStreet extends AbstractEntity implements Street {
     private String name;

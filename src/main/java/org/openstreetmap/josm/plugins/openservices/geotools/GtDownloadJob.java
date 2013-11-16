@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -30,7 +31,6 @@ public class GtDownloadJob implements DownloadJob {
     SimpleFeatureCollection featureCollection;
     MetaData metaData;
     Set<Entity> newEntities;
-    List<Exception> exceptions = new LinkedList<Exception>();
 
     protected GtDownloadJob(GtDataSource dataSource, ImportDataLayer dataLayer, Bounds bounds, Set<Entity> newEntities) {
         super();
@@ -53,7 +53,7 @@ public class GtDownloadJob implements DownloadJob {
         return new Callable<Object>() {
 
             @Override
-            public Object call() {
+            public Object call() throws ExecutionException {
                 try {
                     dataSource.initialize();
                     metaData = dataSource.getMetaData();
@@ -78,8 +78,7 @@ public class GtDownloadJob implements DownloadJob {
                     featureSource = gtFeatureSource.getFeatureSource();
                     featureCollection = featureSource.getFeatures(filter);
                 } catch (Exception e) {
-                    exceptions.add(e);
-                    return null;
+                    throw new ExecutionException(e.getMessage(), e.getCause());
                 }
                 return null;
             }
@@ -91,9 +90,7 @@ public class GtDownloadJob implements DownloadJob {
         return new Callable<Object>() {
 
             @Override
-            public Object call() {
-                if (exceptions.size() > 0)
-                    return null;
+            public Object call() throws ExecutionException {
                 SimpleFeatureIterator it = null;
                 List<SimpleFeature> featureList = new LinkedList<SimpleFeature>();
                 try {
@@ -103,8 +100,7 @@ public class GtDownloadJob implements DownloadJob {
                         featureList.add(it.next());
                     }
                 } catch (Exception e) {
-                    exceptions.add(e);
-                    return null;
+                    throw new ExecutionException(e.getMessage(), e.getCause());
                 } finally {
                     if (it != null)
                         it.close();
@@ -118,8 +114,7 @@ public class GtDownloadJob implements DownloadJob {
                         };
                     }
                 } catch (MappingException e) {
-                    exceptions.add(e);
-                    return null;
+                    throw new ExecutionException(e.getMessage(), e.getCause());
                 }
                 return null;
             }
@@ -129,11 +124,6 @@ public class GtDownloadJob implements DownloadJob {
     @Override
     public Set<Entity> getNewEntities() {
         return newEntities;
-    }
-
-    @Override
-    public List<Exception> getExceptions() {
-        return exceptions;
     }
     // @Override
     // public OdsFeatureSet getFeatureSet() {

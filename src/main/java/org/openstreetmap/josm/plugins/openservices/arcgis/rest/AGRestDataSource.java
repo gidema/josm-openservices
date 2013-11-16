@@ -17,6 +17,6 @@ public class AGRestDataSource extends AbstractOdsDataSource {
 
   @Override
   public DownloadJob createDownloadJob(ImportDataLayer dataLayer, Bounds bounds, Set<Entity> newEntities) {
-    return new AGRestDownloadJob(this, bounds);
+    return new AGRestDownloadJob(this, dataLayer, bounds, newEntities);
   }
 }

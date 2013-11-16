@@ -99,7 +99,7 @@ public class OdsWorkingSet implements LayerChangeListener {
 
     public ImportDataLayer getImportDataLayer() {
         if (importDataLayer == null) {
-            importDataLayer = new ImportDataLayer("ODS: " + name);
+            importDataLayer = new ImportDataLayer("ODS " + name);
             MapView.addLayerChangeListener(new LayerChangeListener() {
                 @Override
                 public void activeLayerChange(Layer oldLayer, Layer newLayer) {
@@ -177,7 +177,7 @@ public class OdsWorkingSet implements LayerChangeListener {
 
     public JosmDataLayer getOdsOsmDataLayer() {
         if (josmDataLayer == null) {
-            josmDataLayer = new JosmDataLayer("OSM: " + name);
+            josmDataLayer = new JosmDataLayer("OSM " + name);
             Main.main.addLayer(josmDataLayer);
         }
         return josmDataLayer;

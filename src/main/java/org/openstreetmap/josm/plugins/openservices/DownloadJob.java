@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.openservices;
 
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -13,8 +12,6 @@ public interface DownloadJob {
     Callable<?> getDownloadCallable();
 
     // OdsFeatureSet getFeatureSet();
-
-    List<Exception> getExceptions();
 
     Set<Entity> getNewEntities();
 }

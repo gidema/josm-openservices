@@ -31,6 +31,7 @@ import org.openstreetmap.josm.plugins.openservices.tags.ExpressionTagBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.FixedTagBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.MetaTagBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.PropertyTagBuilder;
+import static org.openstreetmap.josm.tools.I18n.*;
 import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
@@ -118,7 +119,7 @@ public class ConfigurationReader {
     try {
       dataSource.setFilter(CQL.toFilter(filter));
     } catch (CQLException e) {
-      throw new ConfigurationException("Error in filter", e);
+      throw new ConfigurationException(tr("Error in filter"), e);
     }
   }
 
@@ -178,7 +179,7 @@ public class ConfigurationReader {
       if (iconName != null) {
         ImageIcon icon = ImageProvider.getIfAvailable(iconName);
         if (icon == null) {
-          throw new ConfigurationException("No icon found named " + iconName);
+          throw new ConfigurationException(tr("No icon found named {0}", iconName));
         }
         action.setIcon(icon);
       }
@@ -211,7 +212,7 @@ public class ConfigurationReader {
 	            ImportEntityBuilder<?> builder = (ImportEntityBuilder<?>) classLoader.loadClass(className).newInstance();
 	            OpenDataServices.registerEntityBuilder(builder);
 	          } catch (Exception e) {
-	            throw new ConfigurationException("Could not configure Entity builder", e);
+	            throw new ConfigurationException(tr("Could not configure Entity builder"), e);
 	          }
 	    }
   }
@@ -266,7 +267,7 @@ private void configureFeatureMappers(HierarchicalConfiguration conf) throws Conf
         geometryMapper.setTargetPrimitive(mapTo);
         mapper.setGeometryMapper(geometryMapper);
       } catch (Exception e) {
-        throw new ConfigurationException("Could not configure Geometry mapper", e);
+        throw new ConfigurationException(tr("Could not configure Geometry mapper:\n{0}", e.getMessage()), e);
       }
     }
   }
@@ -284,7 +285,7 @@ private void configureFeatureMappers(HierarchicalConfiguration conf) throws Conf
     // TODO implement POST
     // String method = c.getString("method", "GET");
     if (url == null) {
-      throw new ConfigurationException("Required parameter 'url' is missing");
+      throw new ConfigurationException(tr("Required parameter 'url' is missing"));
     }
     HttpMetaDataLoader metaDataLoader = new HttpMetaDataLoader(url);
     configureMetaDataProperties(conf, metaDataLoader);
@@ -307,7 +308,7 @@ private void configureFeatureMappers(HierarchicalConfiguration conf) throws Conf
       properties.put("pattern", pattern);
     }
     ValueMapperFactory vmFactory = new ValueMapperFactory();
-    ValueMapper valueMapper;
+    ValueMapper<?> valueMapper;
     try {
       valueMapper = vmFactory.createValueMapper(type, properties);
       MetaDataAttribute attr = new MetaDataAttribute(name, query, valueMapper);

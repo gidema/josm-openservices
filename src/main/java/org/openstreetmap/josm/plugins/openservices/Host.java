@@ -56,15 +56,24 @@ public abstract class Host {
         && other.getUrl().equals(url);
   }
 
-  public void initialize() throws InitializationException {
+  public synchronized void initialize() throws InitializationException {
     if (initialized) return;
     metaData = new MetaData();
+    List<Exception> exceptions = new LinkedList<Exception>();
     for (MetaDataLoader loader : metaDataLoaders) {
       try {
         loader.populateMetaData(metaData);
       } catch (MetaDataException e) {
-        throw new InitializationException(e);
+          exceptions.add(e);
       }
+    }
+    if (!exceptions.isEmpty()) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("One or more error occured while initializing the dowload job(s):");
+        for (Exception e : exceptions) {
+            sb.append("\n").append(e.getMessage());
+        }
+        throw new InitializationException(sb.toString());
     }
     initialized = true;
   }

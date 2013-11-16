@@ -30,7 +30,7 @@ public interface ImportEntityBuilder<T extends Entity> {
 
 	
 	/**
-	 * Create an ODS Object from the provided feature.
+	 * Create an ODS Entity object from the provided feature.
 	 * 
 	 * @param feature
 	 * @return

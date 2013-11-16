@@ -1,6 +1,9 @@
 package org.openstreetmap.josm.plugins.openservices.metadata;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +86,19 @@ public class HttpMetaDataLoader implements MetaDataLoader {
           metaData.put(attribute.getName(), oValue);
         }
       }
+    } catch (UnknownHostException e) {
+        URL theUrl;
+        try {
+            theUrl = new URL(url);
+            throw new MetaDataException("The connection to the webserver at " + theUrl.getHost() + " failed. Please try again later.", e);
+        } catch (MalformedURLException e1) {
+            throw new MetaDataException("The URL " + url + " is malformed. This is probably a configuration error." +
+                "Please check your configuration files;", e1);
+        }
     } catch (IOException e) {
-      throw new MetaDataException(e);
+        throw new MetaDataException(e.getMessage(), e);
     } catch (ValueMapperException e) {
-      throw new MetaDataException(e);
+      throw new MetaDataException(e.getMessage(), e);
     }
   }
 }

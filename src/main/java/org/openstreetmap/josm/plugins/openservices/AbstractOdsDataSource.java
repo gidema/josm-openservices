@@ -86,6 +86,9 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 		if (entityBuilder == null) {
 			try {
 				entityBuilder = OpenDataServices.getEntityBuilder(getFeatureType());
+				if (entityBuilder == null) {
+				    // TODO create default entity builder
+				}
 				entityBuilder.setContext(odsFeatureSource.getMetaData());
 			} catch (Exception e) {
 				entityBuilder = null;

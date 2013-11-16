@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.openservices.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.openservices.entities.buildings.Address;
 import org.openstreetmap.josm.plugins.openservices.entities.buildings.Building;
 import org.openstreetmap.josm.plugins.openservices.entities.buildings.Place;
 import org.openstreetmap.josm.plugins.openservices.entities.buildings.Street;
@@ -73,7 +74,7 @@ public class EntitySet {
     public EntityStore<Street> getStreets() {
     	return getStore(Street.NAMESPACE);
     }
-
+    
     public void extendBoundary(Bounds bounds) {
         Polygon polygon = CRSUtil.toPolygon(bounds);
          boundary = boundary.union(polygon);

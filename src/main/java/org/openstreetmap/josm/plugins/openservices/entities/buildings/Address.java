@@ -28,4 +28,6 @@ public interface Address extends Entity {
 	public String getHouseName();
 	
 	public Point getGeometry();
+
+    String getPlaceName();
 }
