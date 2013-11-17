@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.entities.imprt;
+package org.openstreetmap.josm.plugins.openservices.entities.imported;
 
 import java.io.Serializable;
 
@@ -7,7 +7,7 @@ import org.opengis.metadata.MetaData;
 import org.openstreetmap.josm.plugins.openservices.entities.AbstractEntity;
 
 
-public class ImportEntity extends AbstractEntity {
+public class ImportedEntity extends AbstractEntity {
     private SimpleFeature feature;
     private MetaData metaData;
     

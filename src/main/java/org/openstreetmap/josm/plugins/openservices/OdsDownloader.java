@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,8 +17,9 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
-import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityAnalyzer;
-import org.openstreetmap.josm.plugins.openservices.entities.imprt.BuildingImportEntityAnalyzer;
+import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedBuiltEnvironmentEntityAnalyzer;
+import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityAnalyzer;
+import org.openstreetmap.josm.tools.I18n;
 
 public class OdsDownloader {
     private static final int NTHREADS = 10;
@@ -58,20 +58,24 @@ public class OdsDownloader {
             futures.add(future);
         }
         // Wait for all futures to finish
-        boolean interupted = false;
+        boolean interrupted = false;
         List<Exception> exceptions = new LinkedList<Exception>();
         for (Future<?> future : futures) {
             try {
                 future.get();
             } catch (InterruptedException e) {
-                interupted = true;
-            } catch (ExecutionException e) {
+                interrupted = true;
+            } catch (Exception e) {
                 exceptions.add(e);
             }
         }
+        if (interrupted) {
+            throw new InterruptedException();
+        }
         if (!exceptions.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            sb.append("One or more errors occured while preparing the download jobs:");
+            sb.append(I18n.trn("An error occurred while preparing the download jobs:",
+                    "{0} errors occurred while prepering the download jods:", exceptions.size()));
             for (Exception e : exceptions) {
                 sb.append("\n").append(e.getMessage());
             }
@@ -93,14 +97,29 @@ public class OdsDownloader {
             Future<?> future = executor.submit(job.getDownloadCallable());
             futures.add(future);
         }
+        boolean interrupted = false;
+        List<Exception> exceptions = new LinkedList<Exception>();
         // Wait for all futures to finish
         for (Future<?> future : futures) {
             try {
                 future.get();
+            } catch (InterruptedException e) {
+                interrupted = true;
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                exceptions.add(e);
             }
+        }
+        if (interrupted) {
+            throw new InterruptedException();
+        }
+        if (!exceptions.isEmpty()) {
+            StringBuilder msg = new StringBuilder();
+            msg.append(I18n.trn("An error occured while downloading the data:", 
+                "{0} errors occurred while downloading the data:", exceptions.size()));
+            for (Exception e: exceptions) {
+                msg.append("\n").append(e.getMessage());
+            }
+            throw new ExecutionException(msg.toString(), null);
         }
         workingSet.getImportDataLayer().getEntitySet().extendBoundary(bounds);
         // Retrieve the results
@@ -129,7 +148,7 @@ public class OdsDownloader {
     private void analyze(Set<Entity> newEntities, Bounds bounds) {
         EntitySet entitySet = workingSet.getImportDataLayer().getEntitySet();
         // TODO flexible configuration of analyzers
-        ImportEntityAnalyzer analyzer = new BuildingImportEntityAnalyzer();
+        ImportedEntityAnalyzer analyzer = new ImportedBuiltEnvironmentEntityAnalyzer();
         analyzer.setEntitySet(entitySet);
         analyzer.analyzeNewEntities(newEntities, bounds);
     }

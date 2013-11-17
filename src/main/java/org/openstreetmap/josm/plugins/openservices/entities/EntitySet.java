@@ -7,10 +7,9 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.openservices.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Address;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Building;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Place;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Street;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Street;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
@@ -24,8 +23,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class EntitySet {
 	private Map<String, EntityStore<? extends Entity>> stores = new HashMap<>();
     private List<EntitySetListener> listeners = new LinkedList<>();
-    private Geometry boundary = 
-            CRSUtil.OSM_GEOMETRY_FACTORY.createMultiPolygon(null);
+    private Geometry boundary = null;
 	
     public EntitySet() {
 		// TODO Auto-generated constructor stub
@@ -77,6 +75,9 @@ public class EntitySet {
     
     public void extendBoundary(Bounds bounds) {
         Polygon polygon = CRSUtil.toPolygon(bounds);
-         boundary = boundary.union(polygon);
+        if (boundary == null) {
+            boundary = polygon;
+        }
+        boundary = boundary.union(polygon);
     }
 }

@@ -1,24 +1,19 @@
 package org.openstreetmap.josm.plugins.openservices.tags;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.opengis.feature.Feature;
-import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.openservices.JosmObjectFactory;
 import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataException;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 public class DefaultFeatureMapper implements FeatureMapper {
     private final List<TagBuilder> tagBuilders = new LinkedList<TagBuilder>();
-    private GeometryMapper geometryMapper;
     private String featureName;
+    private GeometryMapper geometryMapper;
 
     @Override
     public void setContext(MetaData context) throws MetaDataException {

@@ -1,10 +1,9 @@
-package org.openstreetmap.josm.plugins.openservices.entities;
+package org.openstreetmap.josm.plugins.openservices.entities.imported;
 
 import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
-import org.openstreetmap.josm.plugins.openservices.entities.imprt.ImportEntity;
 import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 
-public class SimpleImportEntity extends ImportEntity {
+public class SimpleImportedEntity extends ImportedEntity {
     private FeatureMapper featureMapper;
 	
 	public void setFeatureMapper(FeatureMapper featureMapper) {

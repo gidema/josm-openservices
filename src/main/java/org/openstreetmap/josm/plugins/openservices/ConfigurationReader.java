@@ -21,7 +21,7 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityBuilder;
+import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.HttpMetaDataLoader;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataAttribute;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataLoader;
@@ -31,7 +31,10 @@ import org.openstreetmap.josm.plugins.openservices.tags.ExpressionTagBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.FixedTagBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.MetaTagBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.PropertyTagBuilder;
+
 import static org.openstreetmap.josm.tools.I18n.*;
+
+import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
@@ -74,7 +77,8 @@ public class ConfigurationReader {
       clazz = classLoader.loadClass(className);
       OpenDataServices.registerImport(type, name, clazz);
     } catch (ClassNotFoundException e) {
-      throw new ConfigurationException(e.getMessage());
+      throw new ConfigurationException(I18n.tr(
+          "A class named {0} could not be found", className));
     }
   }
   
@@ -209,7 +213,7 @@ public class ConfigurationReader {
 	    String className = conf.getString("[@builder]");
 	    if (className != null) {
 	        try {
-	            ImportEntityBuilder<?> builder = (ImportEntityBuilder<?>) classLoader.loadClass(className).newInstance();
+	            ImportedEntityBuilder<?> builder = (ImportedEntityBuilder<?>) classLoader.loadClass(className).newInstance();
 	            OpenDataServices.registerEntityBuilder(builder);
 	          } catch (Exception e) {
 	            throw new ConfigurationException(tr("Could not configure Entity builder"), e);

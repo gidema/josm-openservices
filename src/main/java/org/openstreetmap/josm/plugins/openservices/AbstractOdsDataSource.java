@@ -9,8 +9,8 @@ import java.util.Map;
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
-import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
+import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataException;
 import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
@@ -23,7 +23,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	private boolean initialized;
 	private final Map<Serializable, SimpleFeature> featureStore = new HashMap<Serializable, SimpleFeature>();
 	private final List<FeatureListener> featureListeners = new LinkedList<FeatureListener>();
-	private ImportEntityBuilder<?> entityBuilder;
+	private ImportedEntityBuilder<?> entityBuilder;
 
 	protected AbstractOdsDataSource(OdsFeatureSource odsFeatureSource) {
 		super();
@@ -82,7 +82,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	}
 
 	@Override
-	public ImportEntityBuilder<?> getEntityBuilder() {
+	public ImportedEntityBuilder<?> getEntityBuilder() {
 		if (entityBuilder == null) {
 			try {
 				entityBuilder = OpenDataServices.getEntityBuilder(getFeatureType());
@@ -122,7 +122,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	}
 
 	public void addFeatures(List<SimpleFeature> features) {
-		ImportEntityBuilder<?> builder = getEntityBuilder();
+		ImportedEntityBuilder<?> builder = getEntityBuilder();
 		if (builder != null) {
 			for (SimpleFeature feature : features) {
 				try {

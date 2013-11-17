@@ -3,5 +3,5 @@
   <import type="host" name="WFS" class="org.openstreetmap.josm.plugins.openservices.wfs.WFSHost"/>
   <import type="host" name="ArcgisRest" class="org.openstreetmap.josm.plugins.openservices.arcgis.rest.AGRestHost"/>
   <import type="action" name="download" class="org.openstreetmap.josm.plugins.openservices.OdsDownloadAction"/>
-  <import type="action" name="nearestWay" class="org.openstreetmap.josm.plugins.openservices.buildings.NearestWayAction"/>
+  <import type="action" name="nearestWay" class="org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.NearestWayAction"/>
 </openservices>

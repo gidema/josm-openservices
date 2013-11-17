@@ -5,8 +5,8 @@ import java.util.Set;
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.filter.Filter;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
+import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 
@@ -24,7 +24,7 @@ import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 public interface OdsDataSource {
     public String getFeatureType();
 
-    public ImportEntityBuilder<?> getEntityBuilder();
+    public ImportedEntityBuilder<?> getEntityBuilder();
 
     public FeatureMapper getFeatureMapper();
 

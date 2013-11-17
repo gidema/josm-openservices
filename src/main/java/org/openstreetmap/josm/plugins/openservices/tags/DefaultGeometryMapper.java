@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.openservices.JosmObjectFactory;
+import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -24,13 +24,13 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class DefaultGeometryMapper implements GeometryMapper {
-  private JosmObjectFactory objectFactory;
+  private PrimitiveBuilder primitiveBuilder;
   private String targetPrimitive;
   private final Boolean merge = false;
   
   @Override
-  public final void setObjectFactory(JosmObjectFactory objectFactory) {
-    this.objectFactory = objectFactory;
+  public final void setObjectFactory(PrimitiveBuilder primitiveBuilder) {
+    this.primitiveBuilder = primitiveBuilder;
   }
 
   public final void setTargetPrimitive(String targetPrimitive) {
@@ -51,28 +51,28 @@ public class DefaultGeometryMapper implements GeometryMapper {
     OsmPrimitive primitive = null;
     if (targetPrimitive.equals("WAY")) {
       if (geometry instanceof LineString) {
-        primitive = objectFactory.buildWay((LineString)geometry, dataSet);
+        primitive = primitiveBuilder.buildWay((LineString)geometry);
       }
       else if (geometry instanceof Polygon) {
         Polygon polygon = (Polygon) geometry;
         if (polygon.getNumInteriorRing() == 0) {
-          primitive = objectFactory.buildWay(polygon, dataSet);
+          primitive = primitiveBuilder.buildWay(polygon);
         }
         else {
-          primitive = objectFactory.buildMultiPolygon(polygon, dataSet);
+          primitive = primitiveBuilder.buildMultiPolygon(polygon);
         }
       }
     } else if (targetPrimitive.equals("MULTIPOLYGON")) {
       if (geometry instanceof Polygon) {
-        primitive = objectFactory.buildMultiPolygon((Polygon) geometry, dataSet);
+        primitive = primitiveBuilder.buildMultiPolygon((Polygon) geometry);
       } else if (geometry instanceof MultiPolygon) {
-        primitive = objectFactory.buildMultiPolygon((MultiPolygon) geometry, dataSet);
+        primitive = primitiveBuilder.buildMultiPolygon((MultiPolygon) geometry);
       }
     }
     else if (targetPrimitive.equals("NODE")) {
-      primitive = objectFactory.buildNode((Point)geometry, dataSet, merge);
+      primitive = primitiveBuilder.buildNode((Point)geometry, merge);
     } else if (targetPrimitive.equals("POLYGON")) {
-      primitive = objectFactory.buildPolygon((Polygon)geometry, dataSet);
+      primitive = primitiveBuilder.buildPolygon((Polygon)geometry, tags);
     }
     if (primitive != null) {
       for (Entry<String, String> entry : tags.entrySet()) {

@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityBuilder;
+import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 
 public class OpenDataServices {
 	private static Map<String, Host> hosts = new HashMap<String, Host>();
 	private static Map<String, OdsWorkingSet> layers = new HashMap<String, OdsWorkingSet>();
 	private static Map<String, FeatureMapper> featureMappers = new HashMap<String, FeatureMapper>();
-	private static Map<String, ImportEntityBuilder<?>> entityBuilders = new HashMap<String, ImportEntityBuilder<?>>();
+	private static Map<String, ImportedEntityBuilder<?>> entityBuilders = new HashMap<String, ImportedEntityBuilder<?>>();
 	private static Map<String, Class<?>> imports = new HashMap<String, Class<?>>();
 
 	public static void registerImport(String type, String name, Class<?> clazz)
@@ -60,7 +60,7 @@ public class OpenDataServices {
 		featureMappers.put(mapper.getFeatureName(), mapper);
 	}
 
-	public static void registerEntityBuilder(ImportEntityBuilder builder)
+	public static void registerEntityBuilder(ImportedEntityBuilder builder)
 			throws ConfigurationException {
 		if (entityBuilders.get(builder.getFeatureName()) != null) {
 			throw new ConfigurationException(String.format(
@@ -98,9 +98,9 @@ public class OpenDataServices {
 		return mapper;
 	}
 
-	public static ImportEntityBuilder<?> getEntityBuilder(String feature)
+	public static ImportedEntityBuilder<?> getEntityBuilder(String feature)
 			throws ConfigurationException {
-		ImportEntityBuilder<?> builder = entityBuilders.get(feature);
+		ImportedEntityBuilder<?> builder = entityBuilders.get(feature);
 		if (builder == null) {
 			throw new ConfigurationException(String.format(
 					"No entity builder for featureName '%s' exists", feature));

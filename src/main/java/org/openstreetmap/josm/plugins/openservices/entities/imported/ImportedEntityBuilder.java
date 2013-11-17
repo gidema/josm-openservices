@@ -1,7 +1,8 @@
-package org.openstreetmap.josm.plugins.openservices.entities;
+package org.openstreetmap.josm.plugins.openservices.entities.imported;
 
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.plugins.openservices.MappingException;
+import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataException;
 
@@ -11,7 +12,7 @@ import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataException;
  * @author Gertjan Idema
  * 
  */
-public interface ImportEntityBuilder<T extends Entity> {
+public interface ImportedEntityBuilder<T extends Entity> {
 
 	/**
 	 * Set the metaData context for this mapper

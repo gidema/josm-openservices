@@ -1,19 +1,19 @@
-package org.openstreetmap.josm.plugins.openservices.entities.imprt;
+package org.openstreetmap.josm.plugins.openservices.entities.imported;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Address;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Block;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Building;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Place;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Street;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Address;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Block;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Street;
 
 import com.vividsolutions.jts.geom.Point;
 
-public abstract class ImportAddress extends ImportEntity implements Address {
+public abstract class ImportedAddress extends ImportedEntity implements Address {
     private EntitySet entitySet;
     private Place place;
     private Block block;

@@ -15,12 +15,12 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.openservices.BBoxUtil;
 import org.openstreetmap.josm.plugins.openservices.DownloadJob;
 import org.openstreetmap.josm.plugins.openservices.ImportDataLayer;
 import org.openstreetmap.josm.plugins.openservices.MappingException;
-import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityBuilder;
+import org.openstreetmap.josm.plugins.openservices.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
+import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
 public class GtDownloadJob implements DownloadJob {
@@ -66,7 +66,7 @@ public class GtDownloadJob implements DownloadJob {
                     String geometryProperty = gtFeatureSource.getFeatureType()
                             .getGeometryDescriptor().getLocalName();
                     // TODO Find faster solution for the following line
-                    ReferencedEnvelope bbox = BBoxUtil.createBoundingBox(
+                    ReferencedEnvelope bbox = CRSUtil.createBoundingBox(
                             gtFeatureSource.getCrs(), bounds);
                     Filter bboxFilter = ff.bbox(ff.property(geometryProperty),
                             bbox);
@@ -105,7 +105,7 @@ public class GtDownloadJob implements DownloadJob {
                     if (it != null)
                         it.close();
                 }
-                ImportEntityBuilder<?> builder = dataSource.getEntityBuilder();
+                ImportedEntityBuilder<?> builder = dataSource.getEntityBuilder();
                 try {
                     for (SimpleFeature feature : featureList) {
                         Entity entity = builder.build(feature);

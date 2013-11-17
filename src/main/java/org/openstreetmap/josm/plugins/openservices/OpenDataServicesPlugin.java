@@ -42,6 +42,7 @@ public class OpenDataServicesPlugin extends Plugin {
         configurationReader.read(configFile);
       } catch (ConfigurationException e) {
         Main.info("An error occured trying to registrate the odsFeatureSource types.");
+        Main.info(e.getMessage());
       }
       getMenu();
       configureSources();

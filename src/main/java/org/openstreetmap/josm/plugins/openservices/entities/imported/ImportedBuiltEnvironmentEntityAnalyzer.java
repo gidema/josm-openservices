@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.entities.imprt;
+package org.openstreetmap.josm.plugins.openservices.entities.imported;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -9,18 +9,17 @@ import java.util.List;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
-import org.openstreetmap.josm.plugins.openservices.entities.ImportEntityAnalyzer;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Building;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Street;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Street;
 
 /**
- * The BuildingImportEntityAnalyzer analyzes buildings, addresses and related
+ * The ImportedBuiltEnvironmentEntityAnalyzer analyzes buildings, addresses and related
  * objects like streets and cities.
  * 
  * @author gertjan
  * 
  */
-public class BuildingImportEntityAnalyzer implements ImportEntityAnalyzer {
+public class ImportedBuiltEnvironmentEntityAnalyzer implements ImportedEntityAnalyzer {
     private EntitySet entitySet;
 
     /**
@@ -37,29 +36,29 @@ public class BuildingImportEntityAnalyzer implements ImportEntityAnalyzer {
 
     @Override
     public void analyzeNewEntities(Collection<Entity> entities, Bounds bounds) {
-        List<ImportBuilding> newBuildings = new LinkedList<ImportBuilding>();
-        List<ImportAddress> newAddresses = new LinkedList<ImportAddress>();
+        List<ImportedBuilding> newBuildings = new LinkedList<ImportedBuilding>();
+        List<ImportedAddress> newAddresses = new LinkedList<ImportedAddress>();
 
         for (Entity entity : entities) {
-            if (entity instanceof ImportBuilding) {
-                newBuildings.add((ImportBuilding) entity);
-            } else if (entity instanceof ImportAddress) {
-                newAddresses.add((ImportAddress) entity);
+            if (entity instanceof ImportedBuilding) {
+                newBuildings.add((ImportedBuilding) entity);
+            } else if (entity instanceof ImportedAddress) {
+                newAddresses.add((ImportedAddress) entity);
             }
         }
         analyzeAddressStreets(newAddresses);
         analyzeAddressBuildings(newAddresses);
     }
 
-    protected void analyzeAddressStreets(List<ImportAddress> newAddresses) {
-        for (ImportAddress address : newAddresses) {
+    protected void analyzeAddressStreets(List<ImportedAddress> newAddresses) {
+        for (ImportedAddress address : newAddresses) {
             String streetName = address.getStreetName();
             if (streetName != null) {
                 List<Street> streets = getEntitySet().getStreets().getByName(
                         streetName);
                 Street street = null;
                 if (streets.isEmpty()) {
-                    street = new ImportStreet(streetName);
+                    street = new ImportedStreet(streetName);
                     entitySet.add(street);
                 } else if (streets.size() == 1) {
                     street = streets.get(0);
@@ -70,8 +69,8 @@ public class BuildingImportEntityAnalyzer implements ImportEntityAnalyzer {
         }
     }
 
-    protected void analyzeAddressBuildings(List<ImportAddress> newAddresses) {
-        for (ImportAddress address : newAddresses) {
+    protected void analyzeAddressBuildings(List<ImportedAddress> newAddresses) {
+        for (ImportedAddress address : newAddresses) {
             assert address.getBuilding() == null;
             Serializable buildingRef = address.getBuildingRef();
             if (buildingRef != null) {
@@ -89,7 +88,7 @@ public class BuildingImportEntityAnalyzer implements ImportEntityAnalyzer {
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByRef(ImportAddress address) {
+    private void analyzeAddressBuildingByRef(ImportedAddress address) {
         Serializable buildingRef = address.getBuildingRef();
         Building building = entitySet.getBuildings().get(buildingRef);
         address.setBuilding(building);
@@ -102,7 +101,7 @@ public class BuildingImportEntityAnalyzer implements ImportEntityAnalyzer {
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByGeometry(ImportAddress address) {
+    private void analyzeAddressBuildingByGeometry(ImportedAddress address) {
         Iterator<Building> iterator = entitySet.getBuildings().iterator();
         boolean found = false;
         while (iterator.hasNext() && !found) {
@@ -115,12 +114,12 @@ public class BuildingImportEntityAnalyzer implements ImportEntityAnalyzer {
         }
     }
 
-    protected void analyzeBuildingCompleteness(ImportBuilding entity) {
+    protected void analyzeBuildingCompleteness(ImportedBuilding entity) {
         // TODO Auto-generated method stub
 
     }
 
-    protected void analyzeAddress(ImportAddress entity) {
+    protected void analyzeAddress(ImportedAddress entity) {
         // TODO Auto-generated method stub
 
     }

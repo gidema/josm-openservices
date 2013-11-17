@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.entities.buildings;
+package org.openstreetmap.josm.plugins.openservices.entities.builtenvironment;
 
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 

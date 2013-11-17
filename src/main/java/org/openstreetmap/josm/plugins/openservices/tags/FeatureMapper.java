@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opengis.feature.Feature;
-import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.openservices.JosmObjectFactory;
 import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaDataException;

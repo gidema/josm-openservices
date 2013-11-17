@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.entities.imprt;
+package org.openstreetmap.josm.plugins.openservices.entities.imported;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,14 +6,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Address;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Block;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Building;
-import org.openstreetmap.josm.plugins.openservices.entities.buildings.Place;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Address;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Block;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Place;
 
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class ImportBuilding extends ImportEntity implements Building {
+public abstract class ImportedBuilding extends ImportedEntity implements Building {
     private Polygon geometry;
     private Place place;
     private Block block;
