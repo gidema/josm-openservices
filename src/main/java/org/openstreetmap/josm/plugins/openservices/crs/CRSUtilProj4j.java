@@ -121,18 +121,6 @@ public class CRSUtilProj4j extends AbstractCRSUtil {
         return new LineSegment(toCoordinate(nodePair.a), toCoordinate(nodePair.b));
     }
     
-    public Coordinate toCoordinate(Node node) {
-        return toCoordinate(node.getEastNorth());
-    }
-    
-    public Coordinate toCoordinate(LatLon latLon) {
-        return new Coordinate(latLon.getX(), latLon.getY());
-    }
-    
-    public Coordinate toCoordinate(EastNorth en) {
-        return new Coordinate(en.getX(), en.getY());
-    }
-    
     /**
      * Create a ReferencedEnvelope from a Josm bounds object, using the supplied CoordinateReferenceSystem
      * 

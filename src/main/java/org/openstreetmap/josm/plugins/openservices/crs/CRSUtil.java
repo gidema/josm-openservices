@@ -13,6 +13,7 @@ import org.openstreetmap.josm.tools.Pair;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class CRSUtil {
@@ -69,5 +70,9 @@ public class CRSUtil {
 
     public static CoordinateReferenceSystem getCrs(String srs) throws CRSException {
         return util.getCrs(srs);
+    }
+
+    public static Point toPoint(Node node) {
+        return util.toPoint(node);
     }
 }
