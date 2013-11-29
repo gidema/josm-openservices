@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.openservices.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.openservices.crs.GeoUtil;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
@@ -21,38 +21,43 @@ public class JosmAddress extends JosmEntity implements Address {
     private String streetName;
     private String placeName;
     private String postcode;
-    private boolean bag = false;
+    private String source = null;
+    private String sourceDate;
     
-    public JosmAddress(Node node) {
-        super(node);
+    public JosmAddress(OsmPrimitive primitive) {
+        super(primitive);
     }
 
-    private void parseKeys() {
+    public void build() {
         Iterator<Entry<String, String>> it =
-            getPrimitive().getKeys().entrySet().iterator();
+            primitive.getKeys().entrySet().iterator();
         while (it.hasNext()) {
             Entry<String, String> entry = it.next();
             String key = entry.getKey();
-            if ("address:housenumber".equals(key)) {
-                houseNumber = entry.getValue();
+            String value = entry.getValue();
+            if ("addr:housenumber".equals(key)) {
+                houseNumber = value;
             }
-            else if ("address:street".equals(key)) {
-                streetName = entry.getValue();
+            else if ("addr:street".equals(key)) {
+                streetName = value;
             }
-            else if ("address:housename".equals(key)) {
-                houseName = entry.getValue();
+            else if ("addr:housename".equals(key)) {
+                houseName = value;
             }
-            else if ("address:city".equals(key)) {
-                placeName = entry.getValue();
+            else if ("addr:city".equals(key)) {
+                placeName = value;
             }
-            else if ("address:postcode".equals(key)) {
-                postcode = normalizePostcode(entry.getValue());
-                if (!postcode.equals(entry.getValue())) {
-                    getPrimitive().put("address:postcode", postcode);
+            else if ("addr:postcode".equals(key)) {
+                postcode = normalizePostcode(value);
+                if (!postcode.equals(value)) {
+                    getPrimitive().put("addr:postcode", postcode);
                 }
             }
             else if ("source".equals(key) && key.toUpperCase().startsWith("BAG")) {
-                bag = true;
+                source = "BAG";
+            }
+            else if ("bag:extract".equals(key)) {
+                sourceDate = parseBagExtract(value);
             }
         }
     }
@@ -114,7 +119,8 @@ public class JosmAddress extends JosmEntity implements Address {
 
     @Override
     public Point getGeometry() {
-        return CRSUtil.toPoint((Node)getPrimitive());
+        GeoUtil geoUtil = GeoUtil.getInstance();
+        return geoUtil.toPoint((Node)getPrimitive());
     }
 
     @Override
@@ -124,5 +130,22 @@ public class JosmAddress extends JosmEntity implements Address {
 
     private String normalizePostcode(String postcode) {
         return postcode.replace(" ", "");
+    }
+    
+    public String getSource() {
+        return source;
+    }
+    
+    public String getSourceDate() {
+        return sourceDate;
+    }
+
+    private String parseBagExtract(String s) {
+        if (s.startsWith("9999PND") || s.startsWith("9999LIG") || s.startsWith("9999STA")) {
+            StringBuilder sb = new StringBuilder(10);
+            sb.append(s.substring(11,15)).append("-").append(s.substring(9,11)).append("-").append(s.substring(7, 9));
+            return sb.toString();
+        }
+        return s;
     }
 }

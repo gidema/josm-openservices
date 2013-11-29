@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.openservices;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.plugins.openservices.entities.DefaultEntitySet;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
 
 /**
@@ -14,7 +15,7 @@ import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
  * 
  */
 public class JosmDataLayer extends OsmDataLayer {
-    private EntitySet entitySet = new EntitySet();
+    private EntitySet entitySet = new DefaultEntitySet();
 
     /**
      * Simple constructor providing a new (empty) dataset

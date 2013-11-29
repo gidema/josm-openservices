@@ -11,13 +11,18 @@ import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Blo
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Place;
 
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.MultiPolygon;
 
 public abstract class ImportedBuilding extends ImportedEntity implements Building {
-    private Polygon geometry;
+    private MultiPolygon geometry;
+    private boolean complete;
     private Place place;
     private Block block;
     private Set<Address> addresses = new HashSet<Address>();
+    
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
     
 	@Override
 	public String getNamespace() {
@@ -38,7 +43,7 @@ public abstract class ImportedBuilding extends ImportedEntity implements Buildin
 	}
 	
 	@Override
-	public Polygon getGeometry() {
+	public MultiPolygon getGeometry() {
 		return geometry;
 	}
 
@@ -57,7 +62,7 @@ public abstract class ImportedBuilding extends ImportedEntity implements Buildin
 		return addresses;
 	}
 
-	public void setGeometry(Polygon geometry) {
+	public void setGeometry(MultiPolygon geometry) {
 		this.geometry = geometry;
 	}
 
@@ -71,6 +76,7 @@ public abstract class ImportedBuilding extends ImportedEntity implements Buildin
 
     @Override
     public boolean isComplete() {
-        return getEntitySet().getBoundary().covers(getGeometry());
+        return complete;
+//        return getEntitySet().getBoundary().covers(getGeometry());
     }
 }

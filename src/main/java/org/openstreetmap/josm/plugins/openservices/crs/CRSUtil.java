@@ -1,56 +1,68 @@
 package org.openstreetmap.josm.plugins.openservices.crs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.coor.EastNorth;
-import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.tools.Pair;
+import org.openstreetmap.josm.tools.I18n;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
-public class CRSUtil {
-    private static AbstractCRSUtil util = new CRSUtilProj4j();
-    public static String getSrs(CoordinateReferenceSystem crs) {
-        return util.getSrs(crs);
+public abstract class CRSUtil {
+    private final static CRSUtil instance = new CRSUtilProj4j();
+    private final static int OSM_SRID = 4326;
+    protected final static CoordinateReferenceSystem OSM_CRS;
+    protected final static PrecisionModel OSM_PRECISION_MODEL = new PrecisionModel(
+            10000000);
+    protected final static GeometryFactory OSM_GEOMETRY_FACTORY = new GeometryFactory(
+            OSM_PRECISION_MODEL, OSM_SRID);
+    private static Map<String, CoordinateReferenceSystem> coordinateReferenceSystems = new HashMap<String, CoordinateReferenceSystem>();
+
+    static {
+        try {
+            OSM_CRS = CRS.decode("EPSG:4326");
+        } catch (NoSuchAuthorityCodeException e) {
+            throw new RuntimeException(e);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static CRSUtil getInstance() {
+        return instance;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.openstreetmap.josm.plugins.openservices.crs.CRSUtil#getSrs(org.opengis.referencing.crs.CoordinateReferenceSystem)
+     */
+    public String getSrs(CoordinateReferenceSystem crs) {
+        return getIdentifier(crs).toString();
     }
 
-    public static Integer getSrid(CoordinateReferenceSystem crs) {
-        return util.getSrid(crs);
+    /* (non-Javadoc)
+     * @see org.openstreetmap.josm.plugins.openservices.crs.CRSUtil#getSrid(org.opengis.referencing.crs.CoordinateReferenceSystem)
+     */
+    public Integer getSrid(CoordinateReferenceSystem crs) {
+        return Integer.valueOf(getIdentifier(crs).getCode());
     }
 
-    public static Geometry transform(SimpleFeature feature) throws CRSException {
-        return util.transform(feature);
+    private ReferenceIdentifier getIdentifier(
+            CoordinateReferenceSystem crs) {
+        return crs.getIdentifiers().iterator().next();
     }
 
-    
-    public static Polygon toPolygon(Bounds bounds) {
-        return util.toPolygon(bounds);
-    }
-    
-    public static LineSegment toSegment(Pair<Node, Node> nodePair) {
-        return util.toSegment(nodePair);
-    }
-    
-    public static Coordinate toCoordinate(Node node) {
-        return util.toCoordinate(node);
-    }
-    
-    public static Coordinate toCoordinate(LatLon latLon) {
-        return util.toCoordinate(latLon);
-    }
-    
-    public static Coordinate toCoordinate(EastNorth en) {
-        return util.toCoordinate(en);
-    }
-    
+    public abstract Geometry transform(SimpleFeature feature) throws CRSException;
+
     /**
      * Create a ReferencedEnvelope from a Josm bounds object, using the supplied CoordinateReferenceSystem
      * 
@@ -59,20 +71,101 @@ public class CRSUtil {
      * @return
      * @throws TransformException 
      */
-    public static ReferencedEnvelope createBoundingBox(CoordinateReferenceSystem crs, Bounds bounds) throws CRSException {
-        return util.createBoundingBox(crs, bounds);
-    }
+    public abstract ReferencedEnvelope createBoundingBox(CoordinateReferenceSystem crs,
+            Bounds bounds) throws CRSException;
 
-    public static CoordinateReferenceSystem getCrs(Long srid) throws CRSException {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openstreetmap.josm.plugins.openservices.crs.CRSUtil#getCrs
+     * (java.lang.Long)
+     */
+    public CoordinateReferenceSystem getCrs(Long srid) throws CRSException {
         String srs = "EPSG:" + srid.toString();
         return getCrs(srs);
     }
 
-    public static CoordinateReferenceSystem getCrs(String srs) throws CRSException {
-        return util.getCrs(srs);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openstreetmap.josm.plugins.openservices.crs.CRSUtil#getCrs
+     * (java.lang.String)
+     */
+    public CoordinateReferenceSystem getCrs(String srs) throws CRSException {
+        CoordinateReferenceSystem crs = coordinateReferenceSystems.get(srs);
+        try {
+            if (crs == null) {
+                crs = CRS.decode(srs);
+                coordinateReferenceSystems.put(srs, crs);
+            }
+        } catch (NoSuchAuthorityCodeException e) {
+            throw new CRSException(I18n.tr(
+                    "The supplied coordinate reference system "
+                            + "{0} is unknown", srs));
+        } catch (FactoryException e) {
+            throw new CRSException(I18n.tr("Unable to create a "
+                    + "coordinate reference system for {0}", srs));
+        }
+        return crs;
     }
 
-    public static Point toPoint(Node node) {
-        return util.toPoint(node);
-    }
+//    public Coordinate toCoordinate(Node node) {
+//        return toCoordinate(node.getEastNorth());
+//    }
+//    
+//    public Coordinate toCoordinate(LatLon latLon) {
+//        return new Coordinate(latLon.getX(), latLon.getY());
+//    }
+//    
+//    public Coordinate toCoordinate(EastNorth en) {
+//        return new Coordinate(en.getX(), en.getY());
+//    }
+//    
+//    public Point toPoint(Node node) {
+//        return toPoint(toCoordinate(node));    
+//    }
+//    public Point toPoint(EastNorth en) {
+//        return toPoint(toCoordinate(en));    
+//    }
+//    
+//    public Point toPoint(Coordinate coord) {
+//        return OSM_GEOMETRY_FACTORY.createPoint(coord);
+//    }
+//
+//    public Polygon toPolygon(Way way) {
+//        LinearRing shell = toLinearRing(way);
+//        return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
+//    }
+//
+//    public Polygon toPolygon(Relation relation) {
+//        Way outerWay;
+//        List<Way> innerWays = new LinkedList<Way>();
+//        for (RelationMember member : relation.getMembers())
+//            if ("outer".equals(member.getRole())) {
+////                member.getMember()
+//            }
+//        return null;
+//    }
+//    
+//    public LineString toLineString(Way way) {
+//        Coordinate[] coords = new Coordinate[way.getNodes().size()];
+//        int i=0;
+//        for (Node node: way.getNodes()) {
+//            coords[i++] = CRSUtils.toCoordinate(node);
+//        }
+//        return OSM_GEOMETRY_FACTORY.createLinearRing(coords);
+//    }
+//
+//    public LinearRing toLinearRing(Way way) {
+//        Coordinate[] coords = new Coordinate[way.getNodes().size() + 1];
+//        int i=0;
+//        for (Node node: way.getNodes()) {
+//            coords[i++] = CRSUtils.toCoordinate(node);
+//        }
+//        coords[i] = coords[0];
+//        return OSM_GEOMETRY_FACTORY.createLinearRing(coords);
+//    }
+
 }

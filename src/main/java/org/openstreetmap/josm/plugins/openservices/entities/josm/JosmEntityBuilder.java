@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.openservices.entities.josm;
 
+import org.openstreetmap.josm.plugins.openservices.entities.BuildException;
+
 
 /**
  * Build entities from the Josm dataset
@@ -7,6 +9,6 @@ package org.openstreetmap.josm.plugins.openservices.entities.josm;
  *
  */
 public interface JosmEntityBuilder {
-    public void build();
+    public void build() throws BuildException;
 
 }

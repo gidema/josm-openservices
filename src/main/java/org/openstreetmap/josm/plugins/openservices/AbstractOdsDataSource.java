@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
+import org.openstreetmap.josm.plugins.openservices.entities.BuildException;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
@@ -23,7 +24,8 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	private boolean initialized;
 	private final Map<Serializable, SimpleFeature> featureStore = new HashMap<Serializable, SimpleFeature>();
 	private final List<FeatureListener> featureListeners = new LinkedList<FeatureListener>();
-	private ImportedEntityBuilder<?> entityBuilder;
+	private Class<? extends Entity> entityClass = null;
+	private ImportedEntityBuilder entityBuilder;
 
 	protected AbstractOdsDataSource(OdsFeatureSource odsFeatureSource) {
 		super();
@@ -48,6 +50,11 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 		}
 	}
 
+	@Override
+	public void setEntityClass(Class<? extends Entity> entityClass) {
+	    this.entityClass = entityClass;
+	}
+	
 	@Override
 	public void setFilter(Filter filter) throws ConfigurationException {
 		this.filter = filter;
@@ -82,13 +89,14 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	}
 
 	@Override
-	public ImportedEntityBuilder<?> getEntityBuilder() {
+	public ImportedEntityBuilder getEntityBuilder() {
 		if (entityBuilder == null) {
 			try {
-				entityBuilder = OpenDataServices.getEntityBuilder(getFeatureType());
+				entityBuilder = new ImportedEntityBuilder();
 				if (entityBuilder == null) {
 				    // TODO create default entity builder
 				}
+				entityBuilder.setEntityClass(entityClass);
 				entityBuilder.setContext(odsFeatureSource.getMetaData());
 			} catch (Exception e) {
 				entityBuilder = null;
@@ -122,13 +130,13 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	}
 
 	public void addFeatures(List<SimpleFeature> features) {
-		ImportedEntityBuilder<?> builder = getEntityBuilder();
+		ImportedEntityBuilder builder = getEntityBuilder();
 		if (builder != null) {
 			for (SimpleFeature feature : features) {
 				try {
 					Entity entity = builder.build(feature);
 					System.out.println();
-				} catch (MappingException e) {
+				} catch (BuildException e) {
 					throw new RuntimeException(e);
 				}
 			}

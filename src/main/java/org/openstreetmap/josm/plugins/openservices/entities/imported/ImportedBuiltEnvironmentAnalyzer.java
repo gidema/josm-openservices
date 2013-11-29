@@ -10,27 +10,28 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.BuiltEnvironmentEntitySet;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Street;
 
 /**
- * The ImportedBuiltEnvironmentEntityAnalyzer analyzes buildings, addresses and related
+ * The ImportedBuiltEnvironmentAnalyzer analyzes buildings, addresses and related
  * objects like streets and cities.
  * 
  * @author gertjan
  * 
  */
-public class ImportedBuiltEnvironmentEntityAnalyzer implements ImportedEntityAnalyzer {
-    private EntitySet entitySet;
+public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer {
+    private BuiltEnvironmentEntitySet entitySet;
 
     /**
      * 
      */
     @Override
     public void setEntitySet(EntitySet entitySet) {
-        this.entitySet = entitySet;
+        this.entitySet = new BuiltEnvironmentEntitySet(entitySet);
     }
 
-    public EntitySet getEntitySet() {
+    public BuiltEnvironmentEntitySet getEntitySet() {
         return entitySet;
     }
 
@@ -46,22 +47,20 @@ public class ImportedBuiltEnvironmentEntityAnalyzer implements ImportedEntityAna
                 newAddresses.add((ImportedAddress) entity);
             }
         }
+        analyzeBuildingCompleteness(newBuildings);
         analyzeAddressStreets(newAddresses);
         analyzeAddressBuildings(newAddresses);
     }
 
     protected void analyzeAddressStreets(List<ImportedAddress> newAddresses) {
         for (ImportedAddress address : newAddresses) {
-            String streetName = address.getStreetName();
-            if (streetName != null) {
-                List<Street> streets = getEntitySet().getStreets().getByName(
-                        streetName);
-                Street street = null;
-                if (streets.isEmpty()) {
-                    street = new ImportedStreet(streetName);
-                    entitySet.add(street);
-                } else if (streets.size() == 1) {
-                    street = streets.get(0);
+            String fullStreetName = ImportedStreet.getFullName(
+                address.getPlaceName(), address.getStreetName());
+            if (fullStreetName != null) {
+                Street street = getEntitySet().getStreet(fullStreetName);
+                if (street == null) {
+                    street = new ImportedStreet(address.getPlaceName(), address.getStreetName());
+                    getEntitySet().add(street);
                 }
                 address.setStreet(street);
                 street.getAddresses().add(address);
@@ -114,12 +113,13 @@ public class ImportedBuiltEnvironmentEntityAnalyzer implements ImportedEntityAna
         }
     }
 
-    protected void analyzeBuildingCompleteness(ImportedBuilding entity) {
-        // TODO Auto-generated method stub
-
+    protected void analyzeBuildingCompleteness(List<ImportedBuilding> newBuildings) {
+        for (ImportedBuilding building : newBuildings) {
+            building.setComplete(entitySet.getBoundary().covers(building.getGeometry()));
+        }
     }
 
-    protected void analyzeAddress(ImportedAddress entity) {
+    protected void analyzeAddress(ImportedAddress building) {
         // TODO Auto-generated method stub
 
     }

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
 
 /**
  * ODS entities are represent entities like buildings, address nodes,
@@ -19,11 +18,53 @@ import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
  *
  */
 public interface Entity {
+    /**
+     * Create relations to other objects
+     * @throws BuildException 
+     */
+    void build() throws BuildException;
+    
+	/**
+	 * Get the namespace of this object
+	 * 
+	 * @return
+	 */
 	public String getNamespace();
+	
+	
+	/**
+	 * Get the unique id of this entity with respect to its datasource
+	 * 
+	 * @return
+	 */
 	public Serializable getId();
+	
+	/**
+	 * Get the unique name of this entity
+	 * 
+	 * @return
+	 */
 	public String getName();
-	public void setEntitySet(EntitySet entitySet);
-    public EntitySet getEntitySet();
-    public void createPrimitives(PrimitiveBuilder primitiveBuilder);
+	
+	/**
+	 * Set the containing entitySet property of this entity
+	 * 
+	 * @param entitySet
+	 */
+//	public void setEntitySet(EntitySet entitySet);
+	
+    /**
+     * Get the containing entitySet of this entity
+     * 
+     * @return
+     */
+//    public EntitySet getEntitySet();
+    
+    /**
+     * Get the OSM primitives of this entity
+     * In most cases, this collection will contain only one primitive
+     * 
+     * @return
+     */
     public Collection<OsmPrimitive> getPrimitives();
 }

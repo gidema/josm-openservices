@@ -77,7 +77,7 @@ public class OpenDataServicesPlugin extends Plugin {
       URL url = jarFile.toURI().toURL();
       URLClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
       URL configFile = classLoader.getResource("config.xml");
-      classLoader.close();
+      //classLoader.close();
       if (configFile == null) {
         Main.warn("Warning: {0} should contain a config.xml file", jarFile);
         return;
@@ -85,7 +85,7 @@ public class OpenDataServicesPlugin extends Plugin {
       classLoader = new URLClassLoader(new URL[] {url}, getClass().getClassLoader());
       ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
       configurationReader.read(configFile);
-      classLoader.close();
+      //classLoader.close();
     }
     catch (MalformedURLException e) {
       throw new RuntimeException("An unexpected exception occurred", e);

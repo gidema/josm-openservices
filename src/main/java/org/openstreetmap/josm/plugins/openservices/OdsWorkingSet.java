@@ -16,16 +16,12 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 
 /**
  * The OdsWorkingSet is the main component of the ODS plugin. It manages a pair
@@ -50,7 +46,6 @@ public class OdsWorkingSet implements LayerChangeListener {
     private JDialog toolbox;
     private final List<OdsAction> actions = new LinkedList<OdsAction>();
     String osmQuery;
-    private FeatureStore featureStore;
     private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
     OdsDownloadAction downloadAction;
     private boolean active = false;

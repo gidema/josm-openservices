@@ -3,13 +3,20 @@ package org.openstreetmap.josm.plugins.openservices.entities.imported;
 import java.io.Serializable;
 
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.metadata.MetaData;
+import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.openservices.entities.AbstractEntity;
+import org.openstreetmap.josm.plugins.openservices.entities.BuildException;
+import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
 
 
-public class ImportedEntity extends AbstractEntity {
+public abstract class ImportedEntity extends AbstractEntity {
     private SimpleFeature feature;
     private MetaData metaData;
+    private String namespace;
+    
+    public void init(MetaData metaData) throws BuildException {
+        namespace = feature.getName().getNamespaceURI().intern();
+    }
     
     public void setFeature(SimpleFeature feature) {
         this.feature = feature;
@@ -21,7 +28,7 @@ public class ImportedEntity extends AbstractEntity {
 
     @Override
     public String getNamespace() {
-        return feature.getName().getNamespaceURI().intern();
+        return namespace;
     }
 
     @Override
@@ -36,4 +43,7 @@ public class ImportedEntity extends AbstractEntity {
     protected MetaData getMetaData() {
         return metaData;
     }
+    
+    public abstract void createPrimitives(PrimitiveBuilder primitiveBuilder);
+
 }

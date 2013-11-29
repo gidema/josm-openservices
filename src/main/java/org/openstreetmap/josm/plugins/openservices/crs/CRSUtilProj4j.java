@@ -30,12 +30,12 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 //import org.osgeo.proj4j.CoordinateReferenceSystem;
 
 /**
- * A Proj4j based implementation of CRSUtil.
+ * A Proj4j based implementation of CRSUtils.
  * The opengis Mathtransform has issues with EPSG:28992
  * @author gertjan
  *
  */
-public class CRSUtilProj4j extends AbstractCRSUtil {
+public class CRSUtilProj4j extends CRSUtil {
     private final static CRSCache crsCache = new CRSCache();
     private final static Long OSM_SRID = 4326L;
     private final static org.osgeo.proj4j.CoordinateReferenceSystem OSM_CRS;
@@ -44,9 +44,9 @@ public class CRSUtilProj4j extends AbstractCRSUtil {
             new PrecisionModel(10000000);
     public final static GeometryFactory OSM_GEOMETRY_FACTORY =
             new GeometryFactory(OSM_PRECISION_MODEL, OSM_SRID.intValue());
-    private static Map<String, CoordinateReferenceSystem> coordinateReferenceSystems = new HashMap<>();
-    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> toOsmTransforms = new HashMap<>();
-    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> fromOsmTransforms = new HashMap<>();
+    private static Map<String, CoordinateReferenceSystem> coordinateReferenceSystems = new HashMap<String, CoordinateReferenceSystem>();
+    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> toOsmTransforms = new HashMap<CoordinateReferenceSystem, JTSCoordinateTransform>();
+    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> fromOsmTransforms = new HashMap<CoordinateReferenceSystem, JTSCoordinateTransform>();
 
     static {
         OSM_CRS = crsCache.createFromName("EPSG:4326");
@@ -104,21 +104,6 @@ public class CRSUtilProj4j extends AbstractCRSUtil {
     public static Envelope toEnvelope(Bounds bounds) {
         return new Envelope(bounds.getMinLon(), bounds.getMaxLon(),
             bounds.getMinLat(), bounds.getMaxLat());
-    }
-    
-    public Polygon toPolygon(Bounds bounds) {
-        Coordinate[] coords = new Coordinate[5];
-        coords[0] = new Coordinate(bounds.getMinLon(), bounds.getMinLat());
-        coords[1] = new Coordinate(bounds.getMaxLon(), bounds.getMinLat());
-        coords[2] = new Coordinate(bounds.getMaxLon(), bounds.getMaxLat());
-        coords[3] = new Coordinate(bounds.getMinLon(), bounds.getMaxLat());
-        coords[4] = new Coordinate(bounds.getMinLon(), bounds.getMinLat());
-        LinearRing shell = OSM_GEOMETRY_FACTORY.createLinearRing(coords);
-        return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
-    }
-    
-    public LineSegment toSegment(Pair<Node, Node> nodePair) {
-        return new LineSegment(toCoordinate(nodePair.a), toCoordinate(nodePair.b));
     }
     
     /**

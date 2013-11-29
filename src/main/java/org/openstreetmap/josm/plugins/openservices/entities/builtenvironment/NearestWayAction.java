@@ -11,7 +11,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.WaySegment;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.openservices.OdsAction;
-import org.openstreetmap.josm.plugins.openservices.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.openservices.crs.GeoUtil;
 import org.openstreetmap.josm.tools.Pair;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -45,15 +45,16 @@ public class NearestWayAction extends OdsAction {
     }
 
     private WaySegment nearestWaySegment(DataSet dataSet, Node node) {
+        GeoUtil geoUtil = GeoUtil.getInstance();
         Double minDistance = Double.POSITIVE_INFINITY;
         WaySegment nearestWaySegment = null;
-        Coordinate coord = CRSUtil.toCoordinate(node);
+        Coordinate coord = geoUtil.toCoordinate(node);
         for (Way way : dataSet.getWays()) {
             if (!validWay(way))
                 continue;
             int i=0;
             for (Pair<Node, Node> pair: way.getNodePairs(false)) {
-                LineSegment lineSegment = CRSUtil.toSegment(pair);
+                LineSegment lineSegment = geoUtil.toSegment(pair);
                 Double distance = lineSegment.distance(coord);
                 if (distance < minDistance) {
                     minDistance = distance;

@@ -4,12 +4,12 @@ import java.util.Set;
 
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.MultiPolygon;
 
 public interface Building extends Entity {
 	public final static String NAMESPACE = "ods:building".intern();
 
-	public Polygon getGeometry();
+	public MultiPolygon getGeometry();
 	public Place getPlace();
     public Set<Address> getAddresses();
 	public Block getBlock();
@@ -22,4 +22,8 @@ public interface Building extends Entity {
 	 * @return
 	 */
 	public boolean isComplete();
+	
+	public boolean isUnderConstruction();
+	
+	public String getStartDate();
 }

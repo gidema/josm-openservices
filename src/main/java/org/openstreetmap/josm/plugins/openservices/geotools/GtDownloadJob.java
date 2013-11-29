@@ -17,8 +17,8 @@ import org.opengis.filter.FilterFactory2;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.openservices.DownloadJob;
 import org.openstreetmap.josm.plugins.openservices.ImportDataLayer;
-import org.openstreetmap.josm.plugins.openservices.MappingException;
 import org.openstreetmap.josm.plugins.openservices.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.openservices.entities.BuildException;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.metadata.MetaData;
@@ -28,7 +28,7 @@ public class GtDownloadJob implements DownloadJob {
     ImportDataLayer dataLayer;
     Bounds bounds;
     SimpleFeatureSource featureSource;
-    SimpleFeatureCollection featureCollection;
+    Filter filter;
     MetaData metaData;
     Set<Entity> newEntities;
 
@@ -66,17 +66,16 @@ public class GtDownloadJob implements DownloadJob {
                     String geometryProperty = gtFeatureSource.getFeatureType()
                             .getGeometryDescriptor().getLocalName();
                     // TODO Find faster solution for the following line
-                    ReferencedEnvelope bbox = CRSUtil.createBoundingBox(
+                    ReferencedEnvelope bbox = CRSUtil.getInstance().createBoundingBox(
                             gtFeatureSource.getCrs(), bounds);
                     Filter bboxFilter = ff.bbox(ff.property(geometryProperty),
                             bbox);
                     Filter dataFilter = dataSource.getFilter();
-                    Filter filter = bboxFilter;
+                    filter = bboxFilter;
                     // if (dataFilter != null) {
                     // filter = ff.and(filter, dataFilter);
                     // }
                     featureSource = gtFeatureSource.getFeatureSource();
-                    featureCollection = featureSource.getFeatures(filter);
                 } catch (Exception e) {
                     throw new ExecutionException(e.getMessage(), e.getCause());
                 }
@@ -92,8 +91,10 @@ public class GtDownloadJob implements DownloadJob {
             @Override
             public Object call() throws ExecutionException {
                 SimpleFeatureIterator it = null;
-                List<SimpleFeature> featureList = new LinkedList<SimpleFeature>();
+                List<SimpleFeature> featureList;
                 try {
+                    SimpleFeatureCollection featureCollection = featureSource.getFeatures(filter);
+                    featureList = new LinkedList<SimpleFeature>();
                     it = featureCollection.features();
                     // retrieve all features
                     while (!Thread.interrupted() && it.hasNext()) {
@@ -105,7 +106,7 @@ public class GtDownloadJob implements DownloadJob {
                     if (it != null)
                         it.close();
                 }
-                ImportedEntityBuilder<?> builder = dataSource.getEntityBuilder();
+                ImportedEntityBuilder builder = dataSource.getEntityBuilder();
                 try {
                     for (SimpleFeature feature : featureList) {
                         Entity entity = builder.build(feature);
@@ -113,7 +114,7 @@ public class GtDownloadJob implements DownloadJob {
                             newEntities.add(entity);
                         };
                     }
-                } catch (MappingException e) {
+                } catch (BuildException e) {
                     throw new ExecutionException(e.getMessage(), e.getCause());
                 }
                 return null;

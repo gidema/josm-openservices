@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
-import org.openstreetmap.josm.plugins.openservices.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 
 public class OpenDataServices {
 	private static Map<String, Host> hosts = new HashMap<String, Host>();
 	private static Map<String, OdsWorkingSet> layers = new HashMap<String, OdsWorkingSet>();
 	private static Map<String, FeatureMapper> featureMappers = new HashMap<String, FeatureMapper>();
-	private static Map<String, ImportedEntityBuilder<?>> entityBuilders = new HashMap<String, ImportedEntityBuilder<?>>();
 	private static Map<String, Class<?>> imports = new HashMap<String, Class<?>>();
 
 	public static void registerImport(String type, String name, Class<?> clazz)
@@ -60,16 +58,6 @@ public class OpenDataServices {
 		featureMappers.put(mapper.getFeatureName(), mapper);
 	}
 
-	public static void registerEntityBuilder(ImportedEntityBuilder builder)
-			throws ConfigurationException {
-		if (entityBuilders.get(builder.getFeatureName()) != null) {
-			throw new ConfigurationException(String.format(
-					"A mapper for '%s' already exists",
-					builder.getFeatureName()));
-		}
-		entityBuilders.put(builder.getFeatureName(), builder);
-	}
-
 	public static Host getHost(String name) throws ConfigurationException {
 		Host host = hosts.get(name);
 		if (host == null) {
@@ -98,23 +86,18 @@ public class OpenDataServices {
 		return mapper;
 	}
 
-	public static ImportedEntityBuilder<?> getEntityBuilder(String feature)
-			throws ConfigurationException {
-		ImportedEntityBuilder<?> builder = entityBuilders.get(feature);
-		if (builder == null) {
-			throw new ConfigurationException(String.format(
-					"No entity builder for featureName '%s' exists", feature));
-		}
-		return builder;
+	public static Class<?> getClass(String type, String name) throws ConfigurationException {
+        Class<?> clazz = imports.get(type + ":" + name);
+        if (clazz == null) {
+            throw new ConfigurationException(String.format(
+                    "A '%s' type named '%s' doesn't exist", type, name));
+        }
+	    return clazz;
 	}
-
+	
 	public static Object createObject(String type, String name)
 			throws ConfigurationException {
-		Class<?> clazz = imports.get(type + ":" + name);
-		if (clazz == null) {
-			throw new ConfigurationException(String.format(
-					"A '%s' type named '%s' doesn't exist", type, name));
-		}
+		Class<?> clazz = getClass(type, name);
 		try {
 			return clazz.newInstance();
 		} catch (Exception e) {

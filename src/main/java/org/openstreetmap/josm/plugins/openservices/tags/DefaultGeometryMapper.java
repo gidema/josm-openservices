@@ -72,7 +72,7 @@ public class DefaultGeometryMapper implements GeometryMapper {
     else if (targetPrimitive.equals("NODE")) {
       primitive = primitiveBuilder.buildNode((Point)geometry, merge);
     } else if (targetPrimitive.equals("POLYGON")) {
-      primitive = primitiveBuilder.buildPolygon((Polygon)geometry, tags);
+      primitive = primitiveBuilder.buildMultiPolygon((MultiPolygon)geometry, tags);
     }
     if (primitive != null) {
       for (Entry<String, String> entry : tags.entrySet()) {

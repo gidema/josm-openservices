@@ -53,9 +53,9 @@ public class PrimitiveBuilder {
         // }
     }
 
-    public Collection<OsmPrimitive> build(Polygon polygon,
+    public Collection<OsmPrimitive> build(MultiPolygon polygon,
             Map<String, String> keys) {
-        return Collections.singletonList(buildPolygon(polygon, keys));
+        return Collections.singletonList(buildMultiPolygon(polygon, keys));
     }
 
     public Collection<OsmPrimitive> build(Point point, Map<String, String> keys) {
@@ -65,17 +65,24 @@ public class PrimitiveBuilder {
     }
 
     /**
-     * Create a josm Object from a Polygon object The resulting Object depends
+     * Create a josm Object from a MultiPolygon object The resulting Object depends
      * on whether the input polygon has inner rings. If so, the result will be a
      * Relation of type Multipolyon. Otherwise the result will be a Way
      */
-    public OsmPrimitive buildPolygon(Polygon polygon, Map<String, String> keys) {
+    public OsmPrimitive buildMultiPolygon(MultiPolygon mpg, Map<String, String> keys) {
         OsmPrimitive primitive;
-        if (polygon.getNumInteriorRing() > 0) {
-            primitive = buildMultiPolygon(polygon);
+        if (mpg.getNumGeometries() > 1) {
+            primitive = buildMultiPolygon(mpg);
             primitive.put("type", "multipolygon");
         } else {
-            primitive = buildWay(polygon);
+            Polygon polygon = (Polygon) mpg.getGeometryN(0);
+            if (polygon.getNumInteriorRing() > 0) {
+                primitive = buildMultiPolygon(mpg);
+                primitive.put("type", "multipolygon");
+            }
+            else {
+                primitive = buildWay(polygon);
+            }
         }
         primitive.setKeys(keys);
         return primitive;

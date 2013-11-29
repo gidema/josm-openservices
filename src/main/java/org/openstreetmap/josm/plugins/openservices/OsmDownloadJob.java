@@ -5,19 +5,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
-import org.openstreetmap.josm.actions.downloadtasks.DownloadOsmTask;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
+import org.openstreetmap.josm.io.BoundingBoxDownloader;
+import org.openstreetmap.josm.io.OsmTransferCanceledException;
+import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.openservices.entities.Entity;
 
-public class DownloadOsmJob implements DownloadJob {
+public class OsmDownloadJob implements DownloadJob {
     final OdsWorkingSet workingSet;
     final Bounds bounds;
+    BoundingBoxDownloader bbDownloader;
     String overpassQuery;
     List<Exception> exceptions = new LinkedList<Exception>();
 
-    protected DownloadOsmJob(OdsWorkingSet workingSet, Bounds bounds) {
+    protected OsmDownloadJob(OdsWorkingSet workingSet, Bounds bounds) {
         super();
         this.workingSet = workingSet;
         this.bounds = bounds;
@@ -30,6 +34,7 @@ public class DownloadOsmJob implements DownloadJob {
             @Override
             public Object call() {
                 overpassQuery = workingSet.getOsmQuery();
+                bbDownloader = new BoundingBoxDownloader(bounds);
                 return null;
             }
         };
@@ -41,21 +46,33 @@ public class DownloadOsmJob implements DownloadJob {
 
             @Override
             public Object call() {
-                
-                DownloadOsmTask osmTask = new DownloadOsmTask();
-                Future<?> osmFuture;
-                if (overpassQuery != null) {
-                    String url = getOverpassUrl(overpassQuery, bounds);
-                    osmTask = new DownloadOsmTask();
-                    osmFuture = osmTask.loadUrl(false, url, null);
-                } else {
-                    osmTask = new DownloadOsmTask();
-                    osmFuture = osmTask.download(false, bounds, null);
+                try {
+//                    if (isCanceled())
+//                        return;
+                    DataSet dataSet = parseDataSet();
+                    workingSet.josmDataLayer.mergeFrom(dataSet);
                 }
-                // Wait for the task to finish ?
-                // osmFuture.get();
+                catch(Exception e) {
+//                    if (isCanceled()) {
+//                        Main.info(tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
+//                        return;
+//                    }
+                    if (e instanceof OsmTransferCanceledException) {
+//                        setCanceled(true);
+                        return null;
+                    } else if (e instanceof OsmTransferException) {
+//                        rememberException(e);
+                    } else {
+//                        rememberException(new OsmTransferException(e));
+                    }
+                }
                 return null;
             }
+                
+            protected DataSet parseDataSet() throws OsmTransferException {
+                return bbDownloader.parseOsm(NullProgressMonitor.INSTANCE);
+            }
+
         };
     }
 

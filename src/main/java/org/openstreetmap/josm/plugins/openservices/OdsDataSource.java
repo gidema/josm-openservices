@@ -24,7 +24,7 @@ import org.openstreetmap.josm.plugins.openservices.tags.FeatureMapper;
 public interface OdsDataSource {
     public String getFeatureType();
 
-    public ImportedEntityBuilder<?> getEntityBuilder();
+    public ImportedEntityBuilder getEntityBuilder();
 
     public FeatureMapper getFeatureMapper();
 
@@ -44,5 +44,7 @@ public interface OdsDataSource {
             Bounds bounds, Set<Entity> newEntities);
 
     void addFeatureListener(FeatureListener featureListener);
+
+    void setEntityClass(Class<? extends Entity> entityClass);
 
 }

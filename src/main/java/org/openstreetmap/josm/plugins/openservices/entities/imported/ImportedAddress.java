@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.openservices.PrimitiveBuilder;
-import org.openstreetmap.josm.plugins.openservices.entities.EntitySet;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Building;
@@ -14,7 +13,6 @@ import org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.Str
 import com.vividsolutions.jts.geom.Point;
 
 public abstract class ImportedAddress extends ImportedEntity implements Address {
-    private EntitySet entitySet;
     private Place place;
     private Block block;
     private Building building;
@@ -24,6 +22,10 @@ public abstract class ImportedAddress extends ImportedEntity implements Address 
     private String houseName;
     private Point geometry;
     
+    @Override
+    public void build() {
+        
+    }
 	@Override
 	public String getName() {
 		return null;
@@ -32,15 +34,6 @@ public abstract class ImportedAddress extends ImportedEntity implements Address 
 	@Override
 	public String getNamespace() {
 		return Address.NAMESPACE;
-	}
-
-	@Override
-	public void setEntitySet(EntitySet entitySet) {
-		this.entitySet = entitySet;
-	}
-
-	public EntitySet getEntitySet() {
-		return entitySet;
 	}
 
 	@Override
@@ -63,9 +56,6 @@ public abstract class ImportedAddress extends ImportedEntity implements Address 
 
 	@Override
 	public Street getStreet() {
-		if (street != null) {
-		    getEntitySet().getStreets().getByName(getStreetName());
-		}
 	    return street;
 	}
 	

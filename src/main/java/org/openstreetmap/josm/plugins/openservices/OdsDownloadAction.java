@@ -12,7 +12,12 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.tools.ImageProvider;
 
 public class OdsDownloadAction extends OdsAction {
-  public OdsDownloadAction() {
+  /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+public OdsDownloadAction() {
     super();
     this.setName("Download");
     this.setIcon(ImageProvider.get("download"));

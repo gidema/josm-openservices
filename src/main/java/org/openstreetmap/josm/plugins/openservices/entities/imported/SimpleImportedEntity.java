@@ -10,6 +10,9 @@ public class SimpleImportedEntity extends ImportedEntity {
 		this.featureMapper = featureMapper;
 	}
 
+	public void build() {
+	    //TODO implement    
+	}
 	
 	@Override
     public void createPrimitives(PrimitiveBuilder builder) {
