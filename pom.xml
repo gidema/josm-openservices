@@ -2,17 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>openservices</artifactId>
-  <version>0.2.4-SNAPSHOT</version>
+  <version>0.3.0</version>
   <dependencies>
-  	<dependency>
-  		<groupId>com.vividsolutions</groupId>
-  		<artifactId>jts</artifactId>
-  		<version>1.12</version>
-  	</dependency>
   	<dependency>
   		<groupId>org.geotools</groupId>
   		<artifactId>gt-wfs</artifactId>
-  		<version>10.1</version>
+  		<version>9.3</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>commons-codec</artifactId>
@@ -23,7 +18,7 @@
   	<dependency>
   	  <groupId>org.geotools</groupId>
   	  <artifactId>gt-epsg-hsql</artifactId>
-  	  <version>10.1</version>
+  	  <version>9.3</version>
   	</dependency>
   	<dependency>
   		<groupId>commons-configuration</groupId>
@@ -33,12 +28,12 @@
   	<dependency>
   		<groupId>org.geotools</groupId>
   		<artifactId>gt-cql</artifactId>
-  		<version>10.1</version>
+  		<version>9.3</version>
   	</dependency>
   	<dependency>
   		<groupId>org.geotools.xsd</groupId>
   		<artifactId>gt-xsd-kml</artifactId>
-  		<version>10.1</version>
+  		<version>9.3</version>
   	</dependency>
   	<dependency>
   		<groupId>org.jsoup</groupId>
@@ -46,14 +41,14 @@
   		<version>1.7.2</version>
   	</dependency>
   	<dependency>
-  		<groupId>proj4j</groupId>
-  		<artifactId>proj4j</artifactId>
-  		<version>2244</version>
-  	</dependency>
-  	<dependency>
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
   		<version>4.10</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>proj4j</groupId>
+  		<artifactId>proj4j</artifactId>
+  		<version>2408</version>
   	</dependency>
   </dependencies>
   <repositories>

@@ -20,10 +20,14 @@ public class WFSHost extends GtHost {
   public Map<?, ?> getConnectionParameters() throws InitializationException{
     try {
       // TODO move to configuration fase
+      // TODO add possibilities to configure parameters
       URL hostUrl = new URL(getUrl());
       URL capabilitiesUrl = WFSDataStoreFactory.createGetCapabilitiesRequest(hostUrl);
-      Map<String, Object> connectionParameters = new HashMap<String, Object>();
+      Map<String, Object> connectionParameters = new HashMap<>();
       connectionParameters.put(WFSDataStoreFactory.URL.key, capabilitiesUrl);
+      connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 10000);
+      connectionParameters.put(WFSDataStoreFactory.BUFFER_SIZE.key, 1000);
+      connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, "FALSE");     
       return connectionParameters;
     } catch (MalformedURLException e) {
       throw new InitializationException(e.getMessage(), e);

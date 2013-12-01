@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -42,7 +43,6 @@ public class OdsDownloader {
             InterruptedException {
         this.bounds = bounds;
         // Create a download job for each dataSource
-//        downloadJobs.add(new DownloadOsmJob(workingSet, bounds));
         downloadJobs.add(new OsmDownloadJob(workingSet, bounds));
         Set<Entity> newEntities = new HashSet<Entity>();
         for (OdsDataSource dataSource : workingSet.getDataSources().values()) {
@@ -52,8 +52,11 @@ public class OdsDownloader {
         prepareJobs();
         download();
         build();
+        DataSource ds = new DataSource(bounds, "Import");
+        workingSet.getImportDataLayer().data.dataSources.add(ds);
         analyze(newEntities, bounds);
         computeBboxAndCenterScale();
+        Main.map.mapView.setActiveLayer(workingSet.getImportDataLayer());
     }
 
     private void prepareJobs() throws ExecutionException, InterruptedException {
@@ -82,7 +85,7 @@ public class OdsDownloader {
         if (!exceptions.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             sb.append(I18n.trn("An error occurred while preparing the download jobs:",
-                    "{0} errors occurred while prepering the download jods:", exceptions.size()));
+                    "{0} errors occurred while prepering the download jobs:", exceptions.size(), exceptions.size()));
             for (Exception e : exceptions) {
                 sb.append("\n").append(e.getMessage());
             }
@@ -133,6 +136,7 @@ public class OdsDownloader {
         executor.shutdown();
     }
 
+    @Deprecated
     private static String getOverpassUrl(String query, Bounds bounds) {
         String host = "http://overpass-api.de/api";
         String bbox = String.format(Locale.ENGLISH, "%f,%f,%f,%f", bounds

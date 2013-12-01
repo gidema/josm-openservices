@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class MetaData {
   private final MetaData parent;
-  private final Map<String, Object> metaData = new HashMap<String, Object>();
+  private final Map<String, Object> metaData = new HashMap<>();
   private final boolean initialized = false;
   
   public MetaData() {

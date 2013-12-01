@@ -10,7 +10,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.imported.ImportedEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataException;
@@ -22,9 +21,9 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	private Filter filter;
 	private IdFactory idFactory;
 	private boolean initialized;
-	private final Map<Serializable, SimpleFeature> featureStore = new HashMap<Serializable, SimpleFeature>();
+	private final Map<Serializable, SimpleFeature> featureStore = new HashMap<>();
 	private final List<FeatureListener> featureListeners = new LinkedList<FeatureListener>();
-	private Class<? extends Entity> entityClass = null;
+	private String entityType;
 	private ImportedEntityBuilder entityBuilder;
 
 	protected AbstractOdsDataSource(OdsFeatureSource odsFeatureSource) {
@@ -51,8 +50,8 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	}
 
 	@Override
-	public void setEntityClass(Class<? extends Entity> entityClass) {
-	    this.entityClass = entityClass;
+	public void setEntityType(String entityType) {
+	    this.entityType = entityType;
 	}
 	
 	@Override
@@ -96,7 +95,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 				if (entityBuilder == null) {
 				    // TODO create default entity builder
 				}
-				entityBuilder.setEntityClass(entityClass);
+				entityBuilder.setEntityClass(entityType);
 				entityBuilder.setContext(odsFeatureSource.getMetaData());
 			} catch (Exception e) {
 				entityBuilder = null;
@@ -111,7 +110,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 
 		try {
 			// TODO move to configuration fase?
-			mapper = OpenDataServices.getFeatureMapper(typeName);
+			mapper = ODS.getFeatureMapper(typeName);
 		} catch (ConfigurationException e) {
 			throw new InitializationException(e);
 		}
@@ -134,22 +133,22 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 		if (builder != null) {
 			for (SimpleFeature feature : features) {
 				try {
-					Entity entity = builder.build(feature);
+					builder.build(feature);
 					System.out.println();
 				} catch (BuildException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
-		for (SimpleFeature feature : features) {
-			Serializable id = idFactory.getId(feature);
-			if (!featureStore.containsKey(id)) {
-				featureStore.put(id, feature);
-				for (FeatureListener listener : featureListeners) {
-					listener.featureAdded(feature);
-				}
-			}
-		}
+//		for (SimpleFeature feature : features) {
+//			Serializable id = idFactory.getId(feature);
+//			if (!featureStore.containsKey(id)) {
+//				featureStore.put(id, feature);
+//				for (FeatureListener listener : featureListeners) {
+//					listener.featureAdded(feature);
+//				}
+//			}
+//		}
 
 	}
 }

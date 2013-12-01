@@ -37,6 +37,6 @@ public abstract class AbstractEntity implements Entity {
     }
 
     protected Map<String, String> getKeys() {
-	    return new HashMap<String, String>();
+	    return new HashMap<>();
 	}
 }

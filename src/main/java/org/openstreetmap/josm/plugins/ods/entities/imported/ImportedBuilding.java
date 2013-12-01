@@ -37,7 +37,7 @@ public abstract class ImportedBuilding extends ImportedEntity implements Buildin
 	}
 
 	protected Map<String, String> getKeys() {
-		Map<String, String> keys = new HashMap<String, String>();
+		Map<String, String> keys = new HashMap<>();
 		keys.put("building", "yes");
         return keys;	
 	}

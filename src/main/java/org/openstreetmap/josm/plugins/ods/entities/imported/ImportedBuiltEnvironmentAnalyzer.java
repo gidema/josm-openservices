@@ -90,8 +90,11 @@ public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer 
     private void analyzeAddressBuildingByRef(ImportedAddress address) {
         Serializable buildingRef = address.getBuildingRef();
         Building building = entitySet.getBuildings().get(buildingRef);
-        address.setBuilding(building);
-        building.getAddresses().add(address);
+        // TODO create issue if the building is not found
+        if (building != null) {
+            address.setBuilding(building);
+            building.getAddresses().add(address);
+        }
     }
 
     /**

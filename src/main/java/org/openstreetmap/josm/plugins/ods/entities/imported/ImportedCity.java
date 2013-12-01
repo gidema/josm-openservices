@@ -36,7 +36,7 @@ public abstract class ImportedCity extends ImportedEntity implements Place {
 
     @Override
     protected Map<String, String> getKeys() {
-        Map<String, String> keys = new HashMap<String, String>();
+        Map<String, String> keys = new HashMap<>();
         keys.put("name", name);
         return keys;
     }    

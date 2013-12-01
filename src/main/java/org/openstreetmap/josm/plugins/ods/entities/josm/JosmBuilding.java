@@ -33,7 +33,7 @@ public class JosmBuilding extends JosmEntity implements Building {
     private String bagId;
     private boolean underConstruction = false;
     private Set<Address> addresses = new HashSet<Address>();
-    private Map<String, String> addressKeys = new HashMap<String, String>();
+    private Map<String, String> addressKeys = new HashMap<>();
     private boolean hasAddress = false; // True if this building has address tags
 
     public JosmBuilding(OsmPrimitive primitive) {

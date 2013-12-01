@@ -45,6 +45,10 @@ public interface OdsDataSource {
 
     void addFeatureListener(FeatureListener featureListener);
 
-    void setEntityClass(Class<? extends Entity> entityClass);
+    //void setEntityClass(Class<? extends Entity> entityClass);
+
+    //void setEntityFactory(EntityFactory entityFactory);
+
+    public void setEntityType(String entityType);
 
 }

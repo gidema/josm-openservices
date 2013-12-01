@@ -26,7 +26,7 @@ public abstract class CRSUtil {
             10000000);
     protected final static GeometryFactory OSM_GEOMETRY_FACTORY = new GeometryFactory(
             OSM_PRECISION_MODEL, OSM_SRID);
-    private static Map<String, CoordinateReferenceSystem> coordinateReferenceSystems = new HashMap<String, CoordinateReferenceSystem>();
+    private static Map<String, CoordinateReferenceSystem> coordinateReferenceSystems = new HashMap<>();
 
     static {
         try {
@@ -38,7 +38,7 @@ public abstract class CRSUtil {
         }
     }
     
-    public static CRSUtil getInstance() {
+    public synchronized static CRSUtil getInstance() {
         return instance;
     }
     

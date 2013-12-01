@@ -13,7 +13,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -55,9 +54,35 @@ public class OpenDataServicesPlugin extends Plugin {
   
   private void configureSources() {
     File pluginDir = new File(getPluginDir());
+    createPluginClassLoader(pluginDir);
     if (pluginDir.isDirectory()) {
       configureJarSources(pluginDir);
     }
+  }
+  
+  private void createPluginClassLoader(File pluginDir) {
+      FilenameFilter jarFileFilter = new FilenameFilter() {
+          @Override
+          public boolean accept(File dir, String name) {
+              return name.endsWith(".jar");
+          }
+      };
+      String[] jars = pluginDir.list(jarFileFilter);
+      URL[] urls = new URL[jars.length];
+      try {
+          for (int i=0; i<jars.length; i++) {
+              File file = new File(pluginDir, jars[i]);
+              urls[i] = file.toURI().toURL();
+          }
+          URLClassLoader classLoader = new URLClassLoader(urls, getClass().getClassLoader());
+          ODS.setClassLoader(classLoader);
+      } catch (MalformedURLException e) {
+          // I don't expect this to happen. Throw a runtime exception just in case
+          throw new RuntimeException(e);
+      }
+      
+      
+      
   }
   
   private void configureJarSources(File pluginDir) {
@@ -75,13 +100,14 @@ public class OpenDataServicesPlugin extends Plugin {
   public void configureJarSource(File jarFile) {
     try {
       URL url = jarFile.toURI().toURL();
-      URLClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
+      ClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
       URL configFile = classLoader.getResource("config.xml");
       //classLoader.close();
       if (configFile == null) {
         Main.warn("Warning: {0} should contain a config.xml file", jarFile);
         return;
       }
+      //Now we need the classLoader to include the ODS plugin
       classLoader = new URLClassLoader(new URL[] {url}, getClass().getClassLoader());
       ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
       configurationReader.read(configFile);
@@ -95,8 +121,6 @@ public class OpenDataServicesPlugin extends Plugin {
       if (e.getCause() instanceof NullPointerException) {
         e.getCause().printStackTrace();
       }
-    } catch (IOException e) {
-		// TODO Auto-generated catch block
 	}
   }
 

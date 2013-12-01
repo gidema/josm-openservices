@@ -41,13 +41,6 @@ public class GtDownloadJob implements DownloadJob {
         this.newEntities = newEntities;
     }
     
-//    protected GtDownloadJob(GtDataSource dataSource, Bounds bounds) {
-//        super();
-//        this.dataSource = dataSource;
-//        this.bounds = bounds;
-//        this.metaData = dataSource.getMetaData();
-//    }
-
     @Override
     public Callable<?> getPrepareCallable() {
         return new Callable<Object>() {
@@ -126,8 +119,4 @@ public class GtDownloadJob implements DownloadJob {
     public Set<Entity> getNewEntities() {
         return newEntities;
     }
-    // @Override
-    // public OdsFeatureSet getFeatureSet() {
-    // return featureSet;
-    // }
 }

@@ -40,13 +40,13 @@ import org.openstreetmap.josm.gui.layer.Layer;
  */
 public class OdsWorkingSet implements LayerChangeListener {
     private String name;
-    private final Map<String, OdsDataSource> dataSources = new HashMap<String, OdsDataSource>();
+    private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     ImportDataLayer importDataLayer;
     JosmDataLayer josmDataLayer;
     private JDialog toolbox;
-    private final List<OdsAction> actions = new LinkedList<OdsAction>();
+    private final List<OdsAction> actions = new LinkedList<>();
     String osmQuery;
-    private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<OsmPrimitive, Feature>();
+    private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<>();
     OdsDownloadAction downloadAction;
     private boolean active = false;
 
@@ -147,7 +147,7 @@ public class OdsWorkingSet implements LayerChangeListener {
     }
 
     private void initToolbox() {
-        toolbox = new JDialog((Frame) Main.main.parent, "ODS");
+        toolbox = new JDialog((Frame) Main.parent, "ODS");
         toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
                 BoxLayout.Y_AXIS));
         toolbox.setLocation(300, 300);

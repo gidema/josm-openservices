@@ -51,7 +51,6 @@ public class ConfigurationReader {
             conf.load(configFile);
             configureImports(conf);
             configureHosts(conf);
-            // configureEntityBuilders(conf);
             configureLayers(conf);
             configureFeatureMappers(conf);
         } catch (NoSuchElementException e) {
@@ -76,7 +75,7 @@ public class ConfigurationReader {
         Class<?> clazz;
         try {
             clazz = classLoader.loadClass(className);
-            OpenDataServices.registerImport(type, name, clazz);
+            ODS.registerImport(type, name, clazz);
         } catch (ClassNotFoundException e) {
             throw new ConfigurationException(I18n.tr(
                     "A class named {0} could not be found", className));
@@ -97,7 +96,7 @@ public class ConfigurationReader {
         String name = conf.getString("[@name]");
         String type = conf.getString("[@type]");
         String url = conf.getString("[@url]");
-        Host host = OpenDataServices.registerHost(type, name, url);
+        Host host = ODS.registerHost(type, name, url);
         for (MetaDataLoader metaDataLoader : parseMetaDataLoaders(conf)) {
             host.addMetaDataLoader(metaDataLoader);
         }
@@ -121,12 +120,13 @@ public class ConfigurationReader {
         }
         String idAttribute = conf.getString("id[@attribute]", null);
         configureIdFactory(dataSource, idAttribute);
+        // Check in an early stage if the entity class can be found
         Class<? extends Entity> entityClass = getEntityClass(entityType);
         if (entityClass == null) {
             throw new ConfigurationException(I18n.tr("Unknown entity: {0}",
                  entityType));
         }
-        dataSource.setEntityClass(entityClass);
+        dataSource.setEntityType(entityClass.getName());
 
         layer.addDataSource(dataSource);
     }
@@ -153,7 +153,7 @@ public class ConfigurationReader {
         String hostName = conf.getString("[@host]");
         String feature = conf.getString("[@feature]");
         try {
-            Host host = OpenDataServices.getHost(hostName);
+            Host host = ODS.getHost(hostName);
             if (host == null) {
                 throw new ConfigurationException(I18n.tr("Unknown host: {0}",
                         hostName));
@@ -199,7 +199,7 @@ public class ConfigurationReader {
         String type = conf.getString("[@type]");
         String iconName = conf.getString("[@icon]");
         try {
-            OdsAction action = (OdsAction) OpenDataServices.createObject(
+            OdsAction action = (OdsAction) ODS.createObject(
                     "action", type);
             if (name != null) {
                 action.setName(name);
@@ -242,7 +242,7 @@ public class ConfigurationReader {
     // try {
     // ImportedEntityBuilder<?> builder = (ImportedEntityBuilder<?>)
     // classLoader.loadClass(className).newInstance();
-    // OpenDataServices.registerEntityBuilder(builder);
+    // ODS.registerEntityBuilder(builder);
     // } catch (Exception e) {
     // throw new
     // ConfigurationException(tr("Could not configure Entity builder"), e);
@@ -281,7 +281,7 @@ public class ConfigurationReader {
             }
         }
         configureGeometryMapper(mapper, conf.configurationAt("geometry"));
-        OpenDataServices.registerFeatureMapper(mapper);
+        ODS.registerFeatureMapper(mapper);
     }
 
     private void configureGeometryMapper(DefaultFeatureMapper mapper,
@@ -366,7 +366,7 @@ public class ConfigurationReader {
         }
         Class<? extends Entity> entityClass = null;
         try {
-            entityClass = (Class<? extends Entity>) OpenDataServices.getClass("entity", entityType);
+            entityClass = (Class<? extends Entity>) ODS.getClass("entity", entityType);
             if (entityClass == null) {
                 throw new ConfigurationException(I18n.tr("Unknown entity: {0}",
                     entityType));

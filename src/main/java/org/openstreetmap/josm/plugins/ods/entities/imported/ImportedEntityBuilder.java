@@ -1,6 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.entities.imported;
 
+import java.lang.reflect.Constructor;
+
 import org.opengis.feature.simple.SimpleFeature;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.issue.DefaultIssue;
@@ -18,7 +21,8 @@ import org.openstreetmap.josm.tools.I18n;
  */
 public class ImportedEntityBuilder {
     private MetaData context;
-    private Class<? extends ImportedEntity> entityClass;
+    private String entityClass;
+    private Constructor<? extends ImportedEntity> constructor;
     protected FeatureMapper featureMapper;
     
 	/**
@@ -31,11 +35,10 @@ public class ImportedEntityBuilder {
 	    this.context = context;
 	}
 
-	@SuppressWarnings("unchecked")
-    public void setEntityClass(Class<? extends Entity> entityClass) {
-        this.entityClass = (Class<? extends ImportedEntity>) entityClass;
+    public void setEntityClass(String entityClass) {
+        this.entityClass = entityClass;
     }
-
+    
     public void setFeatureMapper(FeatureMapper featureMapper) {
         this.featureMapper = featureMapper;
     }
@@ -48,21 +51,29 @@ public class ImportedEntityBuilder {
 	 * @throws BuildException 
 	 */
 	public Entity build(SimpleFeature feature) throws BuildException {
-	    ImportedEntity entity = null;
+	    ImportedEntity entity;
         try {
-            entity = entityClass.newInstance();
-        } catch (InstantiationException e) {
+            entity = getConstructor().newInstance();
+            entity.setFeature(feature);
+            entity.init(context);
+            entity.build();
+            return entity;
+
+        } catch (Exception e) {
+            e.printStackTrace();
             Issue issue = new DefaultIssue(I18n.tr(
-               "Unable to create a {0} object", entityClass.getName()), e);
-           throw new BuildException(issue);
-        } catch(IllegalAccessException e) {
-            Issue issue = new DefaultIssue(I18n.tr(
-                    "Not allowed to create a {0} object", entityClass.getName()), e);
-                throw new BuildException(issue);
+                "An error occurred while trying to create a entity of type {0}", entityClass));
+            throw new BuildException(issue);
         }
-	    entity.setFeature(feature);
-	    entity.init(context);
-	    entity.build();
-	    return entity;
 	}
+
+    private Constructor<? extends ImportedEntity> getConstructor() throws Exception {
+        if (constructor == null) {
+            @SuppressWarnings("unchecked")
+            Class<? extends ImportedEntity> clazz = (Class<? extends ImportedEntity>) 
+                ODS.getClassLoader().loadClass(entityClass);
+            constructor = clazz.getConstructor();
+        }
+        return constructor;
+    }
 }

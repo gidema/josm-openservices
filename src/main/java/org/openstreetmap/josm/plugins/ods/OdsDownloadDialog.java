@@ -40,7 +40,7 @@ public class OdsDownloadDialog extends DownloadDialog {
 
   public OdsDownloadDialog(Component parent) {
     super(parent);
-    this.setTitle(tr("Download OpenDataServices"));
+    this.setTitle(tr("Download ODS"));
   }
 
   @Override

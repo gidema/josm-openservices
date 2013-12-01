@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openservices>
-  <import type="host" name="WFS" class="org.openstreetmap.josm.plugins.openservices.wfs.WFSHost"/>
-  <import type="host" name="ArcgisRest" class="org.openstreetmap.josm.plugins.openservices.arcgis.rest.AGRestHost"/>
-  <import type="action" name="download" class="org.openstreetmap.josm.plugins.openservices.OdsDownloadAction"/>
-  <import type="action" name="nearestWay" class="org.openstreetmap.josm.plugins.openservices.entities.builtenvironment.NearestWayAction"/>
-</openservices>
+<ods>
+  <import type="host" name="WFS" class="org.openstreetmap.josm.plugins.ods.wfs.WFSHost"/>
+  <import type="action" name="download" class="org.openstreetmap.josm.plugins.ods.OdsDownloadAction"/>
+  <import type="action" name="nearestWay" class="org.openstreetmap.josm.plugins.ods.entities.builtenvironment.NearestWayAction"/>
+</ods>

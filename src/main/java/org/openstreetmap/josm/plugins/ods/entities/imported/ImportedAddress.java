@@ -113,7 +113,7 @@ public abstract class ImportedAddress extends ImportedEntity implements Address 
 	}
 
 	protected Map<String, String> getKeys() {
-		Map<String, String> keys = new HashMap<String, String>();
+		Map<String, String> keys = new HashMap<>();
 		if (getHouseNumber() != null) {
 			keys.put("addr:housenumber", getHouseNumber());
 		}

@@ -8,7 +8,7 @@ public class ValueMapperFactory {
   private final Map<String, Class<? extends ValueMapper<?>>> registry;
   
   public ValueMapperFactory() {
-    registry = new HashMap<String, Class<? extends ValueMapper<?>>>();
+    registry = new HashMap<>();
     registry.put("boolean", BooleanValueMapper.class);
     registry.put("byte", ByteValueMapper.class);
     registry.put("date", DateValueMapper.class);

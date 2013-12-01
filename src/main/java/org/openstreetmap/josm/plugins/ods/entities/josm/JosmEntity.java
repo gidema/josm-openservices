@@ -12,7 +12,7 @@ import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 public abstract class JosmEntity extends AbstractEntity {
     protected OsmPrimitive primitive;
     private String namespace;
-    private Map<String, String> otherKeys = new HashMap<String, String>();
+    private Map<String, String> otherKeys = new HashMap<>();
     
     public JosmEntity(OsmPrimitive primitive) {
         super();

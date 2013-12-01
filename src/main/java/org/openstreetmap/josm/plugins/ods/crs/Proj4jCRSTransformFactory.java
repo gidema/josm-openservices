@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 public class Proj4jCRSTransformFactory implements JTSCoordinateTransformFactory {
   static CRSCache crsCache = new CRSCache();
   static CoordinateTransformFactory CTFactory = new CoordinateTransformFactory();
-  static Map<String, JTSCoordinateTransform> JTSCoordinateTransformCache = new HashMap<String, JTSCoordinateTransform>();
+  static Map<String, JTSCoordinateTransform> JTSCoordinateTransformCache = new HashMap<>();
 
   @Override
   public JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID) {
@@ -31,7 +31,7 @@ public class Proj4jCRSTransformFactory implements JTSCoordinateTransformFactory 
   }
   
   @Override
-  public JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID, Double scale) {
+  public synchronized JTSCoordinateTransform createJTSCoordinateTransform(Long sourceSRID, Long targetSRID, Double scale) {
     String key = String.format(Locale.UK, "%d|%d|%f", sourceSRID, targetSRID, scale);
     JTSCoordinateTransform crsUtil = JTSCoordinateTransformCache.get(key);
     if (crsUtil == null) {

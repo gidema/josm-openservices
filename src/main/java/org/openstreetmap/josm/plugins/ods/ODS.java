@@ -5,19 +5,30 @@ import java.util.Map;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.openstreetmap.josm.plugins.ods.tags.FeatureMapper;
+import org.openstreetmap.josm.tools.I18n;
 
-public class OpenDataServices {
-	private static Map<String, Host> hosts = new HashMap<String, Host>();
-	private static Map<String, OdsWorkingSet> layers = new HashMap<String, OdsWorkingSet>();
-	private static Map<String, FeatureMapper> featureMappers = new HashMap<String, FeatureMapper>();
-	private static Map<String, Class<?>> imports = new HashMap<String, Class<?>>();
-
+/**
+ * This class maintains some global objects.
+ * It may be better to replace this with some dependency injection container,
+ * but for now it serves it purpose.
+ * 
+ * @author gertjan
+ *
+ */
+public class ODS {
+	private static Map<String, Host> hosts = new HashMap<>();
+	private static Map<String, OdsWorkingSet> layers = new HashMap<>();
+	private static Map<String, FeatureMapper> featureMappers = new HashMap<>();
+	private static Map<String, Class<?>> imports = new HashMap<>();
+    // The classloader for all classes in this Plug-in an its modules.
+	private static ClassLoader classLoader;
+	
 	public static void registerImport(String type, String name, Class<?> clazz)
 			throws ConfigurationException {
 		String key = type + ":" + name;
 		if (imports.containsKey(key)) {
-			throw new ConfigurationException(String.format(
-					"A '%s' import named '%s' already exists", type, name));
+			throw new ConfigurationException(I18n.tr(
+					"A ''{0}'' import named ''{1}'' already exists", type, name));
 		}
 		imports.put(key, clazz);
 	}
@@ -29,8 +40,8 @@ public class OpenDataServices {
 			if (existingHost.getType().equals(type)
 					&& existingHost.getUrl().equals(url))
 				return existingHost;
-			throw new ConfigurationException(String.format(
-					"An other host named '%s' already exists", name));
+			throw new ConfigurationException(I18n.tr(
+					"An other host named ''{0}'' already exists", name));
 		}
 		Host host = (Host) createObject("host", type);
 		host.setName(name);
@@ -104,5 +115,12 @@ public class OpenDataServices {
 			throw new ConfigurationException(e);
 		}
 	}
+	
+    public static ClassLoader getClassLoader() {
+        return classLoader;
+    }
 
+    public static void setClassLoader(ClassLoader classLoader) {
+        ODS.classLoader = classLoader;
+    }
 }

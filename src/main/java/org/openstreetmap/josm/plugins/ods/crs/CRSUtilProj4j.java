@@ -7,25 +7,14 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.coor.EastNorth;
-import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.tools.I18n;
-import org.openstreetmap.josm.tools.Pair;
-import org.osgeo.proj4j.util.CRSCache;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 //import org.osgeo.proj4j.CoordinateReferenceSystem;
 
@@ -36,36 +25,16 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  *
  */
 public class CRSUtilProj4j extends CRSUtil {
-    private final static CRSCache crsCache = new CRSCache();
     private final static Long OSM_SRID = 4326L;
-    private final static org.osgeo.proj4j.CoordinateReferenceSystem OSM_CRS;
     private final static JTSCoordinateTransformFactory ctFactory = new Proj4jCRSTransformFactory();
     private final static PrecisionModel OSM_PRECISION_MODEL =
             new PrecisionModel(10000000);
     public final static GeometryFactory OSM_GEOMETRY_FACTORY =
             new GeometryFactory(OSM_PRECISION_MODEL, OSM_SRID.intValue());
-    private static Map<String, CoordinateReferenceSystem> coordinateReferenceSystems = new HashMap<String, CoordinateReferenceSystem>();
-    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> toOsmTransforms = new HashMap<CoordinateReferenceSystem, JTSCoordinateTransform>();
-    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> fromOsmTransforms = new HashMap<CoordinateReferenceSystem, JTSCoordinateTransform>();
+    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> toOsmTransforms = new HashMap<>();
+    private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> fromOsmTransforms = new HashMap<>();
 
-    static {
-        OSM_CRS = crsCache.createFromName("EPSG:4326");
-    }
-
-//    public static String getSrs(CoordinateReferenceSystem crs) {
-//        return getIdentifier(crs).toString();
-//    }
-
-//    public static Integer getSrid(CoordinateReferenceSystem crs) {
-//        return Integer.valueOf(getIdentifier(crs).getCode());
-//    }
-
-//    private static ReferenceIdentifier getIdentifier(
-//            CoordinateReferenceSystem crs) {
-//        return crs.getIdentifiers().iterator().next();
-//    }
-
-    public Geometry transform(SimpleFeature feature) throws CRSException {
+    public synchronized Geometry transform(SimpleFeature feature) throws CRSException {
         JTSCoordinateTransform transform = getToOsmTransform(feature.getType()
                 .getCoordinateReferenceSystem());
         try {
@@ -79,10 +48,16 @@ public class CRSUtilProj4j extends CRSUtil {
         CoordinateReferenceSystem crs) {
         JTSCoordinateTransform transform = toOsmTransforms.get(crs);
         if (transform == null) {
-            Long sourceSRID = getSRID(crs);
-            transform = ctFactory.createJTSCoordinateTransform(sourceSRID, OSM_SRID);
-            toOsmTransforms.put(crs,  transform);
+             transform = createToOsmTransform(crs);
         }
+        return transform;
+    }
+    
+    private static synchronized JTSCoordinateTransform createToOsmTransform(
+            CoordinateReferenceSystem crs) {
+        Long sourceSRID = getSRID(crs);
+        JTSCoordinateTransform transform = ctFactory.createJTSCoordinateTransform(sourceSRID, OSM_SRID);
+        toOsmTransforms.put(crs,  transform);
         return transform;
     }
     
@@ -94,10 +69,16 @@ public class CRSUtilProj4j extends CRSUtil {
     private static JTSCoordinateTransform getFromOsmTransform(CoordinateReferenceSystem crs) {
         JTSCoordinateTransform transform = fromOsmTransforms.get(crs);
         if (transform == null) {
-            Long sourceSRID = getSRID(crs);
-            transform = ctFactory.createJTSCoordinateTransform(OSM_SRID, sourceSRID);
-            toOsmTransforms.put(crs,  transform);
+            transform = createFromOsmTransform(crs);
         }
+        return transform;
+    }
+    
+    private static synchronized JTSCoordinateTransform createFromOsmTransform(
+            CoordinateReferenceSystem crs) {
+        Long sourceSRID = getSRID(crs);
+        JTSCoordinateTransform transform = ctFactory.createJTSCoordinateTransform(OSM_SRID, sourceSRID);
+        fromOsmTransforms.put(crs,  transform);
         return transform;
     }
     

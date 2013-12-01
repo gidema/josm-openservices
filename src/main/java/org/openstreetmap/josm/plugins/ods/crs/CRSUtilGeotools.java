@@ -19,8 +19,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class CRSUtilGeotools extends CRSUtil {
-    private static Map<CoordinateReferenceSystem, MathTransform> toOsmTransforms = new HashMap<CoordinateReferenceSystem, MathTransform>();
-    private static Map<CoordinateReferenceSystem, MathTransform> fromOsmTransforms = new HashMap<CoordinateReferenceSystem, MathTransform>();
+    private static Map<CoordinateReferenceSystem, MathTransform> toOsmTransforms = new HashMap<>();
+    private static Map<CoordinateReferenceSystem, MathTransform> fromOsmTransforms = new HashMap<>();
 
     /*
      * (non-Javadoc)
