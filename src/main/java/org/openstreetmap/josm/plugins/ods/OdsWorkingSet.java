@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,8 +9,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import org.opengis.feature.Feature;
@@ -127,7 +123,7 @@ public class OdsWorkingSet implements LayerChangeListener {
         if (!active) {
             downloadAction = new OdsDownloadAction();
             downloadAction.setWorkingSet(this);
-            initToolbox();
+//            initToolbox();
             getImportDataLayer();
             getOdsOsmDataLayer();
             active = true;
@@ -142,22 +138,22 @@ public class OdsWorkingSet implements LayerChangeListener {
         active = false;
     }
 
-    public JDialog getToolbox() {
-        return toolbox;
-    }
+//    public JDialog getToolbox() {
+//        return toolbox;
+//    }
 
-    private void initToolbox() {
-        toolbox = new JDialog((Frame) Main.parent, "ODS");
-        toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
-                BoxLayout.Y_AXIS));
-        toolbox.setLocation(300, 300);
-        toolbox.setMinimumSize(new Dimension(110, 0));
-        toolbox.add(new JButton(downloadAction));
-        for (Action action : actions) {
-            toolbox.add(new JButton(action));
-        }
-        toolbox.pack();
-    }
+//    private void initToolbox() {
+//        toolbox = new JDialog((Frame) Main.parent, "ODS");
+//        toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
+//                BoxLayout.Y_AXIS));
+//        toolbox.setLocation(300, 300);
+//        toolbox.setMinimumSize(new Dimension(110, 0));
+//        toolbox.add(new JButton(downloadAction));
+//        for (Action action : actions) {
+//            toolbox.add(new JButton(action));
+//        }
+//        toolbox.pack();
+//    }
 
     public void download(Bounds area, boolean downloadOsmData)
             throws ExecutionException, InterruptedException {
@@ -221,12 +217,12 @@ public class OdsWorkingSet implements LayerChangeListener {
 
     @Override
     public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-        if (newLayer != null
-                && (newLayer == importDataLayer || newLayer == josmDataLayer)) {
-            getToolbox().setVisible(true);
-        } else if (active) {
-            getToolbox().setVisible(false);
-        }
+//        if (newLayer != null
+//                && (newLayer == importDataLayer || newLayer == josmDataLayer)) {
+//            getToolbox().setVisible(true);
+//        } else if (active) {
+//            getToolbox().setVisible(false);
+//        }
     }
 
     @Override
