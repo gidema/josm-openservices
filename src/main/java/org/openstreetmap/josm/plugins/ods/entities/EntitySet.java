@@ -7,9 +7,9 @@ import com.vividsolutions.jts.geom.Geometry;
 public interface EntitySet {
     public void addListener(EntitySetListener listener);
     
-    public <T extends Entity> boolean add(T entity);
+    public boolean add(Entity entity);
     
-    public <T extends Entity> EntityStore<T> getStore(String nameSpace);
+    public EntityStore getStore(String entityType);
     
     public Geometry getBoundary();
 

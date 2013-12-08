@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import org.openstreetmap.josm.plugins.ods.JosmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 

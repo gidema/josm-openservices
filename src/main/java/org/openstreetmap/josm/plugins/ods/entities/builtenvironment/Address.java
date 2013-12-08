@@ -7,9 +7,9 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import com.vividsolutions.jts.geom.Point;
 
 public interface Address extends Entity {
-	public final static String NAMESPACE = "ods:address".intern();
+	public final static String TYPE = "ods:address";
 
-	public Place getPlace();
+	public City getCity();
 
 	public Block getBlock();
 	

@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.josm;
+package org.openstreetmap.josm.plugins.ods.entities.internal;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -10,12 +10,12 @@ import org.openstreetmap.josm.plugins.ods.crs.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
 
 import com.vividsolutions.jts.geom.Point;
 
-public class JosmAddress extends JosmEntity implements Address {
+public class InternalAddress extends InternalEntity implements Address {
     private String houseNumber;
     private String houseName;
     private String streetName;
@@ -24,8 +24,13 @@ public class JosmAddress extends JosmEntity implements Address {
     private String source = null;
     private String sourceDate;
     
-    public JosmAddress(OsmPrimitive primitive) {
+    public InternalAddress(OsmPrimitive primitive) {
         super(primitive);
+    }
+    
+    @Override
+    public String getType() {
+        return Address.TYPE;
     }
 
     public void build() {
@@ -68,7 +73,7 @@ public class JosmAddress extends JosmEntity implements Address {
     }
 
     @Override
-    public Place getPlace() {
+    public City getCity() {
         // TODO Auto-generated method stub
         return null;
     }

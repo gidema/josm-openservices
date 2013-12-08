@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.entities.internal;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -14,7 +14,7 @@ import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
  * @author Gertjan Idema
  * 
  */
-public class JosmDataLayer extends OsmDataLayer {
+public class InternalDataLayer extends OsmDataLayer {
     private EntitySet entitySet = new DefaultEntitySet();
 
     /**
@@ -22,7 +22,7 @@ public class JosmDataLayer extends OsmDataLayer {
      * 
      * @param name
      */
-    public JosmDataLayer(String name) {
+    public InternalDataLayer(String name) {
         super(new DataSet(), name, null);
     }
 

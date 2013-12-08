@@ -9,7 +9,12 @@ package org.openstreetmap.josm.plugins.ods;
  */
 public class InitializationException extends Exception {
 
-  public InitializationException() {
+  /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+public InitializationException() {
     super();
   }
 

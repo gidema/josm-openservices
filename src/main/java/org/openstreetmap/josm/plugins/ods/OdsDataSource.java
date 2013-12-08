@@ -1,14 +1,10 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import java.util.Set;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.filter.Filter;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.imported.ImportedEntityBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-import org.openstreetmap.josm.plugins.ods.tags.FeatureMapper;
 
 /**
  * An OdsDataSource is the interface between the OdsWorkingSet and the
@@ -24,9 +20,9 @@ import org.openstreetmap.josm.plugins.ods.tags.FeatureMapper;
 public interface OdsDataSource {
     public String getFeatureType();
 
-    public ImportedEntityBuilder getEntityBuilder();
+//    public ExternalEntityBuilder getEntityBuilder();
 
-    public FeatureMapper getFeatureMapper();
+//    public FeatureMapper getFeatureMapper();
 
     public OdsFeatureSource getOdsFeatureSource();
 
@@ -40,15 +36,9 @@ public interface OdsDataSource {
 
     public MetaData getMetaData();
 
-    public DownloadJob createDownloadJob(ImportDataLayer dataLayer,
-            Bounds bounds, Set<Entity> newEntities);
-
-    void addFeatureListener(FeatureListener featureListener);
-
-    //void setEntityClass(Class<? extends Entity> entityClass);
-
-    //void setEntityFactory(EntityFactory entityFactory);
+    public ExternalDownloadTask createDownloadTask(Bounds bounds);
 
     public void setEntityType(String entityType);
 
+    public String getEntityType();
 }

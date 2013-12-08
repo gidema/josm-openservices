@@ -7,10 +7,10 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 public interface Building extends Entity {
-	public final static String NAMESPACE = "ods:building".intern();
+	public final static String TYPE = "ods:building";
 
 	public MultiPolygon getGeometry();
-	public Place getPlace();
+	public City getCity();
     public Set<Address> getAddresses();
 	public Block getBlock();
 	

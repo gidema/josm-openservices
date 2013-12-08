@@ -1,8 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -12,8 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.swing.JOptionPane;
-
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSource;
@@ -21,50 +17,69 @@ import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
-import org.openstreetmap.josm.plugins.ods.entities.imported.ImportedBuiltEnvironmentAnalyzer;
-import org.openstreetmap.josm.plugins.ods.entities.imported.ImportedEntityAnalyzer;
-import org.openstreetmap.josm.plugins.ods.entities.josm.BuiltEnvironmentEntityBuilder;
-import org.openstreetmap.josm.plugins.ods.issue.Issue;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalBuiltEnvironmentAnalyzer;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalEntityAnalyzer;
+import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OdsDownloader {
     private static final int NTHREADS = 10;
 
     private final OdsWorkingSet workingSet;
-    private final Collection<DownloadJob> downloadJobs = new LinkedList<DownloadJob>();
+    private InternalDownloadJob internalDownloadJob;
+    private ExternalDownloadJob externalDownloadJob;
+    
+    private List<DownloadTask> downloadTasks;
     private Bounds bounds;
 
-    protected OdsDownloader(OdsWorkingSet workingSet) {
+    protected OdsDownloader(OdsWorkingSet workingSet, Bounds bounds) {
         super();
         this.workingSet = workingSet;
+        this.bounds = bounds;
     }
 
-    public void download(Bounds bounds) throws ExecutionException,
-            InterruptedException {
-        this.bounds = bounds;
-        // Create a download job for each dataSource
-        downloadJobs.add(new OsmDownloadJob(workingSet, bounds));
-        Set<Entity> newEntities = new HashSet<Entity>();
-        for (OdsDataSource dataSource : workingSet.getDataSources().values()) {
-            downloadJobs.add(dataSource.createDownloadJob(
-                    workingSet.getImportDataLayer(), bounds, newEntities));
-        }
-        prepareJobs();
+    public void run() throws ExecutionException, InterruptedException {
+        setup();
+        prepare();
         download();
-        build();
+        try {
+            build();
+        } catch (BuildException e) {
+            throw new ExecutionException(e);
+        }
         DataSource ds = new DataSource(bounds, "Import");
         workingSet.getImportDataLayer().data.dataSources.add(ds);
-        analyze(newEntities, bounds);
+//        analyze(newEntities, bounds);
         computeBboxAndCenterScale();
         Main.map.mapView.setActiveLayer(workingSet.getImportDataLayer());
     }
 
-    private void prepareJobs() throws ExecutionException, InterruptedException {
-        List<Future<?>> futures = new ArrayList<Future<?>>(downloadJobs.size());
+    /**
+     * Setup the download jobs. One job for the Osm data and one for imported data.
+     * Setup the download tasks. Maybe more than 1 per job. 
+     */
+    private void setup() {
+        internalDownloadJob = new InternalDownloadJob(workingSet, bounds);
+        internalDownloadJob.setup();
+        externalDownloadJob = new ExternalDownloadJob(workingSet, bounds);
+        externalDownloadJob.setup();
+        downloadTasks = new LinkedList<DownloadTask>();
+        downloadTasks.addAll(internalDownloadJob.getDownloadTasks());
+        downloadTasks.addAll(externalDownloadJob.getDownloadTasks());
+    }
+
+    /**
+     * Prepare the 
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    private void prepare() throws ExecutionException, InterruptedException {
+        List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
 
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
-        for (DownloadJob job : downloadJobs) {
-            Future<?> future = executor.submit(job.getPrepareCallable());
+        for (DownloadTask task : downloadTasks) {
+            Future<?> future = executor.submit(task.getPrepareCallable());
             futures.add(future);
         }
         // Wait for all futures to finish
@@ -85,7 +100,7 @@ public class OdsDownloader {
         if (!exceptions.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             sb.append(I18n.trn("An error occurred while preparing the download jobs:",
-                    "{0} errors occurred while prepering the download jobs:", exceptions.size(), exceptions.size()));
+                    "{0} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
             for (Exception e : exceptions) {
                 sb.append("\n").append(e.getMessage());
             }
@@ -100,13 +115,14 @@ public class OdsDownloader {
     private void download() throws ExecutionException, InterruptedException {
         workingSet.activate();
         workingSet.activateOsmLayer();
-        List<Future<?>> futures = new ArrayList<Future<?>>(downloadJobs.size());
+        List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
 
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
-        for (DownloadJob job : downloadJobs) {
-            Future<?> future = executor.submit(job.getDownloadCallable());
+        for (DownloadTask task : downloadTasks) {
+            Future<?> future = executor.submit(task.getDownloadCallable());
             futures.add(future);
         }
+        executor.shutdown();
         boolean interrupted = false;
         List<Exception> exceptions = new LinkedList<Exception>();
         // Wait for all futures to finish
@@ -133,7 +149,11 @@ public class OdsDownloader {
         }
         workingSet.getImportDataLayer().getEntitySet().extendBoundary(bounds);
         // Retrieve the results
-        executor.shutdown();
+    }
+    
+    private void build() throws BuildException {
+        internalDownloadJob.build();
+        externalDownloadJob.build();
     }
 
     @Deprecated
@@ -155,27 +175,11 @@ public class OdsDownloader {
             Main.map.mapView.recalculateCenterScale(v);
         }
     }
-
-    private void build() {
-        BuiltEnvironmentEntityBuilder builder = new BuiltEnvironmentEntityBuilder(workingSet.josmDataLayer);
-        try {
-            builder.build();
-        } catch (BuildException e) {
-            Collection<Issue> issues = e.getIssues();
-            StringBuilder sb = new StringBuilder(1000);
-            sb.append(I18n.trn("An object could not be built:",
-                 "{0} objects could not be built:", issues.size()));
-            for (Issue issue : e.getIssues()) {
-                sb.append("\n").append(issue.getMessage());
-            }
-            JOptionPane.showMessageDialog(Main.parent, sb.toString());
-        }
-    }
-    
+   
     private void analyze(Set<Entity> newEntities, Bounds bounds) {
         EntitySet entitySet = workingSet.getImportDataLayer().getEntitySet();
         // TODO flexible configuration of analyzers
-        ImportedEntityAnalyzer analyzer = new ImportedBuiltEnvironmentAnalyzer();
+        ExternalEntityAnalyzer analyzer = new ExternalBuiltEnvironmentAnalyzer();
         analyzer.setEntitySet(entitySet);
         analyzer.analyzeNewEntities(newEntities, bounds);
         

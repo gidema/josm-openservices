@@ -16,17 +16,6 @@ public abstract class AbstractEntity implements Entity {
 		return null;
 	}
 
-//	@Override
-//	public void setEntitySet(EntitySet entitySet) {
-//		this.entitySet = entitySet;
-//	}
-
-//	@Override
-//	public EntitySet getEntitySet() {
-//		return entitySet;
-//	}
-	
-	
 	protected void setPrimitives(Collection<OsmPrimitive> primitives) {
         this.primitives = primitives;
     }

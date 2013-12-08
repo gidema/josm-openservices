@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.josm;
+package org.openstreetmap.josm.plugins.ods.entities.internal;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,13 +18,13 @@ import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 import org.openstreetmap.josm.plugins.ods.issue.JosmIssue;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 
-public class JosmBuilding extends JosmEntity implements Building {
+public class InternalBuilding extends InternalEntity implements Building {
     private MultiPolygon multiPolygon;
     private String source = "unknown";
     private String sourceDate;
@@ -36,8 +36,13 @@ public class JosmBuilding extends JosmEntity implements Building {
     private Map<String, String> addressKeys = new HashMap<>();
     private boolean hasAddress = false; // True if this building has address tags
 
-    public JosmBuilding(OsmPrimitive primitive) {
+    public InternalBuilding(OsmPrimitive primitive) {
         super(primitive);
+    }
+
+    @Override
+    public String getType() {
+        return Building.TYPE;
     }
 
     public void build() throws BuildException {
@@ -102,7 +107,7 @@ public class JosmBuilding extends JosmEntity implements Building {
                 sourceDate = parseBagExtract(value);
             }
             else if ("addr:housenumber".equals(key)) {
-                JosmAddress address = new JosmAddress(primitive);
+                InternalAddress address = new InternalAddress(primitive);
                 address.build();
                 getAddresses().add(address);
                 hasAddress = true;
@@ -126,7 +131,7 @@ public class JosmBuilding extends JosmEntity implements Building {
     }
 
     @Override
-    public Place getPlace() {
+    public City getCity() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -187,16 +192,6 @@ public class JosmBuilding extends JosmEntity implements Building {
     private void buildGeometry(Relation relation) throws InvalidMultiPolygonException {
         GeoUtil geoUtil = GeoUtil.getInstance();
         multiPolygon = geoUtil.toMultiPolygon(relation);
-    }
-    
-    private String pad(String s, int length, char c) {
-        if (s.length() >= length) return s;
-        StringBuilder sb = new StringBuilder(length);
-        for (int i=s.length(); i<length; i++) {
-            sb.append(c);
-        }
-        sb.append(s);
-        return sb.toString();
     }
     
     private String parseBagExtract(String s) {

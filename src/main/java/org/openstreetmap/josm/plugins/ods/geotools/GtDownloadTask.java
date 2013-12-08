@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -15,32 +14,38 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.ods.DownloadJob;
-import org.openstreetmap.josm.plugins.ods.ImportDataLayer;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.BuildException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.imported.ImportedEntityBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
-public class GtDownloadJob implements DownloadJob {
+public class GtDownloadTask implements ExternalDownloadTask {
     GtDataSource dataSource;
-    ImportDataLayer dataLayer;
+//    ExternalDataLayer dataLayer;
     Bounds bounds;
     SimpleFeatureSource featureSource;
     Filter filter;
     MetaData metaData;
-    Set<Entity> newEntities;
+    List<SimpleFeature> features;
+//    EntityStore entityStore;
 
-    protected GtDownloadJob(GtDataSource dataSource, ImportDataLayer dataLayer, Bounds bounds, Set<Entity> newEntities) {
+    protected GtDownloadTask(GtDataSource dataSource, Bounds bounds) {
         super();
         this.dataSource = dataSource;
-        this.dataLayer = dataLayer;
+//        this.dataLayer = dataLayer;
         this.bounds = bounds;
         this.metaData = dataSource.getMetaData();
-        this.newEntities = newEntities;
     }
     
+    @Override
+    public GtDataSource getDataSource() {
+        return dataSource;
+    }
+
+//    @Override
+//    public EntityStore getEntityStore() {
+//        return entityStore;
+//    }
+//    
     @Override
     public Callable<?> getPrepareCallable() {
         return new Callable<Object>() {
@@ -55,7 +60,6 @@ public class GtDownloadJob implements DownloadJob {
                     // TODO check if selected boundaries overlap with
                     // featureSource boundaries;
                     FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-                    // gtFeatureSource.initialize();
                     String geometryProperty = gtFeatureSource.getFeatureType()
                             .getGeometryDescriptor().getLocalName();
                     // TODO Find faster solution for the following line
@@ -65,12 +69,12 @@ public class GtDownloadJob implements DownloadJob {
                             bbox);
                     Filter dataFilter = dataSource.getFilter();
                     filter = bboxFilter;
-                    // if (dataFilter != null) {
-                    // filter = ff.and(filter, dataFilter);
-                    // }
+                    if (dataFilter != null) {
+                        filter = ff.and(filter, dataFilter);
+                    }
                     featureSource = gtFeatureSource.getFeatureSource();
                 } catch (Exception e) {
-                    throw new ExecutionException(e.getMessage(), e.getCause());
+                    throw new ExecutionException(e.getCause().getMessage(), e.getCause());
                 }
                 return null;
             }
@@ -84,14 +88,13 @@ public class GtDownloadJob implements DownloadJob {
             @Override
             public Object call() throws ExecutionException {
                 SimpleFeatureIterator it = null;
-                List<SimpleFeature> featureList;
                 try {
                     SimpleFeatureCollection featureCollection = featureSource.getFeatures(filter);
-                    featureList = new LinkedList<SimpleFeature>();
+                    features = new LinkedList<SimpleFeature>();
                     it = featureCollection.features();
                     // retrieve all features
                     while (!Thread.interrupted() && it.hasNext()) {
-                        featureList.add(it.next());
+                        features.add(it.next());
                     }
                 } catch (Exception e) {
                     throw new ExecutionException(e.getMessage(), e.getCause());
@@ -99,24 +102,36 @@ public class GtDownloadJob implements DownloadJob {
                     if (it != null)
                         it.close();
                 }
-                ImportedEntityBuilder builder = dataSource.getEntityBuilder();
-                try {
-                    for (SimpleFeature feature : featureList) {
-                        Entity entity = builder.build(feature);
-                        if (dataLayer.getEntitySet().add(entity)) {
-                            newEntities.add(entity);
-                        };
-                    }
-                } catch (BuildException e) {
-                    throw new ExecutionException(e.getMessage(), e.getCause());
-                }
                 return null;
             }
         };
     }
 
+    
+//    @Override
+//    public List<Entity> buildEntities(EntityFactory entityFactory) throws BuildException {
+//        List<Entity> entities = new LinkedList<>();
+//        List<Issue> issues = new LinkedList<>();
+//        String entityType = dataSource.getEntityType();
+////        try {
+//            for (SimpleFeature feature : features) {
+//                Entity entity = entityFactory.createEntity(entityType, feature);
+//                if (entityStore.get(entity.getId()) == null) {
+//                    entityStore.add(entity);
+//                    entities.add(entity);
+//                }
+//            }
+////        } catch (BuildException e) {
+////            issues.add(e.getIssue());
+////        }
+//        if (!issues.isEmpty()) {
+//            throw new BuildException(issues);
+//        }
+//        return entities;
+//    }
+
     @Override
-    public Set<Entity> getNewEntities() {
-        return newEntities;
+    public List<SimpleFeature> getFeatures() {
+        return features;
     }
 }

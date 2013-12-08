@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.josm;
+package org.openstreetmap.josm.plugins.ods.entities.internal;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 
-public abstract class JosmEntity extends AbstractEntity {
+public abstract class InternalEntity extends AbstractEntity {
     protected OsmPrimitive primitive;
-    private String namespace;
     private Map<String, String> otherKeys = new HashMap<>();
     
-    public JosmEntity(OsmPrimitive primitive) {
+    public InternalEntity(OsmPrimitive primitive) {
         super();
         this.primitive = primitive;
     }
@@ -29,14 +29,6 @@ public abstract class JosmEntity extends AbstractEntity {
     }
     
     @Override
-    public String getNamespace() {
-        if (namespace == null) {
-            namespace = "JOSM." + primitive.getType();
-        }
-         return namespace;
-    }
-
-    @Override
     public Serializable getId() {
         return primitive.getId();
     }
@@ -46,5 +38,10 @@ public abstract class JosmEntity extends AbstractEntity {
     }
     
     public abstract String getSource();
+
+    @Override
+    public void createPrimitives(PrimitiveBuilder primitiveBuilder) {
+        // No need to create primitives for a InternalEntity
+    }
 
 }

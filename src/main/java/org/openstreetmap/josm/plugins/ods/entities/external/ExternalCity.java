@@ -1,20 +1,20 @@
-package org.openstreetmap.josm.plugins.ods.entities.imported;
+package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 
-public abstract class ImportedCity extends ImportedEntity implements Place {
+public abstract class ExternalCity extends ExternalEntity implements City {
     protected MultiPolygon geometry;
     protected String name;
     
     @Override
-    public String getNamespace() {
-        return Place.NAMESPACE;
+    public String getType() {
+        return City.TYPE;
     }
 
     @Override

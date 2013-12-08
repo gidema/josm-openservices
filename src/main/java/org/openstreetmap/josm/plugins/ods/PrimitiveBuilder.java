@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.openstreetmap.josm.data.osm.Way;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
@@ -51,6 +53,17 @@ public class PrimitiveBuilder {
         // } catch (Exception e) {
         // throw new RuntimeException(e);
         // }
+    }
+
+    public Collection<OsmPrimitive> build(Geometry geometry,
+            Map<String, String> keys) {
+        switch (geometry.getGeometryType()) {
+        case "MultiPolygon":
+            return build((MultiPolygon)geometry, keys);
+        case "Point":
+            return build((Point)geometry, keys);
+        }
+        return Arrays.asList(new OsmPrimitive[0]);
     }
 
     public Collection<OsmPrimitive> build(MultiPolygon polygon,

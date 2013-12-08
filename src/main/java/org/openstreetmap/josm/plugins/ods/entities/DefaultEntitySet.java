@@ -12,13 +12,13 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * An ODS entity set contains all entities belonging to a WorkinSet.
+ * An ODS entity set contains all entities belonging to a WorkingSet.
  * 
  * @author gertjan
  *
  */
 public class DefaultEntitySet implements EntitySet {
-	private Map<String, EntityStore<? extends Entity>> stores = new HashMap<String, EntityStore<? extends Entity>>();
+	private Map<String, EntityStore> stores = new HashMap<>();
     private List<EntitySetListener> listeners = new LinkedList<EntitySetListener>();
     private Geometry boundary = null;
 	
@@ -34,25 +34,16 @@ public class DefaultEntitySet implements EntitySet {
     	listeners.add(listener);
     }
     
-    public <T extends Entity> boolean add(T entity) {
-    	@SuppressWarnings("unchecked")
-		EntityStore<T> store = (EntityStore<T>) getStore(entity.getNamespace());
-    	boolean added = store.add(entity);
-    	if (added) {
-//    		entity.setEntitySet(this);
-            for (EntitySetListener listener : listeners) {
-            	listener.entityAdded(entity);
-            }
-    	}
-    	return added;
+    public boolean add(Entity entity) {
+		EntityStore store = getStore(entity.getType());
+    	return store.add(entity);
     }
     
-    public <T extends Entity> EntityStore<T> getStore(String nameSpace) {
-    	String ns = nameSpace.intern();
-    	@SuppressWarnings("unchecked")
-		EntityStore<T> store = (EntityStore<T>) stores.get(ns);
+    public EntityStore getStore(String entityType) {
+    	String ns = entityType;
+		EntityStore store = stores.get(ns);
     	if (store == null) {
-    		store = new EntityStore<T>(ns);
+    		store = new EntityStore(ns);
     		stores.put(ns,  store);
     	}
     	return store;

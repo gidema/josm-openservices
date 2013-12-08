@@ -4,35 +4,35 @@ import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 
 public class BuiltEnvironmentAnalyzer {
-    protected EntityStore<Building> buildings;
-    protected EntityStore<Address> addresses;
-    protected EntityStore<Place> cities;
-    protected EntityStore<Street> streets;
+    protected EntityStore buildings;
+    protected EntityStore addresses;
+    protected EntityStore cities;
+    protected EntityStore streets;
     
     public BuiltEnvironmentAnalyzer(EntitySet entitySet) {
-        buildings = entitySet.getStore(Building.NAMESPACE);
-        addresses = entitySet.getStore(Address.NAMESPACE);
-        cities = entitySet.getStore(Place.NAMESPACE);
-        streets = entitySet.getStore(Street.NAMESPACE);
+        buildings = entitySet.getStore(Building.TYPE);
+        addresses = entitySet.getStore(Address.TYPE);
+        cities = entitySet.getStore(City.TYPE);
+        streets = entitySet.getStore(Street.TYPE);
     }
 
     public Street getStreet(String fullName) {
-        return streets.getByName(fullName);
+        return (Street) streets.getByName(fullName);
     }
 
-    public Place getPlace(String cityName) {
-        return cities.getByName(cityName);
+    public City getCity(String cityName) {
+        return (City) cities.getByName(cityName);
     }
     
-    public EntityStore<Building> getBuildings() {
+    public EntityStore getBuildings() {
         return buildings;
     }
     
-    public EntityStore<Address> getAddresses() {
+    public EntityStore getAddresses() {
         return addresses;
     }
 
-    public EntityStore<Street> getStreets() {
+    public EntityStore getStreets() {
         return streets;
     }
 }

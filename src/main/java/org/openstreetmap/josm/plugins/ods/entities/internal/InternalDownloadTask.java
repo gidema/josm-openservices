@@ -1,9 +1,8 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.entities.internal;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.openstreetmap.josm.data.Bounds;
@@ -12,16 +11,17 @@ import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmTransferCanceledException;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.DownloadTask;
+import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 
-public class OsmDownloadJob implements DownloadJob {
+public class InternalDownloadTask implements DownloadTask {
     final OdsWorkingSet workingSet;
     final Bounds bounds;
     BoundingBoxDownloader bbDownloader;
     String overpassQuery;
     List<Exception> exceptions = new LinkedList<Exception>();
 
-    protected OsmDownloadJob(OdsWorkingSet workingSet, Bounds bounds) {
+    protected InternalDownloadTask(OdsWorkingSet workingSet, Bounds bounds) {
         super();
         this.workingSet = workingSet;
         this.bounds = bounds;
@@ -50,7 +50,7 @@ public class OsmDownloadJob implements DownloadJob {
 //                    if (isCanceled())
 //                        return;
                     DataSet dataSet = parseDataSet();
-                    workingSet.josmDataLayer.mergeFrom(dataSet);
+                    workingSet.internalDataLayer.mergeFrom(dataSet);
                 }
                 catch(Exception e) {
 //                    if (isCanceled()) {
@@ -90,11 +90,5 @@ public class OsmDownloadJob implements DownloadJob {
         q = q.replaceAll("\\{\\{bbox\\}\\}", bbox);
         q = q.replace(";$", "");
         return String.format("%s/interpreter?data=%s;out meta;", host, q);
-    }
-
-    @Override
-    public Set<Entity> getNewEntities() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

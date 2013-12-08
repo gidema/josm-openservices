@@ -27,6 +27,8 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
+import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
 
 public class OpenDataServicesPlugin extends Plugin {
   private static JMenu menu;
@@ -142,12 +144,12 @@ public class OpenDataServicesPlugin extends Plugin {
       public void componentShown(ComponentEvent e) {
         if (!Main.isDisplayingMapView()) return;
         Layer activeLayer = Main.main.getActiveLayer();
-        if (activeLayer instanceof ImportDataLayer
-            || activeLayer instanceof JosmDataLayer) {
+        if (activeLayer instanceof ExternalDataLayer
+            || activeLayer instanceof InternalDataLayer) {
           for (Layer layer : Main.map.mapView.getAllLayersAsList()) {
             if (layer instanceof OsmDataLayer 
-                && !(layer instanceof ImportDataLayer)
-                && !(layer instanceof JosmDataLayer)) {
+                && !(layer instanceof ExternalDataLayer)
+                && !(layer instanceof InternalDataLayer)) {
               Main.map.mapView.setActiveLayer(layer);
               return;
             }

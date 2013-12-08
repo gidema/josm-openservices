@@ -5,9 +5,9 @@ import java.util.Set;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public interface Street extends Entity {
-    String NAMESPACE = "ods.street".intern();
+    String TYPE = "ods:street";
 
-    public Place getPlace();
+    public City getCity();
 
     public String getName();
 

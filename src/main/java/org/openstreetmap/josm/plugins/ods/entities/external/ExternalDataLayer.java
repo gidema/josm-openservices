@@ -1,12 +1,12 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySetListener;
-import org.openstreetmap.josm.plugins.ods.entities.imported.ImportedEntity;
 
 /**
  * To distinct the ODS DataLayer from a normal Osm datalayer, we create a
@@ -17,7 +17,7 @@ import org.openstreetmap.josm.plugins.ods.entities.imported.ImportedEntity;
  * @author Gertjan Idema
  * 
  */
-public class ImportDataLayer extends OsmDataLayer implements EntitySetListener {
+public class ExternalDataLayer extends OsmDataLayer implements EntitySetListener {
     private EntitySet entitySet;
     private PrimitiveBuilder primitiveBuilder;
 
@@ -26,7 +26,7 @@ public class ImportDataLayer extends OsmDataLayer implements EntitySetListener {
      * 
      * @param name
      */
-    public ImportDataLayer(String name) {
+    public ExternalDataLayer(String name) {
         super(new DataSet(), name, null);
         entitySet = new DefaultEntitySet();
         entitySet.addListener(this);
@@ -40,8 +40,8 @@ public class ImportDataLayer extends OsmDataLayer implements EntitySetListener {
 
     @Override
     public void entityAdded(Entity entity) {
-        if (entity instanceof ImportedEntity) {
-          ((ImportedEntity)entity).createPrimitives(primitiveBuilder);
+        if (entity instanceof ExternalEntity) {
+          ((ExternalEntity)entity).createPrimitives(primitiveBuilder);
         }
     }
 }

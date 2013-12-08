@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.imported;
+package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -14,13 +14,13 @@ import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuiltEnviron
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
 
 /**
- * The ImportedBuiltEnvironmentAnalyzer analyzes buildings, addresses and related
+ * The ExternalBuiltEnvironmentAnalyzer analyzes buildings, addresses and related
  * objects like streets and cities.
  * 
  * @author gertjan
  * 
  */
-public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer {
+public class ExternalBuiltEnvironmentAnalyzer implements ExternalEntityAnalyzer {
     private BuiltEnvironmentEntitySet entitySet;
 
     /**
@@ -37,14 +37,14 @@ public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer 
 
     @Override
     public void analyzeNewEntities(Collection<Entity> entities, Bounds bounds) {
-        List<ImportedBuilding> newBuildings = new LinkedList<ImportedBuilding>();
-        List<ImportedAddress> newAddresses = new LinkedList<ImportedAddress>();
+        List<ExternalBuilding> newBuildings = new LinkedList<ExternalBuilding>();
+        List<ExternalAddress> newAddresses = new LinkedList<ExternalAddress>();
 
         for (Entity entity : entities) {
-            if (entity instanceof ImportedBuilding) {
-                newBuildings.add((ImportedBuilding) entity);
-            } else if (entity instanceof ImportedAddress) {
-                newAddresses.add((ImportedAddress) entity);
+            if (entity instanceof ExternalBuilding) {
+                newBuildings.add((ExternalBuilding) entity);
+            } else if (entity instanceof ExternalAddress) {
+                newAddresses.add((ExternalAddress) entity);
             }
         }
         analyzeBuildingCompleteness(newBuildings);
@@ -52,14 +52,14 @@ public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer 
         analyzeAddressBuildings(newAddresses);
     }
 
-    protected void analyzeAddressStreets(List<ImportedAddress> newAddresses) {
-        for (ImportedAddress address : newAddresses) {
-            String fullStreetName = ImportedStreet.getFullName(
+    protected void analyzeAddressStreets(List<ExternalAddress> newAddresses) {
+        for (ExternalAddress address : newAddresses) {
+            String fullStreetName = ExternalStreet.getFullName(
                 address.getPlaceName(), address.getStreetName());
             if (fullStreetName != null) {
                 Street street = getEntitySet().getStreet(fullStreetName);
                 if (street == null) {
-                    street = new ImportedStreet(address.getPlaceName(), address.getStreetName());
+                    street = new ExternalStreet(address.getPlaceName(), address.getStreetName());
                     getEntitySet().add(street);
                 }
                 address.setStreet(street);
@@ -68,8 +68,8 @@ public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer 
         }
     }
 
-    protected void analyzeAddressBuildings(List<ImportedAddress> newAddresses) {
-        for (ImportedAddress address : newAddresses) {
+    protected void analyzeAddressBuildings(List<ExternalAddress> newAddresses) {
+        for (ExternalAddress address : newAddresses) {
             assert address.getBuilding() == null;
             Serializable buildingRef = address.getBuildingRef();
             if (buildingRef != null) {
@@ -87,9 +87,9 @@ public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer 
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByRef(ImportedAddress address) {
+    private void analyzeAddressBuildingByRef(ExternalAddress address) {
         Serializable buildingRef = address.getBuildingRef();
-        Building building = entitySet.getBuildings().get(buildingRef);
+        Building building = (Building) entitySet.getBuildings().get(buildingRef);
         // TODO create issue if the building is not found
         if (building != null) {
             address.setBuilding(building);
@@ -103,11 +103,11 @@ public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer 
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByGeometry(ImportedAddress address) {
-        Iterator<Building> iterator = entitySet.getBuildings().iterator();
+    private void analyzeAddressBuildingByGeometry(ExternalAddress address) {
+        Iterator<Entity> iterator = entitySet.getBuildings().iterator();
         boolean found = false;
         while (iterator.hasNext() && !found) {
-            Building building = iterator.next();
+            Building building = (Building) iterator.next();
             if (building.getGeometry().covers(address.getGeometry())) {
                 address.setBuilding(building);
                 building.getAddresses().add(address);
@@ -116,13 +116,13 @@ public class ImportedBuiltEnvironmentAnalyzer implements ImportedEntityAnalyzer 
         }
     }
 
-    protected void analyzeBuildingCompleteness(List<ImportedBuilding> newBuildings) {
-        for (ImportedBuilding building : newBuildings) {
+    protected void analyzeBuildingCompleteness(List<ExternalBuilding> newBuildings) {
+        for (ExternalBuilding building : newBuildings) {
             building.setComplete(entitySet.getBoundary().covers(building.getGeometry()));
         }
     }
 
-    protected void analyzeAddress(ImportedAddress building) {
+    protected void analyzeAddress(ExternalAddress building) {
         // TODO Auto-generated method stub
 
     }

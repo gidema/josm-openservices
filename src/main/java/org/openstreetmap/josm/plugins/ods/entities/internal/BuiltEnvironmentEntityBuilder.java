@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.josm;
+package org.openstreetmap.josm.plugins.ods.entities.internal;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -8,30 +8,25 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.JosmDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuiltEnvironmentEntitySet;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
-import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
-public class BuiltEnvironmentEntityBuilder implements JosmEntityBuilder {
+public class BuiltEnvironmentEntityBuilder {
     BuiltEnvironmentEntitySet entitySet;
     DataSet dataset;
-    EntityStore<Building> buildings;
-    EntityStore<Address> addresses;
+    EntityStore buildings;
+    EntityStore addresses;
     
 
-    public BuiltEnvironmentEntityBuilder(JosmDataLayer dataLayer) {
+    public BuiltEnvironmentEntityBuilder(InternalDataLayer dataLayer) {
         entitySet = new BuiltEnvironmentEntitySet(dataLayer.getEntitySet());
         dataset = dataLayer.data;
         buildings = entitySet.getBuildings();
         addresses = entitySet.getAddresses();
     }
 
-    @Override
     public void build() throws BuildException {
         List<Issue> issues = new LinkedList<Issue>();
         for (OsmPrimitive primitive : dataset.allPrimitives()) {
@@ -90,7 +85,7 @@ public class BuiltEnvironmentEntityBuilder implements JosmEntityBuilder {
 
     private void buildBuilding(Way way) throws BuildException {
         if (buildings.get(way.getId()) == null) {
-            JosmBuilding building = new JosmBuilding(way);
+            InternalBuilding building = new InternalBuilding(way);
             building.build();
             entitySet.getBuildings().add(building);
         }
@@ -98,7 +93,7 @@ public class BuiltEnvironmentEntityBuilder implements JosmEntityBuilder {
 
     private void buildAddress(Node node) {
         if (addresses.get(node.getId()) == null) {
-            JosmAddress address = new JosmAddress(node);
+            InternalAddress address = new InternalAddress(node);
             address.build();
             entitySet.getAddresses().add(address);
         }
@@ -106,7 +101,7 @@ public class BuiltEnvironmentEntityBuilder implements JosmEntityBuilder {
 
     private void buildBuilding(Relation relation) throws BuildException {
         if (buildings.get(relation.getId()) == null) {
-            JosmBuilding building = new JosmBuilding(relation);
+            InternalBuilding building = new InternalBuilding(relation);
             building.build();
             entitySet.getBuildings().add(building);
         }

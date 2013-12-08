@@ -25,7 +25,7 @@ public class WFSHost extends GtHost {
       URL capabilitiesUrl = WFSDataStoreFactory.createGetCapabilitiesRequest(hostUrl);
       Map<String, Object> connectionParameters = new HashMap<>();
       connectionParameters.put(WFSDataStoreFactory.URL.key, capabilitiesUrl);
-      connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 10000);
+      connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 60000);
       connectionParameters.put(WFSDataStoreFactory.BUFFER_SIZE.key, 1000);
       connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, "FALSE");     
       return connectionParameters;

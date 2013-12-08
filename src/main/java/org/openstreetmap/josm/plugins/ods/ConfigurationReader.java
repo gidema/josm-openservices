@@ -22,17 +22,13 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.imported.SimpleImportedEntity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
+import org.openstreetmap.josm.plugins.ods.entities.SimpleEntityFactory;
 import org.openstreetmap.josm.plugins.ods.metadata.HttpMetaDataLoader;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataAttribute;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
 import org.openstreetmap.josm.plugins.ods.tags.DefaultFeatureMapper;
 import org.openstreetmap.josm.plugins.ods.tags.DefaultGeometryMapper;
-import org.openstreetmap.josm.plugins.ods.tags.ExpressionTagBuilder;
-import org.openstreetmap.josm.plugins.ods.tags.FixedTagBuilder;
-import org.openstreetmap.josm.plugins.ods.tags.MetaTagBuilder;
-import org.openstreetmap.josm.plugins.ods.tags.PropertyTagBuilder;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.ImageProvider;
 
@@ -52,7 +48,6 @@ public class ConfigurationReader {
             configureImports(conf);
             configureHosts(conf);
             configureLayers(conf);
-            configureFeatureMappers(conf);
         } catch (NoSuchElementException e) {
             throw new ConfigurationException(e.getMessage(), e.getCause());
         }
@@ -111,23 +106,16 @@ public class ConfigurationReader {
 
     private void configureDataSource(HierarchicalConfiguration conf,
             OdsWorkingSet layer) throws ConfigurationException {
-        String entityType = conf.getString("[@entity]");
         OdsFeatureSource odsFeatureSource = configureOdsFeatureSource(conf);
         OdsDataSource dataSource = odsFeatureSource.newDataSource();
+        String entityType = conf.getString("[@entitytype]", null);
+        dataSource.setEntityType(entityType);
         String filter = conf.getString("filter", null);
         if (filter != null) {
             configureFilter(dataSource, filter);
         }
         String idAttribute = conf.getString("id[@attribute]", null);
         configureIdFactory(dataSource, idAttribute);
-        // Check in an early stage if the entity class can be found
-        Class<? extends Entity> entityClass = getEntityClass(entityType);
-        if (entityClass == null) {
-            throw new ConfigurationException(I18n.tr("Unknown entity: {0}",
-                 entityType));
-        }
-        dataSource.setEntityType(entityClass.getName());
-
         layer.addDataSource(dataSource);
     }
 
@@ -181,9 +169,37 @@ public class ConfigurationReader {
         String osmQuery = conf.getString("osm_query");
         workingSet.setOsmQuery(osmQuery);
         configureActions(workingSet, conf);
+        configureEntityFactory(workingSet, conf);
         JMenu odsMenu = OpenDataServicesPlugin.getMenu();
         Action action = new OdsWorkingSetAction(workingSet);
         odsMenu.add(action);
+    }
+
+    private void configureEntityFactory(OdsWorkingSet layer,
+            HierarchicalConfiguration conf) throws ConfigurationException {
+        EntityFactory entityFactory;
+        HierarchicalConfiguration factoryConf =conf.configurationAt("factory");
+        if (factoryConf != null) {
+            entityFactory = createEntityFactory(factoryConf);
+        }
+        else {
+            entityFactory = new SimpleEntityFactory();
+        }
+        layer.setEntityFactory(entityFactory);
+    }
+
+    private EntityFactory createEntityFactory(
+            HierarchicalConfiguration conf) throws ConfigurationException {
+        String factoryName = conf.getString("[@name]");
+        if (factoryName == null) {
+            throw new ConfigurationException("No name attribute supplied for the factory element");
+        }
+        Class<?> factoryClass = ODS.getClass("entityFactory", factoryName);
+        try {
+            return (EntityFactory) factoryClass.newInstance();
+        } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
+            throw new ConfigurationException("Unable to create a class of type " + factoryClass.getName());
+        }
     }
 
     private void configureActions(OdsWorkingSet layer,
@@ -240,7 +256,7 @@ public class ConfigurationReader {
     // String className = conf.getString("[@builder]");
     // if (className != null) {
     // try {
-    // ImportedEntityBuilder<?> builder = (ImportedEntityBuilder<?>)
+    // ExternalEntityBuilder<?> builder = (ExternalEntityBuilder<?>)
     // classLoader.loadClass(className).newInstance();
     // ODS.registerEntityBuilder(builder);
     // } catch (Exception e) {
@@ -250,39 +266,39 @@ public class ConfigurationReader {
     // }
     // }
 
-    private void configureFeatureMappers(HierarchicalConfiguration conf)
-            throws ConfigurationException {
-        for (HierarchicalConfiguration c : conf.configurationsAt("map")) {
-            configureFeatureMapper(c);
-        }
-    }
-
-    private void configureFeatureMapper(HierarchicalConfiguration conf)
-            throws ConfigurationException {
-        DefaultFeatureMapper mapper = new DefaultFeatureMapper();
-        mapper.setFeatureName(conf.getString("[@feature]"));
-        for (HierarchicalConfiguration c : conf.configurationsAt("tag")) {
-            String value = c.getString("[@value]");
-            String property = c.getString("[@property]");
-            String format = c.getString("[@format]");
-            String expression = c.getString("[@expression]");
-            String meta = c.getString("[@meta]");
-            c.setThrowExceptionOnMissing(true);
-            String key = c.getString("[@key]");
-            if (value != null) {
-                mapper.addTagBuilder(new FixedTagBuilder(key, value));
-            } else if (meta != null) {
-                mapper.addTagBuilder(new MetaTagBuilder(key, meta, format));
-            } else if (property != null) {
-                mapper.addTagBuilder(new PropertyTagBuilder(key, property,
-                        format));
-            } else if (expression != null) {
-                mapper.addTagBuilder(new ExpressionTagBuilder(key, expression));
-            }
-        }
-        configureGeometryMapper(mapper, conf.configurationAt("geometry"));
-        ODS.registerFeatureMapper(mapper);
-    }
+//    private void configureFeatureMappers(HierarchicalConfiguration conf)
+//            throws ConfigurationException {
+//        for (HierarchicalConfiguration c : conf.configurationsAt("map")) {
+//            configureFeatureMapper(c);
+//        }
+//    }
+//
+//    private void configureFeatureMapper(HierarchicalConfiguration conf)
+//            throws ConfigurationException {
+//        DefaultFeatureMapper mapper = new DefaultFeatureMapper();
+//        mapper.setFeatureName(conf.getString("[@feature]"));
+//        for (HierarchicalConfiguration c : conf.configurationsAt("tag")) {
+//            String value = c.getString("[@value]");
+//            String property = c.getString("[@property]");
+//            String format = c.getString("[@format]");
+//            String expression = c.getString("[@expression]");
+//            String meta = c.getString("[@meta]");
+//            c.setThrowExceptionOnMissing(true);
+//            String key = c.getString("[@key]");
+//            if (value != null) {
+//                mapper.addTagBuilder(new FixedTagBuilder(key, value));
+//            } else if (meta != null) {
+//                mapper.addTagBuilder(new MetaTagBuilder(key, meta, format));
+//            } else if (property != null) {
+//                mapper.addTagBuilder(new PropertyTagBuilder(key, property,
+//                        format));
+//            } else if (expression != null) {
+//                mapper.addTagBuilder(new ExpressionTagBuilder(key, expression));
+//            }
+//        }
+//        configureGeometryMapper(mapper, conf.configurationAt("geometry"));
+//        ODS.registerFeatureMapper(mapper);
+//    }
 
     private void configureGeometryMapper(DefaultFeatureMapper mapper,
             SubnodeConfiguration conf) throws ConfigurationException {
@@ -359,24 +375,24 @@ public class ConfigurationReader {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    private Class<? extends Entity> getEntityClass(String entityType) throws ConfigurationException {
-        if (entityType == null) {
-            return SimpleImportedEntity.class;
-        }
-        Class<? extends Entity> entityClass = null;
-        try {
-            entityClass = (Class<? extends Entity>) ODS.getClass("entity", entityType);
-            if (entityClass == null) {
-                throw new ConfigurationException(I18n.tr("Unknown entity: {0}",
-                    entityType));
-            }
-        }
-        catch (ClassCastException e) {
-            throw new ConfigurationException(I18n.tr("Invalid entity type: {0}",
-                    entityClass));
-            
-        }
-        return entityClass;
-    }
+//    @SuppressWarnings("unchecked")
+//    private Class<? extends Entity> getEntityClass(String entityType) throws ConfigurationException {
+//        if (entityType == null) {
+//            return ExternalImportedEntity.class;
+//        }
+//        Class<? extends Entity> entityClass = null;
+//        try {
+//            entityClass = (Class<? extends Entity>) ODS.getClass("entity", entityType);
+//            if (entityClass == null) {
+//                throw new ConfigurationException(I18n.tr("Unknown entity: {0}",
+//                    entityType));
+//            }
+//        }
+//        catch (ClassCastException e) {
+//            throw new ConfigurationException(I18n.tr("Invalid entity type: {0}",
+//                    entityClass));
+//            
+//        }
+//        return entityClass;
+//    }
 }

@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.imported;
+package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,14 +9,14 @@ import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 
-public abstract class ImportedBuilding extends ImportedEntity implements Building {
+public abstract class ExternalBuilding extends ExternalEntity implements Building {
     private MultiPolygon geometry;
     private boolean complete;
-    private Place place;
+    private City city;
     private Block block;
     private Set<Address> addresses = new HashSet<Address>();
     
@@ -25,8 +25,8 @@ public abstract class ImportedBuilding extends ImportedEntity implements Buildin
     }
     
 	@Override
-	public String getNamespace() {
-		return Building.NAMESPACE;
+	public String getType() {
+		return Building.TYPE;
 	}
 
 	@Override
@@ -48,8 +48,8 @@ public abstract class ImportedBuilding extends ImportedEntity implements Buildin
 	}
 
 	@Override
-	public Place getPlace() {
-		return place;
+	public City getCity() {
+		return city;
 	}
 	
 	@Override
@@ -66,8 +66,8 @@ public abstract class ImportedBuilding extends ImportedEntity implements Buildin
 		this.geometry = geometry;
 	}
 
-	public void setPlace(Place place) {
-		this.place = place;
+	public void setPlace(City city) {
+		this.city = city;
 	}
 
 	public void setBlock(Block block) {

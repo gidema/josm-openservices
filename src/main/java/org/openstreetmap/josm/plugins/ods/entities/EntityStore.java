@@ -11,9 +11,9 @@ import java.util.Map;
  * @author gertjan
  *
  */
-public class EntityStore<T extends Entity> {
-    private Map<Serializable, T> entities = new HashMap<Serializable, T>();
-    private Map<String, T> namedEntities = new HashMap<String, T>();
+public class EntityStore {
+    private Map<Serializable, Entity> entities = new HashMap<>();
+    private Map<String, Entity> namedEntities = new HashMap<>();
 	private String namespace;
     
 	public EntityStore(String namespace) {
@@ -25,7 +25,7 @@ public class EntityStore<T extends Entity> {
 		return namespace;
 	}
 	
-	public boolean add(T entity) {
+	public boolean add(Entity entity) {
 		if (!entities.containsKey(entity.getId())) {
             entities.put(entity.getId(), entity);
       		namedEntities.put(entity.getName(), entity);
@@ -34,15 +34,19 @@ public class EntityStore<T extends Entity> {
 		return false;
 	}
 	
-	public T get(Serializable id) {
+	public Entity get(Serializable id) {
 		return entities.get(id);
 	}
 	
-	public T getByName(String name) {
+	public Entity getByName(String name) {
 	    return namedEntities.get(name);
 	}
 	
-	public Iterator<T> iterator() {
+	public Iterator<Entity> iterator() {
 	    return entities.values().iterator();
 	}
+
+    public boolean contains(Entity entity) {
+        return get(entity.getId()) != null;
+    }
 }

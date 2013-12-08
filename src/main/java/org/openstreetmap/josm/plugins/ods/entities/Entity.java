@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 
 /**
  * ODS entities are represent entities like buildings, address nodes,
@@ -25,11 +26,11 @@ public interface Entity {
     void build() throws BuildException;
     
 	/**
-	 * Get the namespace of this object
+	 * Get the entityType of this object
 	 * 
 	 * @return
 	 */
-	public String getNamespace();
+	public String getType();
 	
 	
 	/**
@@ -60,6 +61,15 @@ public interface Entity {
      */
 //    public EntitySet getEntitySet();
     
+    
+    /**
+     * Create the osm primitives for this entity
+     * 
+     * @param primitiveBuilder
+     * The primitiveBuilder to be used
+     */
+    public abstract void createPrimitives(PrimitiveBuilder primitiveBuilder);
+
     /**
      * Get the OSM primitives of this entity
      * In most cases, this collection will contain only one primitive

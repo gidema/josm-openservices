@@ -10,17 +10,17 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class BuiltEnvironmentEntitySet implements EntitySet {
     private EntitySet entitySet; // The wrapped entitySet
-    private EntityStore<Building> buildings;
-    private EntityStore<Address> addresses;
-    private EntityStore<Place> cities;
-    private EntityStore<Street> streets;
+    private EntityStore buildings;
+    private EntityStore addresses;
+    private EntityStore cities;
+    private EntityStore streets;
     
     public BuiltEnvironmentEntitySet(EntitySet entitySet) {
         this.entitySet = entitySet;
-        buildings = entitySet.getStore(Building.NAMESPACE);
-        addresses = entitySet.getStore(Address.NAMESPACE);
-        cities = entitySet.getStore(Place.NAMESPACE);
-        streets = entitySet.getStore(Street.NAMESPACE);
+        buildings = entitySet.getStore(Building.TYPE);
+        addresses = entitySet.getStore(Address.TYPE);
+        cities = entitySet.getStore(City.TYPE);
+        streets = entitySet.getStore(Street.TYPE);
 
     }
 
@@ -30,13 +30,13 @@ public class BuiltEnvironmentEntitySet implements EntitySet {
     }
 
     @Override
-    public <T extends Entity> boolean add(T entity) {
+    public boolean add(Entity entity) {
         return entitySet.add(entity);
     }
 
     @Override
-    public <T extends Entity> EntityStore<T> getStore(String nameSpace) {
-        return entitySet.getStore(nameSpace);
+    public EntityStore getStore(String entityType) {
+        return entitySet.getStore(entityType);
     }
 
 
@@ -52,22 +52,22 @@ public class BuiltEnvironmentEntitySet implements EntitySet {
 
 
     public Street getStreet(String fullName) {
-        return streets.getByName(fullName);
+        return (Street) streets.getByName(fullName);
     }
 
-    public Place getPlace(String cityName) {
-        return cities.getByName(cityName);
+    public City getCity(String cityName) {
+        return (City) cities.getByName(cityName);
     }
     
-    public EntityStore<Building> getBuildings() {
+    public EntityStore getBuildings() {
         return buildings;
     }
     
-    public EntityStore<Address> getAddresses() {
+    public EntityStore getAddresses() {
         return addresses;
     }
 
-    public EntityStore<Street> getStreets() {
+    public EntityStore getStreets() {
         return streets;
     }
 

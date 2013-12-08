@@ -1,22 +1,23 @@
-package org.openstreetmap.josm.plugins.ods.entities.imported;
+package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
 
-public class ImportedStreet extends AbstractEntity implements Street {
+import com.vividsolutions.jts.geom.Geometry;
+
+public class ExternalStreet extends ExternalEntity implements Street {
     private String fullName;
     private String cityName;
     private String streetName;
-    private Place place;
+    private City city;
     private Set<Address> addresses = new HashSet<Address>();
     
-    public ImportedStreet(String cityName, String streetName) {
+    public ExternalStreet(String cityName, String streetName) {
         this.cityName = cityName;
         this.streetName = streetName;
         this.fullName = getFullName(cityName, streetName);
@@ -34,8 +35,8 @@ public class ImportedStreet extends AbstractEntity implements Street {
     }
     
     @Override
-    public String getNamespace() {
-        return Street.NAMESPACE;
+    public String getType() {
+        return Street.TYPE;
     }
 
     @Override
@@ -44,8 +45,8 @@ public class ImportedStreet extends AbstractEntity implements Street {
     }
 
     @Override
-    public Place getPlace() {
-        return place;
+    public City getCity() {
+        return city;
     }
 
     @Override
@@ -68,6 +69,11 @@ public class ImportedStreet extends AbstractEntity implements Street {
         return addresses;
     }
 
+    @Override
+    public Geometry getGeometry() {
+        return null;
+    }
+    
     public static String getFullName(String cityName, String streetName) {
         return streetName + "|" + cityName;
     }

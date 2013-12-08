@@ -7,7 +7,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import com.vividsolutions.jts.geom.Polygon;
 
 public interface Block extends Entity {
-  public Place getPlace();
+  public City getCity();
   public Polygon getArea();
   public Set<Building> getBuildings();
   public Set<Address> getAddresses();

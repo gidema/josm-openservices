@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.imported;
+package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.io.Serializable;
 
@@ -8,14 +8,16 @@ import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
+import com.vividsolutions.jts.geom.Geometry;
 
-public abstract class ImportedEntity extends AbstractEntity {
+
+public abstract class ExternalEntity extends AbstractEntity {
     private SimpleFeature feature;
     private MetaData metaData;
-    private String namespace;
+    private String entityType;
     
     public void init(MetaData metaData) throws BuildException {
-        namespace = feature.getName().getNamespaceURI().intern();
+        entityType = feature.getName().getNamespaceURI().intern();
     }
     
     public void setFeature(SimpleFeature feature) {
@@ -27,8 +29,8 @@ public abstract class ImportedEntity extends AbstractEntity {
     }
 
     @Override
-    public String getNamespace() {
-        return namespace;
+    public String getType() {
+        return entityType;
     }
 
     @Override
@@ -44,6 +46,13 @@ public abstract class ImportedEntity extends AbstractEntity {
         return metaData;
     }
     
-    public abstract void createPrimitives(PrimitiveBuilder primitiveBuilder);
+    public abstract Geometry getGeometry();
+    
+    @Override
+    public void createPrimitives(PrimitiveBuilder builder) {
+        if (getPrimitives() == null && getGeometry() != null) {
+            setPrimitives(builder.build(getGeometry(), getKeys()));
+        }
+    }
 
 }

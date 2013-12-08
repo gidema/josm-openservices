@@ -1,19 +1,18 @@
-package org.openstreetmap.josm.plugins.ods.entities.imported;
+package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Place;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
 
 import com.vividsolutions.jts.geom.Point;
 
-public abstract class ImportedAddress extends ImportedEntity implements Address {
-    private Place place;
+public abstract class ExternalAddress extends ExternalEntity implements Address {
+    private City city;
     private Block block;
     private Building building;
     private Street street;
@@ -32,13 +31,13 @@ public abstract class ImportedAddress extends ImportedEntity implements Address 
 	}
 
 	@Override
-	public String getNamespace() {
-		return Address.NAMESPACE;
+	public String getType() {
+		return Address.TYPE;
 	}
 
 	@Override
-	public Place getPlace() {
-		return place;
+	public City getCity() {
+		return city;
 	}
 
 	@Override
@@ -80,8 +79,8 @@ public abstract class ImportedAddress extends ImportedEntity implements Address 
 		return houseName;
 	}
 
-	public void setPlace(Place place) {
-		this.place = place;
+	public void setPlace(City city) {
+		this.city = city;
 	}
 
 	public void setBlock(Block block) {
@@ -130,14 +129,7 @@ public abstract class ImportedAddress extends ImportedEntity implements Address 
 	}
 	
     public String getPlaceName() {
-        if (getPlace() == null) return null;
-        return getPlace().getName();
-    }
-
-    @Override
-    public void createPrimitives(PrimitiveBuilder builder) {
-        if (getPrimitives() == null) {
-            setPrimitives(builder.build(getGeometry(), getKeys()));
-        }
+        if (getCity() == null) return null;
+        return getCity().getName();
     }
 }
