@@ -1,33 +1,26 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import java.io.Serializable;
 
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+public interface Address {
+    public City getCity();
 
-import com.vividsolutions.jts.geom.Point;
+//    public Serializable getBuildingRef();
 
-public interface Address extends Entity {
-	public final static String TYPE = "ods:address";
+//    public void setBuilding(Building building);
 
-	public City getCity();
-
-	public Block getBlock();
-	
-	public Serializable getBuildingRef();
-
-	public Building getBuilding();
+//    public Building getBuilding();
 
     public String getStreetName();
 
     public Street getStreet();
 
-	public String getPostcode();
+    public String getPostcode();
 
-	public String getHouseNumber();
+    public String getHouseNumber();
 
-	public String getHouseName();
-	
-	public Point getGeometry();
+    public String getHouseName();
 
-    String getPlaceName();
+    public String getPlaceName();
+
+    public void setStreet(Street street);
 }

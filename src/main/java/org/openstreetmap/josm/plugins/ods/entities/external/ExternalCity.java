@@ -1,9 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -13,8 +11,8 @@ public abstract class ExternalCity extends ExternalEntity implements City {
     protected String name;
     
     @Override
-    public String getType() {
-        return City.TYPE;
+    public Class<? extends Entity> getType() {
+        return City.class;
     }
 
     @Override
@@ -28,16 +26,9 @@ public abstract class ExternalCity extends ExternalEntity implements City {
     }
 
     @Override
-    public void createPrimitives(PrimitiveBuilder builder) {
-        if (getPrimitives() == null) {
-            setPrimitives(builder.build(geometry, getKeys()));
-        }
-    }
-
-    @Override
-    protected Map<String, String> getKeys() {
-        Map<String, String> keys = new HashMap<>();
-        keys.put("name", name);
-        return keys;
+    protected void buildTags(OsmPrimitive primitive) {
+        primitive.put("name", name);
+        primitive.put("boundary", "administrative");
+        primitive.put("type", "multipolygon");
     }    
 }

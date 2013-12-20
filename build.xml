@@ -151,8 +151,8 @@
        <manifest>
          <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;"/>
          <attribute name="Plugin-Class" value="${plugin.class}"/>
-         <attribute name="Plugin-Date" value="${version.entry.commit.date}"/>
-         <attribute name="Plugin-Description" value="FIXME"/>
+         <attribute name="Plugin-Date" value="${time}"/>
+         <attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS"/>
          <attribute name="Plugin-Icon" value="images/wfs.png"/>
          <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
          <attribute name="Plugin-Mainversion" value="${plugin.main.version}"/>

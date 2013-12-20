@@ -16,7 +16,17 @@ public abstract class AbstractEntity implements Entity {
 		return null;
 	}
 
-	protected void setPrimitives(Collection<OsmPrimitive> primitives) {
+	@Override
+    public boolean isIncomplete() {
+        return false;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return false;
+    }
+
+    protected void setPrimitives(Collection<OsmPrimitive> primitives) {
         this.primitives = primitives;
     }
 

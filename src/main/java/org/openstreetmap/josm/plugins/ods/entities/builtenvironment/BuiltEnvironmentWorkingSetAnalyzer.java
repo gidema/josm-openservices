@@ -15,8 +15,8 @@ public class BuiltEnvironmentWorkingSetAnalyzer {
     }
     
     public void analyze() {
-        EntitySet osmEntities = workingSet.getOdsOsmDataLayer().getEntitySet();
-        EntitySet importedEntities = workingSet.getImportDataLayer().getEntitySet();
+        EntitySet osmEntities = workingSet.getInternalDataLayer().getEntitySet();
+        EntitySet importedEntities = workingSet.getExternalDataLayer().getEntitySet();
         
     }
 }

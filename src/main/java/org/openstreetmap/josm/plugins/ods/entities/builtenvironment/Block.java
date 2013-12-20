@@ -10,5 +10,5 @@ public interface Block extends Entity {
   public City getCity();
   public Polygon getArea();
   public Set<Building> getBuildings();
-  public Set<Address> getAddresses();
+  public Set<AddressNode> getAddresses();
 }

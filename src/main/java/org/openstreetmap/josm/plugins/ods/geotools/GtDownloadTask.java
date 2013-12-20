@@ -63,8 +63,10 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     String geometryProperty = gtFeatureSource.getFeatureType()
                             .getGeometryDescriptor().getLocalName();
                     // TODO Find faster solution for the following line
-                    ReferencedEnvelope bbox = CRSUtil.getInstance().createBoundingBox(
-                            gtFeatureSource.getCrs(), bounds);
+                    CRSUtil crsUtil = CRSUtil.getInstance();
+                    ReferencedEnvelope bbox = crsUtil.createBoundingBox(gtFeatureSource.getCrs(), bounds);
+//                    ReferencedEnvelope bbox = CRSUtil.getInstance().createBoundingBox(
+//                    CRSUtil.OSM_CRS, bounds);
                     Filter bboxFilter = ff.bbox(ff.property(geometryProperty),
                             bbox);
                     Filter dataFilter = dataSource.getFilter();

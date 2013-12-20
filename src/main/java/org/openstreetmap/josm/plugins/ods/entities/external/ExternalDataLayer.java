@@ -1,12 +1,15 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
+import java.util.Iterator;
+
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySetListener;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 
 /**
  * To distinct the ODS DataLayer from a normal Osm datalayer, we create a
@@ -17,7 +20,8 @@ import org.openstreetmap.josm.plugins.ods.entities.EntitySetListener;
  * @author Gertjan Idema
  * 
  */
-public class ExternalDataLayer extends OsmDataLayer implements EntitySetListener {
+public class ExternalDataLayer implements DataLayer {
+    private OsmDataLayer osmDataLayer;
     private EntitySet entitySet;
     private PrimitiveBuilder primitiveBuilder;
 
@@ -27,21 +31,46 @@ public class ExternalDataLayer extends OsmDataLayer implements EntitySetListener
      * @param name
      */
     public ExternalDataLayer(String name) {
-        super(new DataSet(), name, null);
+        DataSet dataSet = new DataSet();
+        osmDataLayer = new OsmDataLayer(dataSet, name, null);
         entitySet = new DefaultEntitySet();
-        entitySet.addListener(this);
-        primitiveBuilder = new PrimitiveBuilder(data);
-        data.setUploadDiscouraged(true);
+        primitiveBuilder = new PrimitiveBuilder(dataSet);
+        dataSet.setUploadDiscouraged(true);
     }
+
+    
+    @Override
+    public OsmDataLayer getOsmDataLayer() {
+        return osmDataLayer;
+    }
+
+
+    @Override
+    public boolean isInternal() {
+        return false;
+    }
+
 
     public EntitySet getEntitySet() {
         return entitySet;
     }
 
-    @Override
-    public void entityAdded(Entity entity) {
-        if (entity instanceof ExternalEntity) {
-          ((ExternalEntity)entity).createPrimitives(primitiveBuilder);
+    public void merge(EntitySet newEntities) {
+        DataSet data = osmDataLayer.data;
+        data.beginUpdate();
+        Iterator<EntityStore<? extends Entity>> stores = newEntities.stores();
+        while (stores.hasNext()) {
+            EntityStore<? extends Entity> store = stores.next();
+            Iterator<? extends Entity> entities = store.iterator();
+            while (entities.hasNext()) {
+                Entity entity = entities.next();
+                if (!entity.isIncomplete() && !entity.isDeleted()) {
+                    if (entitySet.add(entity)) {
+                        entity.createPrimitives(primitiveBuilder);
+                    }
+                };
+            }
         }
+        data.endUpdate();
     }
 }

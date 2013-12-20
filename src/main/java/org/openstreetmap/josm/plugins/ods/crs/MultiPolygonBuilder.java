@@ -11,8 +11,8 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.issue.InvalidMultiPolygonIssue;
 import org.openstreetmap.josm.plugins.ods.issue.JosmIssue;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class MultiPolygonBuilder {
@@ -22,7 +22,7 @@ public class MultiPolygonBuilder {
     List<Way> innerWays = new LinkedList<Way>();
     List<RelationMember> otherMembers = new LinkedList<RelationMember>();
     private JosmIssue issue;
-    private MultiPolygon mpg;
+    private Geometry geometry;
 
     public MultiPolygonBuilder(Relation relation) {
         this.relation = relation;
@@ -89,26 +89,15 @@ public class MultiPolygonBuilder {
         return otherMembers;
     }
 
-    private void buildGeometry() throws InvalidMultiPolygonException {
+    private void buildGeometry() throws IllegalArgumentException {
         List<Polygon> holes = new LinkedList<Polygon>();
-        try {
-            for (Way way : innerWays) {
-                holes.add(geoUtil.toPolygon(way));
-            }
-        } catch (InvalidPolygonException e) {
-            throw new InvalidMultiPolygonException(relation,
-                 "One or more of the inner ways of this relation are not closed");
+        for (Way way : innerWays) {
+            holes.add(geoUtil.toPolygon(way));
         }
         List<Polygon> polygons = new ArrayList<Polygon>(outerWays.size());
         for (Way way : outerWays) {
-            Polygon shell= null;
-            try {
-                shell = geoUtil.toPolygon(way);
-            } catch (InvalidPolygonException e) {
-                throw new InvalidMultiPolygonException(relation,
-                        "One or more of the outer ways of this relation are not closed");
-            }
-            List<LinearRing> innerRings = new LinkedList<LinearRing>();
+            Polygon shell = geoUtil.toPolygon(way);
+           List<LinearRing> innerRings = new LinkedList<LinearRing>();
             Iterator<Polygon> it = holes.iterator();
             while (it.hasNext()) {
                 Polygon hole = it.next();
@@ -117,18 +106,21 @@ public class MultiPolygonBuilder {
                     it.remove();
                 }
             }
-            polygons.add(geoUtil.toPolygon((LinearRing) shell.getBoundary(), innerRings));
+            polygons.add(geoUtil.createPolygon((LinearRing) shell.getBoundary(), innerRings));
         }
         if (holes.size() > 0) {
-            throw new InvalidMultiPolygonException(relation,
+            throw new IllegalArgumentException(
                 "One or more of the inner rings of this relation don't fall " +
                 "within one of the outer rings.");
             
         }
-        mpg = geoUtil.toMultiPolygon(polygons);
+        if (polygons.size() == 1) {
+            geometry = polygons.get(0);
+        }
+        geometry = geoUtil.createMultiPolygon(polygons);
     }
 
-    public MultiPolygon getMultiPolygon() {
-        return mpg;
+    public Geometry getGeometry() {
+        return geometry;
     }
 }

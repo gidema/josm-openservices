@@ -15,24 +15,25 @@ import org.openstreetmap.josm.plugins.ods.crs.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.crs.InvalidGeometryException;
 import org.openstreetmap.josm.plugins.ods.crs.InvalidMultiPolygonException;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 import org.openstreetmap.josm.plugins.ods.issue.JosmIssue;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class InternalBuilding extends InternalEntity implements Building {
-    private MultiPolygon multiPolygon;
+    private Geometry geometry;
     private String source = "unknown";
     private String sourceDate;
     private String startDate;
     private String buildingType = "yes";
     private String bagId;
     private boolean underConstruction = false;
-    private Set<Address> addresses = new HashSet<Address>();
+    private Set<AddressNode> addresses = new HashSet<AddressNode>();
     private Map<String, String> addressKeys = new HashMap<>();
     private boolean hasAddress = false; // True if this building has address tags
 
@@ -41,8 +42,13 @@ public class InternalBuilding extends InternalEntity implements Building {
     }
 
     @Override
-    public String getType() {
-        return Building.TYPE;
+    public void setIncomplete(boolean complete) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public Class<? extends Entity> getType() {
+        return Building.class;
     }
 
     public void build() throws BuildException {
@@ -79,13 +85,16 @@ public class InternalBuilding extends InternalEntity implements Building {
                 source = "BAG";
                 if (value.length() == 11 && value.charAt(6) == '-') {
                     try {
-                        String month = value.substring(4, 2);
-                        String year = value.substring(7, 4);
+                        String month = value.substring(4, 6);
+                        String year = value.substring(7, 11);
                         int m = Integer.parseInt(month);
                         int y = Integer.parseInt(year);
-                        sourceDate = String.format("%1$4s-%2$02s", y, m);
+                        sourceDate = String.format("%1$4d-%2$02d", y, m);
                     }
-                    finally {};
+                    catch (Exception e) {
+                        // Something went wrong. Ignore the source date and print the stack trace
+                        e.printStackTrace();
+                    };
                 }
             }
             else if ("source:date".equals(key)) {
@@ -107,7 +116,7 @@ public class InternalBuilding extends InternalEntity implements Building {
                 sourceDate = parseBagExtract(value);
             }
             else if ("addr:housenumber".equals(key)) {
-                InternalAddress address = new InternalAddress(primitive);
+                InternalAddressNode address = new InternalAddressNode(primitive);
                 address.build();
                 getAddresses().add(address);
                 hasAddress = true;
@@ -125,9 +134,13 @@ public class InternalBuilding extends InternalEntity implements Building {
         }
     }
 
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
+    }
+
     @Override
-    public MultiPolygon getGeometry() {
-        return multiPolygon;
+    public Geometry getGeometry() {
+        return geometry;
     }
 
     @Override
@@ -137,7 +150,7 @@ public class InternalBuilding extends InternalEntity implements Building {
     }
 
     @Override
-    public Set<Address> getAddresses() {
+    public Set<AddressNode> getAddresses() {
         return addresses;
     }
 
@@ -152,9 +165,9 @@ public class InternalBuilding extends InternalEntity implements Building {
     }
 
     @Override
-    public boolean isComplete() {
+    public boolean isIncomplete() {
         // TODO check this. The whole area must be downloaded
-        return !getPrimitive().isIncomplete();
+        return getPrimitive().isIncomplete();
     }
 
     @Override
@@ -184,14 +197,14 @@ public class InternalBuilding extends InternalEntity implements Building {
         }
     }
 
-    private void buildGeometry(Way way) throws InvalidMultiPolygonException {
+    private void buildGeometry(Way way) throws IllegalArgumentException {
         GeoUtil geoUtil = GeoUtil.getInstance();
-        multiPolygon = geoUtil.toMultiPolygon(way);
+        geometry = geoUtil.toPolygon(way);
     }
     
     private void buildGeometry(Relation relation) throws InvalidMultiPolygonException {
         GeoUtil geoUtil = GeoUtil.getInstance();
-        multiPolygon = geoUtil.toMultiPolygon(relation);
+        geometry = geoUtil.toMultiPolygon(relation);
     }
     
     private String parseBagExtract(String s) {

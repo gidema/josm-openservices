@@ -1,15 +1,23 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
+import java.util.Iterator;
+
 import org.openstreetmap.josm.data.Bounds;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public interface EntitySet {
-    public void addListener(EntitySetListener listener);
     
-    public boolean add(Entity entity);
+    public <T extends Entity> boolean add(T entity);
     
-    public EntityStore getStore(String entityType);
+    public <T extends Entity> EntityStore<T> getStore(Class<? extends Entity> entityType);
+    
+    /**
+     * Retrieve an iterator that iterates over all stores
+     *  
+     * @return
+     */
+    public Iterator<EntityStore<? extends Entity>> stores();
     
     public Geometry getBoundary();
 

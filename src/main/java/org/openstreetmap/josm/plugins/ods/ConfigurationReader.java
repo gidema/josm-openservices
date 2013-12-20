@@ -163,8 +163,10 @@ public class ConfigurationReader {
     private void configureLayer(HierarchicalConfiguration conf)
             throws ConfigurationException {
         String name = conf.getString("[@name]");
+        String description = conf.getString("[@description]", "");
         OdsWorkingSet workingSet = new OdsWorkingSet();
         workingSet.setName(name);
+        workingSet.setDescription(description);
         configureDataSources(conf, workingSet);
         String osmQuery = conf.getString("osm_query");
         workingSet.setOsmQuery(osmQuery);
@@ -378,7 +380,7 @@ public class ConfigurationReader {
 //    @SuppressWarnings("unchecked")
 //    private Class<? extends Entity> getEntityClass(String entityType) throws ConfigurationException {
 //        if (entityType == null) {
-//            return ExternalImportedEntity.class;
+//            return SimpleExternalEntity.class;
 //        }
 //        Class<? extends Entity> entityClass = null;
 //        try {

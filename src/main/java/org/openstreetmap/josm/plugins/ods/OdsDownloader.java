@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,12 +13,11 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.gui.progress.PleaseWaitProgressMonitor;
+import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalBuiltEnvironmentAnalyzer;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalEntityAnalyzer;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -40,19 +38,24 @@ public class OdsDownloader {
     }
 
     public void run() throws ExecutionException, InterruptedException {
+//        ProgressMonitor monitor = new PleaseWaitProgressMonitor(Main.map, I18n.tr("Downloading"));
+//        monitor.beginTask("Setup");
         setup();
         prepare();
         download();
+        System.out.println("Download finished");
         try {
             build();
         } catch (BuildException e) {
             throw new ExecutionException(e);
         }
         DataSource ds = new DataSource(bounds, "Import");
-        workingSet.getImportDataLayer().data.dataSources.add(ds);
-//        analyze(newEntities, bounds);
+        OsmDataLayer exernalDataLayer = workingSet.getExternalDataLayer().getOsmDataLayer();
+        exernalDataLayer.data.dataSources.add(ds);
+//        monitor.finishTask();
         computeBboxAndCenterScale();
-        Main.map.mapView.setActiveLayer(workingSet.getImportDataLayer());
+        workingSet.activate();
+        Main.map.mapView.setActiveLayer(exernalDataLayer);
     }
 
     /**
@@ -78,43 +81,44 @@ public class OdsDownloader {
         List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
 
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
-        for (DownloadTask task : downloadTasks) {
-            Future<?> future = executor.submit(task.getPrepareCallable());
-            futures.add(future);
-        }
-        // Wait for all futures to finish
-        boolean interrupted = false;
-        List<Exception> exceptions = new LinkedList<Exception>();
-        for (Future<?> future : futures) {
-            try {
-                future.get();
-            } catch (InterruptedException e) {
-                interrupted = true;
-            } catch (Exception e) {
-                exceptions.add(e);
+        try {
+            for (DownloadTask task : downloadTasks) {
+                Future<?> future = executor.submit(task.getPrepareCallable());
+                futures.add(future);
             }
-        }
-        if (interrupted) {
-            throw new InterruptedException();
-        }
-        if (!exceptions.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(I18n.trn("An error occurred while preparing the download jobs:",
-                    "{0} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
-            for (Exception e : exceptions) {
-                sb.append("\n").append(e.getMessage());
+            // Wait for all futures to finish
+            boolean interrupted = false;
+            List<Exception> exceptions = new LinkedList<Exception>();
+            for (Future<?> future : futures) {
+                try {
+                    future.get();
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                } catch (Exception e) {
+                    exceptions.add(e);
+                }
             }
-            throw new ExecutionException(sb.toString(), null);
-        }
+            if (interrupted) {
+                throw new InterruptedException();
+            }
+            if (!exceptions.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(I18n.trn("An error occurred while preparing the download jobs:",
+                        "{0} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
+                for (Exception e : exceptions) {
+                    sb.append("\n").append(e.getMessage());
+                }
+                throw new ExecutionException(sb.toString(), null);
+            }
+        } 
+        finally {
+            executor.shutdown();
+         }
     }
-
-    // finally {
-    // executor.shutdown();
-    // }
 
     private void download() throws ExecutionException, InterruptedException {
         workingSet.activate();
-        workingSet.activateOsmLayer();
+//        workingSet.activateOsmLayer();
         List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
 
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
@@ -122,6 +126,7 @@ public class OdsDownloader {
             Future<?> future = executor.submit(task.getDownloadCallable());
             futures.add(future);
         }
+        // TODO isn't this a bit early to shutdown the executor?
         executor.shutdown();
         boolean interrupted = false;
         List<Exception> exceptions = new LinkedList<Exception>();
@@ -147,7 +152,7 @@ public class OdsDownloader {
             }
             throw new ExecutionException(msg.toString(), null);
         }
-        workingSet.getImportDataLayer().getEntitySet().extendBoundary(bounds);
+        workingSet.getExternalDataLayer().getEntitySet().extendBoundary(bounds);
         // Retrieve the results
     }
     
@@ -174,14 +179,5 @@ public class OdsDownloader {
             v.visit(bounds);
             Main.map.mapView.recalculateCenterScale(v);
         }
-    }
-   
-    private void analyze(Set<Entity> newEntities, Bounds bounds) {
-        EntitySet entitySet = workingSet.getImportDataLayer().getEntitySet();
-        // TODO flexible configuration of analyzers
-        ExternalEntityAnalyzer analyzer = new ExternalBuiltEnvironmentAnalyzer();
-        analyzer.setEntitySet(entitySet);
-        analyzer.analyzeNewEntities(newEntities, bounds);
-        
     }
 }

@@ -1,49 +1,40 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class ExternalBuilding extends ExternalEntity implements Building {
-    private MultiPolygon geometry;
-    private boolean complete;
+    private Geometry geometry;
+    private boolean incomplete;
     private City city;
     private Block block;
-    private Set<Address> addresses = new HashSet<Address>();
+    private Set<AddressNode> addresses = new HashSet<AddressNode>();
     
-    public void setComplete(boolean complete) {
-        this.complete = complete;
+    public void setIncomplete(boolean incomplete) {
+        this.incomplete = incomplete;
     }
     
 	@Override
-	public String getType() {
-		return Building.TYPE;
+	public Class<? extends Entity> getType() {
+		return Building.class;
 	}
 
-	@Override
-	public void createPrimitives(PrimitiveBuilder builder) {
-		if (getPrimitives() == null) {
-			setPrimitives(builder.build(getGeometry(), getKeys()));
-		}
-	}
-
-	protected Map<String, String> getKeys() {
-		Map<String, String> keys = new HashMap<>();
-		keys.put("building", "yes");
-        return keys;	
+    @Override
+    protected void buildTags(OsmPrimitive primitive) {
+		primitive.put("building", "yes");
 	}
 	
 	@Override
-	public MultiPolygon getGeometry() {
+	public Geometry getGeometry() {
 		return geometry;
 	}
 
@@ -58,11 +49,11 @@ public abstract class ExternalBuilding extends ExternalEntity implements Buildin
 	}
 
 	@Override
-	public Set<Address> getAddresses() {
+	public Set<AddressNode> getAddresses() {
 		return addresses;
 	}
 
-	public void setGeometry(MultiPolygon geometry) {
+	public void setGeometry(Geometry geometry) {
 		this.geometry = geometry;
 	}
 
@@ -75,8 +66,8 @@ public abstract class ExternalBuilding extends ExternalEntity implements Buildin
 	}
 
     @Override
-    public boolean isComplete() {
-        return complete;
+    public boolean isIncomplete() {
+        return incomplete;
 //        return getEntitySet().getBoundary().covers(getGeometry());
     }
 }

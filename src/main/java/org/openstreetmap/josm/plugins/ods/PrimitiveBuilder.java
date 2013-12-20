@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.BBox;
@@ -55,49 +54,61 @@ public class PrimitiveBuilder {
         // }
     }
 
-    public Collection<OsmPrimitive> build(Geometry geometry,
-            Map<String, String> keys) {
+    public Collection<OsmPrimitive> build(Geometry geometry) {
         switch (geometry.getGeometryType()) {
+        case "Polygon":
+            return build((Polygon)geometry);
         case "MultiPolygon":
-            return build((MultiPolygon)geometry, keys);
+            return build((MultiPolygon)geometry);
         case "Point":
-            return build((Point)geometry, keys);
+            return build((Point)geometry);
         }
         return Arrays.asList(new OsmPrimitive[0]);
     }
 
-    public Collection<OsmPrimitive> build(MultiPolygon polygon,
-            Map<String, String> keys) {
-        return Collections.singletonList(buildMultiPolygon(polygon, keys));
+    public Collection<OsmPrimitive> build(Polygon polygon) {
+        return Collections.singletonList(buildArea(polygon));
     }
 
-    public Collection<OsmPrimitive> build(Point point, Map<String, String> keys) {
+    public Collection<OsmPrimitive> build(MultiPolygon mpg) {
+        return Collections.singletonList(buildArea(mpg));
+    }
+
+    public Collection<OsmPrimitive> build(Point point) {
         OsmPrimitive node = buildNode(point, false);
-        node.setKeys(keys);
         return Collections.singletonList(node);
     }
 
     /**
      * Create a josm Object from a MultiPolygon object The resulting Object depends
-     * on whether the input polygon has inner rings. If so, the result will be a
-     * Relation of type Multipolyon. Otherwise the result will be a Way
+     * on whether the input Multipolygon consists of multiple polygons. If so, the result will be a
+     * Relation of type Multipolyon. Otherwise the single polygon will be built.
      */
-    public OsmPrimitive buildMultiPolygon(MultiPolygon mpg, Map<String, String> keys) {
+    public OsmPrimitive buildArea(MultiPolygon mpg) {
         OsmPrimitive primitive;
         if (mpg.getNumGeometries() > 1) {
             primitive = buildMultiPolygon(mpg);
             primitive.put("type", "multipolygon");
         } else {
-            Polygon polygon = (Polygon) mpg.getGeometryN(0);
-            if (polygon.getNumInteriorRing() > 0) {
-                primitive = buildMultiPolygon(mpg);
-                primitive.put("type", "multipolygon");
-            }
-            else {
-                primitive = buildWay(polygon);
-            }
+            primitive = buildArea((Polygon) mpg.getGeometryN(0));
         }
-        primitive.setKeys(keys);
+        return primitive;
+    }
+
+    /**
+     * Create a josm Object from a Polygon object The resulting Object depends
+     * on whether the input polygon has inner rings. If so, the result will be a
+     * Relation of type Multipolyon. Otherwise the result will be a Way
+     */
+    public OsmPrimitive buildArea(Polygon polygon) {
+        OsmPrimitive primitive;
+        if (polygon.getNumInteriorRing() > 0) {
+            primitive = buildMultiPolygon(polygon);
+            primitive.put("type", "multipolygon");
+        }
+        else {
+            primitive = buildWay(polygon);
+        }
         return primitive;
     }
 

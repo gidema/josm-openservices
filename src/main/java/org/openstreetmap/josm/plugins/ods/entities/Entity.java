@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -30,15 +29,20 @@ public interface Entity {
 	 * 
 	 * @return
 	 */
-	public String getType();
+	public Class<? extends Entity> getType();
 	
+	public boolean isInternal();
 	
-	/**
+    boolean isIncomplete();
+
+    public boolean isDeleted();
+    
+    /**
 	 * Get the unique id of this entity with respect to its datasource
 	 * 
 	 * @return
 	 */
-	public Serializable getId();
+	public Object getId();
 	
 	/**
 	 * Get the unique name of this entity

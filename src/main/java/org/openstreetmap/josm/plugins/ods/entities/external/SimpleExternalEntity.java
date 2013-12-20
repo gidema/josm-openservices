@@ -1,19 +1,26 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import org.opengis.feature.simple.SimpleFeature;
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.tags.FeatureMapper;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ExternalImportedEntity extends ExternalEntity {
+public class SimpleExternalEntity extends ExternalEntity {
     private SimpleFeature feature;
     private FeatureMapper featureMapper;
 	
-	public ExternalImportedEntity(SimpleFeature feature) {
+	public SimpleExternalEntity(SimpleFeature feature) {
         super();
         this.feature = feature;
     }
+
+    @Override
+    public Class<? extends Entity> getType() {
+        return SimpleExternalEntity.class;
+    }
+
 
     public void setFeatureMapper(FeatureMapper featureMapper) {
 		this.featureMapper = featureMapper;
@@ -30,10 +37,9 @@ public class ExternalImportedEntity extends ExternalEntity {
         return null;
     }
 
+	
     @Override
-    public void createPrimitives(PrimitiveBuilder builder) {
-        if (getPrimitives() == null) {
-            setPrimitives(featureMapper.mapFeature(getFeature(), builder));
-        }
+    protected void buildTags(OsmPrimitive primitive) {
+        // TODO Auto-generated method stub
     }
 }

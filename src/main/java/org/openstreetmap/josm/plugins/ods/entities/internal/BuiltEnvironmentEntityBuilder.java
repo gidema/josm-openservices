@@ -10,18 +10,18 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuiltEnvironmentEntitySet;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuiltEnvironment;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 
 public class BuiltEnvironmentEntityBuilder {
-    BuiltEnvironmentEntitySet entitySet;
+    BuiltEnvironment entitySet;
     DataSet dataset;
     EntityStore buildings;
     EntityStore addresses;
     
 
     public BuiltEnvironmentEntityBuilder(InternalDataLayer dataLayer) {
-        entitySet = new BuiltEnvironmentEntitySet(dataLayer.getEntitySet());
+        entitySet = new BuiltEnvironment(dataLayer.getEntitySet());
         dataset = dataLayer.data;
         buildings = entitySet.getBuildings();
         addresses = entitySet.getAddresses();
@@ -93,7 +93,7 @@ public class BuiltEnvironmentEntityBuilder {
 
     private void buildAddress(Node node) {
         if (addresses.get(node.getId()) == null) {
-            InternalAddress address = new InternalAddress(node);
+            InternalAddressNode address = new InternalAddressNode(node);
             address.build();
             entitySet.getAddresses().add(address);
         }

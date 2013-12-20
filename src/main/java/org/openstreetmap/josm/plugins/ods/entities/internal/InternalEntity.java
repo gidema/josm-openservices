@@ -19,6 +19,13 @@ public abstract class InternalEntity extends AbstractEntity {
         this.primitive = primitive;
     }
 
+    
+    @Override
+    public boolean isInternal() {
+        return true;
+    }
+
+
     public OsmPrimitive getPrimitive() {
         return primitive;
     }

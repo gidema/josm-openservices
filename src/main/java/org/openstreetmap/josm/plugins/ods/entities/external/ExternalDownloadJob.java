@@ -7,17 +7,21 @@ import java.util.concurrent.Callable;
 
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
+import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToStreetMatcher;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingCompletenessAnalyzer;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingSimplifier;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.CrossingBuildingAnalyzer;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
@@ -26,14 +30,22 @@ public class ExternalDownloadJob implements DownloadJob {
     private ExternalDataLayer dataLayer;
     private Bounds bounds;
     private List<ExternalDownloadTask> downloadTasks;
-    private List<Entity> newEntities = new LinkedList<>();
+    private EntitySet entities;
     private EntityFactory entityFactory;
+    private List<Analyzer> analyzers;
 
     public ExternalDownloadJob(OdsWorkingSet workingSet, Bounds bounds) {
         this.workingSet = workingSet;
-        this.dataLayer = workingSet.getImportDataLayer();
+        this.dataLayer = workingSet.getExternalDataLayer();
         this.entityFactory = workingSet.getEntityFactory();
         this.bounds = bounds;
+        Double tolerance = 2e-7;
+        analyzers = new ArrayList<>(5);
+        analyzers.add(new BuildingSimplifier(tolerance));
+        analyzers.add(new CrossingBuildingAnalyzer(tolerance));
+        analyzers.add(new AddressToBuildingMatcher());
+        analyzers.add(new BuildingCompletenessAnalyzer());
+        analyzers.add(new AddressToStreetMatcher());
     }
 
     @Override
@@ -76,27 +88,21 @@ public class ExternalDownloadJob implements DownloadJob {
      */
     public void build() throws BuildException {
         // First create entities for all downloaded features
-        newEntities = new LinkedList<>();
+        entities = new DefaultEntitySet();
         for (ExternalDownloadTask downloadTask : downloadTasks) {
             buildEntities(downloadTask);
         }
+        entities.extendBoundary(bounds);
         // Next establish the relationships between the features
-        EntitySet entitySet = dataLayer.getEntitySet();
-        ExternalEntityAnalyzer analyzer = entityFactory.getEntityAnalyzer();
-        if (analyzer != null) {
-            analyzer.setEntitySet(entitySet);
-            analyzer.analyzeNewEntities(newEntities, bounds);
-        }
-        // Finally build the Josm primitives for the entities
-        DataSet dataSet = dataLayer.data;
-        PrimitiveBuilder builder = new PrimitiveBuilder(dataSet);
-        dataSet.beginUpdate();
-        for (Entity entity : newEntities) {
-            entity.createPrimitives(builder);
-        }
-        dataSet.endUpdate();
+        analyze();
+        dataLayer.merge(entities);
     }
     
+    private void analyze() {
+        for (Analyzer analyzer : analyzers) {
+            analyzer.analyze(dataLayer, entities);
+        }
+    }
     
     /**
      * Create entities for the downloaded features. Add them to the dataSet and to the 
@@ -107,16 +113,13 @@ public class ExternalDownloadJob implements DownloadJob {
      */
     private void buildEntities(ExternalDownloadTask task) throws BuildException {
         String entityType = task.getDataSource().getEntityType();
-        EntityStore store = dataLayer.getEntitySet().getStore(entityType);
+//        EntityStore store = dataLayer.getEntitySet().getStore(entityType);
         MetaData metaData = task.getDataSource().getMetaData();
         List<Issue> issues = new LinkedList<>();
         for (SimpleFeature feature : task.getFeatures()) {
             try {
                 Entity entity = entityFactory.buildEntity(entityType, metaData, feature);
-                if (!store.contains(entity)) {
-                    store.add(entity);
-                    newEntities.add(entity);
-                }
+                entities.add(entity);
             } catch (BuildException e) {
                 issues.add(e.getIssue());
             }

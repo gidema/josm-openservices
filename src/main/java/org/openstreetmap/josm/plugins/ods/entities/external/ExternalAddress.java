@@ -1,48 +1,33 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.opengis.feature.simple.SimpleFeature;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
 
-import com.vividsolutions.jts.geom.Point;
-
-public abstract class ExternalAddress extends ExternalEntity implements Address {
+public abstract class ExternalAddress implements Address {
+    private SimpleFeature feature;
     private City city;
-    private Block block;
     private Building building;
     private Street street;
     private String postcode;
     private String houseNumber;
     private String houseName;
-    private Point geometry;
     
-    @Override
-    public void build() {
-        
+    public ExternalAddress(SimpleFeature feature) {
+        super();
+        this.feature = feature;
     }
-	@Override
-	public String getName() {
-		return null;
-	}
 
-	@Override
-	public String getType() {
-		return Address.TYPE;
-	}
+    public SimpleFeature getFeature() {
+        return feature;
+    }
 
-	@Override
+    @Override
 	public City getCity() {
 		return city;
-	}
-
-	@Override
-	public Block getBlock() {
-		return block;
 	}
 
 	public Building getBuilding() {
@@ -83,10 +68,6 @@ public abstract class ExternalAddress extends ExternalEntity implements Address 
 		this.city = city;
 	}
 
-	public void setBlock(Block block) {
-		this.block = block;
-	}
-
 	public void setStreet(Street street) {
 		this.street = street;
 	}
@@ -103,29 +84,11 @@ public abstract class ExternalAddress extends ExternalEntity implements Address 
 		this.houseName = houseName;
 	}
 	
-	public Point getGeometry() {
-		return geometry;
-	}
-
-	public void setGeometry(Point geometry) {
-		this.geometry = geometry;
-	}
-
-	protected Map<String, String> getKeys() {
-		Map<String, String> keys = new HashMap<>();
-		if (getHouseNumber() != null) {
-			keys.put("addr:housenumber", getHouseNumber());
-		}
-		if (getPostcode() != null) {
-			keys.put("addr:postcode", getPostcode());
-		}
-		if (getStreetName() != null) {
-			keys.put("addr:street", getStreetName());
-		}
-		if (getPlaceName() != null) {
-			keys.put("addr:city", getPlaceName());
-		}
-		return keys;
+    public void buildTags(OsmPrimitive primitive) {
+		primitive.put("addr:housenumber", getHouseNumber());
+		primitive.put("addr:postcode", getPostcode());
+		primitive.put("addr:street", getStreetName());
+		primitive.put("addr:city", getPlaceName());
 	}
 	
     public String getPlaceName() {

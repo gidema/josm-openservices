@@ -19,10 +19,10 @@ import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 public abstract class GtHost extends Host {
   private List<String> featureTypes;
   private DataStore dataStore;
-  private final boolean initialized = false;
+  private boolean initialized = false;
   
   @Override
-  public void initialize() throws InitializationException {
+  public synchronized void initialize() throws InitializationException {
     if (initialized) return;
     super.initialize();
     // TODO move to next line configuration fase
@@ -30,6 +30,7 @@ public abstract class GtHost extends Host {
     try {
       dataStore = DataStoreFinder.getDataStore(connectionParameters);
       featureTypes = Arrays.asList(getDataStore().getTypeNames());
+      initialized = true;
     } catch (IOException e) {
       throw new InitializationException("Unable to connect to the datastore", e);
     }

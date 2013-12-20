@@ -4,14 +4,13 @@ import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Geometry;
 
 public interface Building extends Entity {
-	public final static String TYPE = "ods:building";
-
-	public MultiPolygon getGeometry();
+    public void setGeometry(Geometry geometry);
+	public Geometry getGeometry();
 	public City getCity();
-    public Set<Address> getAddresses();
+    public Set<AddressNode> getAddresses();
 	public Block getBlock();
 	
 	/**
@@ -21,8 +20,8 @@ public interface Building extends Entity {
 	 * 
 	 * @return
 	 */
-	public boolean isComplete();
-	
+    public void setIncomplete(boolean incomplete);
+
 	public boolean isUnderConstruction();
 	
 	public String getStartDate();

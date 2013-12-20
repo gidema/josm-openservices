@@ -21,7 +21,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 public abstract class CRSUtil {
     private final static CRSUtil instance = new CRSUtilProj4j();
     private final static int OSM_SRID = 4326;
-    protected final static CoordinateReferenceSystem OSM_CRS;
+    public final static CoordinateReferenceSystem OSM_CRS;
     protected final static PrecisionModel OSM_PRECISION_MODEL = new PrecisionModel(
             10000000);
     protected final static GeometryFactory OSM_GEOMETRY_FACTORY = new GeometryFactory(
@@ -110,62 +110,4 @@ public abstract class CRSUtil {
         }
         return crs;
     }
-
-//    public Coordinate toCoordinate(Node node) {
-//        return toCoordinate(node.getEastNorth());
-//    }
-//    
-//    public Coordinate toCoordinate(LatLon latLon) {
-//        return new Coordinate(latLon.getX(), latLon.getY());
-//    }
-//    
-//    public Coordinate toCoordinate(EastNorth en) {
-//        return new Coordinate(en.getX(), en.getY());
-//    }
-//    
-//    public Point toPoint(Node node) {
-//        return toPoint(toCoordinate(node));    
-//    }
-//    public Point toPoint(EastNorth en) {
-//        return toPoint(toCoordinate(en));    
-//    }
-//    
-//    public Point toPoint(Coordinate coord) {
-//        return OSM_GEOMETRY_FACTORY.createPoint(coord);
-//    }
-//
-//    public Polygon toPolygon(Way way) {
-//        LinearRing shell = toLinearRing(way);
-//        return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
-//    }
-//
-//    public Polygon toPolygon(Relation relation) {
-//        Way outerWay;
-//        List<Way> innerWays = new LinkedList<Way>();
-//        for (RelationMember member : relation.getMembers())
-//            if ("outer".equals(member.getRole())) {
-////                member.getMember()
-//            }
-//        return null;
-//    }
-//    
-//    public LineString toLineString(Way way) {
-//        Coordinate[] coords = new Coordinate[way.getNodes().size()];
-//        int i=0;
-//        for (Node node: way.getNodes()) {
-//            coords[i++] = CRSUtils.toCoordinate(node);
-//        }
-//        return OSM_GEOMETRY_FACTORY.createLinearRing(coords);
-//    }
-//
-//    public LinearRing toLinearRing(Way way) {
-//        Coordinate[] coords = new Coordinate[way.getNodes().size() + 1];
-//        int i=0;
-//        for (Node node: way.getNodes()) {
-//            coords[i++] = CRSUtils.toCoordinate(node);
-//        }
-//        coords[i] = coords[0];
-//        return OSM_GEOMETRY_FACTORY.createLinearRing(coords);
-//    }
-
 }

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
@@ -15,7 +17,7 @@ public class ExternalStreet extends ExternalEntity implements Street {
     private String cityName;
     private String streetName;
     private City city;
-    private Set<Address> addresses = new HashSet<Address>();
+    private Set<Address> addresses = new HashSet<>();
     
     public ExternalStreet(String cityName, String streetName) {
         this.cityName = cityName;
@@ -25,8 +27,8 @@ public class ExternalStreet extends ExternalEntity implements Street {
 
     
 //    @Override
-//    public BuiltEnvironmentEntitySet getEntitySet() {
-//        return (BuiltEnvironmentEntitySet) super.getEntitySet();
+//    public BuiltEnvironment getEntitySet() {
+//        return (BuiltEnvironment) super.getEntitySet();
 //    }
 
 
@@ -35,8 +37,8 @@ public class ExternalStreet extends ExternalEntity implements Street {
     }
     
     @Override
-    public String getType() {
-        return Street.TYPE;
+    public Class<? extends Entity> getType() {
+        return Street.class;
     }
 
     @Override
@@ -78,6 +80,11 @@ public class ExternalStreet extends ExternalEntity implements Street {
         return streetName + "|" + cityName;
     }
     
+    @Override
+    protected void buildTags(OsmPrimitive primitive) {
+        primitive.put("name", getStreetName());
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder(100);
         sb.append(getName());

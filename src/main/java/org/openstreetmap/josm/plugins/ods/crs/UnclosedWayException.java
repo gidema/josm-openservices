@@ -10,6 +10,9 @@ public class UnclosedWayException extends Exception {
      */
     private static final long serialVersionUID = 7323107196151526925L;
 
+    public UnclosedWayException() {
+    }
+
     public UnclosedWayException(Way way) {
         this.way = way;
     }
