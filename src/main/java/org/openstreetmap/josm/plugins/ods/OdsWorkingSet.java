@@ -1,5 +1,8 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,6 +12,9 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.Main;
@@ -42,7 +48,8 @@ public class OdsWorkingSet implements LayerChangeListener {
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     public ExternalDataLayer externalDataLayer;
     public InternalDataLayer internalDataLayer;
-//    private JDialog toolbox;
+    private boolean useToolbox = false;
+    private JDialog toolbox;
     private final List<OdsAction> actions = new LinkedList<>();
     String osmQuery;
     private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<>();
@@ -110,14 +117,13 @@ public class OdsWorkingSet implements LayerChangeListener {
 
     public void addDataSource(OdsDataSource dataSource) {
         dataSources.put(dataSource.getFeatureType(), dataSource);
-//        dataSource.addFeatureListener(this);
     }
 
     void activate() {
         if (!active) {
             downloadAction = new OdsDownloadAction();
             downloadAction.setWorkingSet(this);
-//            initToolbox();
+            initToolbox();
             getExternalDataLayer();
             getInternalDataLayer();
             active = true;
@@ -129,27 +135,33 @@ public class OdsWorkingSet implements LayerChangeListener {
         internalDataLayer = null;
         externalDataLayer.getOsmDataLayer().destroy();
         externalDataLayer = null;
-//        toolbox.setVisible(false);
-//        toolbox = null;
+        toolbox.setVisible(false);
+        toolbox = null;
         active = false;
     }
 
-//    public JDialog getToolbox() {
-//        return toolbox;
-//    }
+    public JDialog getToolbox() {
+        return toolbox;
+    }
 
-//    private void initToolbox() {
-//        toolbox = new JDialog((Frame) Main.parent, "ODS");
-//        toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
-//                BoxLayout.Y_AXIS));
-//        toolbox.setLocation(300, 300);
-//        toolbox.setMinimumSize(new Dimension(110, 0));
-//        toolbox.add(new JButton(downloadAction));
-//        for (Action action : actions) {
-//            toolbox.add(new JButton(action));
-//        }
-//        toolbox.pack();
-//    }
+    private void initToolbox() {
+        toolbox = new JDialog((Frame) Main.parent, "ODS");
+        if (useToolbox) {
+            toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
+                    BoxLayout.Y_AXIS));
+            toolbox.setLocation(300, 300);
+            toolbox.setMinimumSize(new Dimension(110, 0));
+            toolbox.add(new JButton(downloadAction));
+            for (Action action : actions) {
+                toolbox.add(new JButton(action));
+            }
+            int width = toolbox.getContentPane().getWidth();
+            for (Component comp : toolbox.getComponents()) {
+                comp.setSize(width, comp.getHeight());
+            }
+            toolbox.pack();
+        }
+    }
 
     public void download(Bounds area, boolean downloadOsmData)
             throws ExecutionException, InterruptedException {
@@ -174,12 +186,15 @@ public class OdsWorkingSet implements LayerChangeListener {
 
     @Override
     public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-//        if (newLayer != null
-//                && (newLayer == externalDataLayer || newLayer == internalDataLayer)) {
-//            getToolbox().setVisible(true);
-//        } else if (active) {
-//            getToolbox().setVisible(false);
-//        }
+        if (!active) return;
+        if (newLayer != null
+                && (newLayer == externalDataLayer.getOsmDataLayer() || newLayer == internalDataLayer)) {
+            if (useToolbox) {
+                getToolbox().setVisible(true);
+            }
+        } else if (active) {
+            getToolbox().setVisible(false);
+        }
     }
 
     @Override
@@ -190,6 +205,7 @@ public class OdsWorkingSet implements LayerChangeListener {
     @Override
     public void layerRemoved(Layer oldLayer) {
         boolean deActivate = false;
+        if (!active) return;
         if (oldLayer == externalDataLayer.getOsmDataLayer()) {
             if (Main.map != null && Main.map.mapView.getAllLayers().contains(internalDataLayer)) {
                 Main.map.mapView.removeLayer(internalDataLayer);

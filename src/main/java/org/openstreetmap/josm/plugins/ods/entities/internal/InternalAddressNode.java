@@ -6,12 +6,12 @@ import java.util.Map.Entry;
 
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.crs.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Block;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 import com.vividsolutions.jts.geom.Point;
 

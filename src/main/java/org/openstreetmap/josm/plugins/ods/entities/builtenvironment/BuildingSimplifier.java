@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
+import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
@@ -39,7 +40,12 @@ public class BuildingSimplifier implements Analyzer {
             if (!geom.isValid()) {
                 geom = TopologyPreservingSimplifier.simplify(geom, tolerance);
             }
-            building.setGeometry(geom);
+            if (geom.isValid()) {
+                building.setGeometry(geom);
+            }
+            else {
+                System.out.println(I18n.tr("Could not simply building {0}", building.getId()));
+            }
         }
     }
 }

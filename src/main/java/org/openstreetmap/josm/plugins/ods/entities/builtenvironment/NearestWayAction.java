@@ -11,7 +11,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.WaySegment;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsAction;
-import org.openstreetmap.josm.plugins.ods.crs.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.tools.Pair;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -67,6 +67,6 @@ public class NearestWayAction extends OdsAction {
     }
 
     private boolean validWay(Way way) {
-        return way.hasKey("highway");
+        return way.hasKey("highway") || way.hasKey("water") || way.hasKey("rail");
     }
 }

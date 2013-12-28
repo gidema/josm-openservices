@@ -1,13 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.jts.LinearRingAligner;
 
-import org.openstreetmap.josm.plugins.ods.crs.GeoUtil;
-
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -36,44 +32,17 @@ public class CrossingBuildingFixer {
         }
         Polygon polygon1 = (Polygon) geom1;
         Polygon polygon2 = (Polygon) geom2;
-        List<Coordinate> coords1 = toList(polygon1.getExteriorRing().getCoordinates());
-        List<Coordinate> coords2 = toList(polygon2.getExteriorRing().getCoordinates());
-        fix(coords1, coords2);
-        fix(coords2, coords1);
+        LinearRing ring1 = (LinearRing)polygon1.getExteriorRing();
+        LinearRing ring2 = (LinearRing)polygon2.getExteriorRing();
+        LinearRingAligner aligner = new LinearRingAligner(ring1, ring2, tolerance);
+        aligner.run();
         GeoUtil geoUtil = GeoUtil.getInstance();
-        building1.setGeometry(geoUtil.toPolygon(coords1, getInteriorRings(polygon1)));
-        building2.setGeometry(geoUtil.toPolygon(coords2, getInteriorRings(polygon2)));
-    }
-    
-    private void fix(List<Coordinate> coords1, List<Coordinate> coords2) {
-        for (Coordinate coord1 : coords1) {
-            LineSegment segment = new LineSegment(coords2.get(0), coords2.get(0));
-            int i = 1;
-            while (i<coords2.size()) {
-                segment.p0 = segment.p1;
-                segment.p1 = coords2.get(i);
-                Double dist = segment.distance(coord1);
-                if (dist != 0 && dist < tolerance) {
-                    if (segment.p1.distance(coord1) < tolerance) {
-                        segment.p1 = coord1;
-                        coords2.set(i, coord1);
-                    }
-                    else {
-                        coords2.add(i, coord1);
-                        segment.p1 = coord1;
-                    }
-                }
-                i++;
-            }
+        if (aligner.ring1Modified()) {
+            building1.setGeometry(geoUtil.toPolygon(aligner.getRing1(), getInteriorRings(polygon1)));            
         }
-    }
-    
-    private LinkedList<Coordinate> toList(Coordinate[] coords) {
-        LinkedList<Coordinate> list = new LinkedList<>();
-        for (Coordinate coord : coords) {
-            list.add(coord);
+        if (aligner.ring2Modified()) {
+            building2.setGeometry(geoUtil.toPolygon(aligner.getRing2(), getInteriorRings(polygon2)));            
         }
-        return list;
     }
     
     private LinearRing[] getInteriorRings(Polygon polygon) {

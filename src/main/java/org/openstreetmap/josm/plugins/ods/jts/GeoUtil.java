@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.crs;
+package org.openstreetmap.josm.plugins.ods.jts;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.crs.InvalidMultiPolygonException;
+import org.openstreetmap.josm.plugins.ods.crs.UnclosedWayException;
 import org.openstreetmap.josm.tools.Pair;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -97,9 +99,13 @@ public class GeoUtil {
         return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
     }
 
-    public Polygon toPolygon(List<Coordinate> coords, LinearRing[] innerRings) {
+    public Polygon toPolygon(List<Coordinate> coords, LinearRing[] interiorRings) {
         LinearRing shell = toLinearRing(coords);
-        return OSM_GEOMETRY_FACTORY.createPolygon(shell, innerRings);
+        return toPolygon(shell, interiorRings);
+    }
+    
+    public Polygon toPolygon(LinearRing shell, LinearRing[] interiorRings) {
+        return OSM_GEOMETRY_FACTORY.createPolygon(shell, interiorRings);
     }
 
     public MultiPolygon toMultiPolygon(Way way) throws IllegalArgumentException {
@@ -127,7 +133,7 @@ public class GeoUtil {
     }
 
     public LineString toLineString(List<Coordinate> coords) {
-        return OSM_GEOMETRY_FACTORY.createLinearRing(
+        return OSM_GEOMETRY_FACTORY.createLineString(
             coords.toArray(new Coordinate[0]));
     }
 

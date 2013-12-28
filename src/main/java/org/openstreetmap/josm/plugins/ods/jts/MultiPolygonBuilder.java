@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.crs;
+package org.openstreetmap.josm.plugins.ods.jts;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,6 +8,7 @@ import java.util.List;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.crs.InvalidMultiPolygonException;
 import org.openstreetmap.josm.plugins.ods.issue.InvalidMultiPolygonIssue;
 import org.openstreetmap.josm.plugins.ods.issue.JosmIssue;
 

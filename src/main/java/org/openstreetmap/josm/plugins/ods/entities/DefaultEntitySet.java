@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.ods.crs.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
