@@ -63,7 +63,7 @@ public class ExternalDataLayer implements DataLayer {
             EntityStore<? extends Entity> store = stores.next();
             Iterator<? extends Entity> entities = store.iterator();
             while (entities.hasNext()) {
-                Entity entity = entities.next();
+                ExternalEntity entity = (ExternalEntity) entities.next();
                 if (!entity.isIncomplete() && !entity.isDeleted()) {
                     if (entitySet.add(entity)) {
                         entity.createPrimitives(primitiveBuilder);

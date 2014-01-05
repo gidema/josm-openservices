@@ -3,7 +3,8 @@ package org.openstreetmap.josm.plugins.ods.entities;
 import java.util.Collection;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * ODS entities are represent entities like buildings, address nodes,
@@ -31,12 +32,15 @@ public interface Entity {
 	 */
 	public Class<? extends Entity> getType();
 	
+	public String getSource();
+	
 	public boolean isInternal();
 	
     boolean isIncomplete();
 
     public boolean isDeleted();
     
+    public Geometry getGeometry();
     /**
 	 * Get the unique id of this entity with respect to its datasource
 	 * 
@@ -50,35 +54,22 @@ public interface Entity {
 	 * @return
 	 */
 	public String getName();
+
+    Collection<OsmPrimitive> getPrimitives();
 	
 	/**
-	 * Set the containing entitySet property of this entity
+	 * Set the containing environment property of this entity
 	 * 
-	 * @param entitySet
+	 * @param environment
 	 */
-//	public void setEntitySet(EntitySet entitySet);
+//	public void setEntitySet(EntitySet environment);
 	
     /**
-     * Get the containing entitySet of this entity
+     * Get the containing environment of this entity
      * 
      * @return
      */
 //    public EntitySet getEntitySet();
     
     
-    /**
-     * Create the osm primitives for this entity
-     * 
-     * @param primitiveBuilder
-     * The primitiveBuilder to be used
-     */
-    public abstract void createPrimitives(PrimitiveBuilder primitiveBuilder);
-
-    /**
-     * Get the OSM primitives of this entity
-     * In most cases, this collection will contain only one primitive
-     * 
-     * @return
-     */
-    public Collection<OsmPrimitive> getPrimitives();
 }

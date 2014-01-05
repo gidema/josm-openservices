@@ -23,7 +23,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
-import org.openstreetmap.josm.plugins.ods.entities.SimpleEntityFactory;
+import org.openstreetmap.josm.plugins.ods.entities.external.SimpleExternalEntityFactory;
 import org.openstreetmap.josm.plugins.ods.metadata.HttpMetaDataLoader;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataAttribute;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
@@ -185,7 +185,7 @@ public class ConfigurationReader {
             entityFactory = createEntityFactory(factoryConf);
         }
         else {
-            entityFactory = new SimpleEntityFactory();
+            entityFactory = new SimpleExternalEntityFactory();
         }
         layer.setEntityFactory(entityFactory);
     }

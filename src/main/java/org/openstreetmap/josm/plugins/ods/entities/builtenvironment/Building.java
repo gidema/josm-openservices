@@ -11,7 +11,11 @@ public interface Building extends Entity {
 	public Geometry getGeometry();
 	public City getCity();
     public Set<AddressNode> getAddresses();
+    public void setBlock(Block block);
 	public Block getBlock();
+	public Set<Building> getNeighbours();
+	public void addNeighbour(Building building);
+
 	
 	/**
 	 * Check is the full area of this building has been loaded.

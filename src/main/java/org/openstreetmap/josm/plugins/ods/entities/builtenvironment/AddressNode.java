@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import java.io.Serializable;
-
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Point;
@@ -11,26 +9,13 @@ public interface AddressNode extends Entity {
 
     public Address getAddress();
 
-//    public City getCity();
-
 	public Block getBlock();
 	
-	public Serializable getBuildingRef();
+	public Object getBuildingRef();
 
-	public Building getBuilding();
+    public void setBuilding(Building building);
 
-//    public String getStreetName();
-//
-//    public Street getStreet();
-//
-//	public String getPostcode();
-//
-//	public String getHouseNumber();
-//
-//	public String getHouseName();
-	
+    public Building getBuilding();
+
 	public Point getGeometry();
-
-//    String getPlaceName();
-
 }

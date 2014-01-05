@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods.jts;
 import java.util.List;
 
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
@@ -50,22 +49,19 @@ public class GeoUtil {
     }
     
     public Coordinate toCoordinate(Node node) {
-        return toCoordinate(node.getEastNorth());
+        return toCoordinate(node.getCoor());
     }
     
     public Coordinate toCoordinate(LatLon latLon) {
         return new Coordinate(latLon.getX(), latLon.getY());
     }
     
-    public Coordinate toCoordinate(EastNorth en) {
-        return new Coordinate(en.getX(), en.getY());
-    }
-    
     public Point toPoint(Node node) {
         return toPoint(toCoordinate(node));    
     }
-    public Point toPoint(EastNorth en) {
-        return toPoint(toCoordinate(en));    
+    
+    public Point toPoint(LatLon latLon) {
+        return toPoint(toCoordinate(latLon));    
     }
     
     public Point toPoint(Coordinate coord) {

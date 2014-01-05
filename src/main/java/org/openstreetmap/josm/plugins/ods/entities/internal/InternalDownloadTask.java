@@ -20,6 +20,7 @@ public class InternalDownloadTask implements DownloadTask {
     BoundingBoxDownloader bbDownloader;
     String overpassQuery;
     List<Exception> exceptions = new LinkedList<Exception>();
+    boolean cancelled = false;
 
     protected InternalDownloadTask(OdsWorkingSet workingSet, Bounds bounds) {
         super();
@@ -50,7 +51,7 @@ public class InternalDownloadTask implements DownloadTask {
 //                    if (isCanceled())
 //                        return;
                     DataSet dataSet = parseDataSet();
-                    workingSet.internalDataLayer.mergeFrom(dataSet);
+                    workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
                 }
                 catch(Exception e) {
 //                    if (isCanceled()) {
@@ -74,6 +75,15 @@ public class InternalDownloadTask implements DownloadTask {
             }
 
         };
+    }
+
+    
+    @Override
+    public void operationCanceled() {
+        cancelled = true;
+        if (bbDownloader != null) {
+            bbDownloader.cancel();
+        }
     }
 
     // @Override

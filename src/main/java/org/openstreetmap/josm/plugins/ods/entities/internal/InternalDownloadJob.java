@@ -12,25 +12,43 @@ import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
+import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
+import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
+import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
+import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToStreetMatcher;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingBlockAnalyzer;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 import org.openstreetmap.josm.tools.I18n;
 
 public class InternalDownloadJob implements DownloadJob {
-    final OdsWorkingSet workingSet;
-    final Bounds bounds;
+    private final OdsWorkingSet workingSet;
+    private final Bounds bounds;
     private List<InternalDownloadTask> downloadTasks;
-    BoundingBoxDownloader bbDownloader;
-    String overpassQuery;
-    List<Exception> exceptions = new LinkedList<Exception>();
+    private BoundingBoxDownloader bbDownloader;
+    private DataLayer dataLayer;
+    private EntityFactory entityFactory;
+    private String overpassQuery;
+    private List<Exception> exceptions = new LinkedList<Exception>();
+    private List<Analyzer> analyzers;
+    private EntitySet newEntities;
 
     public InternalDownloadJob(OdsWorkingSet workingSet, Bounds bounds) {
         super();
         this.workingSet = workingSet;
         this.bounds = bounds;
+        this.dataLayer = workingSet.getInternalDataLayer();
+        this.entityFactory = workingSet.getEntityFactory();
+        Double tolerance = 1e-7;
+        analyzers = new ArrayList<>(5);
+        analyzers.add(new BuildingBlockAnalyzer(tolerance));
+        analyzers.add(new AddressToBuildingMatcher());
+        analyzers.add(new AddressToStreetMatcher());
     }
 
     public void setup() {
@@ -65,8 +83,11 @@ public class InternalDownloadJob implements DownloadJob {
     public void build() throws BuildException {
         BuiltEnvironmentEntityBuilder builder = new BuiltEnvironmentEntityBuilder(
                 workingSet.internalDataLayer);
+        builder.setEntityFactory(entityFactory);
         try {
             builder.build();
+            newEntities = builder.getNewEntities();
+            analyze();
         } catch (BuildException e) {
             Collection<Issue> issues = e.getIssues();
             StringBuilder sb = new StringBuilder(1000);
@@ -78,5 +99,11 @@ public class InternalDownloadJob implements DownloadJob {
             }
             JOptionPane.showMessageDialog(Main.parent, sb.toString());
         }
+    }
+    
+    private void analyze() {
+        for (Analyzer analyzer : analyzers) {
+            analyzer.analyze(dataLayer, newEntities);
+        }        
     }
 }

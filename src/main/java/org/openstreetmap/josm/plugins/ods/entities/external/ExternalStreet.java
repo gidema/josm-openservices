@@ -1,18 +1,22 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
+import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ExternalStreet extends ExternalEntity implements Street {
+public class ExternalStreet implements ExternalEntity, Street {
     private String fullName;
     private String cityName;
     private String streetName;
@@ -81,7 +85,7 @@ public class ExternalStreet extends ExternalEntity implements Street {
     }
     
     @Override
-    protected void buildTags(OsmPrimitive primitive) {
+    public void buildTags(OsmPrimitive primitive) {
         primitive.put("name", getStreetName());
     }
 
@@ -92,5 +96,48 @@ public class ExternalStreet extends ExternalEntity implements Street {
             sb.append(" ").append(address.getHouseNumber());
         }
         return sb.toString();
+    }
+
+
+    @Override
+    public String getSource() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public boolean isInternal() {
+        return false;
+    }
+
+
+    @Override
+    public boolean isIncomplete() {
+        return false;
+    }
+
+
+    @Override
+    public boolean isDeleted() {
+        return false;
+    }
+
+
+    @Override
+    public Collection<OsmPrimitive> getPrimitives() {
+        return null;
+    }
+
+
+    @Override
+    public void init(MetaData metaData) throws BuildException {
+    }
+
+
+    @Override
+    public void createPrimitives(PrimitiveBuilder builder) {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -20,12 +21,13 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 public class GtDownloadTask implements ExternalDownloadTask {
     GtDataSource dataSource;
-//    ExternalDataLayer dataLayer;
+//    InternalDataLayer dataLayer;
     Bounds bounds;
     SimpleFeatureSource featureSource;
     Filter filter;
     MetaData metaData;
     List<SimpleFeature> features;
+    boolean cancelled = false;
 //    EntityStore entityStore;
 
     protected GtDownloadTask(GtDataSource dataSource, Bounds bounds) {
@@ -134,6 +136,14 @@ public class GtDownloadTask implements ExternalDownloadTask {
 
     @Override
     public List<SimpleFeature> getFeatures() {
+        if (cancelled) {
+            return new ArrayList<SimpleFeature>(0);
+        }
         return features;
+    }
+
+    @Override
+    public void operationCanceled() {
+        cancelled = true;
     }
 }

@@ -1,13 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
 import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalAddressNode;
 
 
 /**
@@ -24,9 +22,9 @@ public class AddressToBuildingMatcher implements Analyzer {
         EntityStore<Building> newBuildings = bes.getBuildings();
         Iterator<AddressNode> it = newAddresses.iterator();
         while (it.hasNext()) {
-            ExternalAddressNode addressNode = (ExternalAddressNode) it.next();
+            AddressNode addressNode = (AddressNode) it.next();
             assert addressNode.getBuilding() == null;
-            Serializable buildingRef = addressNode.getBuildingRef();
+            Object buildingRef = addressNode.getBuildingRef();
             if (buildingRef != null) {
                 analyzeAddressBuildingByRef(addressNode, newBuildings);
             }
@@ -42,8 +40,8 @@ public class AddressToBuildingMatcher implements Analyzer {
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByRef(ExternalAddressNode address, EntityStore<Building> newBuildings) {
-        Serializable buildingRef = address.getBuildingRef();
+    private void analyzeAddressBuildingByRef(AddressNode address, EntityStore<Building> newBuildings) {
+        Object buildingRef = address.getBuildingRef();
         Building building = newBuildings.get(buildingRef);
         // TODO create issue if the building is not found
         if (building != null) {
@@ -58,7 +56,7 @@ public class AddressToBuildingMatcher implements Analyzer {
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByGeometry(ExternalAddressNode address, EntityStore<Building> newBuildings) {
+    private void analyzeAddressBuildingByGeometry(AddressNode address, EntityStore<Building> newBuildings) {
         Iterator<Building> iterator = newBuildings.iterator();
         boolean found = false;
         while (iterator.hasNext() && !found) {

@@ -9,25 +9,41 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
+import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
+import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
+import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNode;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuiltEnvironment;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 
 public class BuiltEnvironmentEntityBuilder {
-    BuiltEnvironment entitySet;
+    BuiltEnvironment environment;
+    EntitySet newEntities;
     DataSet dataset;
-    EntityStore buildings;
-    EntityStore addresses;
+    EntityStore<Building> buildings;
+    EntityStore<AddressNode> addresses;
+    EntityFactory entityFactory;
     
 
     public BuiltEnvironmentEntityBuilder(InternalDataLayer dataLayer) {
-        entitySet = new BuiltEnvironment(dataLayer.getEntitySet());
-        dataset = dataLayer.data;
-        buildings = entitySet.getBuildings();
-        addresses = entitySet.getAddresses();
+        environment = new BuiltEnvironment(dataLayer.getEntitySet());
+        dataset = dataLayer.getOsmDataLayer().data;
+        buildings = environment.getBuildings();
+        addresses = environment.getAddresses();
+    }
+
+    public void setEntityFactory(EntityFactory entityFactory) {
+        this.entityFactory = entityFactory;
+    }
+
+    public EntitySet getNewEntities() {
+        return newEntities;
     }
 
     public void build() throws BuildException {
+        newEntities = new DefaultEntitySet();
         List<Issue> issues = new LinkedList<Issue>();
         for (OsmPrimitive primitive : dataset.allPrimitives()) {
             try {
@@ -69,7 +85,7 @@ public class BuiltEnvironmentEntityBuilder {
         
     }
 
-    private void build(Node node) {
+    private void build(Node node) throws BuildException {
         if (node.hasKey("addr:housenumber")) {
             buildAddress(node);
         }
@@ -85,25 +101,27 @@ public class BuiltEnvironmentEntityBuilder {
 
     private void buildBuilding(Way way) throws BuildException {
         if (buildings.get(way.getId()) == null) {
-            InternalBuilding building = new InternalBuilding(way);
-            building.build();
-            entitySet.getBuildings().add(building);
+            Building building = (Building) entityFactory.buildEntity("building", way);
+            buildings.add(building);
+            newEntities.add(building);
         }
     }
 
-    private void buildAddress(Node node) {
+    private void buildAddress(Node node) throws BuildException {
         if (addresses.get(node.getId()) == null) {
-            InternalAddressNode address = new InternalAddressNode(node);
+            AddressNode address = (AddressNode) entityFactory.buildEntity("address", node);
             address.build();
-            entitySet.getAddresses().add(address);
+            addresses.add(address);
+            newEntities.add(address);
         }
     }
 
     private void buildBuilding(Relation relation) throws BuildException {
         if (buildings.get(relation.getId()) == null) {
-            InternalBuilding building = new InternalBuilding(relation);
+            Building building = (Building) entityFactory.buildEntity("building", relation);
             building.build();
-            entitySet.getBuildings().add(building);
+            buildings.add(building);
+            newEntities.add(building);
         }
     }
 }

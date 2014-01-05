@@ -38,4 +38,8 @@ public class EntityStore<T extends Entity> {
     public boolean contains(T entity) {
         return get(entity.getId()) != null;
     }
+    
+    public void remove(T entity) {
+        entities.remove(entity.getId());
+    }
 }
