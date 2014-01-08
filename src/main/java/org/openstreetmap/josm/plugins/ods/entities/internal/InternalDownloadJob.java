@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods.entities.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -11,7 +10,6 @@ import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
@@ -30,11 +28,9 @@ public class InternalDownloadJob implements DownloadJob {
     private final OdsWorkingSet workingSet;
     private final Bounds bounds;
     private List<InternalDownloadTask> downloadTasks;
-    private BoundingBoxDownloader bbDownloader;
     private DataLayer dataLayer;
     private EntityFactory entityFactory;
     private String overpassQuery;
-    private List<Exception> exceptions = new LinkedList<Exception>();
     private List<Analyzer> analyzers;
     private EntitySet newEntities;
 
@@ -46,7 +42,7 @@ public class InternalDownloadJob implements DownloadJob {
         this.entityFactory = workingSet.getEntityFactory();
         Double tolerance = 1e-7;
         analyzers = new ArrayList<>(5);
-        analyzers.add(new BuildingBlockAnalyzer(tolerance));
+        analyzers.add(new BuildingBlockAnalyzer(true, tolerance));
         analyzers.add(new AddressToBuildingMatcher());
         analyzers.add(new AddressToStreetMatcher());
     }

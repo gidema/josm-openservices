@@ -13,22 +13,24 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import javax.swing.JMenu;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.download.DownloadDialog;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
 
 public class OpenDataServicesPlugin extends Plugin {
   private static JMenu menu;
@@ -47,6 +49,7 @@ public class OpenDataServicesPlugin extends Plugin {
       }
       getMenu();
       configureSources();
+      configureDiscardableKeys();
       addDownloadDialogListener();
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -60,6 +63,22 @@ public class OpenDataServicesPlugin extends Plugin {
     if (pluginDir.isDirectory()) {
       configureJarSources(pluginDir);
     }
+  }
+  
+  
+ /**
+  * Add extra keys to the list of discardable keys
+  * We can use these keys to add extra context sensitive styling to object
+  * without the risk of these keys end up in the OSM database. 
+  */
+  private void configureDiscardableKeys() {
+      Collection<String> discardableKeys = Main.pref.getCollection("tags.discardable");
+      if (!discardableKeys.contains("ODS:")) {
+          discardableKeys = new LinkedList<>();
+          discardableKeys.addAll(OsmPrimitive.getDiscardableKeys());
+          discardableKeys.add("ODS:");
+          Main.pref.putCollection("tags.discardable", discardableKeys);
+      }
   }
   
   private void createPluginClassLoader(File pluginDir) {
@@ -102,9 +121,9 @@ public class OpenDataServicesPlugin extends Plugin {
   public void configureJarSource(File jarFile) {
     try {
       URL url = jarFile.toURI().toURL();
-      ClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
+      URLClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
       URL configFile = classLoader.getResource("config.xml");
-      //classLoader.close();
+      classLoader.close();
       if (configFile == null) {
         Main.warn("Warning: {0} should contain a config.xml file", jarFile);
         return;
@@ -113,7 +132,7 @@ public class OpenDataServicesPlugin extends Plugin {
       classLoader = new URLClassLoader(new URL[] {url}, getClass().getClassLoader());
       ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
       configurationReader.read(configFile);
-      //classLoader.close();
+      classLoader.close();
     }
     catch (MalformedURLException e) {
       throw new RuntimeException("An unexpected exception occurred", e);
@@ -123,7 +142,10 @@ public class OpenDataServicesPlugin extends Plugin {
       if (e.getCause() instanceof NullPointerException) {
         e.getCause().printStackTrace();
       }
-	}
+	} catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
   }
 
   public static JMenu getMenu() {

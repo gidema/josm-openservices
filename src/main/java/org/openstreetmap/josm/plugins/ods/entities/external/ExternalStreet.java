@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,13 +28,6 @@ public class ExternalStreet implements ExternalEntity, Street {
         this.fullName = getFullName(cityName, streetName);
     }
 
-    
-//    @Override
-//    public BuiltEnvironment getEntitySet() {
-//        return (BuiltEnvironment) super.getEntitySet();
-//    }
-
-
     public void build() {
         // Nothing to build
     }
@@ -46,13 +38,28 @@ public class ExternalStreet implements ExternalEntity, Street {
     }
 
     @Override
-    public Serializable getId() {
+    public Object getId() {
         return getName();
+    }
+
+    @Override
+    public boolean hasReferenceId() {
+        return false;
+    }
+
+    @Override
+    public Object getReferenceId() {
+        return null;
     }
 
     @Override
     public City getCity() {
         return city;
+    }
+
+    @Override
+    public boolean hasName() {
+        return true;
     }
 
     @Override
@@ -73,6 +80,11 @@ public class ExternalStreet implements ExternalEntity, Street {
     @Override
     public Set<Address> getAddresses() {
         return addresses;
+    }
+
+    @Override
+    public boolean hasGeometry() {
+        return false;
     }
 
     @Override

@@ -12,8 +12,8 @@ import com.vividsolutions.jts.geom.Geometry;
  * Josm entities.
  * Using these entities gives the possibility to build object relations
  * from geometric relations.
- * The method 'getPrimitives' creates the nodes, ways and relations to
- * represent this on a Josm layer.
+ * The method 'getPrimitives' returns the nodes, ways and relations to
+ * represent this entity on a Josm layer.
  *   
  * @author gertjan
  *
@@ -40,6 +40,8 @@ public interface Entity {
 
     public boolean isDeleted();
     
+    public boolean hasGeometry();
+    
     public Geometry getGeometry();
     /**
 	 * Get the unique id of this entity with respect to its datasource
@@ -49,27 +51,29 @@ public interface Entity {
 	public Object getId();
 	
 	/**
-	 * Get the unique name of this entity
+	 * Returns whether or not this entity has a domain specific reference.
+	 * @return
+	 */
+	public boolean hasReferenceId();
+	
+	/**
+	 * Returns the domain specific referenceId of this entity
+	 * @return
+	 */
+	public Object getReferenceId();
+	
+	/**
+	 * Returns whether or not this entity has a name.
+	 * @return
+	 */
+	public boolean hasName();
+	
+	/**
+	 * Get the unique name of this entity if applicable
 	 * 
 	 * @return
 	 */
 	public String getName();
 
-    Collection<OsmPrimitive> getPrimitives();
-	
-	/**
-	 * Set the containing environment property of this entity
-	 * 
-	 * @param environment
-	 */
-//	public void setEntitySet(EntitySet environment);
-	
-    /**
-     * Get the containing environment of this entity
-     * 
-     * @return
-     */
-//    public EntitySet getEntitySet();
-    
-    
+    public Collection<OsmPrimitive> getPrimitives();
 }

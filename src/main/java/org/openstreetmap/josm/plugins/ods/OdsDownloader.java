@@ -14,7 +14,9 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.plugins.ods.analysis.GlobalAnalyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.GlobalBlockBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
 import org.openstreetmap.josm.tools.I18n;
@@ -29,10 +31,14 @@ public class OdsDownloader {
     private List<DownloadTask> downloadTasks;
     private Bounds bounds;
 
+    private List<GlobalAnalyzer> analyzers = new LinkedList<>();
+
     protected OdsDownloader(OdsWorkingSet workingSet, Bounds bounds) {
         super();
         this.workingSet = workingSet;
         this.bounds = bounds;
+        Double tolerance = 1e-7;
+        analyzers.add(new GlobalBlockBuilder(tolerance));
     }
 
     public void run() throws ExecutionException, InterruptedException {
@@ -157,6 +163,9 @@ public class OdsDownloader {
     private void build() throws BuildException {
         internalDownloadJob.build();
         externalDownloadJob.build();
+        for (GlobalAnalyzer analyzer: analyzers) {
+            analyzer.analyze(workingSet);
+        }
     }
 
     @Deprecated

@@ -26,6 +26,15 @@ public class SimpleExternalEntity implements ExternalEntity {
         return SimpleExternalEntity.class;
     }
 
+    @Override
+    public boolean hasReferenceId() {
+        return false;
+    }
+
+    @Override
+    public Object getReferenceId() {
+        return null;
+    }
 
     public void setFeatureMapper(FeatureMapper featureMapper) {
 		this.featureMapper = featureMapper;
@@ -35,13 +44,16 @@ public class SimpleExternalEntity implements ExternalEntity {
 	    //TODO implement    
 	}
 	
-	
+    @Override
+    public boolean hasGeometry() {
+        return false;
+    }
+
 	@Override
     public Geometry getGeometry() {
         // TODO Auto-generated method stub
         return null;
     }
-
 	
     @Override
     public void buildTags(OsmPrimitive primitive) {
@@ -60,25 +72,25 @@ public class SimpleExternalEntity implements ExternalEntity {
 
     @Override
     public boolean isIncomplete() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean isDeleted() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public Object getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return feature.getID();
     }
 
+    public boolean hasName() {
+        return false;
+    }
+    
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return null;
     }
 

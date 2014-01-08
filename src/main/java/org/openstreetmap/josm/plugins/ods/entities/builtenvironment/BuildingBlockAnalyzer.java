@@ -12,8 +12,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 
 /**
- * This analyzer verifies if there are overlapping buildings in
- * the downloaded data.
+ * This analyzer groups building into blocks.
  * 
  * TODO consider running over all buildings, not just the new ones.
  * 
@@ -21,10 +20,12 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class BuildingBlockAnalyzer implements Analyzer {
+    private final boolean internal;
     private final Double tolerance;
     
-    public BuildingBlockAnalyzer(Double tolerance) {
+    public BuildingBlockAnalyzer(boolean internal, Double tolerance) {
         super();
+        this.internal = internal;
         this.tolerance = tolerance;
     }
 
@@ -48,7 +49,7 @@ public class BuildingBlockAnalyzer implements Analyzer {
             }
         }
         if (touchingBlocks.isEmpty()) {
-            Block block = new BlockImpl();
+            Block block = new BlockImpl(internal);
             block.add(building);
             building.setBlock(block);
             environment.getBlocks().add(block);
