@@ -13,14 +13,12 @@ import com.vividsolutions.jts.geom.Geometry;
 public class BlockImpl implements Block {
     private static Integer nextId = 1;
     private Geometry geometry;
-    private boolean internal;
     private Set<Building> buildings = new HashSet<>();
     private Set<AddressNode> addresses = new HashSet<>();
     private boolean incomplete = false;
     private Integer id;
     
-    public BlockImpl(boolean internal) {
-        this.internal = internal;
+    public BlockImpl() {
         this.id = nextId++;
 
     }
@@ -35,7 +33,7 @@ public class BlockImpl implements Block {
 
     @Override
     public boolean isInternal() {
-        return internal;
+        return false;
     }
 
     @Override
@@ -53,21 +51,6 @@ public class BlockImpl implements Block {
         return id;
     }
 
-    @Override
-    public boolean hasReferenceId() {
-        return false;
-    }
-    
-    @Override
-    public Object getReferenceId() {
-        return null;
-    }
-    
-    @Override
-    public boolean hasName() {
-        return false;
-    }
-    
     @Override
     public String getName() {
         return null;
@@ -101,11 +84,6 @@ public class BlockImpl implements Block {
         return buildings;
     }
 
-    @Override
-    public boolean hasGeometry() {
-        return true;
-    }
-    
     public Geometry getGeometry() {
         return geometry;
     }

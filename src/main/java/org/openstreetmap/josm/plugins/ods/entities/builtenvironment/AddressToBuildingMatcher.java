@@ -42,7 +42,7 @@ public class AddressToBuildingMatcher implements Analyzer {
      */
     private void analyzeAddressBuildingByRef(AddressNode address, EntityStore<Building> newBuildings) {
         Object buildingRef = address.getBuildingRef();
-        Building building = newBuildings.getByReference(buildingRef);
+        Building building = newBuildings.get(buildingRef);
         // TODO create issue if the building is not found
         if (building != null) {
             address.setBuilding(building);

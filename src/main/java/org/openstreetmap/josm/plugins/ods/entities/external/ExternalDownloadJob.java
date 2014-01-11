@@ -43,7 +43,7 @@ public class ExternalDownloadJob implements DownloadJob {
         Double tolerance = 2e-7;
         analyzers = new ArrayList<>(5);
         analyzers.add(new BuildingSimplifier(tolerance));
-        analyzers.add(new BuildingBlockAnalyzer(false, tolerance));
+        analyzers.add(new BuildingBlockAnalyzer(tolerance));
         analyzers.add(new CrossingBuildingAnalyzer(tolerance));
         analyzers.add(new AddressToBuildingMatcher());
         analyzers.add(new BuildingCompletenessAnalyzer());
