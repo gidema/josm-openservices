@@ -40,6 +40,12 @@ public interface Entity {
 
     public boolean isDeleted();
     
+    public boolean hasReferenceId();
+    
+    public Object getReferenceId();
+    
+    public boolean hasGeometry();
+    
     public Geometry getGeometry();
     /**
 	 * Get the unique id of this entity with respect to its datasource
@@ -47,6 +53,8 @@ public interface Entity {
 	 * @return
 	 */
 	public Object getId();
+	
+	public boolean hasName();
 	
 	/**
 	 * Get the unique name of this entity
@@ -56,7 +64,7 @@ public interface Entity {
 	public String getName();
 
     Collection<OsmPrimitive> getPrimitives();
-	
+
 	/**
 	 * Set the containing environment property of this entity
 	 * 

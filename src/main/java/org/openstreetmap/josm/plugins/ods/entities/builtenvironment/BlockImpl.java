@@ -1,39 +1,34 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.entities.BuildException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public class BlockImpl implements Block {
     private static Integer nextId = 1;
+    
+    private BlockStore store;
     private Geometry geometry;
-    private Set<Building> buildings = new HashSet<>();
+    private Set<Building> internalBuildings = new HashSet<>();
+    private Set<Building> externalBuildings = new HashSet<>();
     private Set<AddressNode> addresses = new HashSet<>();
     private boolean incomplete = false;
     private Integer id;
     
-    public BlockImpl() {
+    public BlockImpl(BlockStore store) {
         this.id = nextId++;
-
+        this.store = store;
     }
+    
     @Override
-    public void build() throws BuildException {
-    }
-
-    @Override
-    public Class<? extends Entity> getType() {
-        return Block.class;
+    public Integer getId() {
+        return id;
     }
 
     @Override
-    public boolean isInternal() {
-        return false;
+    public BlockStore getStore() {
+        return store;
     }
 
     @Override
@@ -42,23 +37,13 @@ public class BlockImpl implements Block {
     }
 
     @Override
-    public boolean isDeleted() {
-        return false;
-    }
-
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
     public void add(Building building) {
-        buildings.add(building);
+        if (building.isInternal()) {
+            internalBuildings.add(building);
+        }
+        else {
+            externalBuildings.add(building);
+        }
         if (building.isIncomplete()) {
             incomplete = true;
         }
@@ -74,40 +59,36 @@ public class BlockImpl implements Block {
     @Override
     public void merge(Block other) {
         geometry = getGeometry().union(other.getGeometry());
-        buildings.addAll(other.getBuildings());
+        for (Building building : other.getInternalBuildings()) {
+            internalBuildings.add(building);
+            building.setBlock(this);
+        }
+        for (Building building : other.getExternalBuildings()) {
+            internalBuildings.add(building);
+            building.setBlock(this);
+        }
         if (other.isIncomplete()) {
             incomplete = true;
         }
     }
     
-    public Set<Building> getBuildings() {
-        return buildings;
+    @Override
+    public Set<Building> getInternalBuildings() {
+        return internalBuildings;
     }
 
+    @Override
+    public Set<Building> getExternalBuildings() {
+        return externalBuildings;
+    }
+
+    @Override
     public Geometry getGeometry() {
         return geometry;
     }
 
     @Override
-    public City getCity() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public Set<AddressNode> getAddresses() {
         return addresses;
-    }
-    @Override
-    
-    public String getSource() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    @Override
-    public Collection<OsmPrimitive> getPrimitives() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

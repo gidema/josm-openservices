@@ -51,10 +51,26 @@ public class ExternalStreet implements ExternalEntity, Street {
     }
 
     @Override
+    public boolean hasReferenceId() {
+        return false;
+    }
+
+
+    @Override
+    public Object getReferenceId() {
+        return null;
+    }
+
+
+    @Override
     public City getCity() {
         return city;
     }
 
+    public boolean hasName() {
+        return true;
+    }
+    
     @Override
     public String getName() {
         return fullName;
@@ -73,6 +89,11 @@ public class ExternalStreet implements ExternalEntity, Street {
     @Override
     public Set<Address> getAddresses() {
         return addresses;
+    }
+
+    @Override
+    public boolean hasGeometry() {
+        return false;
     }
 
     @Override

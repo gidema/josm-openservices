@@ -13,11 +13,17 @@ import java.util.Map;
 public class EntityStore<T extends Entity> {
     private Map<Object, T> entities = new HashMap<>();
     private Map<String, T> namedEntities = new HashMap<>();
+    private Map<Object, T> referencedEntities = new HashMap<>();
 	
 	public boolean add(T entity) {
 		if (!entities.containsKey(entity.getId())) {
             entities.put(entity.getId(), entity);
-      		namedEntities.put(entity.getName(), entity);
+            if (entity.hasName()) {
+      		    namedEntities.put(entity.getName(), entity);
+            }
+            if (entity.hasReferenceId()) {
+                referencedEntities.put(entity.getReferenceId(), entity);
+            }
             return true;
 		}
 		return false;
@@ -27,6 +33,10 @@ public class EntityStore<T extends Entity> {
 		return entities.get(id);
 	}
 	
+    public T getByReference(Object id) {
+        return referencedEntities.get(id);
+    }
+    
 	public T getByName(String name) {
 	    return namedEntities.get(name);
 	}

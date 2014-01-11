@@ -22,6 +22,21 @@ public class SimpleExternalEntity implements ExternalEntity {
     }
 
     @Override
+    public Object getId() {
+        return feature.getID();
+    }
+
+    @Override
+    public boolean hasReferenceId() {
+        return false;
+    }
+
+    @Override
+    public Object getReferenceId() {
+        return null;
+    }
+
+    @Override
     public Class<? extends Entity> getType() {
         return SimpleExternalEntity.class;
     }
@@ -37,12 +52,15 @@ public class SimpleExternalEntity implements ExternalEntity {
 	
 	
 	@Override
-    public Geometry getGeometry() {
-        // TODO Auto-generated method stub
-        return null;
+    public boolean hasGeometry() {
+        return true;
     }
 
-	
+    @Override
+    public Geometry getGeometry() {
+        return (Geometry) feature.getDefaultGeometry();
+    }
+
     @Override
     public void buildTags(OsmPrimitive primitive) {
         // TODO Auto-generated method stub
@@ -70,15 +88,14 @@ public class SimpleExternalEntity implements ExternalEntity {
         return false;
     }
 
+    
     @Override
-    public Object getId() {
-        // TODO Auto-generated method stub
-        return null;
+    public boolean hasName() {
+        return false;
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return null;
     }
 

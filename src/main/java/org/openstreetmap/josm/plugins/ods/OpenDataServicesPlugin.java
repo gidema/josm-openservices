@@ -13,6 +13,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,8 +28,6 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
 
 public class OpenDataServicesPlugin extends Plugin {
   private static JMenu menu;
@@ -102,9 +101,14 @@ public class OpenDataServicesPlugin extends Plugin {
   public void configureJarSource(File jarFile) {
     try {
       URL url = jarFile.toURI().toURL();
-      ClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
+      URLClassLoader classLoader = new URLClassLoader(new URL[] {url}, null);
       URL configFile = classLoader.getResource("config.xml");
-      //classLoader.close();
+      try {
+        classLoader.close();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       if (configFile == null) {
         Main.warn("Warning: {0} should contain a config.xml file", jarFile);
         return;
@@ -113,7 +117,12 @@ public class OpenDataServicesPlugin extends Plugin {
       classLoader = new URLClassLoader(new URL[] {url}, getClass().getClassLoader());
       ConfigurationReader configurationReader = new ConfigurationReader(classLoader);
       configurationReader.read(configFile);
-      //classLoader.close();
+      try {
+        classLoader.close();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
     catch (MalformedURLException e) {
       throw new RuntimeException("An unexpected exception occurred", e);

@@ -16,7 +16,6 @@ public class BuiltEnvironment  {
     private EntitySet entitySet; // The wrapped environment
     private EntityStore<Building> buildings;
     private EntityStore<AddressNode> addresses;
-    private EntityStore<Block> blocks;
     private EntityStore<City> cities;
     private EntityStore<Street> streets;
     
@@ -26,7 +25,6 @@ public class BuiltEnvironment  {
         addresses = entitySet.getStore(AddressNode.class);
         cities = entitySet.getStore(City.class);
         streets = entitySet.getStore(Street.class);
-        blocks = entitySet.getStore(Block.class);
     }
 
     public EntitySet getEntitySet() {
@@ -56,9 +54,4 @@ public class BuiltEnvironment  {
     public EntityStore<Street> getStreets() {
         return streets;
     }
-
-    public EntityStore<Block> getBlocks() {
-        return blocks;
-    }
-
 }
