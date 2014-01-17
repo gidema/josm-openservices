@@ -18,14 +18,16 @@ import javax.swing.JDialog;
 
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStore;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStoreImpl;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
 /**
  * The OdsWorkingSet is the main component of the ODS plugin. It manages a pair
@@ -56,11 +58,18 @@ public class OdsWorkingSet implements LayerChangeListener {
     OdsDownloadAction downloadAction;
     private boolean active = false;
     private EntityFactory entityFactory;
+    // TODO this is a dependency on the BuiltEnvironment submodule
+    // Change to a more generic solution like a Container pattern
+    private BlockStore blockStore = new BlockStoreImpl();
 
     public OdsWorkingSet() {
         MapView.addLayerChangeListener(this);
     }
 
+    public BlockStore getBlockStore() {
+        return blockStore;
+    }
+    
     public void addAction(OdsAction action) {
         action.setWorkingSet(this);
         actions.add(action);
@@ -108,9 +117,16 @@ public class OdsWorkingSet implements LayerChangeListener {
     }
 
     public ExternalDataLayer getExternalDataLayer() {
+        Layer oldLayer = null;
+        if (Main.map != null) {
+            oldLayer = Main.main.getActiveLayer();
+        }
         if (externalDataLayer == null) {
             externalDataLayer = new ExternalDataLayer("ODS " + name);
             Main.main.addLayer(externalDataLayer.getOsmDataLayer());
+        }
+        if (oldLayer != null) {
+            Main.map.mapView.setActiveLayer(oldLayer);
         }
         return externalDataLayer;
     }
@@ -163,9 +179,9 @@ public class OdsWorkingSet implements LayerChangeListener {
         }
     }
 
-    public void download(Bounds area, boolean downloadOsmData)
+    public void download(Boundary boundary, boolean downloadOsmData)
             throws ExecutionException, InterruptedException {
-        OdsDownloader downloader = new OdsDownloader(this, area);
+        OdsDownloader downloader = new OdsDownloader(this, boundary);
         downloader.run();
     }
 
@@ -175,9 +191,16 @@ public class OdsWorkingSet implements LayerChangeListener {
     }
 
     public InternalDataLayer getInternalDataLayer() {
+        Layer oldLayer = null;
+        if (Main.map != null) {
+            oldLayer = Main.main.getActiveLayer();
+        }
         if (internalDataLayer == null) {
             internalDataLayer = new InternalDataLayer("OSM " + name);
             Main.main.addLayer(internalDataLayer.getOsmDataLayer());
+        }
+        if (oldLayer != null) {
+            Main.map.mapView.setActiveLayer(oldLayer);
         }
         return internalDataLayer;
     }

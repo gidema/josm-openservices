@@ -43,6 +43,34 @@ public class CRSUtilGeotools extends CRSUtil {
         }
     }
 
+    @Override
+    public Geometry toOsm(Geometry geometry, CoordinateReferenceSystem crs)
+            throws CRSException {
+        MathTransform transform = getToOsmTransform(crs);
+        try {
+            return JTS.transform(geometry, transform);
+        } catch (MismatchedDimensionException e) {
+            throw new RuntimeException(e);
+        } catch (TransformException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public Geometry fromOsm(Geometry geometry, CoordinateReferenceSystem crs)
+            throws CRSException {
+        MathTransform transform = getFromOsmTransform(crs);
+        try {
+            return JTS.transform(geometry, transform);
+        } catch (MismatchedDimensionException e) {
+            throw new RuntimeException(e);
+        } catch (TransformException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private MathTransform getToOsmTransform(CoordinateReferenceSystem crs) {
         MathTransform transform = toOsmTransforms.get(crs);
         if (transform == null) {

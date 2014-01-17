@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,8 +44,9 @@ public class ExternalStreet implements ExternalEntity, Street {
         return Street.class;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Serializable getId() {
+    public Comparable<String> getId() {
         return getName();
     }
 

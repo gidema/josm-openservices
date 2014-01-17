@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.jts;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openstreetmap.josm.data.Bounds;
@@ -7,11 +9,13 @@ import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.data.osm.visitor.paint.relations.Multipolygon.PolyData;
 import org.openstreetmap.josm.plugins.ods.crs.InvalidMultiPolygonException;
 import org.openstreetmap.josm.plugins.ods.crs.UnclosedWayException;
 import org.openstreetmap.josm.tools.Pair;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
@@ -152,12 +156,47 @@ public class GeoUtil {
     }
 
     public Polygon createPolygon(LinearRing shell, List<LinearRing> innerRings) {
+        if (innerRings == null) {
+            return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
+        }
         return OSM_GEOMETRY_FACTORY.createPolygon(shell, innerRings.toArray(new LinearRing[0]));
     }
 
-    public MultiPolygon createMultiPolygon(List<Polygon> polygons) {
+    public MultiPolygon createMultiPolygon(Collection<Polygon> polygons) {
         return OSM_GEOMETRY_FACTORY.createMultiPolygon(polygons.toArray(new Polygon[0]));
     }
+
+    public Geometry buildGeometry(List<PolyData> polygons) {
+        // TODO Find an other solution because PolyData doesn't
+        // expose its shell and internal rings
+        if (polygons.size() == 1) {
+            return createPolygon(polygons.get(0));
+        }
+        List<Polygon> jtsPolygons = new ArrayList<>(polygons.size());
+        for (PolyData polyData : polygons) {
+            jtsPolygons.add(createPolygon(polyData));
+        }
+        return createMultiPolygon(jtsPolygons);
+    }
+
+    private Polygon createPolygon(PolyData polyData) {
+//        LinearRing shell = createLinearRing(polyData.)
+        return null;
+    }
+
+    /**
+     * Create a Josm Bounds object from a LinearRing.
+     * The LinearRing coordinate are expected to be in WGS84
+     *  
+     * @param boundary
+     * @return
+     */
+    public Bounds createBounds(LinearRing boundary) {
+        Envelope e = boundary.getEnvelopeInternal();
+        return new Bounds(e.getMinY(), e.getMinX(), e.getMaxY(), e.getMaxX());
+    }
+    
+    
 
 //    public Polygon toPolygon(Relation relation) throws InvalidPolygonException {
 //        MultiPolygon mpg;

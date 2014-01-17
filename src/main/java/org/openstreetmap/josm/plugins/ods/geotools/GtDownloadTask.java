@@ -17,24 +17,26 @@ import org.opengis.filter.FilterFactory2;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 public class GtDownloadTask implements ExternalDownloadTask {
+    private final static CRSUtil crsUtil = CRSUtil.getInstance();
+    private final static GeoUtil geoUtil = GeoUtil.getInstance();
+    
     GtDataSource dataSource;
-//    InternalDataLayer dataLayer;
-    Bounds bounds;
+    Boundary boundary;
     SimpleFeatureSource featureSource;
     Filter filter;
     MetaData metaData;
     List<SimpleFeature> features;
     boolean cancelled = false;
-//    EntityStore entityStore;
 
-    protected GtDownloadTask(GtDataSource dataSource, Bounds bounds) {
+    protected GtDownloadTask(GtDataSource dataSource, Boundary boundary) {
         super();
         this.dataSource = dataSource;
-//        this.dataLayer = dataLayer;
-        this.bounds = bounds;
+        this.boundary = boundary;
         this.metaData = dataSource.getMetaData();
     }
     
@@ -65,14 +67,13 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     String geometryProperty = gtFeatureSource.getFeatureType()
                             .getGeometryDescriptor().getLocalName();
                     // TODO Find faster solution for the following line
-                    CRSUtil crsUtil = CRSUtil.getInstance();
-                    ReferencedEnvelope bbox = crsUtil.createBoundingBox(gtFeatureSource.getCrs(), bounds);
-//                    ReferencedEnvelope bbox = CRSUtil.getInstance().createBoundingBox(
-//                    CRSUtil.OSM_CRS, bounds);
-                    Filter bboxFilter = ff.bbox(ff.property(geometryProperty),
-                            bbox);
+                    //Polygon polygon = geoUtil.createPolygon(boundary, null);
+                    Bounds bounds = boundary.getBounds();
+                    //Geometry transformedBoundary = crsUtil.fromOsm(polygon, gtFeatureSource.getCrs());
+                    // TODO Find faster solution for the following line
+                                        ReferencedEnvelope bbox = crsUtil.createBoundingBox(gtFeatureSource.getCrs(), bounds);
+                    filter = ff.bbox(ff.property(geometryProperty), bbox);
                     Filter dataFilter = dataSource.getFilter();
-                    filter = bboxFilter;
                     if (dataFilter != null) {
                         filter = ff.and(filter, dataFilter);
                     }
@@ -100,7 +101,12 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     while (!Thread.interrupted() && it.hasNext()) {
                         features.add(it.next());
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    if (e instanceof ExecutionException) {
+                        throw (ExecutionException) e;
+                    }
                     throw new ExecutionException(e.getMessage(), e.getCause());
                 } finally {
                     if (it != null)

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.opengis.feature.simple.SimpleFeature;
-import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
@@ -18,41 +17,43 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToStreetMatcher;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingCompletenessAnalyzer;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingSimplifier;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.CrossingBuildingAnalyzer;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
+
+import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 
 public class ExternalDownloadJob implements DownloadJob {
     private OdsWorkingSet workingSet;
     private ExternalDataLayer dataLayer;
-    private Bounds bounds;
+    private Boundary boundary;
     private List<ExternalDownloadTask> downloadTasks;
     private EntitySet entities;
     private EntityFactory entityFactory;
     private List<Analyzer> analyzers;
 
-    public ExternalDownloadJob(OdsWorkingSet workingSet, Bounds bounds) {
+    public ExternalDownloadJob(OdsWorkingSet workingSet, Boundary boundary) {
         this.workingSet = workingSet;
         this.dataLayer = workingSet.getExternalDataLayer();
         this.entityFactory = workingSet.getEntityFactory();
-        this.bounds = bounds;
+        this.boundary = boundary;
         Double tolerance = 2e-7;
         analyzers = new ArrayList<>(5);
         analyzers.add(new BuildingSimplifier(tolerance));
         analyzers.add(new CrossingBuildingAnalyzer(tolerance));
         analyzers.add(new AddressToBuildingMatcher());
         analyzers.add(new BuildingCompletenessAnalyzer());
-        analyzers.add(new AddressToStreetMatcher());
+        //analyzers.add(new AddressToStreetMatcher());
     }
 
     @Override
     public void setup() {
         downloadTasks = new ArrayList<ExternalDownloadTask>(workingSet.getDataSources().size());
         for (OdsDataSource dataSource : workingSet.getDataSources().values()) {
-            downloadTasks.add(dataSource.createDownloadTask(bounds));
+            downloadTasks.add(dataSource.createDownloadTask(boundary));
         }
     }
     
@@ -92,7 +93,8 @@ public class ExternalDownloadJob implements DownloadJob {
         for (ExternalDownloadTask downloadTask : downloadTasks) {
             buildEntities(downloadTask);
         }
-        entities.extendBoundary(bounds);
+        // Retrieve the results
+        entities.extendBoundary(boundary.getPolygon());
         // Next establish the relationships between the features
         analyze();
         dataLayer.merge(entities);
@@ -116,10 +118,16 @@ public class ExternalDownloadJob implements DownloadJob {
 //        EntityStore store = dataLayer.getEntitySet().getStore(entityType);
         MetaData metaData = task.getDataSource().getMetaData();
         List<Issue> issues = new LinkedList<>();
+        PreparedPolygon preparedBoundary = new PreparedPolygon(boundary.getPolygon());
         for (SimpleFeature feature : task.getFeatures()) {
             try {
                 Entity entity = entityFactory.buildEntity(entityType, metaData, feature);
-                entities.add(entity);
+                if (boundary.isRectangular()) {
+                    entities.add(entity);
+                }
+                else if (preparedBoundary.intersects(entity.getGeometry())) {
+                    entities.add(entity);
+                }
             } catch (BuildException e) {
                 issues.add(e.getIssue());
             }
@@ -128,10 +136,4 @@ public class ExternalDownloadJob implements DownloadJob {
             throw new BuildException(issues);
         }
     }
-
-//    @Override
-//    public List<Entity> getNewEntities() {
-//        return newEntities;
-//    }
-
 }

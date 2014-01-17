@@ -18,7 +18,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author gertjan
  *
  */
-public class CrossingBuildingAnalyzer implements Analyzer {
+public class CrossingBuildingAnalyzer implements Analyzer, BlockAnalyzer {
     private final Double tolerance;
     private final CrossingBuildingFixer fixer;
     
@@ -28,6 +28,19 @@ public class CrossingBuildingAnalyzer implements Analyzer {
         this.fixer = new CrossingBuildingFixer(tolerance);
     }
 
+    @Override
+    public  void analyze(Block block) {
+        for (Building building : block.getExternalBuildings()) {
+            Comparable<Object> buildingId = building.getId();
+            for (Building neighbour :building.getNeighbours()) {
+                Comparable<Object> neighbourId = neighbour.getId();
+                 if (neighbourId.compareTo(buildingId) == 1) {
+                     analyzeCrossing(building, neighbour);
+                 }
+            }
+        }
+    }
+    
     public void analyze(DataLayer dataLayer, EntitySet newEntities) {
         BuiltEnvironment newEnvironment = new BuiltEnvironment(newEntities);
         Iterator<Building> buildings1 = newEnvironment.getBuildings().iterator();

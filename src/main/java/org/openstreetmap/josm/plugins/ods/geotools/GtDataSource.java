@@ -1,9 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
-import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.ods.AbstractOdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+
+import com.vividsolutions.jts.geom.LinearRing;
 
 public class GtDataSource extends AbstractOdsDataSource {
   
@@ -12,7 +14,7 @@ public class GtDataSource extends AbstractOdsDataSource {
   }
 
   @Override
-  public ExternalDownloadTask createDownloadTask(Bounds bounds) {
-    return new GtDownloadTask(this, bounds);
+  public ExternalDownloadTask createDownloadTask(Boundary boundary) {
+    return new GtDownloadTask(this, boundary);
   }
 }

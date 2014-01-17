@@ -13,19 +13,20 @@ import org.openstreetmap.josm.io.OsmTransferCanceledException;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
 public class InternalDownloadTask implements DownloadTask {
     final OdsWorkingSet workingSet;
-    final Bounds bounds;
+    final Boundary boundary;
     BoundingBoxDownloader bbDownloader;
     String overpassQuery;
     List<Exception> exceptions = new LinkedList<Exception>();
     boolean cancelled = false;
 
-    protected InternalDownloadTask(OdsWorkingSet workingSet, Bounds bounds) {
+    protected InternalDownloadTask(OdsWorkingSet workingSet, Boundary boundary) {
         super();
         this.workingSet = workingSet;
-        this.bounds = bounds;
+        this.boundary = boundary;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class InternalDownloadTask implements DownloadTask {
             @Override
             public Object call() {
                 overpassQuery = workingSet.getOsmQuery();
-                bbDownloader = new BoundingBoxDownloader(bounds);
+                bbDownloader = new BoundingBoxDownloader(boundary.getBounds());
                 return null;
             }
         };
@@ -51,6 +52,9 @@ public class InternalDownloadTask implements DownloadTask {
 //                    if (isCanceled())
 //                        return;
                     DataSet dataSet = parseDataSet();
+                    if (!boundary.isRectangular()) {
+                        boundary.filter(dataSet);
+                    }
                     workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
                 }
                 catch(Exception e) {
@@ -77,7 +81,6 @@ public class InternalDownloadTask implements DownloadTask {
         };
     }
 
-    
     @Override
     public void operationCanceled() {
         cancelled = true;

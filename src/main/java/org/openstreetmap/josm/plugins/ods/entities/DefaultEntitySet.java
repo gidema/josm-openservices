@@ -2,8 +2,6 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.Bounds;
@@ -53,6 +51,11 @@ public class DefaultEntitySet implements EntitySet {
     
     public void extendBoundary(Bounds bounds) {
         Polygon polygon = GeoUtil.getInstance().toPolygon(bounds);
+        extendBoundary(polygon);
+    }
+
+    @Override
+    public void extendBoundary(Polygon polygon) {
         if (boundary == null) {
             boundary = polygon;
         }

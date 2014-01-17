@@ -3,15 +3,12 @@ package org.openstreetmap.josm.plugins.ods.entities.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
@@ -23,34 +20,34 @@ import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToStreetMatcher;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.I18n;
 
 public class InternalDownloadJob implements DownloadJob {
     private final OdsWorkingSet workingSet;
-    private final Bounds bounds;
+    private final Boundary boundary;
     private List<InternalDownloadTask> downloadTasks;
-    private BoundingBoxDownloader bbDownloader;
     private DataLayer dataLayer;
     private EntityFactory entityFactory;
     private String overpassQuery;
-    private List<Exception> exceptions = new LinkedList<Exception>();
     private List<Analyzer> analyzers;
     private EntitySet newEntities;
 
-    public InternalDownloadJob(OdsWorkingSet workingSet, Bounds bounds) {
+    public InternalDownloadJob(OdsWorkingSet workingSet, Boundary boundary) {
         super();
         this.workingSet = workingSet;
-        this.bounds = bounds;
+        this.boundary = boundary;
+;
         this.dataLayer = workingSet.getInternalDataLayer();
         this.entityFactory = workingSet.getEntityFactory();
         Double tolerance = 1e-7;
         analyzers = new ArrayList<>(5);
-        analyzers.add(new AddressToBuildingMatcher());
-        analyzers.add(new AddressToStreetMatcher());
+//        analyzers.add(new AddressToBuildingMatcher());
+//        analyzers.add(new AddressToStreetMatcher());
     }
 
     public void setup() {
-        InternalDownloadTask downloadTask = new InternalDownloadTask(workingSet, bounds);
+        InternalDownloadTask downloadTask = new InternalDownloadTask(workingSet, boundary);
         downloadTasks = Collections.singletonList(downloadTask);
     }
 

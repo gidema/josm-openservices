@@ -6,6 +6,7 @@ import java.util.Map;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.ReferenceIdentifier;
@@ -110,4 +111,10 @@ public abstract class CRSUtil {
         }
         return crs;
     }
+
+    public abstract Geometry toOsm(Geometry geometry, CoordinateReferenceSystem crs)
+            throws CRSException;
+
+    public abstract Geometry fromOsm(Geometry geometry, CoordinateReferenceSystem crs)
+            throws CRSException;
 }

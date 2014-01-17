@@ -17,6 +17,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OdsDownloader {
@@ -27,12 +28,12 @@ public class OdsDownloader {
     private ExternalDownloadJob externalDownloadJob;
     
     private List<DownloadTask> downloadTasks;
-    private Bounds bounds;
+    private Boundary boundary;
 
-    protected OdsDownloader(OdsWorkingSet workingSet, Bounds bounds) {
+    protected OdsDownloader(OdsWorkingSet workingSet, Boundary boundary) {
         super();
         this.workingSet = workingSet;
-        this.bounds = bounds;
+        this.boundary = boundary;
     }
 
     public void run() throws ExecutionException, InterruptedException {
@@ -45,11 +46,12 @@ public class OdsDownloader {
             throw new ExecutionException(e);
         }
         
+        Bounds bounds = boundary.getBounds();
         DataSource ds = new DataSource(bounds, "Import");
         OsmDataLayer exernalDataLayer = workingSet.getExternalDataLayer().getOsmDataLayer();
         exernalDataLayer.data.dataSources.add(ds);
 //        pm.finishTask();
-        computeBboxAndCenterScale();
+        computeBboxAndCenterScale(bounds);
         workingSet.activate();
         Main.map.mapView.setActiveLayer(exernalDataLayer);
     }
@@ -59,9 +61,9 @@ public class OdsDownloader {
      * Setup the download tasks. Maybe more than 1 per job. 
      */
     private void setup() {
-        internalDownloadJob = new InternalDownloadJob(workingSet, bounds);
+        internalDownloadJob = new InternalDownloadJob(workingSet, boundary);
         internalDownloadJob.setup();
-        externalDownloadJob = new ExternalDownloadJob(workingSet, bounds);
+        externalDownloadJob = new ExternalDownloadJob(workingSet, boundary);
         externalDownloadJob.setup();
         downloadTasks = new LinkedList<DownloadTask>();
         downloadTasks.addAll(internalDownloadJob.getDownloadTasks());
@@ -100,7 +102,7 @@ public class OdsDownloader {
             if (!exceptions.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(I18n.trn("An error occurred while preparing the download jobs:",
-                        "{0} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
+                        "{1} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
                 for (Exception e : exceptions) {
                     sb.append("\n").append(e.getMessage());
                 }
@@ -114,7 +116,6 @@ public class OdsDownloader {
 
     private void download() throws ExecutionException, InterruptedException {
         workingSet.activate();
-//        workingSet.activateOsmLayer();
         List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
 
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
@@ -142,14 +143,12 @@ public class OdsDownloader {
         if (!exceptions.isEmpty()) {
             StringBuilder msg = new StringBuilder();
             msg.append(I18n.trn("An error occured while downloading the data:", 
-                "{0} errors occurred while downloading the data:", exceptions.size()));
+                "{0} errors occurred while downloading the data:", exceptions.size(), exceptions.size()));
             for (Exception e: exceptions) {
                 msg.append("\n").append(e.getMessage());
             }
             throw new ExecutionException(msg.toString(), null);
         }
-        workingSet.getExternalDataLayer().getEntitySet().extendBoundary(bounds);
-        // Retrieve the results
     }
     
     private void build() throws BuildException {
@@ -169,7 +168,7 @@ public class OdsDownloader {
         return String.format("%s/interpreter?data=%s;out meta;", host, q);
     }
 
-    protected void computeBboxAndCenterScale() {
+    protected void computeBboxAndCenterScale(Bounds bounds) {
         BoundingXYVisitor v = new BoundingXYVisitor();
         if (bounds != null) {
             v.visit(bounds);

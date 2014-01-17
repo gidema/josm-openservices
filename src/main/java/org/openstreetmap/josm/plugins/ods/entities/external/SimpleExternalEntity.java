@@ -21,8 +21,9 @@ public class SimpleExternalEntity implements ExternalEntity {
         this.feature = feature;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object getId() {
+    public String getId() {
         return feature.getID();
     }
 

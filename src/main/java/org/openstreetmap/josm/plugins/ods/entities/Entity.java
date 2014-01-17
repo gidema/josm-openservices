@@ -52,7 +52,7 @@ public interface Entity {
 	 * 
 	 * @return
 	 */
-	public Object getId();
+	public <T> Comparable<T> getId();
 	
 	public boolean hasName();
 	

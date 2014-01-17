@@ -47,6 +47,26 @@ public class CRSUtilProj4j extends CRSUtil {
         }
     }
 
+    public Geometry fromOsm(Geometry geometry, CoordinateReferenceSystem crs)
+            throws CRSException {
+        JTSCoordinateTransform transform = getFromOsmTransform(crs);
+        try {
+            return transform.transform(geometry);
+        } catch (MismatchedDimensionException e) {
+            throw new CRSException(e);
+        }
+    }
+
+    public Geometry toOsm(Geometry geometry, CoordinateReferenceSystem crs)
+            throws CRSException {
+        JTSCoordinateTransform transform = getToOsmTransform(crs);
+        try {
+            return transform.transform(geometry);
+        } catch (MismatchedDimensionException e) {
+            throw new CRSException(e);
+        }
+    }
+
     private static JTSCoordinateTransform getToOsmTransform(
             CoordinateReferenceSystem crs) {
         JTSCoordinateTransform transform = toOsmTransforms.get(crs);
