@@ -34,7 +34,7 @@
     <!-- enter the SVN commit message -->
     <property name="commit.message" value="Commit message"/>
     <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-    <property name="plugin.main.version" value="5531"/>
+    <property name="plugin.main.version" value="6502"/>
 	  <property name="plugin.class" value="org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin"/>
     <property name="plugin.version" value="${mypom.version}"/>
     <property name="plugin.build.dir" value="build/deploy"/>
@@ -57,18 +57,13 @@
     <target name="init" depends="clean">
       <mkdir dir="${plugin.build.dir}"/>
       <artifact:dependencies filesetId="dependency.fileset">
-        <dependency groupId="org.geotools" artifactId="gt-wfs" version="9.3"/>
-        <dependency groupId="org.geotools" artifactId="gt-xml" version="9.3"/>
-        <dependency groupId="org.geotools" artifactId="gt-cql" version="9.3"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="9.3"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="9.3"/>
+        <dependency groupId="org.geotools" artifactId="gt-wfs" version="10.3"/>
+        <dependency groupId="org.geotools" artifactId="gt-xml" version="10.3"/>
+        <dependency groupId="org.geotools" artifactId="gt-cql" version="10.3"/>
+        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="10.3"/>
         <dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
         <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
         <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
-        <!--<dependency groupId="commons-collections" artifactId="commons-collections" version="3.1"/>-->
-<!--        <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-core" version="2.1.4"/>
-        <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-databind" version="2.1.4"/>
-        <dependency groupId="com.fasterxml.jackson.core" artifactId="jackson-annotations" version="2.1.4"/>-->
       	<dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>
         <dependency groupId="proj4j" artifactId="proj4j" version="2408"/>
       </artifact:dependencies>

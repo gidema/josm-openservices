@@ -16,6 +16,7 @@ import org.openstreetmap.josm.tools.I18n;
  *
  */
 public class ODS {
+    private static Map<String, OdsModule> modules = new HashMap<>();
 	private static Map<String, Host> hosts = new HashMap<>();
 	private static Map<String, OdsWorkingSet> layers = new HashMap<>();
 	private static Map<String, FeatureMapper> featureMappers = new HashMap<>();
@@ -122,5 +123,9 @@ public class ODS {
 
     public static void setClassLoader(ClassLoader classLoader) {
         ODS.classLoader = classLoader;
+    }
+
+    public static void registerModule(OdsModule module) {
+        modules.put(module.getName(), module);
     }
 }
