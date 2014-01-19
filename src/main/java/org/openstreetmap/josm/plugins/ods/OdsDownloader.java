@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +15,7 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
@@ -29,17 +31,28 @@ public class OdsDownloader {
     
     private List<DownloadTask> downloadTasks;
     private Boundary boundary;
+    
+    private ProgressMonitor pm;
+    
+    boolean cancelled = false;
+    boolean interrupted = false;
 
-    protected OdsDownloader(OdsWorkingSet workingSet, Boundary boundary) {
+    protected OdsDownloader(OdsWorkingSet workingSet, Boundary boundary, ProgressMonitor progressMonitor) {
         super();
         this.workingSet = workingSet;
         this.boundary = boundary;
+        this.pm = progressMonitor;
     }
 
     public void run() throws ExecutionException, InterruptedException {
+        pm.indeterminateSubTask(I18n.tr("Setup"));
         setup();
         prepare();
+        if (cancelled || interrupted) return;
+        pm.indeterminateSubTask(I18n.tr("Downloading"));
         download();
+        if (cancelled || interrupted) return;
+        pm.indeterminateSubTask(I18n.tr("Processing data"));
         try {
             build();
         } catch (BuildException e) {
@@ -52,6 +65,7 @@ public class OdsDownloader {
         exernalDataLayer.data.dataSources.add(ds);
 //        pm.finishTask();
         computeBboxAndCenterScale(bounds);
+        pm.finishTask();
         workingSet.activate();
         Main.map.mapView.setActiveLayer(exernalDataLayer);
     }
@@ -75,43 +89,56 @@ public class OdsDownloader {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    private void prepare() throws ExecutionException, InterruptedException {
-        List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
-
+    private void prepare() {
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
+        List<Callable<Object>> tasks = new LinkedList<>();
+        for (DownloadTask task : downloadTasks) {
+            tasks.add(task.getPrepareCallable());
+        }
+        interrupted = false;
+        List<Exception> exceptions = new LinkedList<>();
+        List<Future<Object>> futures = new LinkedList<>();
         try {
-            for (DownloadTask task : downloadTasks) {
-                Future<?> future = executor.submit(task.getPrepareCallable());
-                futures.add(future);
+            futures = executor.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            interrupted = true;
+        }
+        for (Future<Object> future : futures) {
+            if (future.isCancelled()) {
+                cancelled = true;
             }
-            // Wait for all futures to finish
-            boolean interrupted = false;
-            List<Exception> exceptions = new LinkedList<Exception>();
-            for (Future<?> future : futures) {
-                try {
-                    future.get();
-                } catch (InterruptedException e) {
-                    interrupted = true;
-                } catch (Exception e) {
-                    exceptions.add(e);
-                }
-            }
-            if (interrupted) {
-                throw new InterruptedException();
-            }
-            if (!exceptions.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(I18n.trn("An error occurred while preparing the download jobs:",
-                        "{1} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
-                for (Exception e : exceptions) {
-                    sb.append("\n").append(e.getMessage());
-                }
-                throw new ExecutionException(sb.toString(), null);
-            }
-        } 
-        finally {
-            executor.shutdown();
-         }
+        }
+        boolean ready = false;
+//            while (!ready) {
+//                ready = true;
+//                for (Future<?> future : futures) {
+//                    if (future.isCancelled()) {
+//                        cancelled = true;
+//                    }
+//                    if (!future.isDone()) {
+//                        ready = false;
+//                    }
+//                }
+//                try {
+//                    future.get();
+//                } catch (InterruptedException e) {
+//                    interrupted = true;
+//                } catch (Exception e) {
+//                    exceptions.add(e);
+//                }
+//            }
+//            if (interrupted) {
+//                throw new InterruptedException();
+//            }
+//            if (!exceptions.isEmpty()) {
+//                StringBuilder sb = new StringBuilder();
+//                sb.append(I18n.trn("An error occurred while preparing the download jobs:",
+//                        "{1} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
+//                for (Exception e : exceptions) {
+//                    sb.append("\n").append(e.getMessage());
+//                }
+//                throw new ExecutionException(sb.toString(), null);
+//            }
     }
 
     private void download() throws ExecutionException, InterruptedException {

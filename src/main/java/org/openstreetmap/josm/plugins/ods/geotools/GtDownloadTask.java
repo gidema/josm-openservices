@@ -18,20 +18,20 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 public class GtDownloadTask implements ExternalDownloadTask {
     private final static CRSUtil crsUtil = CRSUtil.getInstance();
-    private final static GeoUtil geoUtil = GeoUtil.getInstance();
     
-    GtDataSource dataSource;
-    Boundary boundary;
-    SimpleFeatureSource featureSource;
-    Filter filter;
-    MetaData metaData;
-    List<SimpleFeature> features;
+    private GtDataSource dataSource;
+    private Boundary boundary;
+    private SimpleFeatureSource featureSource;
+    private Filter filter;
+    private MetaData metaData;
+    private List<SimpleFeature> features;
     boolean cancelled = false;
+    boolean failed = false;
+    private Exception exception = null;
 
     protected GtDownloadTask(GtDataSource dataSource, Boundary boundary) {
         super();
@@ -45,17 +45,27 @@ public class GtDownloadTask implements ExternalDownloadTask {
         return dataSource;
     }
 
-//    @Override
-//    public EntityStore getEntityStore() {
-//        return entityStore;
-//    }
-//    
     @Override
-    public Callable<?> getPrepareCallable() {
+    public boolean cancelled() {
+        return cancelled;
+    }
+
+    @Override
+    public boolean failed() {
+        return failed;
+    }
+
+    @Override
+    public Exception getException() {
+        return exception;
+    }
+
+    @Override
+    public Callable<Object> getPrepareCallable() {
         return new Callable<Object>() {
 
             @Override
-            public Object call() throws ExecutionException {
+            public Object call()  {
                 try {
                     dataSource.initialize();
                     metaData = dataSource.getMetaData();
@@ -79,7 +89,8 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     }
                     featureSource = gtFeatureSource.getFeatureSource();
                 } catch (Exception e) {
-                    throw new ExecutionException(e.getCause().getMessage(), e.getCause());
+                    failed = true;
+                    exception = e;
                 }
                 return null;
             }

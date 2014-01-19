@@ -140,17 +140,21 @@ public class OdsWorkingSet implements LayerChangeListener {
             downloadAction = new OdsDownloadAction();
             downloadAction.setWorkingSet(this);
             initToolbox();
-            getExternalDataLayer();
-            getInternalDataLayer();
-            active = true;
         }
+        getExternalDataLayer();
+        getInternalDataLayer();
+        active = true;
     }
 
     private void deActivate() {
-        internalDataLayer.getOsmDataLayer().destroy();
-        internalDataLayer = null;
-        externalDataLayer.getOsmDataLayer().destroy();
-        externalDataLayer = null;
+    	if (internalDataLayer != null) {
+    		internalDataLayer.getOsmDataLayer().destroy();
+            internalDataLayer = null;
+    	}
+    	if (externalDataLayer != null) {
+            externalDataLayer.getOsmDataLayer().destroy();
+            externalDataLayer = null;
+    	}
         toolbox.setVisible(false);
         toolbox = null;
         active = false;
@@ -181,8 +185,7 @@ public class OdsWorkingSet implements LayerChangeListener {
 
     public void download(Boundary boundary, boolean downloadOsmData)
             throws ExecutionException, InterruptedException {
-        OdsDownloader downloader = new OdsDownloader(this, boundary);
-        downloader.run();
+        new OdsDownloadAction().run();
     }
 
     void activateOsmLayer() {
@@ -231,14 +234,18 @@ public class OdsWorkingSet implements LayerChangeListener {
         boolean deActivate = false;
         if (!active) return;
         if (oldLayer == externalDataLayer.getOsmDataLayer()) {
-            if (Main.map != null && Main.map.mapView.getAllLayers().contains(internalDataLayer)) {
+            if (Main.map != null && Main.map.mapView.getAllLayers().contains(internalDataLayer.getOsmDataLayer())) {
                 Main.map.mapView.removeLayer(internalDataLayer.getOsmDataLayer());
                 deActivate = true;
+                internalDataLayer = null;
+                externalDataLayer = null;
             }
         } else if (oldLayer == internalDataLayer.getOsmDataLayer()) {
             if (Main.map != null && Main.map.mapView.getAllLayers().contains(externalDataLayer.getOsmDataLayer())) {
                 Main.map.mapView.removeLayer(externalDataLayer.getOsmDataLayer());
                 deActivate = true;
+                externalDataLayer = null;
+                internalDataLayer = null;
             }
         }
         if (deActivate) {

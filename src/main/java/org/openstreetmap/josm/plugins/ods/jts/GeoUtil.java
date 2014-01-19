@@ -32,6 +32,8 @@ import com.vividsolutions.jts.io.WKTReader;
  * geometries. No coordinate transformation is performed.
  * All source and target coordinates are in WGS84
  * 
+ * TODO make method names more uniform
+ * 
  * @author gertjan
  *
  */
@@ -129,7 +131,7 @@ public class GeoUtil {
         for (Node node: way.getNodes()) {
             coords[i++] = toCoordinate(node);
         }
-        return OSM_GEOMETRY_FACTORY.createLinearRing(coords);
+        return OSM_GEOMETRY_FACTORY.createLineString(coords);
     }
 
     public LineString toLineString(List<Coordinate> coords) {
