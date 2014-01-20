@@ -12,6 +12,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
@@ -33,9 +34,9 @@ public class InternalDownloadJob implements DownloadJob {
     private List<Analyzer> analyzers;
     private EntitySet newEntities;
 
-    public InternalDownloadJob(OdsWorkingSet workingSet, Boundary boundary) {
+    public InternalDownloadJob(Boundary boundary) {
         super();
-        this.workingSet = workingSet;
+        this.workingSet = ODS.getModule().getWorkingSet();
         this.boundary = boundary;
 ;
         this.dataLayer = workingSet.getInternalDataLayer();

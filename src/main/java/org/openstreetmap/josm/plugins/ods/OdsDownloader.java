@@ -25,7 +25,8 @@ import org.openstreetmap.josm.tools.I18n;
 public class OdsDownloader {
     private static final int NTHREADS = 10;
 
-    private final OdsWorkingSet workingSet;
+    private OdsWorkingSet workingSet;
+    
     private InternalDownloadJob internalDownloadJob;
     private ExternalDownloadJob externalDownloadJob;
     
@@ -37,9 +38,9 @@ public class OdsDownloader {
     boolean cancelled = false;
     boolean interrupted = false;
 
-    protected OdsDownloader(OdsWorkingSet workingSet, Boundary boundary, ProgressMonitor progressMonitor) {
+    protected OdsDownloader(Boundary boundary, ProgressMonitor progressMonitor) {
         super();
-        this.workingSet = workingSet;
+        this.workingSet = ODS.getModule().getWorkingSet();
         this.boundary = boundary;
         this.pm = progressMonitor;
     }
@@ -75,9 +76,9 @@ public class OdsDownloader {
      * Setup the download tasks. Maybe more than 1 per job. 
      */
     private void setup() {
-        internalDownloadJob = new InternalDownloadJob(workingSet, boundary);
+        internalDownloadJob = new InternalDownloadJob(boundary);
         internalDownloadJob.setup();
-        externalDownloadJob = new ExternalDownloadJob(workingSet, boundary);
+        externalDownloadJob = new ExternalDownloadJob(boundary);
         externalDownloadJob.setup();
         downloadTasks = new LinkedList<DownloadTask>();
         downloadTasks.addAll(internalDownloadJob.getDownloadTasks());

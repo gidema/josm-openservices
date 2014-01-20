@@ -52,7 +52,7 @@ public class OdsWorkingSet implements LayerChangeListener {
     public InternalDataLayer internalDataLayer;
     private boolean useToolbox = false;
     private JDialog toolbox;
-    private final List<OdsAction> actions = new LinkedList<>();
+    private final List<OldOdsAction> actions = new LinkedList<>();
     String osmQuery;
     private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<>();
     OdsDownloadAction downloadAction;
@@ -70,7 +70,7 @@ public class OdsWorkingSet implements LayerChangeListener {
         return blockStore;
     }
     
-    public void addAction(OdsAction action) {
+    public void addAction(OldOdsAction action) {
         action.setWorkingSet(this);
         actions.add(action);
     }
@@ -79,7 +79,7 @@ public class OdsWorkingSet implements LayerChangeListener {
         return name;
     }
 
-    protected void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -138,7 +138,6 @@ public class OdsWorkingSet implements LayerChangeListener {
     void activate() {
         if (!active) {
             downloadAction = new OdsDownloadAction();
-            downloadAction.setWorkingSet(this);
             initToolbox();
         }
         getExternalDataLayer();

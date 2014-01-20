@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
-import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JMenu;
 
 import nl.gertjanidema.conversion.valuemapper.ValueMapper;
 import nl.gertjanidema.conversion.valuemapper.ValueMapperException;
@@ -34,9 +32,16 @@ import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
     private final ClassLoader classLoader;
+    private final OdsModule module;
 
     public ConfigurationReader(ClassLoader classLoader) {
         this.classLoader = classLoader;
+        this.module = null;
+    }
+
+    public ConfigurationReader(ClassLoader classLoader, OdsModule module) {
+        this.classLoader = classLoader;
+        this.module = module;
     }
 
     public void read(URL configFile) throws ConfigurationException {
@@ -47,7 +52,9 @@ public class ConfigurationReader {
             conf.load(configFile);
             configureImports(conf);
             configureHosts(conf);
-            configureLayers(conf);
+            if (module != null) {
+                configureModule(conf);
+            }
         } catch (NoSuchElementException e) {
             throw new ConfigurationException(e.getMessage(), e.getCause());
         }
@@ -97,15 +104,13 @@ public class ConfigurationReader {
         }
     }
 
-    private void configureDataSources(HierarchicalConfiguration conf,
-            OdsWorkingSet layer) throws ConfigurationException {
+    private void configureDataSources(HierarchicalConfiguration conf) throws ConfigurationException {
         for (HierarchicalConfiguration c : conf.configurationsAt("datasource")) {
-            configureDataSource(c, layer);
+            configureDataSource(c);
         }
     }
 
-    private void configureDataSource(HierarchicalConfiguration conf,
-            OdsWorkingSet layer) throws ConfigurationException {
+    private void configureDataSource(HierarchicalConfiguration conf) throws ConfigurationException {
         OdsFeatureSource odsFeatureSource = configureOdsFeatureSource(conf);
         OdsDataSource dataSource = odsFeatureSource.newDataSource();
         String entityType = conf.getString("[@entitytype]", null);
@@ -116,7 +121,7 @@ public class ConfigurationReader {
         }
         String idAttribute = conf.getString("id[@attribute]", null);
         configureIdFactory(dataSource, idAttribute);
-        layer.addDataSource(dataSource);
+        module.getWorkingSet().addDataSource(dataSource);
     }
 
     private void configureFilter(OdsDataSource dataSource, String filter)
@@ -153,31 +158,20 @@ public class ConfigurationReader {
         }
     }
 
-    private void configureLayers(HierarchicalConfiguration conf)
+    private void configureModule(HierarchicalConfiguration conf)
             throws ConfigurationException {
-        for (HierarchicalConfiguration c : conf.configurationsAt("layer")) {
-            configureLayer(c);
-        }
-    }
-
-    private void configureLayer(HierarchicalConfiguration conf)
-            throws ConfigurationException {
-        String name = conf.getString("[@name]");
-        String description = conf.getString("[@description]", "");
-        OdsWorkingSet workingSet = new OdsWorkingSet();
-        workingSet.setName(name);
-        workingSet.setDescription(description);
-        configureDataSources(conf, workingSet);
-        String osmQuery = conf.getString("osm_query");
+        HierarchicalConfiguration c = conf.configurationAt("layer");
+//        String name = conf.getString("[@name]");
+//        String description = conf.getString("[@description]", "");
+        configureDataSources(c);
+        String osmQuery = c.getString("osm_query");
+        OdsWorkingSet workingSet = module.getWorkingSet();
         workingSet.setOsmQuery(osmQuery);
-        configureActions(workingSet, conf);
-        configureEntityFactory(workingSet, conf);
-        JMenu odsMenu = OpenDataServicesPlugin.getMenu();
-        Action action = new OdsWorkingSetAction(workingSet);
-        odsMenu.add(action);
+//        configureActions(workingSet, conf);
+        configureEntityFactory(workingSet, c);
     }
 
-    private void configureEntityFactory(OdsWorkingSet layer,
+    private void configureEntityFactory(OdsWorkingSet ows,
             HierarchicalConfiguration conf) throws ConfigurationException {
         EntityFactory entityFactory;
         HierarchicalConfiguration factoryConf =conf.configurationAt("factory");
@@ -187,7 +181,7 @@ public class ConfigurationReader {
         else {
             entityFactory = new SimpleExternalEntityFactory();
         }
-        layer.setEntityFactory(entityFactory);
+        ows.setEntityFactory(entityFactory);
     }
 
     private EntityFactory createEntityFactory(
@@ -217,7 +211,7 @@ public class ConfigurationReader {
         String type = conf.getString("[@type]");
         String iconName = conf.getString("[@icon]");
         try {
-            OdsAction action = (OdsAction) ODS.createObject(
+            OldOdsAction action = (OldOdsAction) ODS.createObject(
                     "action", type);
             if (name != null) {
                 action.setName(name);
