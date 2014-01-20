@@ -10,7 +10,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.WaySegment;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.OdsAction;
+import org.openstreetmap.josm.plugins.ods.OldOdsAction;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.tools.Pair;
 
@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.LineSegment;
  * @author Gertjan Idema
  * 
  */
-public class NearestWayAction extends OdsAction {
+public class NearestWayAction extends OldOdsAction {
 
     /**
      * 

@@ -1,7 +1,11 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.swing.JMenu;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.openstreetmap.josm.plugins.ods.tags.FeatureMapper;
@@ -24,7 +28,28 @@ public class ODS {
     // The classloader for all classes in this Plug-in an its modules.
 	private static ClassLoader classLoader;
 	
-	public static void registerImport(String type, String name, Class<?> clazz)
+	private static OdsModule module;
+
+    private static JMenu menu;
+
+	public static void setModule(OdsModule module) {
+        ODS.module = module;
+        menu.setText("ODS "+ module.getName());
+    }
+
+    public static OdsModule getModule() {
+        return module;
+    }
+
+	public static JMenu getMenu() {
+        return menu;
+    }
+
+    public static void setMenu(JMenu menu) {
+        ODS.menu = menu;
+    }
+
+    public static void registerImport(String type, String name, Class<?> clazz)
 			throws ConfigurationException {
 		String key = type + ":" + name;
 		if (imports.containsKey(key)) {
@@ -127,5 +152,9 @@ public class ODS {
 
     public static void registerModule(OdsModule module) {
         modules.put(module.getName(), module);
+    }
+
+    public static Collection<OdsModule> getModules() {
+        return modules.values();
     }
 }

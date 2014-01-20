@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
@@ -35,8 +36,8 @@ public class ExternalDownloadJob implements DownloadJob {
     private EntityFactory entityFactory;
     private List<Analyzer> analyzers;
 
-    public ExternalDownloadJob(OdsWorkingSet workingSet, Boundary boundary) {
-        this.workingSet = workingSet;
+    public ExternalDownloadJob(Boundary boundary) {
+        this.workingSet = ODS.getModule().getWorkingSet();
         this.dataLayer = workingSet.getExternalDataLayer();
         this.entityFactory = workingSet.getEntityFactory();
         this.boundary = boundary;

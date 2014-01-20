@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.openstreetmap.josm.Main;
@@ -30,8 +31,6 @@ import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
 
 public class OpenDataServicesPlugin extends Plugin {
-    private static JMenu menu;
-
     public OpenDataServicesPlugin(PluginInformation info) {
         super(info);
         try {
@@ -42,15 +41,15 @@ public class OpenDataServicesPlugin extends Plugin {
                         classLoader);
                 configurationReader.read(configFile);
             } catch (ConfigurationException e) {
-                Main.info("An error occured trying to registrate the odsFeatureSource types.");
-                Main.info(e.getMessage());
+                String message = "An error occured trying to registrate the odsFeatureSource types: " + e.getMessage();
+                JOptionPane.showMessageDialog(Main.parent,  message, "Error", JOptionPane.ERROR_MESSAGE);
             }
-            getMenu();
+            initializeMenu();
 //            configureSources();
             addDownloadDialogListener();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            String message = "An error occured trying to registrate the odsFeatureSource types: " + e.getMessage();
+            JOptionPane.showMessageDialog(Main.parent,  message, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -139,10 +138,14 @@ public class OpenDataServicesPlugin extends Plugin {
         }
     }
 
-    public static JMenu getMenu() {
+    public static JMenu initializeMenu() {
+        JMenu menu = ODS.getMenu();
         if (menu == null) {
             menu = Main.main.menu.addMenu(marktr("ODS"), KeyEvent.VK_UNDEFINED,
                     4, ht("/Plugin/ODS"));
+            menu.add(new OdsAction());
+            menu.add(new OdsDownloadAction());
+            ODS.setMenu(menu);
         }
         return menu;
     }

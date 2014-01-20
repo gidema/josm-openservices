@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.AbstractAction;
+
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -19,7 +21,7 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.xml.sax.SAXException;
 
-public class OdsDownloadAction extends OdsAction {
+public class OdsDownloadAction extends AbstractAction {
     /**
      * 
      */
@@ -28,10 +30,8 @@ public class OdsDownloadAction extends OdsAction {
     private boolean cancelled = false;
     
     public OdsDownloadAction() {
-        super();
-        this.setName("Download");
-        this.setIcon(ImageProvider.get("download"));
-
+        super("Download", ImageProvider.get("download"));
+        this.setEnabled(false);
     }
 
     @Override
@@ -76,6 +76,9 @@ public class OdsDownloadAction extends OdsAction {
     }
     
     private Boundary getPolygonBoundary() {
+        if (Main.map == null) {
+            return null;
+        }
         Layer activeLayer = Main.map.mapView.getActiveLayer();
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
@@ -108,7 +111,7 @@ public class OdsDownloadAction extends OdsAction {
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
-            OdsDownloader downloader = new OdsDownloader(workingSet, boundary, getProgressMonitor());
+            OdsDownloader downloader = new OdsDownloader(boundary, getProgressMonitor());
             try {
                 downloader.run();
             } catch (ExecutionException|InterruptedException e) {
