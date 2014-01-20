@@ -120,7 +120,6 @@
         <attribute name="Plugin-Version" value="${plugin.version}"/>
         <attribute name="Plugin-Requires" value="geotools"/>
       	<attribute name="Plugin-Stage" value="40"/>
-        <attribute name="Class-Path" value="lib/"/>
       </manifest>
         </jar>
     </target>
