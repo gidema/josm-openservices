@@ -3,9 +3,9 @@ package org.openstreetmap.josm.plugins.ods;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
-import java.util.Collection;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
@@ -23,39 +23,24 @@ public class OdsAction extends AbstractAction {
 
     public OdsAction() {
         super("Enable ODS");
-//        super.setDescription("Switch ODS between enabled and disabled state");
+        super.putValue("description", "Switch ODS between enabled and disabled state");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         OdsModule module = ODS.getModule();
-        if (module != null) {
-            JOptionPane.showMessageDialog(Main.parent, 
-                I18n.tr("ODS has allready been enabled for {0}.", module.getName()),
-            I18n.tr("Warning"), JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
-        Collection<OdsModule> modules = ODS.getModules();
-        if (modules.isEmpty()) {
+        if (module == null) {
             JOptionPane.showMessageDialog(Main.parent, 
                     I18n.tr("No ODS module is available."),
                 I18n.tr("Missing module"), JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        module = modules.iterator().next();
-        if (!checkUser(module)) {
-            int answer = JOptionPane.showConfirmDialog(Main.parent, 
-                 "Je gebruikersnaam eindigt niet op _BAG en is daarom niet geschikt " +
-                 "voor de BAG import.\nWeet je zeker dat je door wilt gaan?",
-                I18n.tr("Invalid user"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
-            if (answer == 2) {
-                // TODO where is the constant for CANCEL?
-                return;
-            }
+        if (module.isEnabled()) {
+            disableModule(module);
         }
-        ODS.setModule(module);
-        JMenu menu = ODS.getMenu();
-        menu.getItem(1).setEnabled(true);
+        else {
+            enableModule(module);
+        }
         
     	Layer activeLayer = null;
     	if (Main.map != null) {
@@ -66,6 +51,36 @@ public class OdsAction extends AbstractAction {
         }
     }
     
+    private void enableModule(OdsModule module) {
+        JMenu menu = ODS.getMenu();
+        if (!checkUser(module)) {
+            int answer = JOptionPane.showConfirmDialog(Main.parent, 
+                 "Je gebruikersnaam eindigt niet op _BAG en is daarom niet geschikt " +
+                 "voor de BAG import.\nWeet je zeker dat je door wilt gaan?",
+                I18n.tr("Invalid user"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (answer == JOptionPane.CANCEL_OPTION) {
+                return;
+            }
+        }
+        module.enable();
+        putValue(Action.NAME, "Disable ODS");
+        menu.setText("ODS "+ module.getName());
+        for (int i=1; i<menu.getItemCount(); i++) {
+            menu.getItem(i).setEnabled(true);
+        }
+        menu.repaint();
+    }
+
+    private void disableModule(OdsModule module) {
+        JMenu menu = ODS.getMenu();
+        module.disable();
+        putValue(Action.NAME, "Enable ODS");
+        menu.setText("ODS "+ module.getName());
+        for (int i=1; i<menu.getItemCount(); i++) {
+            menu.getItem(i).setEnabled(false);
+        }
+    }
+
     private boolean checkUser(OdsModule module) {
         try {
             final UserInfo userInfo = new OsmServerUserInfoReader().fetchUserInfo(NullProgressMonitor.INSTANCE);

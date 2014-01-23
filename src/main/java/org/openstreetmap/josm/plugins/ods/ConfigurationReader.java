@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
-import javax.swing.ImageIcon;
-
 import nl.gertjanidema.conversion.valuemapper.ValueMapper;
 import nl.gertjanidema.conversion.valuemapper.ValueMapperException;
 import nl.gertjanidema.conversion.valuemapper.ValueMapperFactory;
@@ -28,7 +26,6 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
 import org.openstreetmap.josm.plugins.ods.tags.DefaultFeatureMapper;
 import org.openstreetmap.josm.plugins.ods.tags.DefaultGeometryMapper;
 import org.openstreetmap.josm.tools.I18n;
-import org.openstreetmap.josm.tools.ImageProvider;
 
 public class ConfigurationReader {
     private final ClassLoader classLoader;
@@ -198,37 +195,37 @@ public class ConfigurationReader {
         }
     }
 
-    private void configureActions(OdsWorkingSet layer,
-            HierarchicalConfiguration conf) throws ConfigurationException {
-        for (HierarchicalConfiguration c : conf.configurationsAt("action")) {
-            configureAction(layer, c);
-        }
-    }
+//    private void configureActions(OdsWorkingSet layer,
+//            HierarchicalConfiguration conf) throws ConfigurationException {
+//        for (HierarchicalConfiguration c : conf.configurationsAt("action")) {
+//            configureAction(layer, c);
+//        }
+//    }
 
-    private void configureAction(OdsWorkingSet layer,
-            HierarchicalConfiguration conf) throws ConfigurationException {
-        String name = conf.getString("[@name]", null);
-        String type = conf.getString("[@type]");
-        String iconName = conf.getString("[@icon]");
-        try {
-            OldOdsAction action = (OldOdsAction) ODS.createObject(
-                    "action", type);
-            if (name != null) {
-                action.setName(name);
-            }
-            if (iconName != null) {
-                ImageIcon icon = ImageProvider.getIfAvailable(iconName);
-                if (icon == null) {
-                    throw new ConfigurationException(tr(
-                            "No icon found named {0}", iconName));
-                }
-                action.setIcon(icon);
-            }
-            layer.addAction(action);
-        } catch (Exception e) {
-            throw new ConfigurationException(e);
-        }
-    }
+//    private void configureAction(OdsWorkingSet layer,
+//            HierarchicalConfiguration conf) throws ConfigurationException {
+//        String name = conf.getString("[@name]", null);
+//        String type = conf.getString("[@type]");
+//        String iconName = conf.getString("[@icon]");
+//        try {
+//            OldOdsAction action = (OldOdsAction) ODS.createObject(
+//                    "action", type);
+//            if (name != null) {
+//                action.setName(name);
+//            }
+//            if (iconName != null) {
+//                ImageIcon icon = ImageProvider.getIfAvailable(iconName);
+//                if (icon == null) {
+//                    throw new ConfigurationException(tr(
+//                            "No icon found named {0}", iconName));
+//                }
+//                action.setIcon(icon);
+//            }
+//            layer.addAction(action);
+//        } catch (Exception e) {
+//            throw new ConfigurationException(e);
+//        }
+//    }
 
     // private synchronized void configureMenu(Action action, String menu) {
     // String[] menuParts = menu.split("\\.");

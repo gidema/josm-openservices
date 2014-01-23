@@ -35,7 +35,6 @@ public class ExternalDataLayer implements DataLayer {
         osmDataLayer = new OsmDataLayer(dataSet, name, null);
         entitySet = new DefaultEntitySet();
         primitiveBuilder = new PrimitiveBuilder(dataSet);
-        dataSet.setUploadDiscouraged(true);
     }
 
     

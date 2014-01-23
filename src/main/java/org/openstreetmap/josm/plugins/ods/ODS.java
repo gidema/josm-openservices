@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.JMenu;
@@ -26,19 +25,21 @@ public class ODS {
 	private static Map<String, FeatureMapper> featureMappers = new HashMap<>();
 	private static Map<String, Class<?>> imports = new HashMap<>();
     // The classloader for all classes in this Plug-in an its modules.
-	private static ClassLoader classLoader;
+//	private static ClassLoader classLoader;
 	
-	private static OdsModule module;
+//	private static OdsModule module;
 
     private static JMenu menu;
 
-	public static void setModule(OdsModule module) {
-        ODS.module = module;
-        menu.setText("ODS "+ module.getName());
-    }
+//	public static void setModule(OdsModule module) {
+//        ODS.module = module;
+//        menu.setText("ODS "+ module.getName());
+//    }
 
     public static OdsModule getModule() {
-        return module;
+        //Maximal 1 module at the moment
+        if (modules.isEmpty()) return null;
+        return modules.values().iterator().next();
     }
 
 	public static JMenu getMenu() {
@@ -142,13 +143,13 @@ public class ODS {
 		}
 	}
 	
-    public static ClassLoader getClassLoader() {
-        return classLoader;
-    }
-
-    public static void setClassLoader(ClassLoader classLoader) {
-        ODS.classLoader = classLoader;
-    }
+//    public static ClassLoader getClassLoader() {
+//        return classLoader;
+//    }
+//
+//    public static void setClassLoader(ClassLoader classLoader) {
+//        ODS.classLoader = classLoader;
+//    }
 
     public static void registerModule(OdsModule module) {
         modules.put(module.getName(), module);

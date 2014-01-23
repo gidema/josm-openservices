@@ -11,12 +11,7 @@ import static org.openstreetmap.josm.tools.I18n.marktr;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
@@ -53,90 +48,90 @@ public class OpenDataServicesPlugin extends Plugin {
         }
     }
 
-    private void configureSources() {
-        File pluginDir = new File(getPluginDir());
-        createPluginClassLoader(pluginDir);
-        if (pluginDir.isDirectory()) {
-            configureJarSources(pluginDir);
-        }
-    }
+//    private void configureSources() {
+//        File pluginDir = new File(getPluginDir());
+//        createPluginClassLoader(pluginDir);
+//        if (pluginDir.isDirectory()) {
+//            configureJarSources(pluginDir);
+//        }
+//    }
 
-    private void createPluginClassLoader(File pluginDir) {
-        FilenameFilter jarFileFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        };
-        String[] jars = pluginDir.list(jarFileFilter);
-        URL[] urls = new URL[jars.length];
-        try {
-            for (int i = 0; i < jars.length; i++) {
-                File file = new File(pluginDir, jars[i]);
-                urls[i] = file.toURI().toURL();
-            }
-            URLClassLoader classLoader = new URLClassLoader(urls, getClass()
-                    .getClassLoader());
-            ODS.setClassLoader(classLoader);
-        } catch (MalformedURLException e) {
-            // I don't expect this to happen. Throw a runtime exception just in
-            // case
-            throw new RuntimeException(e);
-        }
+//    private void createPluginClassLoader(File pluginDir) {
+//        FilenameFilter jarFileFilter = new FilenameFilter() {
+//            @Override
+//            public boolean accept(File dir, String name) {
+//                return name.endsWith(".jar");
+//            }
+//        };
+//        String[] jars = pluginDir.list(jarFileFilter);
+//        URL[] urls = new URL[jars.length];
+//        try {
+//            for (int i = 0; i < jars.length; i++) {
+//                File file = new File(pluginDir, jars[i]);
+//                urls[i] = file.toURI().toURL();
+//            }
+//            URLClassLoader classLoader = new URLClassLoader(urls, getClass()
+//                    .getClassLoader());
+//            ODS.setClassLoader(classLoader);
+//        } catch (MalformedURLException e) {
+//            // I don't expect this to happen. Throw a runtime exception just in
+//            // case
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
 
-    }
-
-    private void configureJarSources(File pluginDir) {
-        FilenameFilter jarFileFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        };
-        for (String jarFile : pluginDir.list(jarFileFilter)) {
-            configureJarSource(new File(pluginDir, jarFile));
-        }
-    }
-
-    public void configureJarSource(File jarFile) {
-        try {
-            URL url = jarFile.toURI().toURL();
-            URLClassLoader classLoader = new URLClassLoader(new URL[] { url },
-                    null);
-            URL configFile = classLoader.getResource("config.xml");
-            try {
-                classLoader.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            if (configFile == null) {
-                Main.warn("Warning: {0} should contain a config.xml file",
-                        jarFile);
-                return;
-            }
-            // Now we need the classLoader to include the ODS plugin
-            classLoader = new URLClassLoader(new URL[] { url }, getClass()
-                    .getClassLoader());
-            ConfigurationReader configurationReader = new ConfigurationReader(
-                    classLoader);
-            configurationReader.read(configFile);
-            try {
-                classLoader.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("An unexpected exception occurred", e);
-        } catch (ConfigurationException e) {
-            Main.warn("A problem occurred when reading {0}", jarFile);
-            Main.warn(e.getMessage());
-            if (e.getCause() instanceof NullPointerException) {
-                e.getCause().printStackTrace();
-            }
-        }
-    }
+//    private void configureJarSources(File pluginDir) {
+//        FilenameFilter jarFileFilter = new FilenameFilter() {
+//            @Override
+//            public boolean accept(File dir, String name) {
+//                return name.endsWith(".jar");
+//            }
+//        };
+//        for (String jarFile : pluginDir.list(jarFileFilter)) {
+//            configureJarSource(new File(pluginDir, jarFile));
+//        }
+//    }
+//
+//    public void configureJarSource(File jarFile) {
+//        try {
+//            URL url = jarFile.toURI().toURL();
+//            URLClassLoader classLoader = new URLClassLoader(new URL[] { url },
+//                    null);
+//            URL configFile = classLoader.getResource("config.xml");
+//            try {
+//                classLoader.close();
+//            } catch (IOException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//            if (configFile == null) {
+//                Main.warn("Warning: {0} should contain a config.xml file",
+//                        jarFile);
+//                return;
+//            }
+//            // Now we need the classLoader to include the ODS plugin
+//            classLoader = new URLClassLoader(new URL[] { url }, getClass()
+//                    .getClassLoader());
+//            ConfigurationReader configurationReader = new ConfigurationReader(
+//                    classLoader);
+//            configurationReader.read(configFile);
+//            try {
+//                classLoader.close();
+//            } catch (IOException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException("An unexpected exception occurred", e);
+//        } catch (ConfigurationException e) {
+//            Main.warn("A problem occurred when reading {0}", jarFile);
+//            Main.warn(e.getMessage());
+//            if (e.getCause() instanceof NullPointerException) {
+//                e.getCause().printStackTrace();
+//            }
+//        }
+//    }
 
     public static JMenu initializeMenu() {
         JMenu menu = ODS.getMenu();
