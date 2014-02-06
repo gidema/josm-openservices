@@ -1,7 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
+import java.util.Comparator;
 
-public interface Address {
+
+public interface Address extends Comparable<Address> {
     public City getCity();
 
 //    public Serializable getBuildingRef();

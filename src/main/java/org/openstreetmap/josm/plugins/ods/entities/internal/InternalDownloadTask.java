@@ -1,29 +1,33 @@
 package org.openstreetmap.josm.plugins.ods.entities.internal;
 
-import java.util.Locale;
 import java.util.concurrent.Callable;
 
-import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmApiException;
+import org.openstreetmap.josm.io.OsmServerLocationReader;
+import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.jts.PolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 
 public class InternalDownloadTask implements DownloadTask {
     final OdsWorkingSet workingSet;
     final Boundary boundary;
-    BoundingBoxDownloader bbDownloader;
-    String overpassQuery;
+    OsmServerReader osmServerReader;
+    private static String overpassQuery = 
+        "(node($bbox);rel(bn)->.x;way($bbox);" +
+        "node(w)->.x;rel(bw);)";
 //    List<Exception> exceptions = new LinkedList<Exception>();
     boolean failed = false;
     boolean cancelled = false;
     Exception exception = null;
     String errorMessage = null;
+    private DownloadSource downloadSource=  DownloadSource.OSM;
 
     protected InternalDownloadTask(OdsWorkingSet workingSet, Boundary boundary) {
         super();
@@ -60,8 +64,15 @@ public class InternalDownloadTask implements DownloadTask {
 
             @Override
             public Object call() {
-                overpassQuery = workingSet.getOsmQuery();
-                bbDownloader = new BoundingBoxDownloader(boundary.getBounds());
+                switch (downloadSource) {
+                case OSM:
+                    osmServerReader = new BoundingBoxDownloader(boundary.getBounds());
+                    break;
+                case OVERPASS:
+                    String url = Overpass.getURL(overpassQuery, boundary);
+                    osmServerReader = new OsmServerLocationReader(url);
+                    break;
+                }
                 return null;
             }
         };
@@ -77,10 +88,12 @@ public class InternalDownloadTask implements DownloadTask {
                     if (cancelled)
                         return null;
                     DataSet dataSet = parseDataSet();
-                    if (!boundary.isRectangular()) {
-                        boundary.filter(dataSet);
+                    if (downloadSource == DownloadSource.OSM) {
+                        PolygonFilter filter = new PolygonFilter(boundary.getPolygon());
+                        dataSet = filter.filter(dataSet);
                     }
                     workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
+                    //layer.destroy();
                 }
                 catch(Exception e) {
                     failed = true;
@@ -99,7 +112,7 @@ public class InternalDownloadTask implements DownloadTask {
             }
                 
             protected DataSet parseDataSet() throws OsmTransferException {
-                return bbDownloader.parseOsm(NullProgressMonitor.INSTANCE);
+                return osmServerReader.parseOsm(NullProgressMonitor.INSTANCE);
             }
 
         };
@@ -108,19 +121,13 @@ public class InternalDownloadTask implements DownloadTask {
     @Override
     public void operationCanceled() {
         cancelled = true;
-        if (bbDownloader != null) {
-            bbDownloader.cancel();
+        if (osmServerReader != null) {
+            osmServerReader.cancel();
         }
     }
-
-    static String getOverpassUrl(String query, Bounds bounds) {
-        String host = "http://overpass-api.de/api";
-        String bbox = String.format(Locale.ENGLISH, "%f,%f,%f,%f", bounds
-                .getMin().getY(), bounds.getMin().getX(), bounds.getMax()
-                .getY(), bounds.getMax().getX());
-        String q = query.replaceAll("\\$bbox", bbox);
-        q = q.replaceAll("\\{\\{bbox\\}\\}", bbox);
-        q = q.replace(";$", "");
-        return String.format("%s/interpreter?data=%s;out meta;", host, q);
+    
+    static enum DownloadSource {
+        OSM,
+        OVERPASS;
     }
 }

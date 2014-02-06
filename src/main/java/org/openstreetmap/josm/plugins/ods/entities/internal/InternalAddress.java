@@ -93,4 +93,20 @@ public class InternalAddress implements Address {
     public void setStreet(Street street) {
         // TODO Auto-generated method stub   
     }
+
+        
+    @Override
+    public int compareTo(Address a) {
+        int result = getPlaceName().compareTo(a.getPlaceName());
+        if (result == 0) {
+            result = getPostcode().compareTo(a.getPostcode());
+        };
+        if (result == 0) {
+            result = getStreetName().compareTo(a.getStreetName());
+        };
+        if (result == 0) {
+            result = getHouseName().compareTo(a.getHouseName());
+        };
+        return result;
+    }
 }

@@ -4,7 +4,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Point;
 
-public interface AddressNode extends Entity {
+public interface AddressNode extends Entity, Comparable<AddressNode> {
 	public final static String TYPE = "ods:address";
 
     public Address getAddress();
@@ -17,5 +17,7 @@ public interface AddressNode extends Entity {
 
     public Building getBuilding();
 
-	public Point getGeometry();
+    public void setGeometry(Point point);
+
+    public Point getGeometry();
 }

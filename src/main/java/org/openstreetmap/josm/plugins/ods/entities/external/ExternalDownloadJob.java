@@ -17,6 +17,7 @@ import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNodeDistributor;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingCompletenessAnalyzer;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingSimplifier;
@@ -46,6 +47,7 @@ public class ExternalDownloadJob implements DownloadJob {
         analyzers.add(new BuildingSimplifier(tolerance));
         analyzers.add(new CrossingBuildingAnalyzer(tolerance));
         analyzers.add(new AddressToBuildingMatcher());
+        analyzers.add(new AddressNodeDistributor());
         analyzers.add(new BuildingCompletenessAnalyzer());
         //analyzers.add(new AddressToStreetMatcher());
     }

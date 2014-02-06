@@ -76,9 +76,8 @@ public class Boundary {
         return bounds;
     }
     
-    // TODO create a class for this task;
-    public void filter(DataSet dataSet) {
-        PolygonFilter filter = new PolygonFilter(polygon);
-        filter.filter(dataSet);
-    }
+//    public void filter(DataSet dataSet) {
+//        PolygonFilter filter = new PolygonFilter(polygon);
+//        filter.filter(dataSet);
+//    }
 }

@@ -18,8 +18,6 @@ import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToStreetMatcher;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.I18n;
@@ -30,7 +28,6 @@ public class InternalDownloadJob implements DownloadJob {
     private List<InternalDownloadTask> downloadTasks;
     private DataLayer dataLayer;
     private EntityFactory entityFactory;
-    private String overpassQuery;
     private List<Analyzer> analyzers;
     private EntitySet newEntities;
 
@@ -41,7 +38,7 @@ public class InternalDownloadJob implements DownloadJob {
 ;
         this.dataLayer = workingSet.getInternalDataLayer();
         this.entityFactory = workingSet.getEntityFactory();
-        Double tolerance = 1e-7;
+        Double tolerance = 2e-7;
         analyzers = new ArrayList<>(5);
 //        analyzers.add(new AddressToBuildingMatcher());
 //        analyzers.add(new AddressToStreetMatcher());
