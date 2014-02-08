@@ -11,8 +11,14 @@ import static org.openstreetmap.josm.tools.I18n.marktr;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
@@ -24,10 +30,16 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.Plugin;
 import org.openstreetmap.josm.plugins.PluginInformation;
+import org.openstreetmap.josm.tools.I18n;
 
 public class OpenDataServicesPlugin extends Plugin {
+    private final static String INFO_URL = "http://www.gertjanidema.nl/ods/ods.json";
+    private JsonObject metaInfo;
+    
     public OpenDataServicesPlugin(PluginInformation info) {
         super(info);
+        readInfo();
+        checkVersion(info);
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             URL configFile = classLoader.getResource("config.xml");
@@ -48,91 +60,6 @@ public class OpenDataServicesPlugin extends Plugin {
         }
     }
 
-//    private void configureSources() {
-//        File pluginDir = new File(getPluginDir());
-//        createPluginClassLoader(pluginDir);
-//        if (pluginDir.isDirectory()) {
-//            configureJarSources(pluginDir);
-//        }
-//    }
-
-//    private void createPluginClassLoader(File pluginDir) {
-//        FilenameFilter jarFileFilter = new FilenameFilter() {
-//            @Override
-//            public boolean accept(File dir, String name) {
-//                return name.endsWith(".jar");
-//            }
-//        };
-//        String[] jars = pluginDir.list(jarFileFilter);
-//        URL[] urls = new URL[jars.length];
-//        try {
-//            for (int i = 0; i < jars.length; i++) {
-//                File file = new File(pluginDir, jars[i]);
-//                urls[i] = file.toURI().toURL();
-//            }
-//            URLClassLoader classLoader = new URLClassLoader(urls, getClass()
-//                    .getClassLoader());
-//            ODS.setClassLoader(classLoader);
-//        } catch (MalformedURLException e) {
-//            // I don't expect this to happen. Throw a runtime exception just in
-//            // case
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
-
-//    private void configureJarSources(File pluginDir) {
-//        FilenameFilter jarFileFilter = new FilenameFilter() {
-//            @Override
-//            public boolean accept(File dir, String name) {
-//                return name.endsWith(".jar");
-//            }
-//        };
-//        for (String jarFile : pluginDir.list(jarFileFilter)) {
-//            configureJarSource(new File(pluginDir, jarFile));
-//        }
-//    }
-//
-//    public void configureJarSource(File jarFile) {
-//        try {
-//            URL url = jarFile.toURI().toURL();
-//            URLClassLoader classLoader = new URLClassLoader(new URL[] { url },
-//                    null);
-//            URL configFile = classLoader.getResource("config.xml");
-//            try {
-//                classLoader.close();
-//            } catch (IOException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
-//            if (configFile == null) {
-//                Main.warn("Warning: {0} should contain a config.xml file",
-//                        jarFile);
-//                return;
-//            }
-//            // Now we need the classLoader to include the ODS plugin
-//            classLoader = new URLClassLoader(new URL[] { url }, getClass()
-//                    .getClassLoader());
-//            ConfigurationReader configurationReader = new ConfigurationReader(
-//                    classLoader);
-//            configurationReader.read(configFile);
-//            try {
-//                classLoader.close();
-//            } catch (IOException e) {
-//                // TODO Auto-generated catch block
-//                e.printStackTrace();
-//            }
-//        } catch (MalformedURLException e) {
-//            throw new RuntimeException("An unexpected exception occurred", e);
-//        } catch (ConfigurationException e) {
-//            Main.warn("A problem occurred when reading {0}", jarFile);
-//            Main.warn(e.getMessage());
-//            if (e.getCause() instanceof NullPointerException) {
-//                e.getCause().printStackTrace();
-//            }
-//        }
-//    }
-
     public static JMenu initializeMenu() {
         JMenu menu = ODS.getMenu();
         if (menu == null) {
@@ -145,6 +72,49 @@ public class OpenDataServicesPlugin extends Plugin {
         return menu;
     }
 
+    public void checkVersion(PluginInformation info) {
+        if (metaInfo == null) return;
+        String latestVersion = metaInfo.getJsonObject("version").getString("latest");
+        if (!info.version.equals(latestVersion)) {
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr("Your ODS version ({0}) is out of date.\n" +
+                 "Please upgrade to the latest version: {1}", info.version, latestVersion), "Plug-in out of date", JOptionPane.WARNING_MESSAGE);
+
+        }
+    }
+    
+    private void readInfo() {
+        URL url;
+        try {
+            url = new URL(INFO_URL);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        InputStream is = null;
+        JsonReader reader = null;
+        try {
+            is = url.openStream();
+            reader = Json.createReader(is);
+            metaInfo = reader.readObject().getJsonObject("ods");
+            if (metaInfo == null) {
+                JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
+                        "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
+                "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
+            
+        } finally {
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    // Ignore
+                }
+            if (reader != null) reader.close();
+        }
+    }
+    
     /*
      * When Josm's default download is called, the results shouldn't end up in
      * one of the OpenService layers. To achieve this, we intercept the
