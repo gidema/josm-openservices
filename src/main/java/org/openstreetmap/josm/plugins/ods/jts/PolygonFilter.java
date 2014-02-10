@@ -1,8 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.jts;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +13,9 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
+
+import static org.openstreetmap.josm.data.osm.OsmPrimitiveType.*;
+
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
@@ -30,31 +35,52 @@ public class PolygonFilter {
     private final static GeoUtil geoUtil = GeoUtil.getInstance();
 
     private final PreparedPolygon pp;
-    private final Set<OsmPrimitive> keep = new HashSet<>();
+    private Set<OsmPrimitive> keep;
 
     public PolygonFilter(Polygon polygon) {
         this.pp = new PreparedPolygon(polygon);
     }
 
     public DataSet filter(DataSet dataSet) {
-        // Create a Collection of all primitives we should keep
+        // Create a Collection of all nodes inside the polygon
+        Collection<Node> nodes = new LinkedList<>();
         for (Node node : dataSet.getNodes()) {
             if (node.isIncomplete()) {
                 continue;
             }
             Point point = geoUtil.toPoint(node);
             if (pp.contains(point)) {
-                keep(node, true);
+                nodes.add(node);
             }
         }
-        // Now create a new dataSet containing the primitives to keep
+
+        // Now create a set of all primitives to keep
+        // this may include nodes outside the polygon if they
+        // are part of a way that has nodes inside the polygon
+        keep = new HashSet<>();
+
+        for (Node node : nodes) {
+            // Add the node
+            keep.add(node);
+            // Add ways and relation referred to by this node
+            for (OsmPrimitive primitive : node.getReferrers()) {
+                if (primitive.getType() == WAY) {
+                    keep((Way)primitive);
+                }
+                if (primitive.getType() == RELATION) {
+                    keep((Relation)primitive);
+                }
+            }
+        }
+        
+        // Now create a new dataset containing the primitives we want to keep
+        DataSet newDataSet = new DataSet();
 
         // The nodes are easy. We can simply clone them
-        DataSet newDataSet = new DataSet();
         Iterator<OsmPrimitive> it = keep.iterator();
         while (it.hasNext()) {
             OsmPrimitive primitive = it.next();
-            if (primitive.getType() == OsmPrimitiveType.NODE) {
+            if (primitive.getType() == NODE) {
                 Node newNode = clone((Node) primitive);
                 newDataSet.addPrimitive(newNode);
             }
@@ -64,7 +90,7 @@ public class PolygonFilter {
         it = keep.iterator();
         while (it.hasNext()) {
             OsmPrimitive primitive = it.next();
-            if (primitive.getType() == OsmPrimitiveType.WAY) {
+            if (primitive.getType() == WAY) {
                 Way oldWay = (Way) primitive;
                 Way newWay = clone(oldWay, newDataSet);
                 newDataSet.addPrimitive(newWay);
@@ -77,7 +103,7 @@ public class PolygonFilter {
         while (it.hasNext()) {
             OsmPrimitive primitive = it.next();
             // Relation oldRelation = it.next();
-            if (primitive.getType() == OsmPrimitiveType.RELATION) {
+            if (primitive.getType() == RELATION) {
                 if (newDataSet.getPrimitiveById(primitive.getPrimitiveId()) == null) {
                     try {
                         Relation oldRelation = (Relation) primitive;
@@ -93,41 +119,17 @@ public class PolygonFilter {
         return newDataSet;
     }
 
-    private void keep(OsmPrimitive primitive) {
-        switch (primitive.getType()) {
-        case NODE:
-            keep((Node)primitive, false);
-            break;
-        case WAY:
-            keep((Way)primitive);
-            break;
-        case RELATION:
-            keep((Relation)primitive);
-            break;
-        default:
-            break;
-        }
-    }
-    
-    private void keep(Node node, boolean keepReferrers) {
-        if (keep.add(node)) {
-            if (keepReferrers) {
-                for (OsmPrimitive referrer : node.getReferrers()) {
-                    keep(referrer);
-                }
-            }
-        }
-    }
-    
+    /**
+     * 
+     * @param way
+     */
     private void keep(Way way) {
         if (keep.add(way)) {
-            for (OsmPrimitive referrer : way.getReferrers()) {
-                keep(referrer);
+            for (Node node : way.getNodes()) {
+                keep.add(node);
             }
-            if (!way.isIncomplete()) {
-                for (Node node : way.getNodes()) {
-                    keep(node);
-                }
+            for (OsmPrimitive referrer : way.getReferrers()) {
+                keep((Relation)referrer);
             }
         }
     }
@@ -135,7 +137,7 @@ public class PolygonFilter {
     private void keep (Relation relation) {
         if (keep.add(relation)) {
             for (OsmPrimitive referrer : relation.getReferrers()) {
-                keep(referrer);
+                keep((Relation)referrer);
             }
         }
     }
@@ -155,8 +157,7 @@ public class PolygonFilter {
         List<Node> nodes = new ArrayList<>(way.getNodesCount());
         for (int i = 0; i < way.getNodesCount(); i++) {
             Node node = way.getNode(i);
-            Node newNode = (Node) newDataSet.getPrimitiveById(node.getId(),
-                    OsmPrimitiveType.NODE);
+            Node newNode = (Node) newDataSet.getPrimitiveById(node.getId(), NODE);
             if (newNode == null) {
                 newNode = clone(node);
                 newDataSet.addPrimitive(newNode);
