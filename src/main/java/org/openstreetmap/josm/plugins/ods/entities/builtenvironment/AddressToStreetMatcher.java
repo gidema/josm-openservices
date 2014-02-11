@@ -26,11 +26,11 @@ public class AddressToStreetMatcher implements Analyzer {
             AddressNode addressNode = it.next();
             Address address = addressNode.getAddress();
             String fullStreetName = ExternalStreet.getFullName(
-                address.getPlaceName(), address.getStreetName());
+                address.getCityName(), address.getStreetName());
             if (fullStreetName != null) {
                 Street street = existing.getStreet(fullStreetName);
                 if (street == null) {
-                    street = new ExternalStreet(address.getPlaceName(), address.getStreetName());
+                    street = new ExternalStreet(address.getCityName(), address.getStreetName());
                     existing.getEntitySet().add(street);
                 }
                 address.setStreet(street);

@@ -28,6 +28,8 @@ public class OdsDownloadAction extends AbstractAction {
     private static final long serialVersionUID = 1L;
 
     private boolean cancelled = false;
+    private boolean downloadOsm;
+    private boolean downloadOds;
     
     public OdsDownloadAction() {
         super("Download", ImageProvider.get("download"));
@@ -43,7 +45,7 @@ public class OdsDownloadAction extends AbstractAction {
         cancelled = false;
         Boundary boundary = getBoundary();
         if (!cancelled) {
-            DownloadTask task = new DownloadTask(boundary);
+            DownloadTask task = new DownloadTask(boundary, downloadOsm, downloadOds);
             Main.worker.submit(task);
 
         }
@@ -72,6 +74,8 @@ public class OdsDownloadAction extends AbstractAction {
         }
         dialog.rememberSettings();
         Bounds bounds = dialog.getSelectedDownloadArea();
+        downloadOsm = dialog.cbDownloadOSM.isSelected();
+        downloadOds = dialog.cbDownloadODS.isSelected();
         return new Boundary(bounds);
     }
     
@@ -97,10 +101,15 @@ public class OdsDownloadAction extends AbstractAction {
     private class DownloadTask extends PleaseWaitRunnable {
         private boolean cancelled = false;
         private Boundary boundary;
+        private boolean downloadOsm;
+        private boolean downloadOds;
+        private OdsDownloader downloader;
         
-        public DownloadTask(Boundary boundary) {
+        public DownloadTask(Boundary boundary, boolean downloadOsm, boolean downloadOds) {
             super(tr("Downloading data"));
             this.boundary = boundary;
+            this.downloadOsm = downloadOsm;
+            this.downloadOds = downloadOds;
         }
 
         @Override
@@ -111,9 +120,9 @@ public class OdsDownloadAction extends AbstractAction {
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
-            OdsDownloader downloader = new OdsDownloader(boundary, getProgressMonitor());
+            downloader = new OdsDownloader(boundary, getProgressMonitor());
             try {
-                downloader.run();
+                downloader.run(downloadOsm, downloadOds);
             } catch (ExecutionException|InterruptedException e) {
                 throw new OsmTransferException(e);
             }
@@ -121,8 +130,13 @@ public class OdsDownloadAction extends AbstractAction {
 
         @Override
         protected void finish() {
-            // TODO Auto-generated method stub
-        }
-        
+            OdsWorkingSet workingSet = ODS.getModule().getWorkingSet();
+            if (downloadOsm) {
+                Main.map.mapView.setActiveLayer(workingSet.getInternalDataLayer().getOsmDataLayer());
+            }
+            else {
+                Main.map.mapView.setActiveLayer(workingSet.getExternalDataLayer().getOsmDataLayer());
+            }
+        }        
     }
 }

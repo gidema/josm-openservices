@@ -110,7 +110,7 @@ public class BuiltEnvironmentEntityBuilder {
     private void buildAddress(Node node) throws BuildException {
         if (addresses.get(node.getId()) == null) {
             AddressNode address = (AddressNode) entityFactory.buildEntity("address", node);
-            address.build();
+//            address.build();
             addresses.add(address);
             newEntities.add(address);
         }

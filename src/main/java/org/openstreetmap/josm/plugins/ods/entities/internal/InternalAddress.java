@@ -4,17 +4,10 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Address;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.City;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressDataImpl;
 
-public class InternalAddress implements Address {
+public class InternalAddress extends AddressDataImpl {
     private OsmPrimitive primitive;
-    private String houseNumber;
-    private String houseName;
-    private String streetName;
-    private String placeName;
-    private String postcode;
     
     public InternalAddress(OsmPrimitive primitive) {
         this.primitive = primitive;
@@ -28,85 +21,27 @@ public class InternalAddress implements Address {
             String key = entry.getKey();
             String value = entry.getValue();
             if ("addr:housenumber".equals(key)) {
-                houseNumber = value;
+                setHouseNumber(value);
             }
             else if ("addr:street".equals(key)) {
-                streetName = value;
+                setStreetName(value);
             }
             else if ("addr:housename".equals(key)) {
-                houseName = value;
+                setHouseName(value);
             }
             else if ("addr:city".equals(key)) {
-                placeName = value;
+                setCityName(value);
             }
             else if ("addr:postcode".equals(key)) {
-                postcode = normalizePostcode(value);
-                if (!postcode.equals(value)) {
-                    primitive.put("addr:postcode", postcode);
+                setPostcode(normalizePostcode(value));
+                if (!getPostcode().equals(value)) {
+                    primitive.put("addr:postcode", getPostcode());
                 }
             }
         }
     }
     
-    @Override
-    public City getCity() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getStreetName() {
-        return streetName;
-    }
-
-    @Override
-    public Street getStreet() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getPostcode() {
-        return postcode;
-    }
-
-    @Override
-    public String getHouseNumber() {
-        return houseNumber;
-    }
-
-    @Override
-    public String getHouseName() {
-       return houseName;
-    }
-
-    @Override
-    public String getPlaceName() {
-        return placeName;
-    }
-
     private String normalizePostcode(String postcode) {
         return postcode.replace(" ", "");
-    }
-
-    @Override
-    public void setStreet(Street street) {
-        // TODO Auto-generated method stub   
-    }
-
-        
-    @Override
-    public int compareTo(Address a) {
-        int result = getPlaceName().compareTo(a.getPlaceName());
-        if (result == 0) {
-            result = getPostcode().compareTo(a.getPostcode());
-        };
-        if (result == 0) {
-            result = getStreetName().compareTo(a.getStreetName());
-        };
-        if (result == 0) {
-            result = getHouseName().compareTo(a.getHouseName());
-        };
-        return result;
     }
 }

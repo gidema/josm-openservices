@@ -3,6 +3,8 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 
+import javax.swing.AbstractAction;
+
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
@@ -10,7 +12,8 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.WaySegment;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.OldOdsAction;
+import org.openstreetmap.josm.plugins.ods.ODS;
+import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.tools.Pair;
 
@@ -23,7 +26,7 @@ import com.vividsolutions.jts.geom.LineSegment;
  * @author Gertjan Idema
  * 
  */
-public class NearestWayAction extends OldOdsAction {
+public class NearestWayAction extends AbstractAction {
 
     /**
      * 
@@ -32,6 +35,7 @@ public class NearestWayAction extends OldOdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        OdsWorkingSet workingSet = ODS.getModule().getWorkingSet();
         final OsmDataLayer osmDataLayer = workingSet.getInternalDataLayer().getOsmDataLayer();
         Collection<Way> selected = Main.map.mapView.getEditLayer().data
                 .getSelectedWays();

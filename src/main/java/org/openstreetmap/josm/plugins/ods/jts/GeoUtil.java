@@ -74,6 +74,10 @@ public class GeoUtil {
         return OSM_GEOMETRY_FACTORY.createPoint(coord);
     }
 
+    public LatLon toLatLon(Point point) {
+        return new LatLon(point.getY(), point.getX());
+    }
+    
     public Polygon toPolygon(Bounds bounds) {
         Coordinate[] coords = new Coordinate[5];
         coords[0] = new Coordinate(bounds.getMinLon(), bounds.getMinLat());
@@ -197,8 +201,6 @@ public class GeoUtil {
         Envelope e = boundary.getEnvelopeInternal();
         return new Bounds(e.getMinY(), e.getMinX(), e.getMaxY(), e.getMaxX());
     }
-    
-    
 
 //    public Polygon toPolygon(Relation relation) throws InvalidPolygonException {
 //        MultiPolygon mpg;

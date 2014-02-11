@@ -18,6 +18,7 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNodeDistributor;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNodeDistributor;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingCompletenessAnalyzer;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingSimplifier;

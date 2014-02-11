@@ -51,13 +51,12 @@ public class OpenDataServicesPlugin extends Plugin {
                 String message = "An error occured trying to registrate the odsFeatureSource types: " + e.getMessage();
                 JOptionPane.showMessageDialog(Main.parent,  message, "Error", JOptionPane.ERROR_MESSAGE);
             }
-            initializeMenu();
-//            configureSources();
-            addDownloadDialogListener();
         } catch (Exception e) {
             String message = "An error occured trying to registrate the odsFeatureSource types: " + e.getMessage();
             JOptionPane.showMessageDialog(Main.parent,  message, "Error", JOptionPane.ERROR_MESSAGE);
         }
+        initializeMenu();
+        addDownloadDialogListener();
     }
 
     public static JMenu initializeMenu() {

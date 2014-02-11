@@ -29,6 +29,7 @@ public class OdsDownloadDialog extends DownloadDialog {
     static private OdsDownloadDialog instance;
 
     protected JCheckBox cbDownloadOSM;
+    protected JCheckBox cbDownloadODS;
     private SlippyMapChooser slippyMapChooser;
 
     /**
@@ -51,6 +52,10 @@ public class OdsDownloadDialog extends DownloadDialog {
     @Override
     public boolean isDownloadOsmData() {
         return cbDownloadOSM.isSelected();
+    }
+
+    public boolean isDownloadOdsData() {
+        return cbDownloadODS.isSelected();
     }
 
     @Override
@@ -83,14 +88,21 @@ public class OdsDownloadDialog extends DownloadDialog {
         cbNewLayer = new JCheckBox();
         cbStartup = new JCheckBox();
 
+        String moduleName = ODS.getModule().getName();
         cbDownloadOSM = new JCheckBox(tr("Download OSM data"));
         cbDownloadOSM
-                .setToolTipText(tr("<html>Select to download OSM data into a separate data layer.<br>"
+                .setToolTipText(tr("<html>Select to download OSM data.<br>"
                         + "Unselect to skip downloading of OSM data.</html>"));
+        cbDownloadODS = new JCheckBox(tr("Download {0} data", moduleName));
+        cbDownloadODS
+                .setToolTipText(tr("<html>Select to download {0}.<br>"
+                        + "Unselect to skip downloading of {0} data.</html>", moduleName));
         pnl.add(cbDownloadOSM,
                 GBC.std().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+        pnl.add(cbDownloadODS,
+                GBC.eol().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
 
-        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
+//        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
 
         if (!ExpertToggleAction.isExpert()) {
             JLabel infoLabel = new JLabel(

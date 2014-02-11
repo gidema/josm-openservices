@@ -29,6 +29,8 @@ public class OdsDownloader {
     
     private InternalDownloadJob internalDownloadJob;
     private ExternalDownloadJob externalDownloadJob;
+    private boolean downloadOsm;
+    private boolean downloadOds;
     
     private List<DownloadTask> downloadTasks;
     private Boundary boundary;
@@ -45,7 +47,17 @@ public class OdsDownloader {
         this.pm = progressMonitor;
     }
 
-    public void run() throws ExecutionException, InterruptedException {
+    public void run(boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
+        this.downloadOsm = downloadOsm;
+        this.downloadOds = downloadOds;
+        if (!boundary.isRectangular()) {
+            // A bit dirty hack:
+            // download both the OSM and ODS layer when using a polygon
+            // for the download. This is because we skip the download dialog.
+            // Maybe we shouldn't skip it
+            this.downloadOsm = true;
+            this.downloadOds = true;
+        }
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup();
         prepare();
@@ -68,7 +80,12 @@ public class OdsDownloader {
         computeBboxAndCenterScale(bounds);
         pm.finishTask();
         workingSet.activate();
-        Main.map.mapView.setActiveLayer(exernalDataLayer);
+//        if (downloadOds) {
+//            downloadTasks.addAll(externalDownloadJob.getDownloadTasks());
+//        }
+//        else {
+//            downloadTasks.addAll(internalDownloadJob.getDownloadTasks());            
+//        }
     }
 
     /**
@@ -76,13 +93,17 @@ public class OdsDownloader {
      * Setup the download tasks. Maybe more than 1 per job. 
      */
     private void setup() {
-        internalDownloadJob = new InternalDownloadJob(boundary);
-        internalDownloadJob.setup();
-        externalDownloadJob = new ExternalDownloadJob(boundary);
-        externalDownloadJob.setup();
         downloadTasks = new LinkedList<DownloadTask>();
-        downloadTasks.addAll(internalDownloadJob.getDownloadTasks());
-        downloadTasks.addAll(externalDownloadJob.getDownloadTasks());
+        if (downloadOsm) {
+            internalDownloadJob = new InternalDownloadJob(boundary);
+            internalDownloadJob.setup();
+            downloadTasks.addAll(internalDownloadJob.getDownloadTasks());
+        }
+        if (downloadOds) {
+            externalDownloadJob = new ExternalDownloadJob(boundary);
+            externalDownloadJob.setup();
+            downloadTasks.addAll(externalDownloadJob.getDownloadTasks());
+        }
     }
 
     /**
@@ -180,20 +201,12 @@ public class OdsDownloader {
     }
     
     private void build() throws BuildException {
-        internalDownloadJob.build();
-        externalDownloadJob.build();
-    }
-
-    @Deprecated
-    private static String getOverpassUrl(String query, Bounds bounds) {
-        String host = "http://overpass-api.de/api";
-        String bbox = String.format(Locale.ENGLISH, "%f,%f,%f,%f", bounds
-                .getMin().getY(), bounds.getMin().getX(), bounds.getMax()
-                .getY(), bounds.getMax().getX());
-        String q = query.replaceAll("\\$bbox", bbox);
-        q = q.replaceAll("\\{\\{bbox\\}\\}", bbox);
-        q = q.replace(";$", "");
-        return String.format("%s/interpreter?data=%s;out meta;", host, q);
+        if (downloadOsm) {
+            internalDownloadJob.build();
+        }
+        if (downloadOds) {
+            externalDownloadJob.build();
+        }
     }
 
     protected void computeBboxAndCenterScale(Bounds bounds) {

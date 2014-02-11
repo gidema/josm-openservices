@@ -1,28 +1,24 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import java.util.Comparator;
-
-
 public interface Address extends Comparable<Address> {
-    public City getCity();
+    public void setHouseNumber(String houseNumber);
+    public String getHouseNumber();
 
-//    public Serializable getBuildingRef();
+    public void setHouseName(String houseName);
+    public String getHouseName();
 
-//    public void setBuilding(Building building);
-
-//    public Building getBuilding();
-
+    public void setStreetName(String streetName);
     public String getStreetName();
 
     public Street getStreet();
 
+    public void setPostcode(String postcode);
     public String getPostcode();
 
-    public String getHouseNumber();
+    public void setCityName(String cityName);
+    public String getCityName();
 
-    public String getHouseName();
-
-    public String getPlaceName();
+    public City getCity();
 
     public void setStreet(Street street);
 }
