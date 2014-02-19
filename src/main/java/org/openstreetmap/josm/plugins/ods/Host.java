@@ -11,6 +11,7 @@ public abstract class Host {
   private String name;
   private String type;
   private String url;
+  private Integer maxFeatures;
   private MetaData metaData;
   private final List<MetaDataLoader> metaDataLoaders = new LinkedList<MetaDataLoader>();
   private Boolean initialized = false;
@@ -39,6 +40,14 @@ public abstract class Host {
     this.type = type;
   }
   
+  public Integer getMaxFeatures() {
+      return maxFeatures;
+  }
+  
+  public void setMaxFeatures(Integer maxFeatures) {
+      this.maxFeatures = maxFeatures;
+  }
+
   public void addMetaDataLoader(MetaDataLoader metaDataLoader) {
     metaDataLoaders.add(metaDataLoader);
   }
@@ -81,4 +90,5 @@ public abstract class Host {
   public abstract boolean hasFeatureType(String feature) throws ServiceException;
 
   public abstract OdsFeatureSource getOdsFeatureSource(String feature) throws ServiceException;
+
 }

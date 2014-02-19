@@ -60,7 +60,7 @@ public class ODS {
 		imports.put(key, clazz);
 	}
 
-	public static Host registerHost(String type, String name, String url)
+	public static Host registerHost(String type, String name, String url, Integer maxFeatures)
 			throws ConfigurationException {
 		Host existingHost = hosts.get(name);
 		if (existingHost != null) {
@@ -73,6 +73,7 @@ public class ODS {
 		Host host = (Host) createObject("host", type);
 		host.setName(name);
 		host.setUrl(url);
+		host.setMaxFeatures(maxFeatures);
 		hosts.put(name, host);
 		return host;
 	}

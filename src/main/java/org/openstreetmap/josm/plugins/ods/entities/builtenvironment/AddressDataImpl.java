@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
+import org.apache.commons.lang.ObjectUtils;
+
 public class AddressDataImpl implements Address {
     private String postcode;
     private String houseNumber;
@@ -85,15 +87,15 @@ public class AddressDataImpl implements Address {
 
     @Override
     public int compareTo(Address a) {
-        int result = getCityName().compareTo(a.getCityName());
+        int result = ObjectUtils.compare(getCityName(), a.getCityName());
         if (result == 0) {
-            result = getPostcode().compareTo(a.getPostcode());
+            result = ObjectUtils.compare(getPostcode(), a.getPostcode());
         };
         if (result == 0) {
-            result = getStreetName().compareTo(a.getStreetName());
+            result = ObjectUtils.compare(getStreetName(), a.getStreetName());
         };
         if (result == 0) {
-            result = getHouseName().compareTo(a.getHouseName());
+            result = ObjectUtils.compare(getHouseName(), a.getHouseName());
         };
         return result;
     }

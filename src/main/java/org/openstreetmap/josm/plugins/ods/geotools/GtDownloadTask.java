@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JOptionPane;
+
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -14,11 +16,13 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
+import org.openstreetmap.josm.tools.I18n;
 
 public class GtDownloadTask implements ExternalDownloadTask {
     private final static CRSUtil crsUtil = CRSUtil.getInstance();
@@ -109,11 +113,27 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     features = new LinkedList<SimpleFeature>();
                     it = featureCollection.features();
                     // retrieve all features
-                    while (!Thread.interrupted() && it.hasNext()) {
+                    while (!Thread.currentThread().isInterrupted() && it.hasNext()) {
                         features.add(it.next());
+                    }
+                    if (Thread.currentThread().isInterrupted()) {
+                        cancelled = true;
+                    }
+                    else {
+                        Integer maxFeatures = getDataSource().getOdsFeatureSource().getHost().getMaxFeatures();
+                        if (maxFeatures != null && features.size() >= maxFeatures) {
+                            String featureType = getDataSource().getFeatureType();
+                            JOptionPane.showMessageDialog(Main.panel, I18n.tr(
+                               "To many {0} objects. Please choose a smaller download area.", featureType));
+                            cancelled = true;
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 }
                 catch (Exception e) {
+                    if (e instanceof InterruptedException) {
+                        return null;
+                    }
                     e.printStackTrace();
                     if (e instanceof ExecutionException) {
                         throw (ExecutionException) e;

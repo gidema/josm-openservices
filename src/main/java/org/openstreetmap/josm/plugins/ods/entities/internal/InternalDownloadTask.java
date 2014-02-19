@@ -28,6 +28,7 @@ public class InternalDownloadTask implements DownloadTask {
     Exception exception = null;
     String errorMessage = null;
     private DownloadSource downloadSource=  DownloadSource.OSM;
+    private DataSet dataSet;
 
     protected InternalDownloadTask(OdsWorkingSet workingSet, Boundary boundary) {
         super();
@@ -56,6 +57,10 @@ public class InternalDownloadTask implements DownloadTask {
     
     public Exception getException() {
         return exception;
+    }
+    
+    public DataSet getDataSet() {
+        return dataSet;
     }
     
     @Override
@@ -87,13 +92,11 @@ public class InternalDownloadTask implements DownloadTask {
                 try {
                     if (cancelled)
                         return null;
-                    DataSet dataSet = parseDataSet();
+                    dataSet = parseDataSet();
                     if (downloadSource == DownloadSource.OSM) {
                         PolygonFilter filter = new PolygonFilter(boundary.getPolygon());
                         dataSet = filter.filter(dataSet);
                     }
-                    workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
-                    //layer.destroy();
                 }
                 catch(Exception e) {
                     failed = true;

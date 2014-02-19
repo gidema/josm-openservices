@@ -117,7 +117,7 @@ public class OpenDataServicesPlugin extends Plugin {
     /*
      * When Josm's default download is called, the results shouldn't end up in
      * one of the OpenService layers. To achieve this, we intercept the
-     * OdsDownloadDialog and make sure an OsmData layer is active before
+     * AbstractDownloadDialog and make sure an OsmData layer is active before
      * continuing;
      */
     private void addDownloadDialogListener() {

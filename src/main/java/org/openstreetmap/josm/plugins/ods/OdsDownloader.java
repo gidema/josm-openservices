@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -16,6 +15,7 @@ import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.gui.progress.ProgressMonitor.CancelListener;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
@@ -39,6 +39,8 @@ public class OdsDownloader {
     
     boolean cancelled = false;
     boolean interrupted = false;
+    
+    private ExecutorService executor;
 
     protected OdsDownloader(Boundary boundary, ProgressMonitor progressMonitor) {
         super();
@@ -50,21 +52,19 @@ public class OdsDownloader {
     public void run(boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
         this.downloadOsm = downloadOsm;
         this.downloadOds = downloadOds;
-        if (!boundary.isRectangular()) {
-            // A bit dirty hack:
-            // download both the OSM and ODS layer when using a polygon
-            // for the download. This is because we skip the download dialog.
-            // Maybe we shouldn't skip it
-            this.downloadOsm = true;
-            this.downloadOds = true;
-        }
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup();
         prepare();
-        if (cancelled || interrupted) return;
+        if (cancelled || interrupted) {
+            pm.finishTask();
+            return;
+        }
         pm.indeterminateSubTask(I18n.tr("Downloading"));
         download();
-        if (cancelled || interrupted) return;
+        if (cancelled || interrupted) {
+            pm.finishTask();
+            return;
+        }
         pm.indeterminateSubTask(I18n.tr("Processing data"));
         try {
             build();
@@ -112,7 +112,7 @@ public class OdsDownloader {
      * @throws InterruptedException
      */
     private void prepare() {
-        ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
+        executor = Executors.newFixedThreadPool(NTHREADS);
         List<Callable<Object>> tasks = new LinkedList<>();
         for (DownloadTask task : downloadTasks) {
             tasks.add(task.getPrepareCallable());
@@ -125,6 +125,7 @@ public class OdsDownloader {
         } catch (InterruptedException e) {
             interrupted = true;
         }
+        executor.shutdown();
         for (Future<Object> future : futures) {
             if (future.isCancelled()) {
                 cancelled = true;
@@ -167,12 +168,11 @@ public class OdsDownloader {
         workingSet.activate();
         List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
 
-        ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
+        executor = Executors.newFixedThreadPool(NTHREADS);
         for (DownloadTask task : downloadTasks) {
             Future<?> future = executor.submit(task.getDownloadCallable());
             futures.add(future);
         }
-        // TODO isn't this a bit early to shutdown the executor?
         executor.shutdown();
         boolean interrupted = false;
         List<Exception> exceptions = new LinkedList<Exception>();
@@ -180,14 +180,16 @@ public class OdsDownloader {
         for (Future<?> future : futures) {
             try {
                 future.get();
+                if (future.isCancelled()) {
+                    executor.shutdownNow();
+                    interrupted = true;                    
+                }
             } catch (InterruptedException e) {
+                executor.shutdownNow();
                 interrupted = true;
             } catch (Exception e) {
                 exceptions.add(e);
             }
-        }
-        if (interrupted) {
-            throw new InterruptedException();
         }
         if (!exceptions.isEmpty()) {
             StringBuilder msg = new StringBuilder();
@@ -214,6 +216,13 @@ public class OdsDownloader {
         if (bounds != null) {
             v.visit(bounds);
             Main.map.mapView.recalculateCenterScale(v);
+        }
+    }
+
+    public void cancel() {
+        cancelled = true;
+        if (executor != null) {
+            executor.shutdownNow();
         }
     }
 }

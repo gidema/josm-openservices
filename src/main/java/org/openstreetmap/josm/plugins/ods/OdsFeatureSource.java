@@ -14,6 +14,8 @@ public interface OdsFeatureSource {
 
     public void initialize() throws InitializationException;
 
+    public Host getHost();
+    
     public CoordinateReferenceSystem getCrs();
 
     public String getSRS();

@@ -9,7 +9,6 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
@@ -62,10 +61,14 @@ public class OdsDownloadAction extends AbstractAction {
 
     private Boundary getBoundary() {
         Boundary boundary = getPolygonBoundary();
-        if (boundary != null) {
-            return boundary;
+        boolean selectArea = (boundary == null);
+        AbstractDownloadDialog dialog;
+        if (selectArea) {
+            dialog = SlippyMapDownloadDialog.getInstance();
         }
-        OdsDownloadDialog dialog = OdsDownloadDialog.getInstance();
+        else {
+            dialog = FixedBoundsDownloadDialog.getInstance();
+        }
         dialog.restoreSettings();
         dialog.setVisible(true);
         if (dialog.isCanceled()) {
@@ -73,10 +76,12 @@ public class OdsDownloadAction extends AbstractAction {
             return null;
         }
         dialog.rememberSettings();
-        Bounds bounds = dialog.getSelectedDownloadArea();
         downloadOsm = dialog.cbDownloadOSM.isSelected();
         downloadOds = dialog.cbDownloadODS.isSelected();
-        return new Boundary(bounds);
+        if (selectArea) {
+            boundary = new Boundary(dialog.getSelectedDownloadArea());
+        }
+        return boundary;
     }
     
     private Boundary getPolygonBoundary() {
@@ -114,6 +119,7 @@ public class OdsDownloadAction extends AbstractAction {
 
         @Override
         protected void cancel() {
+            downloader.cancel();
             this.cancelled = true;
         }
 

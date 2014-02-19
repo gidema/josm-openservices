@@ -91,11 +91,20 @@ public class ConfigurationReader {
 
     private void configureHost(HierarchicalConfiguration conf)
             throws ConfigurationException {
+        Integer maxFeatures = null;
+        String s = conf.getString("[@maxFeatures]");
+        if (s!=null) {
+            try {
+                maxFeatures = Integer.parseInt(s);
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
+        }
         conf.setThrowExceptionOnMissing(true);
         String name = conf.getString("[@name]");
         String type = conf.getString("[@type]");
         String url = conf.getString("[@url]");
-        Host host = ODS.registerHost(type, name, url);
+        Host host = ODS.registerHost(type, name, url, maxFeatures);
         for (MetaDataLoader metaDataLoader : parseMetaDataLoaders(conf)) {
             host.addMetaDataLoader(metaDataLoader);
         }

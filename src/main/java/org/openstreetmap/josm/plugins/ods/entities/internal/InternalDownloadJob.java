@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
@@ -74,6 +75,9 @@ public class InternalDownloadJob implements DownloadJob {
 
     @Override
     public void build() throws BuildException {
+        DataSet dataSet = downloadTasks.get(0).getDataSet();
+        workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
+
         BuiltEnvironmentEntityBuilder builder = new BuiltEnvironmentEntityBuilder(
                 workingSet.internalDataLayer);
         builder.setEntityFactory(entityFactory);
