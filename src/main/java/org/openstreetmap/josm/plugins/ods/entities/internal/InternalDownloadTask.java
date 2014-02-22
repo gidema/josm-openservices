@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.internal;
 
 import java.util.concurrent.Callable;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
@@ -100,10 +101,10 @@ public class InternalDownloadTask implements DownloadTask {
                 }
                 catch(Exception e) {
                     failed = true;
-//                    if (isCanceled()) {
-//                        Main.info(tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
-//                        return;
-//                    }
+                    if (cancelled()) {
+                        Main.info(I18n.tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
+                        return null;
+                    }
                     if (e instanceof OsmApiException) {
                         if ( ((OsmApiException) e).getResponseCode() == 400) {
                             errorMessage = I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area.");

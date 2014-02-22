@@ -75,7 +75,12 @@ public class InternalDownloadJob implements DownloadJob {
 
     @Override
     public void build() throws BuildException {
-        DataSet dataSet = downloadTasks.get(0).getDataSet();
+        InternalDownloadTask task = downloadTasks.get(0);
+        if (task.failed) {
+            JOptionPane.showMessageDialog(Main.parent, task.errorMessage);
+            return;
+        }
+        DataSet dataSet = task.getDataSet();
         workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
 
         BuiltEnvironmentEntityBuilder builder = new BuiltEnvironmentEntityBuilder(
