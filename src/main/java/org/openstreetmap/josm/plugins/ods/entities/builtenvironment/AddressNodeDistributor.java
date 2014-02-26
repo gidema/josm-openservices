@@ -61,7 +61,7 @@ public class AddressNodeDistributor implements Analyzer {
      */
     private Map<Point, AddressNodeGroup> buildGroups(Building building) {
         Map<Point, AddressNodeGroup> groups = new HashMap<>();
-        Iterator<AddressNode> it = building.getAddresses().iterator();
+        Iterator<AddressNode> it = building.getAddressNodes().iterator();
         while (it.hasNext()) {
             AddressNode addressNode = it.next();
             AddressNodeGroup group = groups.get(addressNode.getGeometry());

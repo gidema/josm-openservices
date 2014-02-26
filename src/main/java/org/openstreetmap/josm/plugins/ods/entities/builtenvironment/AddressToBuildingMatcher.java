@@ -46,7 +46,7 @@ public class AddressToBuildingMatcher implements Analyzer {
         // TODO create issue if the building is not found
         if (building != null) {
             address.setBuilding(building);
-            building.getAddresses().add(address);
+            building.getAddressNodes().add(address);
         }
     }
 
@@ -63,7 +63,7 @@ public class AddressToBuildingMatcher implements Analyzer {
             Building building = iterator.next();
             if (building.getGeometry().covers(address.getGeometry())) {
                 address.setBuilding(building);
-                building.getAddresses().add(address);
+                building.getAddressNodes().add(address);
                 found = true;
             }
         }
