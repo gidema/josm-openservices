@@ -9,5 +9,6 @@ public interface DownloadTask extends CancelListener {
     public Callable<?> getDownloadCallable();
     boolean cancelled();
     boolean failed();
+    String getMessage();
     Exception getException();
 }

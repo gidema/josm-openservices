@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JOptionPane;
-
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -16,8 +14,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -35,6 +33,7 @@ public class GtDownloadTask implements ExternalDownloadTask {
     private List<SimpleFeature> features;
     boolean cancelled = false;
     boolean failed = false;
+    private String message = null;
     private Exception exception = null;
 
     protected GtDownloadTask(GtDataSource dataSource, Boundary boundary) {
@@ -57,6 +56,11 @@ public class GtDownloadTask implements ExternalDownloadTask {
     @Override
     public boolean failed() {
         return failed;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 
     @Override
@@ -119,15 +123,26 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     if (Thread.currentThread().isInterrupted()) {
                         cancelled = true;
                     }
+                    else if (features.isEmpty()) {
+                        String featureType = getDataSource().getFeatureType();
+                        message = I18n.tr("The selected download area contains no {0} objects.",
+                            featureType);
+                    }
                     else {
-                        Integer maxFeatures = getDataSource().getOdsFeatureSource().getHost().getMaxFeatures();
+                        Host host = getDataSource().getOdsFeatureSource().getHost();
+                        host.getMaxFeatures();
+                        Integer maxFeatures = host.getMaxFeatures();
                         if (maxFeatures != null && features.size() >= maxFeatures) {
                             String featureType = getDataSource().getFeatureType();
-                            JOptionPane.showMessageDialog(Main.panel, I18n.tr(
-                               "To many {0} objects. Please choose a smaller download area.", featureType));
+                            message = I18n.tr(
+                               "To many {0} objects. Please choose a smaller download area.", featureType);
                             cancelled = true;
-                            Thread.currentThread().interrupt();
+                            return null;
                         }
+                    }
+                    if (cancelled || failed) {
+                        Thread.currentThread().interrupt();
+                        return null;
                     }
                 }
                 catch (Exception e) {

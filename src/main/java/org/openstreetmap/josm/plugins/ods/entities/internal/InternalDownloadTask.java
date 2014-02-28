@@ -27,7 +27,7 @@ public class InternalDownloadTask implements DownloadTask {
     boolean failed = false;
     boolean cancelled = false;
     Exception exception = null;
-    String errorMessage = null;
+    String message = null;
     private DownloadSource downloadSource=  DownloadSource.OSM;
     private DataSet dataSet;
 
@@ -46,9 +46,9 @@ public class InternalDownloadTask implements DownloadTask {
         return cancelled;
     }
 
-    public String getErrorMessage() {
-        if (errorMessage != null) {
-            return errorMessage;
+    public String getMessage() {
+        if (message != null) {
+            return message;
         }
         if (exception != null) {
             return exception.getMessage();
@@ -98,6 +98,11 @@ public class InternalDownloadTask implements DownloadTask {
                         PolygonFilter filter = new PolygonFilter(boundary.getPolygon());
                         dataSet = filter.filter(dataSet);
                     }
+                    if (dataSet.allPrimitives().isEmpty()) {
+                        cancelled = true;
+                        message = I18n.tr("The selected download area contains no OSM objects");
+                        return null;
+                    }
                 }
                 catch(Exception e) {
                     failed = true;
@@ -107,7 +112,8 @@ public class InternalDownloadTask implements DownloadTask {
                     }
                     if (e instanceof OsmApiException) {
                         if ( ((OsmApiException) e).getResponseCode() == 400) {
-                            errorMessage = I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area.");
+                            message = I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area.");
+                            return null;
                         }
                     }
                     exception = e;

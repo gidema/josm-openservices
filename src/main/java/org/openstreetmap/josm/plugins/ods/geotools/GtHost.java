@@ -12,7 +12,7 @@ import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 
 /**
- * Class to represent a WFS odsFeatureSource host.
+ * Class to represent a Geotools  host.
  * @author Gertjan Idema
  *
  */

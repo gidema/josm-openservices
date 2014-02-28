@@ -9,13 +9,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.swing.JOptionPane;
+
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.gui.progress.ProgressMonitor.CancelListener;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
@@ -189,6 +190,20 @@ public class OdsDownloader {
                 interrupted = true;
             } catch (Exception e) {
                 exceptions.add(e);
+            }
+        }
+        for (DownloadTask task : downloadTasks) {
+            if (task.cancelled()) {
+                cancelled = true;
+                if (task.getMessage() != null) {
+                    JOptionPane.showMessageDialog(Main.parent, task.getMessage());
+                }
+            }
+        }
+        if (cancelled) return;
+        for (DownloadTask task : downloadTasks) {
+            if (task.getMessage() != null) {
+                JOptionPane.showMessageDialog(Main.parent, task.getMessage());
             }
         }
         if (!exceptions.isEmpty()) {

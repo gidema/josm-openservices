@@ -18,6 +18,7 @@ public class BuiltEnvironment  {
     private EntityStore<AddressNode> addresses;
     private EntityStore<City> cities;
     private EntityStore<Street> streets;
+//    private EntityStore<AssociatedStreet> associatedStreets;
     
     public BuiltEnvironment(EntitySet entitySet) {
         this.entitySet = entitySet;
