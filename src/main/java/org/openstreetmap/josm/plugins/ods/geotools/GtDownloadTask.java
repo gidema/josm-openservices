@@ -60,7 +60,13 @@ public class GtDownloadTask implements ExternalDownloadTask {
 
     @Override
     public String getMessage() {
-        return message;
+        if (message != null) {
+            return message;
+        }
+        if (exception != null) {
+            return exception.getMessage();
+        }
+        return null;
     }
 
     @Override

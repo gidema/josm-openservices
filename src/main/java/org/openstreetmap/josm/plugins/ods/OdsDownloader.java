@@ -132,37 +132,37 @@ public class OdsDownloader {
                 cancelled = true;
             }
         }
-        boolean ready = false;
-//            while (!ready) {
-//                ready = true;
-//                for (Future<?> future : futures) {
-//                    if (future.isCancelled()) {
-//                        cancelled = true;
-//                    }
-//                    if (!future.isDone()) {
-//                        ready = false;
-//                    }
-//                }
-//                try {
-//                    future.get();
-//                } catch (InterruptedException e) {
-//                    interrupted = true;
-//                } catch (Exception e) {
-//                    exceptions.add(e);
-//                }
+        for (DownloadTask task : downloadTasks) {
+            if (task.failed()) {
+                cancelled = true;
+                if (task.getMessage() != null) {
+                    JOptionPane.showMessageDialog(Main.parent, task.getMessage());
+                }
+            }
+        }
+        for (DownloadTask task : downloadTasks) {
+            if (task.cancelled()) {
+                cancelled = true;
+                if (task.getMessage() != null) {
+                    JOptionPane.showMessageDialog(Main.parent, task.getMessage());
+                }
+            }
+        }
+        if (cancelled) return;
+        for (DownloadTask task : downloadTasks) {
+            if (task.getMessage() != null) {
+                JOptionPane.showMessageDialog(Main.parent, task.getMessage());
+            }
+        }
+//        if (!exceptions.isEmpty()) {
+//            StringBuilder msg = new StringBuilder();
+//            msg.append(I18n.trn("An error occured while downloading the data:", 
+//                "{0} errors occurred while downloading the data:", exceptions.size(), exceptions.size()));
+//            for (Exception e: exceptions) {
+//                msg.append("\n").append(e.getMessage());
 //            }
-//            if (interrupted) {
-//                throw new InterruptedException();
-//            }
-//            if (!exceptions.isEmpty()) {
-//                StringBuilder sb = new StringBuilder();
-//                sb.append(I18n.trn("An error occurred while preparing the download jobs:",
-//                        "{1} errors occurred while preparing the download jobs:", exceptions.size(), exceptions.size()));
-//                for (Exception e : exceptions) {
-//                    sb.append("\n").append(e.getMessage());
-//                }
-//                throw new ExecutionException(sb.toString(), null);
-//            }
+//            throw new ExecutionException(msg.toString(), null);
+//        }
     }
 
     private void download() throws ExecutionException, InterruptedException {
@@ -190,6 +190,14 @@ public class OdsDownloader {
                 interrupted = true;
             } catch (Exception e) {
                 exceptions.add(e);
+            }
+        }
+        for (DownloadTask task : downloadTasks) {
+            if (task.failed()) {
+                cancelled = true;
+                if (task.getMessage() != null) {
+                    JOptionPane.showMessageDialog(Main.parent, task.getMessage());
+                }
             }
         }
         for (DownloadTask task : downloadTasks) {
