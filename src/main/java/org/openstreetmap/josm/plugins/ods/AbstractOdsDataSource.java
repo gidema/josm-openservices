@@ -10,6 +10,7 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 	private IdFactory idFactory;
 	private boolean initialized;
 	private String entityType;
+	private boolean required;
 
 	protected AbstractOdsDataSource(OdsFeatureSource odsFeatureSource) {
 		super();
@@ -37,6 +38,16 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
         return entityType;
     }
 
+	@Override
+	public void setRequired(boolean required) {
+	    this.required = required;
+	}
+	
+	@Override
+	public boolean isRequired() {
+	    return required;
+	}
+	
     @Override
 	public void setFilter(Filter filter) throws ConfigurationException {
 		this.filter = filter;

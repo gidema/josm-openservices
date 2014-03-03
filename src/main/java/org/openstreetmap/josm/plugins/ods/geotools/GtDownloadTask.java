@@ -69,104 +69,27 @@ public class GtDownloadTask implements ExternalDownloadTask {
         return null;
     }
 
+//    @Override
+//    public Exception getException() {
+//        return exception;
+//    }
+
+    
+
     @Override
-    public Exception getException() {
-        return exception;
+    public void cancel() {
+        cancelled = true;
     }
 
     @Override
-    public Callable<Object> getPrepareCallable() {
-        return new Callable<Object>() {
-
-            @Override
-            public Object call()  {
-                try {
-                    dataSource.initialize();
-                    metaData = dataSource.getMetaData();
-                    GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource
-                            .getOdsFeatureSource();
-                    // TODO check if selected boundaries overlap with
-                    // featureSource boundaries;
-                    FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-                    String geometryProperty = gtFeatureSource.getFeatureType()
-                            .getGeometryDescriptor().getLocalName();
-                    // TODO Find faster solution for the following line
-                    //Polygon polygon = geoUtil.createPolygon(boundary, null);
-                    Bounds bounds = boundary.getBounds();
-                    //Geometry transformedBoundary = crsUtil.fromOsm(polygon, gtFeatureSource.getCrs());
-                    // TODO Find faster solution for the following line
-                                        ReferencedEnvelope bbox = crsUtil.createBoundingBox(gtFeatureSource.getCrs(), bounds);
-                    filter = ff.bbox(ff.property(geometryProperty), bbox);
-                    Filter dataFilter = dataSource.getFilter();
-                    if (dataFilter != null) {
-                        filter = ff.and(filter, dataFilter);
-                    }
-                    featureSource = gtFeatureSource.getFeatureSource();
-                } catch (Exception e) {
-                    failed = true;
-                    exception = e;
-                }
-                return null;
-            }
-        };
-    }
-
-    @Override
-    public Callable<?> getDownloadCallable() {
-        return new Callable<Object>() {
-
-            @Override
-            public Object call() throws ExecutionException {
-                SimpleFeatureIterator it = null;
-                try {
-                    SimpleFeatureCollection featureCollection = featureSource.getFeatures(filter);
-                    features = new LinkedList<SimpleFeature>();
-                    it = featureCollection.features();
-                    // retrieve all features
-                    while (!Thread.currentThread().isInterrupted() && it.hasNext()) {
-                        features.add(it.next());
-                    }
-                    if (Thread.currentThread().isInterrupted()) {
-                        cancelled = true;
-                    }
-                    else if (features.isEmpty()) {
-                        String featureType = getDataSource().getFeatureType();
-                        message = I18n.tr("The selected download area contains no {0} objects.",
-                            featureType);
-                    }
-                    else {
-                        Host host = getDataSource().getOdsFeatureSource().getHost();
-                        host.getMaxFeatures();
-                        Integer maxFeatures = host.getMaxFeatures();
-                        if (maxFeatures != null && features.size() >= maxFeatures) {
-                            String featureType = getDataSource().getFeatureType();
-                            message = I18n.tr(
-                               "To many {0} objects. Please choose a smaller download area.", featureType);
-                            cancelled = true;
-                            return null;
-                        }
-                    }
-                    if (cancelled || failed) {
-                        Thread.currentThread().interrupt();
-                        return null;
-                    }
-                }
-                catch (Exception e) {
-                    if (e instanceof InterruptedException) {
-                        return null;
-                    }
-                    e.printStackTrace();
-                    if (e instanceof ExecutionException) {
-                        throw (ExecutionException) e;
-                    }
-                    throw new ExecutionException(e.getMessage(), e.getCause());
-                } finally {
-                    if (it != null)
-                        it.close();
-                }
-                return null;
-            }
-        };
+    public Callable<Object> stage(String subTask) {
+        switch (subTask) {
+        case "prepare":
+            return new PrepareSubTask();
+        case "download":
+            return new DownloadSubTask();
+        }
+        return null;
     }
 
     
@@ -200,8 +123,89 @@ public class GtDownloadTask implements ExternalDownloadTask {
         return features;
     }
 
-    @Override
-    public void operationCanceled() {
-        cancelled = true;
+    class DownloadSubTask implements Callable<Object> {
+        @Override
+        public Object call() throws ExecutionException {
+            SimpleFeatureIterator it = null;
+            try {
+                SimpleFeatureCollection featureCollection = featureSource.getFeatures(filter);
+                features = new LinkedList<SimpleFeature>();
+                it = featureCollection.features();
+                // retrieve all features
+                while (!Thread.currentThread().isInterrupted() && it.hasNext()) {
+                    features.add(it.next());
+                }
+                if (Thread.currentThread().isInterrupted()) {
+                    cancelled = true;
+                }
+                else if (features.isEmpty() && getDataSource().isRequired()) {
+                    String featureType = getDataSource().getFeatureType();
+                    message = I18n.tr("The selected download area contains no {0} objects.",
+                        featureType);
+                }
+                else {
+                    Host host = getDataSource().getOdsFeatureSource().getHost();
+                    host.getMaxFeatures();
+                    Integer maxFeatures = host.getMaxFeatures();
+                    if (maxFeatures != null && features.size() >= maxFeatures) {
+                        String featureType = getDataSource().getFeatureType();
+                        message = I18n.tr(
+                           "To many {0} objects. Please choose a smaller download area.", featureType);
+                        cancelled = true;
+                        return null;
+                    }
+                }
+                if (cancelled || failed) {
+                    Thread.currentThread().interrupt();
+                    return null;
+                }
+            }
+            catch (Exception e) {
+                if (e instanceof InterruptedException) {
+                    return null;
+                }
+                e.printStackTrace();
+                if (e instanceof ExecutionException) {
+                    throw (ExecutionException) e;
+                }
+                throw new ExecutionException(e.getMessage(), e.getCause());
+            } finally {
+                if (it != null)
+                    it.close();
+            }
+            return null;
+        }
+    }
+
+    class PrepareSubTask implements Callable<Object> {
+        @Override
+        public Object call()  {
+            try {
+                dataSource.initialize();
+                metaData = dataSource.getMetaData();
+                GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource
+                        .getOdsFeatureSource();
+                // TODO check if selected boundaries overlap with
+                // featureSource boundaries;
+                FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+                String geometryProperty = gtFeatureSource.getFeatureType()
+                        .getGeometryDescriptor().getLocalName();
+                //Polygon polygon = geoUtil.createPolygon(boundary, null);
+                Bounds bounds = boundary.getBounds();
+                //Geometry transformedBoundary = crsUtil.fromOsm(polygon, gtFeatureSource.getCrs());
+                // TODO Find faster solution for the following line
+                ReferencedEnvelope bbox = crsUtil.createBoundingBox(gtFeatureSource.getCrs(), bounds);
+                filter = ff.bbox(ff.property(geometryProperty), bbox);
+                Filter dataFilter = dataSource.getFilter();
+                if (dataFilter != null) {
+                    filter = ff.and(filter, dataFilter);
+                }
+                featureSource = gtFeatureSource.getFeatureSource();
+            } catch (Exception e) {
+                failed = true;
+                exception = e;
+            }
+            return null;
+        }
     }
 }

@@ -20,6 +20,10 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 public interface OdsDataSource {
     public String getFeatureType();
 
+    public void setRequired(boolean required);
+
+    public boolean isRequired();
+
 //    public ExternalEntityBuilder getEntityBuilder();
 
 //    public FeatureMapper getFeatureMapper();

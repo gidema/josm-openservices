@@ -36,6 +36,7 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
  */
 public class OdsWorkingSet implements LayerChangeListener {
     private OdsModule module;
+    // TODO move dataSources to externalLayer
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     public ExternalDataLayer externalDataLayer;
     public InternalDataLayer internalDataLayer;

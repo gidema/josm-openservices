@@ -2,13 +2,13 @@ package org.openstreetmap.josm.plugins.ods;
 
 import java.util.concurrent.Callable;
 
-import org.openstreetmap.josm.gui.progress.ProgressMonitor.CancelListener;
+public interface DownloadTask {
+    public Callable<Object> stage(String subTask);
 
-public interface DownloadTask extends CancelListener {
-    public Callable<Object> getPrepareCallable();
-    public Callable<?> getDownloadCallable();
-    boolean cancelled();
-    boolean failed();
-    String getMessage();
-    Exception getException();
+    public void cancel();
+    public boolean cancelled();
+    public boolean failed();
+    public String getMessage();
+
+    //Exception getException();
 }

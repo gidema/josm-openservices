@@ -120,7 +120,9 @@ public class ConfigurationReader {
         OdsFeatureSource odsFeatureSource = configureOdsFeatureSource(conf);
         OdsDataSource dataSource = odsFeatureSource.newDataSource();
         String entityType = conf.getString("[@entitytype]", null);
+        boolean required = conf.getBoolean("[@required]", true);
         dataSource.setEntityType(entityType);
+        dataSource.setRequired(required);
         String filter = conf.getString("filter", null);
         if (filter != null) {
             configureFilter(dataSource, filter);
