@@ -38,6 +38,10 @@ public interface OdsDataSource {
 
     public ExternalDownloadTask createDownloadTask(Boundary boundary);
 
+    public void setRequired(boolean required);
+
+    public boolean isRequired();
+
     public void setEntityType(String entityType);
 
     public String getEntityType();

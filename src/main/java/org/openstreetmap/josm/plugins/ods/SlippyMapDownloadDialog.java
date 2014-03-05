@@ -51,7 +51,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
     protected SlippyMapBBoxChooser slippyMap;
 
     public SlippyMapDownloadDialog(Component parent) {
-        super(parent);
+        super(parent, tr("Download ODS"));
     }
 
     protected JPanel buildMainPanel() {

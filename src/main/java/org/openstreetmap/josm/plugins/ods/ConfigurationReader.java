@@ -119,8 +119,10 @@ public class ConfigurationReader {
     private void configureDataSource(HierarchicalConfiguration conf) throws ConfigurationException {
         OdsFeatureSource odsFeatureSource = configureOdsFeatureSource(conf);
         OdsDataSource dataSource = odsFeatureSource.newDataSource();
+        boolean required = conf.getBoolean("[@required]", true);
         String entityType = conf.getString("[@entitytype]", null);
         dataSource.setEntityType(entityType);
+        dataSource.setRequired(required);
         String filter = conf.getString("filter", null);
         if (filter != null) {
             configureFilter(dataSource, filter);

@@ -43,7 +43,7 @@ public class FixedBoundsDownloadDialog extends AbstractDownloadDialog {
     }
 
     public FixedBoundsDownloadDialog(Component parent) {
-        super(parent);
+        super(parent, tr("Download ODS with polygon"));
     }
 
     protected JPanel buildMainPanel() {

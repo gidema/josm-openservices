@@ -49,8 +49,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 //    private DownloadAction actDownload;
     protected SideButton btnDownload;
 
-    public AbstractDownloadDialog(Component parent) {
-        super(JOptionPane.getFrameForComponent(parent),tr("Download ODS with polygon"), ModalityType.DOCUMENT_MODAL);
+    public AbstractDownloadDialog(Component parent, String title) {
+        super(JOptionPane.getFrameForComponent(parent), title, ModalityType.DOCUMENT_MODAL);
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(buildMainPanel(), BorderLayout.CENTER);
         getContentPane().add(buildButtonPanel(), BorderLayout.SOUTH);

@@ -129,10 +129,11 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     if (Thread.currentThread().isInterrupted()) {
                         cancelled = true;
                     }
-                    else if (features.isEmpty()) {
-                        String featureType = getDataSource().getFeatureType();
+                    else if (features.isEmpty() && getDataSource().isRequired()) {
+                        String featureType = getDataSource().getEntityType();
                         message = I18n.tr("The selected download area contains no {0} objects.",
                             featureType);
+                        cancelled = true;
                     }
                     else {
                         Host host = getDataSource().getOdsFeatureSource().getHost();
