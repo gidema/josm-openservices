@@ -44,7 +44,7 @@ public class BuildingSimplifier implements Analyzer {
                 building.setGeometry(geom);
             }
             else {
-                System.out.println(I18n.tr("Could not simply building {0}", building.getId()));
+                System.out.println(I18n.tr("Could not simplify building {0}", building.getId()));
             }
         }
     }

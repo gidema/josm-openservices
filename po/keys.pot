@@ -1,0 +1,347 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-05 11:05+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsDownloader.java:57
+msgid "Preparing"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsDownloader.java:63
+msgid "Downloading"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsDownloader.java:69
+msgid "Processing data"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsDownloader.java:162
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/external/DownloadExternalLayerTask.java:153
+#, java-format
+msgid "An error occured while downloading the data:"
+msgid_plural "{0} errors occurred while downloading the data:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OpenDataServicesPlugin.java:65
+msgid "ODS"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OpenDataServicesPlugin.java:76
+msgid "latest"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OpenDataServicesPlugin.java:78
+#, java-format
+msgid ""
+"Your ODS version ({0}) is out of date.\n"
+"Please upgrade to the latest version: {1}"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OpenDataServicesPlugin.java:99
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OpenDataServicesPlugin.java:103
+msgid ""
+"No version information is available at the moment.\n"
+"Your ODS version may be out of date"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:71
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:104
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:197
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:362
+msgid "[@name]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:72
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:105
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:363
+msgid "[@type]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:73
+msgid "[@class]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:80
+#, java-format
+msgid "A class named {0} could not be found"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:95
+msgid "[@maxFeatures]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:106
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:341
+msgid "[@url]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:122
+msgid "[@entitytype]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:126
+msgid "filter"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:130
+msgid "id[@attribute]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:140
+msgid "Error in filter"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:154
+msgid "[@host]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:155
+msgid "[@feature]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:159
+#, java-format
+msgid "Unknown host: {0}"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:175
+msgid "osm_query"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:309
+msgid "[@mapper]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:310
+msgid "[@map-to]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:311
+msgid "[@merge]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:324
+#, java-format
+msgid ""
+"Could not configure Geometry mapper:\n"
+"{0}"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:346
+msgid "Required parameter 'url' is missing"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:364
+msgid "[@query]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ConfigurationReader.java:365
+msgid "[@pattern]"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ODS.java:58
+#, java-format
+msgid "A ''{0}'' import named ''{1}'' already exists"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/ODS.java:71
+#, java-format
+msgid "An other host named ''{0}'' already exists"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/internal/DownloadInternalLayerTask.java:141
+msgid "The selected download area contains no OSM objects"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/internal/DownloadInternalLayerTask.java:148
+#, java-format
+msgid ""
+"Ignoring exception because download has been canceled. Exception was: {0}"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/internal/DownloadInternalLayerTask.java:155
+msgid ""
+"You tried to download too much Openstreetmap data. Please select a smaller "
+"download area."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/internal/DownloadInternalLayerTask.java:183
+#, java-format
+msgid "An object could not be built:"
+msgid_plural "{0} objects could not be built:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingSimplifier.java:47
+#, java-format
+msgid "Could not simply building {0}"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingPassageAction.java:42
+msgid "Building passage"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingPassageAction.java:44
+msgid ""
+"Create a tunnel=building_building passage for a highway crossing a building."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingPassageAction.java:206
+msgid "Please select exactly 1 building and 1 highway."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingPassageAction.java:216
+msgid "The building ring is not closed."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingPassageAction.java:224
+msgid "The building and the highway should intersect at exactly 2 point."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/entities/builtenvironment/AddressNodeDistributor.java:101
+#, java-format
+msgid "Distribute {0} address nodes."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/crs/CRSUtilGeotools.java:124
+msgid "Couldn't create a bounding box for the coordinate reference system {0}."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/crs/CRSUtil.java:106
+#, java-format
+msgid "The supplied coordinate reference system {0} is unknown"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/crs/CRSUtil.java:109
+#, java-format
+msgid "Unable to create a coordinate reference system for {0}"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/jts/MultiPolygonBuilder.java:64
+msgid "Relation contains member relation"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/AbstractDownloadDialog.java:53
+msgid "Download ODS with polygon"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/AbstractDownloadDialog.java:147
+msgid "Cancel"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/AbstractDownloadDialog.java:149
+msgid "Click to close the dialog and to abort downloading"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/AbstractDownloadDialog.java:170
+msgid "Download"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/AbstractDownloadDialog.java:172
+msgid "Click to download the currently selected area"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/AbstractDownloadDialog.java:179
+#, java-format
+msgid ""
+"<html>Neither <strong>{0}</strong> nor <strong>{1}</strong> is enabled."
+"<br>Please choose to either download OSM data, or {2} data, or both.</html>"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/AbstractDownloadDialog.java:185
+msgid "Error"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/UserManager.java:66
+msgid "Failed to retrieve OSM credentials from credential manager."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/UserManager.java:67
+#: src/main/java/org/openstreetmap/josm/plugins/ods/UserManager.java:79
+#, java-format
+msgid "Current credential manager is of type ''{0}''"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/UserManager.java:78
+msgid "Failed to save OSM credentials to credential manager."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/SlippyMapDownloadDialog.java:62
+#: src/main/java/org/openstreetmap/josm/plugins/ods/FixedBoundsDownloadDialog.java:54
+msgid "Download OSM data"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/SlippyMapDownloadDialog.java:63
+#: src/main/java/org/openstreetmap/josm/plugins/ods/FixedBoundsDownloadDialog.java:55
+msgid ""
+"<html>Select to download OSM data.<br>Unselect to skip downloading of OSM "
+"data.</html>"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/SlippyMapDownloadDialog.java:65
+#: src/main/java/org/openstreetmap/josm/plugins/ods/FixedBoundsDownloadDialog.java:57
+#, java-format
+msgid "Download {0} data"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/SlippyMapDownloadDialog.java:66
+#: src/main/java/org/openstreetmap/josm/plugins/ods/FixedBoundsDownloadDialog.java:58
+#, java-format
+msgid ""
+"<html>Select to download {0}.<br>Unselect to skip downloading of {0} data.</"
+"html>"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/SlippyMapDownloadDialog.java:82
+#: src/main/java/org/openstreetmap/josm/plugins/ods/FixedBoundsDownloadDialog.java:70
+msgid ""
+"Use left click&drag to select area, arrows or right mouse button to scroll "
+"map, wheel or +/- to zoom."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/geotools/GtDownloadTask.java:143
+#, java-format
+msgid "The selected download area contains no {0} objects."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/geotools/GtDownloadTask.java:153
+#, java-format
+msgid "To many {0} objects. Please choose a smaller download area."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsDownloadAction.java:114
+msgid "Downloading data"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsAction.java:34
+msgid "No ODS module is available."
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsAction.java:35
+msgid "Missing module"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsAction.java:60
+msgid "Invalid user"
+msgstr ""
+
+#: src/main/java/org/openstreetmap/josm/plugins/ods/OdsAction.java:91
+msgid "Failed to retrieve OSM user details from the server."
+msgstr ""
+
