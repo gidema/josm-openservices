@@ -78,6 +78,11 @@ public class AddressNodeDistributor implements Analyzer {
     private void distribute(AddressNodeGroup group) {
         List<AddressNode> nodes = group.getAddressNodes();
         Collections.sort(nodes);
+        if (group.getBuilding().getGeometry().isEmpty()) {
+            // Happens rarely, 
+            // for now return to prevent null pointer Exception
+            return;
+        }
         Point center = group.getBuilding().getGeometry().getCentroid();
         LineSegment ls = new LineSegment(group.getGeometry().getCoordinate(),
                 center.getCoordinate());
