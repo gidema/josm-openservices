@@ -18,7 +18,7 @@ import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuiltEnvironment;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 
-public class BuiltEnvironmentEntityBuilder {
+public class _BuiltEnvironmentEntityBuilder {
     BuiltEnvironment environment;
     EntitySet newEntities;
     DataSet dataset;

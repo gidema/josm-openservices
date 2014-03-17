@@ -2,12 +2,15 @@ package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.Iterator;
 
+import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 
@@ -24,6 +27,7 @@ public class ExternalDataLayer implements DataLayer {
     private OsmDataLayer osmDataLayer;
     private EntitySet entitySet;
     private PrimitiveBuilder primitiveBuilder;
+//    private EntityFactory entityFactory;
 
     /**
      * Simple constructor providing a new (empty) dataset and a new
@@ -71,5 +75,13 @@ public class ExternalDataLayer implements DataLayer {
             }
         }
         data.endUpdate();
+    }
+    
+//    public void setEntityFactory(@SuppressWarnings("rawtypes") EntityFactory entityFactory) {
+//        this.entityFactory = entityFactory;
+//    }
+
+    public EntityFactory<SimpleFeature> getEntityFactory() {
+        return ODS.getModule().getEntityFactory(SimpleFeature.class, null);
     }
 }

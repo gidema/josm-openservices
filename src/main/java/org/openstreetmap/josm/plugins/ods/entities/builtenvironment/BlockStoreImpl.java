@@ -34,7 +34,7 @@ public class BlockStoreImpl implements BlockStore {
          Set<Block> nearByBlocks = new HashSet<>();
          for (Building neighbour : nearByBuildings) {
               if (building.getGeometry().distance(neighbour.getGeometry()) < tolerance) {
-                  nearByBlocks.add(neighbour.getBlock());
+//                  nearByBlocks.add(neighbour.getBlock());
                   if (building.isInternal() == neighbour.isInternal()) {
                       building.addNeighbour(neighbour);
                       neighbour.addNeighbour(building);
@@ -42,16 +42,16 @@ public class BlockStoreImpl implements BlockStore {
               }
          }
          if (nearByBlocks.isEmpty()) {
-             Block newBlock = new BlockImpl(this);
-             newBlock.add(building);
-             blocks.add(newBlock);
-             building.setBlock(newBlock);
+//             Block newBlock = new BlockImpl(this);
+//             newBlock.add(building);
+//             blocks.add(newBlock);
+//             building.setBlock(newBlock);
          } 
          else {
              Iterator<Block> it = nearByBlocks.iterator();
              Block block = it.next();
              block.add(building);
-             building.setBlock(block);
+//             building.setBlock(block);
              while (it.hasNext()) {
                  Block otherBlock = it.next();
                  block.merge(otherBlock);

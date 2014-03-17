@@ -1,25 +1,17 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import org.opengis.feature.simple.SimpleFeature;
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
-public class SimpleExternalEntityFactory implements EntityFactory {
+// TODO This class is broken
+public class SimpleExternalEntityFactory implements EntityFactory<SimpleFeature> {
 
     @Override
-    public ExternalEntity buildEntity(String type, MetaData metaData, SimpleFeature feature) throws BuildException {
-        ExternalEntity entity = new SimpleExternalEntity(feature);
+    public ExternalEntity buildEntity(SimpleFeature feature, MetaData metaData) throws BuildException {
+        ExternalEntity entity = new SimpleExternalEntity(feature, null);
         entity.init(metaData);
         return entity;
-    }
-
-    @Override
-    public Entity buildEntity(String entityType, OsmPrimitive primitive)
-            throws BuildException {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

@@ -53,7 +53,7 @@ public class BlockImpl implements Block {
         else {
             geometry = geometry.union(building.getGeometry());
         }
-        building.setBlock(this);
+//        building.setBlock(this);
     }
     
     @Override
@@ -61,11 +61,11 @@ public class BlockImpl implements Block {
         geometry = getGeometry().union(other.getGeometry());
         for (Building building : other.getInternalBuildings()) {
             internalBuildings.add(building);
-            building.setBlock(this);
+//            building.setBlock(this);
         }
         for (Building building : other.getExternalBuildings()) {
             internalBuildings.add(building);
-            building.setBlock(this);
+//            building.setBlock(this);
         }
         if (other.isIncomplete()) {
             incomplete = true;

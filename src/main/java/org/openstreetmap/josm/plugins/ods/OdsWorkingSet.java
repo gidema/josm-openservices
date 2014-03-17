@@ -48,7 +48,7 @@ public class OdsWorkingSet implements LayerChangeListener {
     private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<>();
     // OdsDownloadAction downloadAction;
     private boolean active = false;
-    private EntityFactory entityFactory;
+//    private EntityFactory entityFactory;
     // TODO this is a dependency on the BuiltEnvironment submodule
     // Change to a more generic solution like a Container pattern
     private BlockStore blockStore = new BlockStoreImpl();
@@ -115,9 +115,9 @@ public class OdsWorkingSet implements LayerChangeListener {
         return externalDataLayer;
     }
 
-    public void addDataSource(OdsDataSource dataSource) {
-        dataSources.put(dataSource.getFeatureType(), dataSource);
-    }
+//    public void addDataSource(OdsDataSource dataSource) {
+//        dataSources.put(dataSource.getFeatureType(), dataSource);
+//    }
 
     public void activate() {
         // if (!active) {
@@ -281,13 +281,13 @@ public class OdsWorkingSet implements LayerChangeListener {
     // }
     // }
 
-    public void setEntityFactory(EntityFactory entityFactory) {
-        this.entityFactory = entityFactory;
-    }
-
-    public EntityFactory getEntityFactory() {
-        return entityFactory;
-    }
+//    public void setEntityFactory(EntityFactory entityFactory) {
+//        this.entityFactory = entityFactory;
+//    }
+//
+//    public EntityFactory getEntityFactory() {
+//        return entityFactory;
+//    }
 
     public OsmDataLayer getPolygonLayer() {
         if (polygonLayer == null) {

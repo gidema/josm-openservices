@@ -10,7 +10,7 @@ public interface AddressNode extends Entity, Comparable<AddressNode> {
 
     public Address getAddress();
 
-	public Block getBlock();
+//	public Block getBlock();
 	
 	public Object getBuildingRef();
 

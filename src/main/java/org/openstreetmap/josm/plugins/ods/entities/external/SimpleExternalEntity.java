@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -8,15 +10,15 @@ import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-import org.openstreetmap.josm.plugins.ods.tags.FeatureMapper;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public class SimpleExternalEntity implements ExternalEntity {
     private SimpleFeature feature;
-    private FeatureMapper featureMapper;
+    private Map<String, String> otherTags = new HashMap<>();
+//    private EntityType entityType;
 	
-	public SimpleExternalEntity(SimpleFeature feature) {
+	public SimpleExternalEntity(SimpleFeature feature, String entityType2) {
         super();
         this.feature = feature;
     }
@@ -42,12 +44,12 @@ public class SimpleExternalEntity implements ExternalEntity {
         return SimpleExternalEntity.class;
     }
 
+//	@Override
+//    public EntityType getEntityType() {
+//        return entityType;
+//    }
 
-    public void setFeatureMapper(FeatureMapper featureMapper) {
-		this.featureMapper = featureMapper;
-	}
-
-	public void build() {
+    public void build() {
 	    //TODO implement    
 	}
 	
@@ -55,6 +57,11 @@ public class SimpleExternalEntity implements ExternalEntity {
 	@Override
     public boolean hasGeometry() {
         return true;
+    }
+
+    @Override
+    public void setGeometry(Geometry geometry) {
+        // TODO Auto-generated method stub
     }
 
     @Override
@@ -115,5 +122,10 @@ public class SimpleExternalEntity implements ExternalEntity {
     public Collection<OsmPrimitive> getPrimitives() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Map<String, String> getOtherTags() {
+        return otherTags;
     }
 }

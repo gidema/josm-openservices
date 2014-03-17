@@ -47,13 +47,13 @@ public class DownloadExternalLayerTask implements DownloadTask {
     private ExecutorService executor;
 
     private EntitySet entities;
-    private EntityFactory entityFactory;
+    private EntityFactory<SimpleFeature> entityFactory;
     private List<Analyzer> analyzers;
 
     public DownloadExternalLayerTask(Boundary boundary) {
         this.workingSet = ODS.getModule().getWorkingSet();
         this.dataLayer = workingSet.getExternalDataLayer();
-        this.entityFactory = workingSet.getEntityFactory();
+        this.entityFactory = dataLayer.getEntityFactory();
         this.boundary = boundary;
         Double tolerance = 2e-7;
         analyzers = new ArrayList<>(5);
@@ -224,7 +224,7 @@ public class DownloadExternalLayerTask implements DownloadTask {
          */
         private void buildEntities(ExternalDownloadTask task)
                 throws BuildException {
-            String entityType = task.getDataSource().getEntityType();
+    //        String entityType = task.getDataSource().getEntityType();
             // EntityStore store =
             // dataLayer.getEntitySet().getStore(entityType);
             MetaData metaData = task.getDataSource().getMetaData();
@@ -233,8 +233,7 @@ public class DownloadExternalLayerTask implements DownloadTask {
                     boundary.getPolygon());
             for (SimpleFeature feature : task.getFeatures()) {
                 try {
-                    Entity entity = entityFactory.buildEntity(entityType,
-                            metaData, feature);
+                    Entity entity = entityFactory.buildEntity(feature, metaData);
                     if (boundary.isRectangular()) {
                         entities.add(entity);
                     } else if (preparedBoundary

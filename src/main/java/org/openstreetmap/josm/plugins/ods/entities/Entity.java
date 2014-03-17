@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 
@@ -32,6 +33,8 @@ public interface Entity {
 	 */
 	public Class<? extends Entity> getType();
 	
+//	public EntityType getEntityType();
+	
 	public String getSource();
 	
 	public boolean isInternal();
@@ -46,13 +49,15 @@ public interface Entity {
     
     public boolean hasGeometry();
     
+    public void setGeometry(Geometry geometry);
+    
     public Geometry getGeometry();
     /**
 	 * Get the unique id of this entity with respect to its datasource
 	 * 
 	 * @return
 	 */
-	public <T> Comparable<T> getId();
+	public <T extends Object> Comparable<T> getId();
 	
 	public boolean hasName();
 	
@@ -79,5 +84,11 @@ public interface Entity {
      */
 //    public EntitySet getEntitySet();
     
+    /**
+     * Get non-default tags
+     * 
+     * @return
+     */
+    public Map<String, String> getOtherTags();
     
 }

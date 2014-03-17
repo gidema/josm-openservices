@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods;
 import java.io.File;
 
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 
 /**
  * The opendataservices plug-in (ODS) can handle multiple modules.
@@ -72,4 +73,6 @@ public interface OdsModule {
      * @return
      */
     public Bounds getBounds();
+
+    public <T> EntityFactory<T> getEntityFactory(Class<T> clazz, String type);
 }

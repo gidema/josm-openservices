@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmApiException;
@@ -21,6 +22,8 @@ import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
+import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBuildingMatcher;
@@ -46,7 +49,6 @@ public class DownloadInternalLayerTask implements DownloadTask {
 
     private final Boundary boundary;
     private DataLayer dataLayer;
-    private EntityFactory entityFactory;
     private List<Analyzer> analyzers;
     private EntitySet newEntities;
 
@@ -55,7 +57,6 @@ public class DownloadInternalLayerTask implements DownloadTask {
         this.workingSet = ODS.getModule().getWorkingSet();
         this.boundary = boundary;
         this.dataLayer = workingSet.getInternalDataLayer();
-        this.entityFactory = workingSet.getEntityFactory();
         Double tolerance = 2e-7;
         analyzers = new ArrayList<>(5);
         analyzers.add(new AddressToBuildingMatcher());
@@ -169,13 +170,21 @@ public class DownloadInternalLayerTask implements DownloadTask {
     class ProcessStage implements Callable<Object> {
         public Object call() throws Exception {
             workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
-
-            BuiltEnvironmentEntityBuilder builder = new BuiltEnvironmentEntityBuilder(
-                    workingSet.internalDataLayer);
-            builder.setEntityFactory(entityFactory);
+//            BuiltEnvironmentEntityBuilder builder = new BuiltEnvironmentEntityBuilder(
+//                    workingSet.internalDataLayer);
+//            builder.setEntityFactory(entityFactory);
             try {
-                builder.build();
-                newEntities = builder.getNewEntities();
+                EntityFactory<OsmPrimitive> entityFactory = 
+                     ODS.getModule().getEntityFactory(OsmPrimitive.class, null);
+                newEntities = new DefaultEntitySet();
+                for (OsmPrimitive primitive: dataSet.allPrimitives()) {
+                    Entity entity = entityFactory.buildEntity(primitive, null);
+                    if (entity != null) {
+                        newEntities.add(entity);
+                    }
+                }
+//                builder.build();
+//                newEntities = builder.getNewEntities();
                 analyze();
             } catch (BuildException e) {
                 Collection<Issue> issues = e.getIssues();

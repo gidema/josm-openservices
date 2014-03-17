@@ -8,9 +8,16 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import com.vividsolutions.jts.geom.Geometry;
 
 public interface Building extends Entity {
-    public void setGeometry(Geometry geometry);
-	public Geometry getGeometry();
+//    public void setGeometry(Geometry geometry);
 	public City getCity();
+	
+	/**
+	 * Return the building type of the building, as used in OSM.
+	 * For example "apartments" or "office"
+	 * 
+	 * @return
+	 */
+	public String getBuildingType();
 	
 	/**
 	 * Return the address information associated with this building.
@@ -25,8 +32,8 @@ public interface Building extends Entity {
 	 */
     public Collection<AddressNode> getAddressNodes();
     
-    public void setBlock(Block block);
-	public Block getBlock();
+//    public void setBlock(Block block);
+//	public Block getBlock();
 	public Set<Building> getNeighbours();
 	public void addNeighbour(Building building);
 

@@ -189,7 +189,7 @@ public class ConfigurationReader {
         else {
             entityFactory = new SimpleExternalEntityFactory();
         }
-        ows.setEntityFactory(entityFactory);
+//        ows.setEntityFactory(entityFactory);
     }
 
     private EntityFactory createEntityFactory(

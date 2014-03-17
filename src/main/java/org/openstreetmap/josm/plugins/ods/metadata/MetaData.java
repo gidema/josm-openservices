@@ -6,7 +6,6 @@ import java.util.Map;
 public class MetaData {
   private final MetaData parent;
   private final Map<String, Object> metaData = new HashMap<>();
-  private final boolean initialized = false;
   
   public MetaData() {
     this(null);
@@ -20,7 +19,7 @@ public class MetaData {
     metaData.put(key, value);
   }
 
-  public Object get(Object key) throws MetaDataException {
+  public Object get(Object key) {
     Object value = metaData.get(key);
     if (value == null && parent != null) {
       value = parent.get(key);
@@ -28,7 +27,7 @@ public class MetaData {
     return value;
   }
 
-  public boolean containsKey(Object key) throws MetaDataException {
+  public boolean containsKey(Object key) {
     if (metaData.containsKey(key)) {
       return true;
     }

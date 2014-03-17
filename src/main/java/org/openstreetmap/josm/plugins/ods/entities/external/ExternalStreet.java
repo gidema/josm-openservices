@@ -1,7 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -43,6 +45,13 @@ public class ExternalStreet implements ExternalEntity, Street {
     public Class<? extends Entity> getType() {
         return Street.class;
     }
+
+//    @Override
+//    public EntityType getEntityType() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
 
     @SuppressWarnings("unchecked")
     @Override
@@ -94,6 +103,12 @@ public class ExternalStreet implements ExternalEntity, Street {
     @Override
     public boolean hasGeometry() {
         return false;
+    }
+
+    
+    @Override
+    public void setGeometry(Geometry geometry) {
+        // TODO Auto-generated method stub
     }
 
     @Override
@@ -160,5 +175,18 @@ public class ExternalStreet implements ExternalEntity, Street {
     public void createPrimitives(PrimitiveBuilder builder) {
         // TODO Auto-generated method stub
         
+    }
+
+
+//    @Override
+//    public <T> Comparable<T> getId() {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+
+
+    @Override
+    public Map<String, String> getOtherTags() {
+        return Collections.emptyMap();
     }
 }

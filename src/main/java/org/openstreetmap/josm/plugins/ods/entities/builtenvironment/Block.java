@@ -2,8 +2,6 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import java.util.Set;
 
-import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 public interface Block {
