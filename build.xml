@@ -66,7 +66,7 @@
         <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
         <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
       	<dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>
-        <dependency groupId="proj4j" artifactId="proj4j" version="2408"/>
+      	<dependency groupId="org.threeten" artifactId="threetenbp" version="0.9"/>
       </artifact:dependencies>
     </target>
 
@@ -94,10 +94,11 @@
         <fileset file="${commons-lang:commons-lang:jar}"/>
         <fileset file="${commons-logging:commons-logging:jar}"/>
         <fileset file="${commons-collections:commons-collections:jar}"/>
-      	<fileset file="${com.fasterxml.jackson.core:jackson-core:jar}"/>
+<!--      	<fileset file="${com.fasterxml.jackson.core:jackson-core:jar}"/>
       	<fileset file="${com.fasterxml.jackson.core:jackson-databind:jar}"/>
         <fileset file="${com.fasterxml.jackson.core:jackson-annotations:jar}"/>
-      	<fileset file="${org.jsoup:jsoup:jar}"/>
+      	<fileset file="${org.jsoup:jsoup:jar}"/>-->
+      	<fileset file="${org.threeten:threetenbp:jar}"/>
         <fileset file="${proj4j:proj4j:jar}"/>
       </unjar>
       <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">

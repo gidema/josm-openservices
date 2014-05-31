@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -101,7 +102,12 @@ public class CRSUtilProj4j extends CRSUtil {
 
     private static synchronized JTSCoordinateTransform createFromOsmTransform(
             CoordinateReferenceSystem crs) {
-        Long sourceSRID = getSRID(crs);
+        Long sourceSRID;
+        if (crs.getClass() == DefaultGeographicCRS.class) {
+            sourceSRID = 4326L;
+        } else {
+            sourceSRID = getSRID(crs);
+        }
         JTSCoordinateTransform transform = ctFactory
                 .createJTSCoordinateTransform(OSM_SRID, sourceSRID);
         fromOsmTransforms.put(crs, transform);

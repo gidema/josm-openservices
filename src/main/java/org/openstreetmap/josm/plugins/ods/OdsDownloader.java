@@ -17,9 +17,9 @@ import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.entities.external.DownloadExternalLayerTask;
-import org.openstreetmap.josm.plugins.ods.entities.internal.DownloadInternalLayerTask;
+import org.openstreetmap.josm.plugins.ods.geotools.DownloadGtLayerTask;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.osm.DownloadOsmLayerTask;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OdsDownloader {
@@ -27,8 +27,8 @@ public class OdsDownloader {
 
     private OdsWorkingSet workingSet;
     
-    private DownloadInternalLayerTask internalDownloadTask;
-    private DownloadExternalLayerTask externalDownloadTask;
+    private DownloadOsmLayerTask internalDownloadTask;
+    private DownloadGtLayerTask externalDownloadTask;
 
     private boolean downloadOsm;
     private boolean downloadOds;
@@ -96,11 +96,11 @@ public class OdsDownloader {
     private void setup() {
         downloadTasks = new ArrayList<DownloadTask>(2);
         if (downloadOsm) {
-            internalDownloadTask = new DownloadInternalLayerTask(boundary);
+            internalDownloadTask = new DownloadOsmLayerTask(boundary);
             downloadTasks.add(internalDownloadTask);
         }
         if (downloadOds) {
-            externalDownloadTask = new DownloadExternalLayerTask(boundary);
+            externalDownloadTask = new DownloadGtLayerTask(boundary);
             downloadTasks.add(externalDownloadTask);
         }
     }

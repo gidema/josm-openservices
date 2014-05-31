@@ -250,6 +250,10 @@ public abstract class JTSCoordinateTransform {
             return transform((MultiLineString) geom);
         }
         if (type.equals("MULTIPOLYGON")) {
+            MultiPolygon mpg = (MultiPolygon) geom;
+            if (mpg.getNumGeometries() == 1) {
+                return transform((Polygon)mpg.getGeometryN(0));
+            }
             return transform((MultiPolygon) geom);
         }
         throw new RuntimeException("Unknown geometry: " + type);

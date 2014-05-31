@@ -24,7 +24,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     protected GtFeatureSource(GtHost host, String featureName) {
         super();
         this.host = host;
-        this.featureName = host.getName() + ":" + featureName;
+        this.featureName = featureName;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class GtFeatureSource implements OdsFeatureSource {
         metaData = host.getMetaData();
         if (!host.hasFeatureType(featureName)) {
             throw new InitializationException(String.format(
-                    "Unknown featureName type: '%s'", featureName));
+                    "Unknown feature type: '%s'", featureName));
         }
         try {
             featureSource = host.getDataStore().getFeatureSource(featureName);

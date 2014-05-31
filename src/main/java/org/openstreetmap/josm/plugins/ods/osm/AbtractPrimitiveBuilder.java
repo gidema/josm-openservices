@@ -1,8 +1,5 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.osm;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -13,6 +10,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -31,7 +29,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Gertjan Idema
  * 
  */
-public class PrimitiveBuilder {
+public abstract class AbtractPrimitiveBuilder<T extends Entity> {
     // private static final Long JOSM_SRID = 4326L;
     // private JTSCoordinateTransform crsTransform;
     // private final JTSCoordinateTransformFactory crsTransformFactory = new
@@ -43,18 +41,11 @@ public class PrimitiveBuilder {
      * 
      * @param sourceCrs
      */
-    public PrimitiveBuilder(DataSet targetDataSet) {
+    public AbtractPrimitiveBuilder(DataSet targetDataSet) {
         this.dataSet = targetDataSet;
-        // try {
-        // crsTransform =
-        // crsTransformFactory.createJTSCoordinateTransform(sourceSRID,
-        // JOSM_SRID, 10000000.0);
-        // } catch (Exception e) {
-        // throw new RuntimeException(e);
-        // }
     }
 
-    public Collection<OsmPrimitive> build(Geometry geometry) {
+    public OsmPrimitive[] build(Geometry geometry) {
         switch (geometry.getGeometryType()) {
         case "Polygon":
             return build((Polygon)geometry);
@@ -63,20 +54,20 @@ public class PrimitiveBuilder {
         case "Point":
             return build((Point)geometry);
         }
-        return Arrays.asList(new OsmPrimitive[0]);
+        return new OsmPrimitive[0];
     }
 
-    public Collection<OsmPrimitive> build(Polygon polygon) {
-        return Collections.singletonList(buildArea(polygon));
+    public OsmPrimitive[] build(Polygon polygon) {
+        return new OsmPrimitive[] {buildArea(polygon)};
     }
 
-    public Collection<OsmPrimitive> build(MultiPolygon mpg) {
-        return Collections.singletonList(buildArea(mpg));
+    public OsmPrimitive[] build(MultiPolygon mpg) {
+        return new OsmPrimitive[] {buildArea(mpg)};
     }
 
-    public Collection<OsmPrimitive> build(Point point) {
+    public OsmPrimitive[] build(Point point) {
         OsmPrimitive node = buildNode(point, false);
-        return Collections.singletonList(node);
+        return new OsmPrimitive[] {node};
     }
 
     /**
@@ -217,4 +208,18 @@ public class PrimitiveBuilder {
             return null;
         return buildNode(point.getCoordinate(), merge);
     }
+
+    public OsmPrimitive[] createPrimitives(T entity) {
+        OsmPrimitive[] primitives = null;
+        if (entity.isIncomplete() || entity.getGeometry() == null ) {
+            return null;
+        }
+        primitives = build(entity.getGeometry());
+        for (OsmPrimitive primitive : primitives) {
+            buildTags(entity, primitive);
+        }
+        return primitives;
+    }
+
+    public abstract void buildTags(T entity, OsmPrimitive primitive);
 }

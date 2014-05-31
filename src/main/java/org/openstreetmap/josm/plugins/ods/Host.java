@@ -24,7 +24,7 @@ public abstract class Host {
     this.name = name;
   }
 
-  public final String getUrl() {
+  public String getUrl() {
     return url;
   }
 

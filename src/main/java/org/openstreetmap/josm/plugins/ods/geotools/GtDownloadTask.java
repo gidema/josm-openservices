@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,14 +16,15 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.tools.I18n;
+import org.threeten.bp.ZonedDateTime;
 
-public class GtDownloadTask implements ExternalDownloadTask {
+public class GtDownloadTask implements DownloadTask {
     private final static CRSUtil crsUtil = CRSUtil.getInstance();
     
     private GtDataSource dataSource;
@@ -40,12 +42,14 @@ public class GtDownloadTask implements ExternalDownloadTask {
         super();
         this.dataSource = dataSource;
         this.boundary = boundary;
-        this.metaData = dataSource.getMetaData();
     }
     
-    @Override
     public GtDataSource getDataSource() {
         return dataSource;
+    }
+    
+    public MetaData getMetaData() {
+        return metaData;
     }
 
     @Override
@@ -115,7 +119,6 @@ public class GtDownloadTask implements ExternalDownloadTask {
 //        return entities;
 //    }
 
-    @Override
     public List<SimpleFeature> getFeatures() {
         if (cancelled) {
             return new ArrayList<SimpleFeature>(0);
@@ -160,6 +163,11 @@ public class GtDownloadTask implements ExternalDownloadTask {
                     return null;
                 }
             }
+            catch (FileNotFoundException e) {
+                failed = true;
+                message = I18n.tr("The dataSource %s is not available at the moment", featureSource.getName());
+                return null;
+            }
             catch (Exception e) {
                 if (e instanceof InterruptedException) {
                     return null;
@@ -182,7 +190,8 @@ public class GtDownloadTask implements ExternalDownloadTask {
         public Object call()  {
             try {
                 dataSource.initialize();
-                metaData = dataSource.getMetaData();
+                metaData = new MetaData(dataSource.getMetaData());
+                metaData.put("downloadDateTime", ZonedDateTime.now());
                 GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource
                         .getOdsFeatureSource();
                 // TODO check if selected boundaries overlap with
@@ -193,7 +202,6 @@ public class GtDownloadTask implements ExternalDownloadTask {
                 //Polygon polygon = geoUtil.createPolygon(boundary, null);
                 Bounds bounds = boundary.getBounds();
                 //Geometry transformedBoundary = crsUtil.fromOsm(polygon, gtFeatureSource.getCrs());
-                // TODO Find faster solution for the following line
                 ReferencedEnvelope bbox = crsUtil.createBoundingBox(gtFeatureSource.getCrs(), bounds);
                 filter = ff.bbox(ff.property(geometryProperty), bbox);
                 Filter dataFilter = dataSource.getFilter();

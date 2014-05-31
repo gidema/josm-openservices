@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.filter.Filter;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
@@ -40,7 +39,7 @@ public interface OdsDataSource {
 
     public MetaData getMetaData();
 
-    public ExternalDownloadTask createDownloadTask(Boundary boundary);
+    public DownloadTask createDownloadTask(Boundary boundary);
 
     public void setEntityType(String entityType);
 

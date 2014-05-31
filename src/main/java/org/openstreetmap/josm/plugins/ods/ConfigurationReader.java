@@ -19,10 +19,11 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
-import org.openstreetmap.josm.plugins.ods.entities.external.SimpleExternalEntityFactory;
+import org.openstreetmap.josm.plugins.ods.geotools.GTDataLayer;
 import org.openstreetmap.josm.plugins.ods.metadata.HttpMetaDataLoader;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataAttribute;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
+import org.openstreetmap.josm.plugins.ods.osm.OdsOsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.tags.DefaultFeatureMapper;
 import org.openstreetmap.josm.plugins.ods.tags.DefaultGeometryMapper;
 import org.openstreetmap.josm.tools.I18n;
@@ -103,20 +104,14 @@ public class ConfigurationReader {
         conf.setThrowExceptionOnMissing(true);
         String name = conf.getString("[@name]");
         String type = conf.getString("[@type]");
-        String url = conf.getString("[@url]");
+        String url = conf.getString("[@url]", "");
         Host host = ODS.registerHost(type, name, url, maxFeatures);
         for (MetaDataLoader metaDataLoader : parseMetaDataLoaders(conf)) {
             host.addMetaDataLoader(metaDataLoader);
         }
     }
 
-    private void configureDataSources(HierarchicalConfiguration conf) throws ConfigurationException {
-        for (HierarchicalConfiguration c : conf.configurationsAt("datasource")) {
-            configureDataSource(c);
-        }
-    }
-
-    private void configureDataSource(HierarchicalConfiguration conf) throws ConfigurationException {
+    private void configureDataSource(GTDataLayer layer, HierarchicalConfiguration conf) throws ConfigurationException {
         OdsFeatureSource odsFeatureSource = configureOdsFeatureSource(conf);
         OdsDataSource dataSource = odsFeatureSource.newDataSource();
         String entityType = conf.getString("[@entitytype]", null);
@@ -129,7 +124,7 @@ public class ConfigurationReader {
         }
         String idAttribute = conf.getString("id[@attribute]", null);
         configureIdFactory(dataSource, idAttribute);
-        module.getWorkingSet().addDataSource(dataSource);
+        layer.addDataSource(dataSource);
     }
 
     private void configureFilter(OdsDataSource dataSource, String filter)
@@ -168,43 +163,57 @@ public class ConfigurationReader {
 
     private void configureModule(HierarchicalConfiguration conf)
             throws ConfigurationException {
-        HierarchicalConfiguration c = conf.configurationAt("layer");
-//        String name = conf.getString("[@name]");
-//        String description = conf.getString("[@description]", "");
-        configureDataSources(c);
-        String osmQuery = c.getString("osm_query");
         OdsWorkingSet workingSet = module.getWorkingSet();
-        workingSet.setOsmQuery(osmQuery);
-//        configureActions(workingSet, conf);
-        configureEntityFactory(workingSet, c);
+        configureWorkingSet(workingSet, conf);
+    }
+    
+    private void configureWorkingSet(OdsWorkingSet workingSet, HierarchicalConfiguration conf) throws ConfigurationException {
+        // TODO configure OSM layer
+        // String osmQuery = c.getString("osm_query");
+        // workingSet.setOsmQuery(osmQuery);
+        OdsOsmDataLayer internalLayer = new OdsOsmDataLayer(workingSet.getName());
+        workingSet.setInternalDataLayer(internalLayer);
+
+        GTDataLayer externalLayer = new GTDataLayer(workingSet.getName());
+        HierarchicalConfiguration c = conf.configurationAt("layer");
+        configureExternalLayer(externalLayer, c);
+        workingSet.setExternalDataLayer(externalLayer);
+//      String name = conf.getString("[@name]");
+//      String description = conf.getString("[@description]", "");        
+    }
+    
+    private void configureExternalLayer(GTDataLayer layer, HierarchicalConfiguration conf) throws ConfigurationException {
+        for (HierarchicalConfiguration c : conf.configurationsAt("datasource")) {
+            configureDataSource(layer, c);
+        }
     }
 
-    private void configureEntityFactory(OdsWorkingSet ows,
-            HierarchicalConfiguration conf) throws ConfigurationException {
-        EntityFactory entityFactory;
-        HierarchicalConfiguration factoryConf =conf.configurationAt("factory");
-        if (factoryConf != null) {
-            entityFactory = createEntityFactory(factoryConf);
-        }
-        else {
-            entityFactory = new SimpleExternalEntityFactory();
-        }
+//    private void configureEntityFactory(OdsWorkingSet ows,
+//            HierarchicalConfiguration conf) throws ConfigurationException {
+//        EntityFactory entityFactory;
+//        HierarchicalConfiguration factoryConf =conf.configurationAt("factory");
+//        if (factoryConf != null) {
+//            entityFactory = createEntityFactory(factoryConf);
+//        }
+//        else {
+//            entityFactory = new SimpleExternalEntityFactory();
+//        }
 //        ows.setEntityFactory(entityFactory);
-    }
+//    }
 
-    private EntityFactory createEntityFactory(
-            HierarchicalConfiguration conf) throws ConfigurationException {
-        String factoryName = conf.getString("[@name]");
-        if (factoryName == null) {
-            throw new ConfigurationException("No name attribute supplied for the factory element");
-        }
-        Class<?> factoryClass = ODS.getClass("entityFactory", factoryName);
-        try {
-            return (EntityFactory) factoryClass.newInstance();
-        } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
-            throw new ConfigurationException("Unable to create a class of type " + factoryClass.getName());
-        }
-    }
+//    private EntityFactory createEntityFactory(
+//            HierarchicalConfiguration conf) throws ConfigurationException {
+//        String factoryName = conf.getString("[@name]");
+//        if (factoryName == null) {
+//            throw new ConfigurationException("No name attribute supplied for the factory element");
+//        }
+//        Class<?> factoryClass = ODS.getClass("entityFactory", factoryName);
+//        try {
+//            return (EntityFactory) factoryClass.newInstance();
+//        } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
+//            throw new ConfigurationException("Unable to create a class of type " + factoryClass.getName());
+//        }
+//    }
 
 //    private void configureActions(OdsWorkingSet layer,
 //            HierarchicalConfiguration conf) throws ConfigurationException {

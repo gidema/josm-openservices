@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -97,14 +98,24 @@ public class OdsDownloadAction extends AbstractAction {
             return null;
         }
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
+        Boundary boundary;
         if (primitive.getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {
-            return null;
+            boundary = null;
         }
-        return new Boundary((Way)primitive);
+        else {
+            boundary = new Boundary((Way)primitive);
+            if (!boundary.getPolygon().isValid()) {
+                boundary = null;
+            }
+        }
+        if (boundary == null) {
+            JOptionPane.showMessageDialog(Main.parent, tr("The selected area is not a valid Polygon"),
+                    tr("Invalid polygon"), JOptionPane.ERROR_MESSAGE);
+        }
+        return boundary;
     }
     
     private class DownloadTask extends PleaseWaitRunnable {
-        private boolean cancelled = false;
         private Boundary boundary;
         private boolean downloadOsm;
         private boolean downloadOds;
@@ -120,7 +131,6 @@ public class OdsDownloadAction extends AbstractAction {
         @Override
         protected void cancel() {
             downloader.cancel();
-            this.cancelled = true;
         }
 
         @Override
@@ -138,11 +148,32 @@ public class OdsDownloadAction extends AbstractAction {
         protected void finish() {
             OdsWorkingSet workingSet = ODS.getModule().getWorkingSet();
             if (downloadOsm) {
-                Main.map.mapView.setActiveLayer(workingSet.getInternalDataLayer().getOsmDataLayer());
+                showLayer(workingSet.getInternalDataLayer().getOsmDataLayer());
+                
             }
-            else {
-                Main.map.mapView.setActiveLayer(workingSet.getExternalDataLayer().getOsmDataLayer());
+            if (downloadOds) {
+                showLayer(workingSet.getExternalDataLayer().getOsmDataLayer());
+                
             }
-        }        
+            OsmDataLayer activeLayer = null;
+            if (workingSet.getInternalDataLayer() != null && downloadOsm) {
+                activeLayer = workingSet.getInternalDataLayer().getOsmDataLayer();
+            }
+            else if (workingSet.getExternalDataLayer() != null) {
+                activeLayer = workingSet.getExternalDataLayer().getOsmDataLayer();
+            }
+            if (activeLayer != null) {
+                Main.map.mapView.setActiveLayer(activeLayer);
+            }
+        } 
+        
+        private void showLayer(Layer layer) {
+            if (!Main.isDisplayingMapView()) {
+                Main.main.addLayer(layer);
+            }
+            else if (!Main.map.mapView.hasLayer(layer)) {
+                Main.map.mapView.addLayer(layer);
+            }
+        }
     }
 }

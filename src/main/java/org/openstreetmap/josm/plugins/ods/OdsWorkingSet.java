@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -17,12 +18,11 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.io.OsmImporter;
-import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStore;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStoreImpl;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
+import org.openstreetmap.josm.plugins.ods.builtenvironment.BlockStore;
+import org.openstreetmap.josm.plugins.ods.builtenvironment.BlockStoreImpl;
+import org.openstreetmap.josm.plugins.ods.geotools.GTDataLayer;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.osm.OdsOsmDataLayer;
 
 /**
  * TODO update this comment The OdsWorkingSet is the main component of the ODS
@@ -37,9 +37,9 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 public class OdsWorkingSet implements LayerChangeListener {
     private OdsModule module;
     // TODO move dataSources to externalLayer
-    private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    public ExternalDataLayer externalDataLayer;
-    public InternalDataLayer internalDataLayer;
+//    private final Map<String, OdsDataSource> dataSources = new HashMap<>();
+    public GTDataLayer gTDataLayer;
+    public OdsOsmDataLayer odsOsmDataLayer;
     public OsmDataLayer polygonLayer;
     // private boolean useToolbox = false;
     // private JDialog toolbox;
@@ -75,44 +75,37 @@ public class OdsWorkingSet implements LayerChangeListener {
         return module.getDescription();
     }
 
-    public final Map<String, OdsDataSource> getDataSources() {
-        return dataSources;
-    }
+//    public final Map<String, OdsDataSource> getDataSources() {
+//        return dataSources;
+//    }
 
-    public void setOsmQuery(String query) {
-        /**
-         * Currently, we pass the osm (overpass) query through http get. This
-         * doesn't allow linefeed or carriage return characters, so we need to
-         * strip them.
-         */
-        if (query == null) {
-            osmQuery = null;
-            return;
-        }
-        this.osmQuery = query.replaceAll("\\s", "");
-    }
-
-    public final String getOsmQuery() {
-        return osmQuery;
-    }
+//    public void setOsmQuery(String query) {
+//        /**
+//         * Currently, we pass the osm (overpass) query through http get. This
+//         * doesn't allow linefeed or carriage return characters, so we need to
+//         * strip them.
+//         */
+//        if (query == null) {
+//            osmQuery = null;
+//            return;
+//        }
+//        this.osmQuery = query.replaceAll("\\s", "");
+//    }
+//
+//    public final String getOsmQuery() {
+//        return osmQuery;
+//    }
 
     public Feature getRelatedFeature(OsmPrimitive primitive) {
         return relatedFeatures.get(primitive);
     }
 
-    public ExternalDataLayer getExternalDataLayer() {
-        Layer oldLayer = null;
-        if (Main.map != null) {
-            oldLayer = Main.main.getActiveLayer();
-        }
-        if (externalDataLayer == null) {
-            externalDataLayer = new ExternalDataLayer("ODS " + getName());
-            Main.main.addLayer(externalDataLayer.getOsmDataLayer());
-        }
-        if (oldLayer != null) {
-            Main.map.mapView.setActiveLayer(oldLayer);
-        }
-        return externalDataLayer;
+    public void setExternalDataLayer(GTDataLayer layer) {
+        this.gTDataLayer = layer;
+    }
+
+    public GTDataLayer getExternalDataLayer() {
+        return gTDataLayer;
     }
 
 //    public void addDataSource(OdsDataSource dataSource) {
@@ -124,25 +117,28 @@ public class OdsWorkingSet implements LayerChangeListener {
         // downloadAction = new OdsDownloadAction();
         // initToolbox();
         // }
-        getExternalDataLayer();
-        getInternalDataLayer();
-        getPolygonLayer();
+        if (gTDataLayer != null) {
+            gTDataLayer.activate();
+        }
+        if (odsOsmDataLayer != null) {
+            odsOsmDataLayer.activate();
+        }
+        if (polygonLayer == null) {
+            loadPolygonLayer();
+        }
         active = true;
     }
 
     public void deActivate() {
-        if (internalDataLayer != null) {
-            OsmDataLayer internalOsmLayer = internalDataLayer.getOsmDataLayer();
-            Main.map.mapView.removeLayer(internalOsmLayer);
-            internalDataLayer = null;
+        if (gTDataLayer != null) {
+            gTDataLayer.deActivate();
         }
-        if (externalDataLayer != null) {
-            OsmDataLayer externalOsmLayer = externalDataLayer.getOsmDataLayer();
-            Main.map.mapView.removeLayer(externalOsmLayer);
-            externalDataLayer = null;
+        if (odsOsmDataLayer != null) {
+            odsOsmDataLayer.deActivate();
         }
         if (polygonLayer != null) {
             Main.map.mapView.removeLayer(polygonLayer);
+            polygonLayer = null;
         }
         // toolbox.setVisible(false);
         // toolbox = null;
@@ -182,19 +178,12 @@ public class OdsWorkingSet implements LayerChangeListener {
         Main.map.mapView.setActiveLayer(osmLayer);
     }
 
-    public InternalDataLayer getInternalDataLayer() {
-        Layer oldLayer = null;
-        if (Main.map != null) {
-            oldLayer = Main.main.getActiveLayer();
-        }
-        if (internalDataLayer == null) {
-            internalDataLayer = new InternalDataLayer("OSM " + getName());
-            Main.main.addLayer(internalDataLayer.getOsmDataLayer());
-        }
-        if (oldLayer != null) {
-            Main.map.mapView.setActiveLayer(oldLayer);
-        }
-        return internalDataLayer;
+    public void setInternalDataLayer(OdsOsmDataLayer layer) {
+        this.odsOsmDataLayer = layer;
+    }
+    
+    public OdsOsmDataLayer getInternalDataLayer() {
+        return odsOsmDataLayer;
     }
 
     // Implement LayerChangeListener
@@ -203,8 +192,8 @@ public class OdsWorkingSet implements LayerChangeListener {
     public void activeLayerChange(Layer oldLayer, Layer newLayer) {
         // if (!active) return;
         // if (newLayer != null
-        // && (newLayer == externalDataLayer.getOsmDataLayer() ||
-        // newLayer == internalDataLayer.getOsmDataLayer())) {
+        // && (newLayer == gTDataLayer.getOsmDataLayer() ||
+        // newLayer == odsOsmDataLayer.getOsmDataLayer())) {
         // if (useToolbox) {
         // getToolbox().setVisible(true);
         // }
@@ -221,117 +210,38 @@ public class OdsWorkingSet implements LayerChangeListener {
 
     @Override
     public void layerRemoved(Layer oldLayer) {
-        // boolean deActivate = false;
-        if (!active)
-            return;
-        OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
-                : externalDataLayer.getOsmDataLayer());
-        OsmDataLayer internalOsmLayer = (internalDataLayer == null ? null
-                : internalDataLayer.getOsmDataLayer());
-        if (oldLayer == externalOsmLayer) {
-            externalDataLayer = null;
-        } else if (oldLayer == internalOsmLayer) {
-            internalDataLayer = null;
-        } else if (oldLayer == polygonLayer) {
-            polygonLayer = null;
-        }
-        //
-        // if (oldLayer == externalOsmLayer) {
-        // if (Main.map != null &&
-        // Main.map.mapView.getAllLayers().contains(internalOsmLayer)) {
-        // if
-        // (!Main.saveUnsavedModifications(Collections.singletonList(internalOsmLayer),
-        // false))
-        // return;
-        // Main.map.mapView.removeLayer(internalOsmLayer);
-        // deActivate = true;
-        // internalDataLayer = null;
-        // externalDataLayer = null;
-        // }
-        // } else if (oldLayer == internalOsmLayer) {
-        // if (Main.map != null &&
-        // Main.map.mapView.getAllLayers().contains(externalOsmLayer)) {
-        // Main.map.mapView.removeLayer(externalOsmLayer);
-        // deActivate = true;
-        // externalDataLayer = null;
-        // internalDataLayer = null;
-        // }
-        // }
-        // if (deActivate) {
-        // deActivate();
-        // }
-    }
-
-    // public Action getActivateAction() {
-    // return new ActivateAction();
-    // }
-
-    // public OdsDownloadAction getDownloadAction() {
-    // return downloadAction;
-    // }
-    //
-    // private class ActivateAction extends AbstractAction {
-    //
-    // private static final long serialVersionUID = -4943320068119307331L;
-    //
-    // @Override
-    // public void actionPerformed(ActionEvent e) {
-    // activate();
-    // // downloadAction.actionPerformed(e);
-    // }
-    // }
-
-//    public void setEntityFactory(EntityFactory entityFactory) {
-//        this.entityFactory = entityFactory;
-//    }
-//
-//    public EntityFactory getEntityFactory() {
-//        return entityFactory;
-//    }
-
-    public OsmDataLayer getPolygonLayer() {
-        if (polygonLayer == null) {
-            String layerName = "ODS Polygons";
-            File polygonFile = module.getPolygonFilePath();
-            if (polygonFile.exists()) {
-                OsmImporter importer = new OsmImporter();
-                try {
-                    polygonLayer = importer.loadLayer(
-                            new FileInputStream(polygonFile), polygonFile,
-                            layerName, NullProgressMonitor.INSTANCE).getLayer();
-                    polygonLayer.setUploadDiscouraged(true);
-                    Main.map.mapView.addLayer(polygonLayer);
-                    // Main.map.mapView.zoomTo(polygonLayer.data.);
-                    Main.info("");
-                } catch (FileNotFoundException e) {
-                    // Won't happen as we checked this
-                    e.printStackTrace();
-                } catch (IllegalDataException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+        if (oldLayer.equals(polygonLayer)) {
+            if (polygonLayer.requiresSaveToFile()) {
+                Main.saveUnsavedModifications(Collections.singletonList(polygonLayer), false);
             }
         }
-        return polygonLayer;
-        // else {
-        //
-        // File dir = polygonFile.getParentFile();
-        // if (!dir.isDirectory()) {
-        // dir.mkdirs();
-        // }
-        // File polygonFile = new File(pluginDir, "polygons.osm");
-        // if (!polygonFile.exists()) {
-        // if (!createIfMissing) {
-        // return null;
-        // }
-        //
-        // }
-        // if (pluginDir == null) {
-        // Files.createDirectory(dir, attrs)
-        // pluginDir.
-        // }
-        //
-        // // TODO Auto-generated method stub
     }
 
+
+    public OsmDataLayer getPolygonLayer() {
+        return polygonLayer;
+    }
+    
+    public void loadPolygonLayer() {
+        String layerName = "ODS Polygons";
+        File polygonFile = module.getPolygonFilePath();
+        if (polygonFile.exists()) {
+            OsmImporter importer = new OsmImporter();
+            try {
+                polygonLayer = importer.loadLayer(
+                        new FileInputStream(polygonFile), polygonFile,
+                        layerName, NullProgressMonitor.INSTANCE).getLayer();
+                polygonLayer.setUploadDiscouraged(true);
+                Main.map.mapView.addLayer(polygonLayer);
+                // Main.map.mapView.zoomTo(polygonLayer.data.);
+                Main.info("");
+            } catch (FileNotFoundException e) {
+                // Won't happen as we checked this
+                e.printStackTrace();
+            } catch (IllegalDataException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 }

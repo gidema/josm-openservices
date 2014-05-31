@@ -74,7 +74,7 @@ public class OpenDataServicesPlugin extends Plugin {
     public void checkVersion(PluginInformation info) {
         if (metaInfo == null) return;
         String latestVersion = metaInfo.getJsonObject("version").getString("latest");
-        if (!info.version.equals(latestVersion)) {
+        if (info.version.compareTo(latestVersion) < 0) {
             JOptionPane.showMessageDialog(Main.parent, I18n.tr("Your ODS version ({0}) is out of date.\n" +
                  "Please upgrade to the latest version: {1}", info.version, latestVersion), "Plug-in out of date", JOptionPane.WARNING_MESSAGE);
 
@@ -128,6 +128,7 @@ public class OpenDataServicesPlugin extends Plugin {
                         if (!Main.isDisplayingMapView())
                             return;
                         Layer activeLayer = Main.main.getActiveLayer();
+                        if (activeLayer == null) return;
                         if (activeLayer.getName().startsWith("ODS")
                                 || activeLayer.getName().startsWith("OSM")) {
                             for (Layer layer : Main.map.mapView

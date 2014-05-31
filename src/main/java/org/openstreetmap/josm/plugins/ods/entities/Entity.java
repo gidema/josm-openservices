@@ -20,11 +20,11 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public interface Entity {
-    /**
-     * Create relations to other objects
-     * @throws BuildException 
-     */
-    void build() throws BuildException;
+//    /**
+//     * Create relations to other objects
+//     * @throws BuildException 
+//     */
+//    void build() throws BuildException;
     
 	/**
 	 * Get the entityType of this object

@@ -15,7 +15,7 @@ public class MetaData {
     this.parent = parent;
   }
   
-  protected void put(String key, Object value) {
+  public void put(String key, Object value) {
     metaData.put(key, value);
   }
 
@@ -31,6 +31,9 @@ public class MetaData {
     if (metaData.containsKey(key)) {
       return true;
     }
-    return parent.containsKey(key);
+    if (parent != null) {
+        return parent.containsKey(key);
+    }
+    return false;
   }
 }
