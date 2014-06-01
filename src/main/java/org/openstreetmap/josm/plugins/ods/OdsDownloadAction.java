@@ -49,15 +49,6 @@ public class OdsDownloadAction extends AbstractAction {
             Main.worker.submit(task);
 
         }
-//        try {
-//            workingSet.download(boundary, true);
-//        } catch (ExecutionException e1) {
-//            JOptionPane.showMessageDialog(Main.parent, e1.getMessage(),
-//                    tr("Error during download"), JOptionPane.ERROR_MESSAGE);
-//        } catch (InterruptedException e1) {
-//            JOptionPane.showMessageDialog(Main.parent, e1.getMessage(),
-//                    tr("Error during download"), JOptionPane.ERROR_MESSAGE);
-//        }
     }
 
     private Boundary getBoundary() {
