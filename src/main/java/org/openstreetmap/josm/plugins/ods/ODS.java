@@ -106,11 +106,10 @@ public class ODS {
 	}
 
 	public static OdsWorkingSet getLayer(String name)
-			throws ConfigurationException {
+			throws UnknownLayerException {
 		OdsWorkingSet layer = layers.get(name);
 		if (layer == null) {
-			throw new ConfigurationException(String.format(
-					"OdsWorkingSet '%s' does not exist", name));
+			throw new UnknownLayerException(name);
 		}
 		return layer;
 	}

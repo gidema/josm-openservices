@@ -10,7 +10,7 @@ import java.util.Map;
  * @author gertjan
  *
  */
-public class EntityStore<T extends Entity> {
+public class EntityStore<T extends Entity> implements Iterable<T> {
     private Map<Object, T> entities = new HashMap<>();
     private Map<String, T> namedEntities = new HashMap<>();
     private Map<Object, T> referencedEntities = new HashMap<>();
