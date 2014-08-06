@@ -13,7 +13,7 @@ import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
-import org.openstreetmap.josm.plugins.ods.jts.PolygonFilter;
+import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 
 public class InternalDownloadTask implements DownloadTask {
@@ -95,7 +95,7 @@ public class InternalDownloadTask implements DownloadTask {
                         return null;
                     dataSet = parseDataSet();
                     if (downloadSource == DownloadSource.OSM) {
-                        PolygonFilter filter = new PolygonFilter(boundary.getPolygon());
+                        MultiPolygonFilter filter = new MultiPolygonFilter(boundary.getMultiPolygon());
                         dataSet = filter.filter(dataSet);
                     }
                     if (dataSet.allPrimitives().isEmpty()) {

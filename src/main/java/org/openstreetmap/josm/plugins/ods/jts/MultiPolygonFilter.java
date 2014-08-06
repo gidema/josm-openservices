@@ -1,5 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.jts;
 
+import static org.openstreetmap.josm.data.osm.OsmPrimitiveType.NODE;
+import static org.openstreetmap.josm.data.osm.OsmPrimitiveType.RELATION;
+import static org.openstreetmap.josm.data.osm.OsmPrimitiveType.WAY;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,15 +17,12 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
-
-import static org.openstreetmap.josm.data.osm.OsmPrimitiveType.*;
-
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 
 /**
@@ -31,14 +32,14 @@ import com.vividsolutions.jts.geom.prep.PreparedPolygon;
  * @author gertjan
  * 
  */
-public class PolygonFilter {
+public class MultiPolygonFilter {
     private final static GeoUtil geoUtil = GeoUtil.getInstance();
 
     private final PreparedPolygon pp;
     private Set<OsmPrimitive> keep;
 
-    public PolygonFilter(Polygon polygon) {
-        this.pp = new PreparedPolygon(polygon);
+    public MultiPolygonFilter(MultiPolygon multiPolygon) {
+        this.pp = new PreparedPolygon(multiPolygon);
     }
 
     public DataSet filter(DataSet dataSet) {

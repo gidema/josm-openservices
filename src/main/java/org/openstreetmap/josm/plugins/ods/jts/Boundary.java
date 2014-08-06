@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.crs.UnclosedWayException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class Boundary {
     private final static GeoUtil geoUtil = GeoUtil.getInstance();
     
     private LinearRing ring;
-    private Polygon polygon;
+    private MultiPolygon multiPolygon;
     private Envelope envelope;
     private Bounds bounds;
     private boolean rectangular;
@@ -33,7 +33,8 @@ public class Boundary {
         } catch (UnclosedWayException e) {
             // Won't happen because we know the way is closed
         }
-        this.polygon = geoUtil.createPolygon(ring, null);
+        Polygon polygon = geoUtil.createPolygon(ring, null);
+        this.multiPolygon = geoUtil.toMultiPolygon(polygon);
         this.envelope = ring.getEnvelopeInternal();
     }
     
@@ -49,7 +50,8 @@ public class Boundary {
         coords.add(new Coordinate(bounds.getMaxLon(), bounds.getMinLat()));
         coords.add(new Coordinate(bounds.getMinLon(), bounds.getMinLat()));
         this.ring = geoUtil.toLinearRing(coords);
-        this.polygon = geoUtil.createPolygon(ring, null);
+        Polygon polygon = geoUtil.createPolygon(ring, null);
+        this.multiPolygon = geoUtil.toMultiPolygon(polygon);        
     }
 
     public boolean isRectangular() {
@@ -60,8 +62,8 @@ public class Boundary {
         return ring;
     }
     
-    public Polygon getPolygon() {
-        return polygon;
+    public MultiPolygon getMultiPolygon() {
+        return multiPolygon;
     }
     
     public Envelope getEnvelope() {
@@ -77,7 +79,7 @@ public class Boundary {
     }
     
 //    public void filter(DataSet dataSet) {
-//        PolygonFilter filter = new PolygonFilter(polygon);
+//        MultiPolygonFilter filter = new MultiPolygonFilter(polygon);
 //        filter.filter(dataSet);
 //    }
 }

@@ -97,7 +97,7 @@ public class ExternalDownloadJob implements DownloadJob {
             buildEntities(downloadTask);
         }
         // Retrieve the results
-        entities.extendBoundary(boundary.getPolygon());
+        entities.extendBoundary(boundary.getMultiPolygon());
         // Next establish the relationships between the features
         analyze();
         dataLayer.merge(entities);
@@ -121,7 +121,7 @@ public class ExternalDownloadJob implements DownloadJob {
 //        EntityStore store = dataLayer.getEntitySet().getStore(entityType);
         MetaData metaData = task.getDataSource().getMetaData();
         List<Issue> issues = new LinkedList<>();
-        PreparedPolygon preparedBoundary = new PreparedPolygon(boundary.getPolygon());
+        PreparedPolygon preparedBoundary = new PreparedPolygon(boundary.getMultiPolygon());
         for (SimpleFeature feature : task.getFeatures()) {
             try {
                 Entity entity = entityFactory.buildEntity(entityType, metaData, feature);

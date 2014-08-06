@@ -29,7 +29,6 @@ public class DefaultEntitySet implements EntitySet {
         return stores.values().iterator();
     }
 
-
     public Geometry getBoundary() {
         return boundary;
     }
@@ -55,10 +54,10 @@ public class DefaultEntitySet implements EntitySet {
     }
 
     @Override
-    public void extendBoundary(Polygon polygon) {
+    public void extendBoundary(Geometry boundary) {
         if (boundary == null) {
-            boundary = polygon;
+            this.boundary = boundary;
         }
-        boundary = boundary.union(polygon);
+        boundary = boundary.union(boundary);
     }
 }

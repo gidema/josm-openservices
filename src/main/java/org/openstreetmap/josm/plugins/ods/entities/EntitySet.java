@@ -5,7 +5,6 @@ import java.util.Iterator;
 import org.openstreetmap.josm.data.Bounds;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 
 public interface EntitySet {
     
@@ -22,7 +21,7 @@ public interface EntitySet {
     
     public Geometry getBoundary();
 
-    public void extendBoundary(Polygon bounds);
+    public void extendBoundary(Geometry area);
 
     public void extendBoundary(Bounds bounds);
 
