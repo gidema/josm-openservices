@@ -12,51 +12,59 @@ import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 
 /**
- * Class to represent a Geotools  host.
+ * Class to represent a Geotools host.
+ * 
  * @author Gertjan Idema
- *
+ * 
  */
 public abstract class GtHost extends Host {
-  private List<String> featureTypes;
-  private DataStore dataStore;
-  private boolean initialized = false;
-  
-  @Override
-  public synchronized void initialize() throws InitializationException {
-    if (initialized) return;
-    super.initialize();
-    // TODO move to next line configuration fase
-    Map<?, ?> connectionParameters = getConnectionParameters();
-    try {
-      dataStore = DataStoreFinder.getDataStore(connectionParameters);
-      featureTypes = Arrays.asList(getDataStore().getTypeNames());
-      initialized = true;
-    } catch (IOException e) {
-      throw new InitializationException("Unable to connect to the datastore", e);
+    private List<String> featureTypes;
+    private DataStore dataStore;
+    private boolean initialized = false;
+
+    public GtHost(String name, String url, Integer maxFeatures) {
+        super(name, url, maxFeatures);
     }
-  }
-  
-  protected abstract Map<?, ?> getConnectionParameters() throws InitializationException;
 
-  protected List<String> getFeatureTypes() {
-    return featureTypes;
-  }
+    @Override
+    public synchronized void initialize() throws InitializationException {
+        if (initialized)
+            return;
+        super.initialize();
+        // TODO move to next line configuration fase
+        Map<?, ?> connectionParameters = getConnectionParameters();
+        try {
+            dataStore = DataStoreFinder.getDataStore(connectionParameters);
+            featureTypes = Arrays.asList(getDataStore().getTypeNames());
+            initialized = true;
+        } catch (IOException e) {
+            throw new InitializationException(
+                    "Unable to connect to the datastore", e);
+        }
+    }
 
-  /**
-   * @return the DataStore object
-   * @throws GtException 
-   */
-  public DataStore getDataStore() {
-    return dataStore;
-  }
-  
-  @Override
-  public boolean hasFeatureType(String type) {
-    return getFeatureTypes().contains(type);
-  }
+    protected abstract Map<?, ?> getConnectionParameters()
+            throws InitializationException;
 
-  @Override
-  public OdsFeatureSource getOdsFeatureSource(String feature) {
-    return  new GtFeatureSource(this, feature);
-  }
+    protected List<String> getFeatureTypes() {
+        return featureTypes;
+    }
+
+    /**
+     * @return the DataStore object
+     * @throws GtException
+     */
+    public DataStore getDataStore() {
+        return dataStore;
+    }
+
+    @Override
+    public boolean hasFeatureType(String type) {
+        return getFeatureTypes().contains(type);
+    }
+
+    @Override
+    public OdsFeatureSource getOdsFeatureSource(String feature) {
+        return new GtFeatureSource(this, feature);
+    }
 }

@@ -2,7 +2,10 @@ package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.Iterator;
 
+import javax.inject.Inject;
+
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
@@ -30,6 +33,7 @@ public class ExternalDataLayer implements DataLayer {
      * 
      * @param name
      */
+    @Inject
     public ExternalDataLayer(String name) {
         DataSet dataSet = new DataSet();
         osmDataLayer = new OsmDataLayer(dataSet, name, null);
@@ -70,6 +74,7 @@ public class ExternalDataLayer implements DataLayer {
                 };
             }
         }
+//        data.dataSources.add(new DataSource(newEntities.getBoundary().));
         data.endUpdate();
     }
 }

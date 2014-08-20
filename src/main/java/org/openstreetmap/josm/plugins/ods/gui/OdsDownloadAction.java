@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.gui;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.AbstractAction;
+import javax.inject.Inject;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -16,23 +16,32 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
+import org.openstreetmap.josm.plugins.ods.OdsDownloader;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.xml.sax.SAXException;
 
-public class OdsDownloadAction extends AbstractAction {
+public class OdsDownloadAction extends OdsAction {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
+    private OdsDownloader downloader;
     private boolean cancelled = false;
+    private Boundary boundary;
     private boolean downloadOsm;
     private boolean downloadOds;
+    private SlippyMapDownloadDialog slippyDialog;
+    private FixedBoundsDownloadDialog fixedDialog;
     
-    public OdsDownloadAction() {
-        super("Download", ImageProvider.get("download"));
-        this.setEnabled(false);
+    @Inject
+    public OdsDownloadAction(OdsModule module) {
+        super(module, "Download", ImageProvider.get("download"));
+        slippyDialog = new SlippyMapDownloadDialog(module);
+        fixedDialog = new FixedBoundsDownloadDialog(module);
+        this.downloader = module.getDownloader();
     }
 
     @Override
@@ -42,14 +51,14 @@ public class OdsDownloadAction extends AbstractAction {
     
     public void run() {
         cancelled = false;
-        Boundary boundary = getBoundary();
+        boundary = getBoundary();
         if (!cancelled) {
-            DownloadTask task = new DownloadTask(boundary, downloadOsm, downloadOds);
+            DownloadTask task = new DownloadTask();
             Main.worker.submit(task);
 
         }
 //        try {
-//            workingSet.download(boundary, true);
+//            module.download(boundary, true);
 //        } catch (ExecutionException e1) {
 //            JOptionPane.showMessageDialog(Main.parent, e1.getMessage(),
 //                    tr("Error during download"), JOptionPane.ERROR_MESSAGE);
@@ -64,10 +73,10 @@ public class OdsDownloadAction extends AbstractAction {
         boolean selectArea = (boundary == null);
         AbstractDownloadDialog dialog;
         if (selectArea) {
-            dialog = SlippyMapDownloadDialog.getInstance();
+            dialog = slippyDialog;
         }
         else {
-            dialog = FixedBoundsDownloadDialog.getInstance();
+            dialog = fixedDialog;
         }
         dialog.restoreSettings();
         dialog.setVisible(true);
@@ -105,16 +114,15 @@ public class OdsDownloadAction extends AbstractAction {
     
     private class DownloadTask extends PleaseWaitRunnable {
         private boolean cancelled = false;
-        private Boundary boundary;
-        private boolean downloadOsm;
-        private boolean downloadOds;
-        private OdsDownloader downloader;
+//        private Boundary boundary;
+//        private boolean downloadOsm;
+//        private boolean downloadOds;
         
-        public DownloadTask(Boundary boundary, boolean downloadOsm, boolean downloadOds) {
+        public DownloadTask() {
             super(tr("Downloading data"));
-            this.boundary = boundary;
-            this.downloadOsm = downloadOsm;
-            this.downloadOds = downloadOds;
+//            this.boundary = boundary;
+//            this.downloadOsm = downloadOsm;
+//            this.downloadOds = downloadOds;
         }
 
         @Override
@@ -126,9 +134,8 @@ public class OdsDownloadAction extends AbstractAction {
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
-            downloader = new OdsDownloader(boundary, getProgressMonitor());
             try {
-                downloader.run(downloadOsm, downloadOds);
+                downloader.run(getProgressMonitor(), boundary, downloadOsm, downloadOds);
             } catch (ExecutionException|InterruptedException e) {
                 throw new OsmTransferException(e);
             }
@@ -136,12 +143,11 @@ public class OdsDownloadAction extends AbstractAction {
 
         @Override
         protected void finish() {
-            OdsWorkingSet workingSet = ODS.getModule().getWorkingSet();
             if (downloadOsm) {
-                Main.map.mapView.setActiveLayer(workingSet.getInternalDataLayer().getOsmDataLayer());
+                Main.map.mapView.setActiveLayer(getModule().getInternalDataLayer().getOsmDataLayer());
             }
             else {
-                Main.map.mapView.setActiveLayer(workingSet.getExternalDataLayer().getOsmDataLayer());
+                Main.map.mapView.setActiveLayer(getModule().getExternalDataLayer().getOsmDataLayer());
             }
         }        
     }

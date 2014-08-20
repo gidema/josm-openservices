@@ -1,75 +1,380 @@
 package org.openstreetmap.josm.plugins.ods;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.JMenu;
+
+import org.opengis.feature.Feature;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.gui.MapView;
+import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
+import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
+import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
+import org.openstreetmap.josm.io.IllegalDataException;
+import org.openstreetmap.josm.io.OsmImporter;
+import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStore;
+import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStoreImpl;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
+import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
+import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
+import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 
 /**
- * The opendataservices plug-in (ODS) can handle multiple modules.
- * OdsModule is the interface for the modules. Currently, each module
- * has an OdsWorkingSet that contains a part of the functionality.
- * The reason for this is historical. The WorkingSet existed before the
- * concept of the ODS module. In the future we might decide to merge the
- * workingSet functionality into the OdsModule.
- *   
- * @author Gertjan Idema <mail@gertjanidema.nl>
- *
+ * TODO update this comment The OdsModule is the main component of the ODS
+ * plugin. It manages a pair of interrelated layers which are a normal OSM layer
+ * and a ODS layer.
+ * 
+ * The data in the ODS layer is retrieved from 1 or more ODS dataSources.
+ * 
+ * @author Gertjan Idema
+ * 
  */
-public interface OdsModule {
+public abstract class OdsModule implements LayerChangeListener {
+    private final OdsModulePlugin plugin;
     
-    public boolean isEnabled();
+//    private OdsModuleConfig module;
+    private final Map<String, OdsDataSource> dataSources = new HashMap<>();
+    private final ExternalDataLayer externalDataLayer;
+    private final InternalDataLayer internalDataLayer;
+    private InternalDownloadJob internalDownloadJob;
+    private ExternalDownloadJob externalDownloadJob;
+    private OsmDataLayer polygonLayer;
+    private final OdsDownloader downloader;
+    // private boolean useToolbox = false;
+    // private JDialog toolbox;
+    // private final List<OldOdsAction> actions = new LinkedList<>();
+    String osmQuery;
+    private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<>();
+    // OdsDownloadAction downloadAction;
+    private boolean active = false;
+    private EntityFactory entityFactory;
+    // TODO this is a dependency on the BuiltEnvironment submodule
+    // Change to a more generic solution like a Container pattern
+    private BlockStore blockStore = new BlockStoreImpl();
+
+    public OdsModule(OdsModulePlugin plugin, OdsDownloader downloader, ExternalDataLayer externalDataLayer, InternalDataLayer internalDataLayer) {
+        this.plugin = plugin;
+        this.downloader = downloader;
+        this.externalDataLayer = externalDataLayer;
+        this.internalDataLayer = internalDataLayer;
+        MapView.addLayerChangeListener(this);
+    }
+
+    public BlockStore getBlockStore() {
+        return blockStore;
+    }
+
+    // public void addAction(OldOdsAction action) {
+    // action.setWorkingSet(this);
+    // actions.add(action);
+    // }
+
+    public abstract String getName();
+
+    public abstract String getDescription();
+
+    public final Map<String, OdsDataSource> getDataSources() {
+        return dataSources;
+    }
+
+    public void setOsmQuery(String query) {
+        /**
+         * Currently, we pass the osm (overpass) query through http get. This
+         * doesn't allow linefeed or carriage return characters, so we need to
+         * strip them.
+         */
+        if (query == null) {
+            osmQuery = null;
+            return;
+        }
+        this.osmQuery = query.replaceAll("\\s", "");
+    }
+
+    public final String getOsmQuery() {
+        return osmQuery;
+    }
+
+    public Feature getRelatedFeature(OsmPrimitive primitive) {
+        return relatedFeatures.get(primitive);
+    }
+
+    public ExternalDataLayer getExternalDataLayer() {
+        return externalDataLayer;
+    }
     
-    /**
-     * Enable the module
-     */
-    public void enable();
+    public void initExternalDatalayer() {
+        Layer oldLayer = null;
+        if (Main.map != null) {
+            oldLayer = Main.main.getActiveLayer();
+        }
+        Main.main.addLayer(externalDataLayer.getOsmDataLayer());
+        if (oldLayer != null) {
+            Main.map.mapView.setActiveLayer(oldLayer);
+        }
+    }
     
-    /**
-     * Disable the module
-     */
-    public void disable();
-    /**
-     * Get the name of this module
-     * @return
-     */
-    public String getName();
+    public InternalDataLayer getInternalDataLayer() {
+        return internalDataLayer;
+    }
     
-    /**
-     * Get a short description for this module
-     * @return
-     */
-    public String getDescription();
+    private void initInternalDatalayer() {
+        Layer oldLayer = null;
+        if (Main.map != null) {
+            oldLayer = Main.main.getActiveLayer();
+        }
+        Main.main.addLayer(internalDataLayer.getOsmDataLayer());
+        if (oldLayer != null) {
+            Main.map.mapView.setActiveLayer(oldLayer);
+        }
+    }
+
+    public void addDataSource(OdsDataSource dataSource) {
+        dataSources.put(dataSource.getFeatureType(), dataSource);
+    }
+
+    public boolean isActive() {
+        return active;
+    }
     
-    /**
-     * Get this modules workingSet. See this class's comment for the relation between
-     *  modules and workingSet
-     *  
-     * @return
-     */
-    public OdsWorkingSet getWorkingSet();
+    public void activate() {
+        JMenu menu = OpenDataServices.INSTANCE.getMenu();
+        for (OdsAction action : getActions()) {
+            menu.add(action);
+        }
+        // if (!active) {
+        // downloadAction = new OdsDownloadAction();
+        // initToolbox();
+        // }
+        initExternalDatalayer();
+        initInternalDatalayer();
+        getPolygonLayer();
+        active = true;
+    }
+
+    public void deActivate() {
+        if (internalDataLayer != null) {
+            OsmDataLayer internalOsmLayer = internalDataLayer.getOsmDataLayer();
+            Main.map.mapView.removeLayer(internalOsmLayer);
+        }
+        if (externalDataLayer != null) {
+            OsmDataLayer externalOsmLayer = externalDataLayer.getOsmDataLayer();
+            Main.map.mapView.removeLayer(externalOsmLayer);
+        }
+        if (polygonLayer != null) {
+            Main.map.mapView.removeLayer(polygonLayer);
+        }
+        JMenu menu = OpenDataServices.INSTANCE.getMenu();
+        for (OdsAction action : getActions()) {
+//            menu.remove(action);
+        }
+
+        // toolbox.setVisible(false);
+        // toolbox = null;
+        active = false;
+    }
+
+    public abstract List<OdsAction> getActions();
+    // public JDialog getToolbox() {
+    // return toolbox;
+    // }
+    //
+    // private void initToolbox() {
+    // toolbox = new JDialog((Frame) Main.parent, "ODS");
+    // if (useToolbox) {
+    // toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
+    // BoxLayout.Y_AXIS));
+    // toolbox.setLocation(300, 300);
+    // toolbox.setMinimumSize(new Dimension(110, 0));
+    // toolbox.add(new JButton(downloadAction));
+    // for (Action action : actions) {
+    // toolbox.add(new JButton(action));
+    // }
+    // int width = toolbox.getContentPane().getWidth();
+    // for (Component comp : toolbox.getComponents()) {
+    // comp.setSize(width, comp.getHeight());
+    // }
+    // toolbox.pack();
+    // }
+    // }
+
+//    public void download(Boundary boundary, boolean downloadOsmData)
+//            throws ExecutionException, InterruptedException {
+//        new OdsDownloadAction().run();
+//    }
+
+    void activateOsmLayer() {
+        Main.map.mapView.setActiveLayer(internalDataLayer.getOsmDataLayer());
+    }
+
+
+    // Implement LayerChangeListener
+
+    @Override
+    public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+        // if (!active) return;
+        // if (newLayer != null
+        // && (newLayer == externalDataLayer.getOsmDataLayer() ||
+        // newLayer == internalDataLayer.getOsmDataLayer())) {
+        // if (useToolbox) {
+        // getToolbox().setVisible(true);
+        // }
+        // }
+        // else if (active) {
+        // getToolbox().setVisible(false);
+        // }
+    }
+
+    @Override
+    public void layerAdded(Layer newLayer) {
+        // No action required
+    }
+
+    @Override
+    public void layerRemoved(Layer oldLayer) {
+        // boolean deActivate = false;
+        if (!active)
+            return;
+        OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
+                : externalDataLayer.getOsmDataLayer());
+        OsmDataLayer internalOsmLayer = (internalDataLayer == null ? null
+                : internalDataLayer.getOsmDataLayer());
+        //
+        // if (oldLayer == externalOsmLayer) {
+        // if (Main.map != null &&
+        // Main.map.mapView.getAllLayers().contains(internalOsmLayer)) {
+        // if
+        // (!Main.saveUnsavedModifications(Collections.singletonList(internalOsmLayer),
+        // false))
+        // return;
+        // Main.map.mapView.removeLayer(internalOsmLayer);
+        // deActivate = true;
+        // internalDataLayer = null;
+        // externalDataLayer = null;
+        // }
+        // } else if (oldLayer == internalOsmLayer) {
+        // if (Main.map != null &&
+        // Main.map.mapView.getAllLayers().contains(externalOsmLayer)) {
+        // Main.map.mapView.removeLayer(externalOsmLayer);
+        // deActivate = true;
+        // externalDataLayer = null;
+        // internalDataLayer = null;
+        // }
+        // }
+        // if (deActivate) {
+        // deActivate();
+        // }
+    }
+
+    // public Action getActivateAction() {
+    // return new ActivateAction();
+    // }
+
+    // public OdsDownloadAction getDownloadAction() {
+    // return downloadAction;
+    // }
+    //
+    // private class ActivateAction extends AbstractAction {
+    //
+    // private static final long serialVersionUID = -4943320068119307331L;
+    //
+    // @Override
+    // public void actionPerformed(ActionEvent e) {
+    // activate();
+    // // downloadAction.actionPerformed(e);
+    // }
+    // }
+
+    public void setEntityFactory(EntityFactory entityFactory) {
+        this.entityFactory = entityFactory;
+    }
+
+    public EntityFactory getEntityFactory() {
+        return entityFactory;
+    }
+
+    public abstract Bounds getBounds();
+
+    public OsmDataLayer getPolygonLayer() {
+        if (polygonLayer == null) {
+            String layerName = "ODS Polygons";
+            File polygonFile = getPolygonFilePath();
+            if (polygonFile.exists()) {
+                OsmImporter importer = new OsmImporter();
+                try {
+                    polygonLayer = importer.loadLayer(
+                            new FileInputStream(polygonFile), polygonFile,
+                            layerName, NullProgressMonitor.INSTANCE).getLayer();
+                    polygonLayer.setUploadDiscouraged(true);
+                    Main.map.mapView.addLayer(polygonLayer);
+                    // Main.map.mapView.zoomTo(polygonLayer.data.);
+                    Main.info("");
+                } catch (FileNotFoundException e) {
+                    // Won't happen as we checked this
+                    e.printStackTrace();
+                } catch (IllegalDataException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        return polygonLayer;
+        // else {
+        //
+        // File dir = polygonFile.getParentFile();
+        // if (!dir.isDirectory()) {
+        // dir.mkdirs();
+        // }
+        // File polygonFile = new File(pluginDir, "polygons.osm");
+        // if (!polygonFile.exists()) {
+        // if (!createIfMissing) {
+        // return null;
+        // }
+        //
+        // }
+        // if (pluginDir == null) {
+        // Files.createDirectory(dir, attrs)
+        // pluginDir.
+        // }
+        //
+        // // TODO Auto-generated method stub
+    }
+
+    public InternalDownloadJob getInternalDownloadJob() {
+        return internalDownloadJob;
+    }
+
+    public ExternalDownloadJob getExternalDownloadJob() {
+        return externalDownloadJob;
+    }
+
+    public OdsDownloader getDownloader() {
+        return downloader;
+    }
     
-    /**
-     * The module may want to keep track of polygons that have already
-     * been imported.
-     *  
-     * @return 
-     * true if the module uses a polygon file to track of polygons  
-     */
-    public boolean usePolygonFile();
-    
-    
-    /**
-     * Get the path to the polygon file.
-     * 
-     * @return
-     */
-    public File getPolygonFilePath();
-    
-    
-    /**
-     * Get the bounding box for which this module is valid.
-     * 
-     * @return
-     */
-    public Bounds getBounds();
+    public boolean usePolygonFile() {
+        return false;
+    }
+
+    public File getPolygonFilePath() {
+        if (!usePolygonFile()) {
+            return null;
+        }
+        File pluginDir = new File(plugin.getPluginDir());
+        return new File(pluginDir, "polygons.osm");
+    }
+
+    public boolean isEnabled() {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

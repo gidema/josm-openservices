@@ -21,10 +21,10 @@ public class GtFeatureSource implements OdsFeatureSource {
     CoordinateReferenceSystem crs;
     MetaData metaData;
 
-    protected GtFeatureSource(GtHost host, String featureName) {
+    public GtFeatureSource(GtHost host, String featureName) {
         super();
         this.host = host;
-        this.featureName = host.getName() + ":" + featureName;
+        this.featureName = featureName;
     }
 
     @Override

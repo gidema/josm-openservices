@@ -6,15 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import javax.inject.Inject;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.plugins.ods.DataLayer;
 import org.openstreetmap.josm.plugins.ods.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
-import org.openstreetmap.josm.plugins.ods.ODS;
-import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
@@ -25,66 +23,65 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.I18n;
 
 public class InternalDownloadJob implements DownloadJob {
-    private final OdsWorkingSet workingSet;
-    private final Boundary boundary;
-    private List<InternalDownloadTask> downloadTasks;
-    private DataLayer dataLayer;
+//    private final OdsModule module;
+    private InternalDownloadTask downloadTask;
+    private InternalDataLayer dataLayer;
     private EntityFactory entityFactory;
     private List<Analyzer> analyzers;
     private EntitySet newEntities;
 
-    public InternalDownloadJob(Boundary boundary) {
+    @Inject
+    public InternalDownloadJob(InternalDataLayer dataLayer, InternalDownloadTask downloadTask, EntityFactory entityFactory) {
         super();
-        this.workingSet = ODS.getModule().getWorkingSet();
-        this.boundary = boundary;
-        this.dataLayer = workingSet.getInternalDataLayer();
-        this.entityFactory = workingSet.getEntityFactory();
+        this.downloadTask = downloadTask;
+//        this.module = module;
+        this.dataLayer = dataLayer;
+        this.entityFactory = entityFactory;
         Double tolerance = 2e-7;
         analyzers = new ArrayList<>(5);
         analyzers.add(new AddressToBuildingMatcher());
 //        analyzers.add(new AddressToStreetMatcher());
     }
 
-    public void setup() {
-        InternalDownloadTask downloadTask = new InternalDownloadTask(workingSet, boundary);
-        downloadTasks = Collections.singletonList(downloadTask);
+    public void setBoundary(Boundary boundary) {
+        downloadTask.setBoundary(boundary);
     }
 
+//    public void setup() {
+//        InternalDownloadTask downloadTask = new InternalDownloadTask(module, boundary);
+//        downloadTasks = Collections.singletonList(downloadTask);
+//    }
+//
     @Override
     public List<Callable<?>> getPrepareCallables() {
-        List<Callable<?>> callables = new ArrayList<>(downloadTasks.size());
-        for (InternalDownloadTask task : downloadTasks) {
-            callables.add(task.getPrepareCallable());
-        }
+        List<Callable<?>> callables = new ArrayList<>(1);
+        callables.add(downloadTask.getPrepareCallable());
         return callables;
     }
 
     @Override
     public List<Callable<?>> getDownloadCallables() {
-        List<Callable<?>> callables = new ArrayList<>(downloadTasks.size());
-        for (InternalDownloadTask task : downloadTasks) {
-            callables.add(task.getDownloadCallable());
-        }
+        List<Callable<?>> callables = new ArrayList<>(1);
+        callables.add(downloadTask.getDownloadCallable());
         return callables;
     }
 
     @Override
     public List<? extends DownloadTask> getDownloadTasks() {
-        return downloadTasks;
+        return Collections.singletonList(downloadTask);
     }
 
     @Override
     public void build() throws BuildException {
-        InternalDownloadTask task = downloadTasks.get(0);
 //        if (task.failed) {
 //            JOptionPane.showMessageDialog(Main.parent, task.errorMessage);
 //            return;
 //        }
-        DataSet dataSet = task.getDataSet();
-        workingSet.internalDataLayer.getOsmDataLayer().mergeFrom(dataSet);
+        DataSet dataSet = downloadTask.getDataSet();
+        dataLayer.getOsmDataLayer().mergeFrom(dataSet);
 
         BuiltEnvironmentEntityBuilder builder = new BuiltEnvironmentEntityBuilder(
-                workingSet.internalDataLayer);
+                dataLayer);
         builder.setEntityFactory(entityFactory);
         try {
             builder.build();

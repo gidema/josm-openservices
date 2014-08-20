@@ -7,7 +7,7 @@ import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 
 public interface DownloadJob {
 
-    void setup();
+//    void setup();
 
     List<Callable<?>> getPrepareCallables();
 

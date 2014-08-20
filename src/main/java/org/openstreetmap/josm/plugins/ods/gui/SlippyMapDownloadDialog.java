@@ -1,8 +1,7 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.gui;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
@@ -18,6 +17,7 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.bbox.BBoxChooser;
 import org.openstreetmap.josm.gui.bbox.SlippyMapBBoxChooser;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.GBC;
 
 /**
@@ -27,13 +27,12 @@ import org.openstreetmap.josm.tools.GBC;
  *
  */
 public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
-
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    private static SlippyMapDownloadDialog instance = null;
+//    private static SlippyMapDownloadDialog instance = null;
     protected Bounds currentBounds = null;
     
     /**
@@ -41,24 +40,25 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
      * 
      * @return the unique instance of this download dialog
      */
-    static public SlippyMapDownloadDialog getInstance() {
-        if (instance == null) {
-                instance = new SlippyMapDownloadDialog(Main.parent);
-        }
-        return instance;
+//    static public SlippyMapDownloadDialog getInstance() {
+//        if (instance == null) {
+//                instance = new SlippyMapDownloadDialog(Main.parent,);
+//        }
+//        return instance;
+//    }
+
+    public SlippyMapDownloadDialog(OdsModule module) {
+        super(module, tr("Download ODS"));
     }
+
 
     protected SlippyMapBBoxChooser slippyMap;
-
-    public SlippyMapDownloadDialog(Component parent) {
-        super(parent, tr("Download ODS"));
-    }
 
     protected JPanel buildMainPanel() {
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
 
-        String moduleName = ODS.getModule().getName();
+        String moduleName = module.getName();
         cbDownloadOSM = new JCheckBox(tr("Download OSM data"));
         cbDownloadOSM.setToolTipText(tr("<html>Select to download OSM data.<br>"
                         + "Unselect to skip downloading of OSM data.</html>"));

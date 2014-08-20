@@ -1,10 +1,9 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.gui;
 
 import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -25,6 +24,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.help.ContextSensitiveHelpAction;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.InputMapUtils;
 import org.openstreetmap.josm.tools.WindowGeometry;
@@ -45,12 +45,14 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     protected JCheckBox cbDownloadOSM;
     protected JCheckBox cbDownloadODS;
+    protected OdsModule module;
     /** the download button */
 //    private DownloadAction actDownload;
     protected SideButton btnDownload;
 
-    public AbstractDownloadDialog(Component parent, String title) {
-        super(JOptionPane.getFrameForComponent(parent), title, ModalityType.DOCUMENT_MODAL);
+    public AbstractDownloadDialog(OdsModule module, String title) {
+        super(JOptionPane.getFrameForComponent(Main.panel), title, ModalityType.DOCUMENT_MODAL);
+        this.module = module;
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(buildMainPanel(), BorderLayout.CENTER);
         getContentPane().add(buildButtonPanel(), BorderLayout.SOUTH);
@@ -180,7 +182,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
                                 + "Please choose to either download OSM data, or {2} data, or both.</html>",
                                 cbDownloadOSM.getText(),
                                 cbDownloadODS.getText(),
-                                ODS.getModule().getName()
+                                module.getName()
                         ),
                         tr("Error"),
                         JOptionPane.ERROR_MESSAGE

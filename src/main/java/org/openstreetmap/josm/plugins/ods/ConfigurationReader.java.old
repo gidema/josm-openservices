@@ -27,16 +27,17 @@ import org.openstreetmap.josm.plugins.ods.tags.DefaultFeatureMapper;
 import org.openstreetmap.josm.plugins.ods.tags.DefaultGeometryMapper;
 import org.openstreetmap.josm.tools.I18n;
 
+@Deprecated
 public class ConfigurationReader {
     private final ClassLoader classLoader;
-    private final OdsModule module;
+    private final OdsModuleConfig module;
 
     public ConfigurationReader(ClassLoader classLoader) {
         this.classLoader = classLoader;
         this.module = null;
     }
 
-    public ConfigurationReader(ClassLoader classLoader, OdsModule module) {
+    public ConfigurationReader(ClassLoader classLoader, OdsModuleConfig module) {
         this.classLoader = classLoader;
         this.module = module;
     }
@@ -47,8 +48,8 @@ public class ConfigurationReader {
             conf.setDelimiterParsingDisabled(true);
             conf.setAttributeSplittingDisabled(true);
             conf.load(configFile);
-            configureImports(conf);
-            configureHosts(conf);
+//            configureImports(conf);
+//            configureHosts(conf);
             if (module != null) {
                 configureModule(conf);
             }
@@ -74,41 +75,41 @@ public class ConfigurationReader {
         Class<?> clazz;
         try {
             clazz = classLoader.loadClass(className);
-            ODS.registerImport(type, name, clazz);
+//            ODS.registerImport(type, name, clazz);
         } catch (ClassNotFoundException e) {
             throw new ConfigurationException(I18n.tr(
                     "A class named {0} could not be found", className));
         }
     }
 
-    private void configureHosts(HierarchicalConfiguration conf)
-            throws ConfigurationException {
-        List<HierarchicalConfiguration> confs = conf.configurationsAt("host");
-        for (HierarchicalConfiguration c : confs) {
-            configureHost(c);
-        }
-    }
+//    private void configureHosts(HierarchicalConfiguration conf)
+//            throws ConfigurationException {
+//        List<HierarchicalConfiguration> confs = conf.configurationsAt("host");
+//        for (HierarchicalConfiguration c : confs) {
+//            configureHost(c);
+//        }
+//    }
 
-    private void configureHost(HierarchicalConfiguration conf)
-            throws ConfigurationException {
-        Integer maxFeatures = null;
-        String s = conf.getString("[@maxFeatures]");
-        if (s!=null) {
-            try {
-                maxFeatures = Integer.parseInt(s);
-            } catch (NumberFormatException e) {
-                // Ignore
-            }
-        }
-        conf.setThrowExceptionOnMissing(true);
-        String name = conf.getString("[@name]");
-        String type = conf.getString("[@type]");
-        String url = conf.getString("[@url]");
-        Host host = ODS.registerHost(type, name, url, maxFeatures);
-        for (MetaDataLoader metaDataLoader : parseMetaDataLoaders(conf)) {
-            host.addMetaDataLoader(metaDataLoader);
-        }
-    }
+//    private void configureHost(HierarchicalConfiguration conf)
+//            throws ConfigurationException {
+//        Integer maxFeatures = null;
+//        String s = conf.getString("[@maxFeatures]");
+//        if (s!=null) {
+//            try {
+//                maxFeatures = Integer.parseInt(s);
+//            } catch (NumberFormatException e) {
+//                // Ignore
+//            }
+//        }
+//        conf.setThrowExceptionOnMissing(true);
+//        String name = conf.getString("[@name]");
+//        String type = conf.getString("[@type]");
+//        String url = conf.getString("[@url]");
+////        Host host = ODS.registerHost(type, name, url, maxFeatures);
+//        for (MetaDataLoader metaDataLoader : parseMetaDataLoaders(conf)) {
+//            host.addMetaDataLoader(metaDataLoader);
+//        }
+//    }
 
     private void configureDataSources(HierarchicalConfiguration conf) throws ConfigurationException {
         for (HierarchicalConfiguration c : conf.configurationsAt("datasource")) {
@@ -173,47 +174,47 @@ public class ConfigurationReader {
 //        String description = conf.getString("[@description]", "");
         configureDataSources(c);
         String osmQuery = c.getString("osm_query");
-        OdsWorkingSet workingSet = module.getWorkingSet();
+        OdsModule workingSet = module.getWorkingSet();
         workingSet.setOsmQuery(osmQuery);
 //        configureActions(workingSet, conf);
-        configureEntityFactory(workingSet, c);
+//        configureEntityFactory(workingSet, c);
     }
 
-    private void configureEntityFactory(OdsWorkingSet ows,
-            HierarchicalConfiguration conf) throws ConfigurationException {
-        EntityFactory entityFactory;
-        HierarchicalConfiguration factoryConf =conf.configurationAt("factory");
-        if (factoryConf != null) {
-            entityFactory = createEntityFactory(factoryConf);
-        }
-        else {
-            entityFactory = new SimpleExternalEntityFactory();
-        }
-        ows.setEntityFactory(entityFactory);
-    }
+//    private void configureEntityFactory(OdsModule ows,
+//            HierarchicalConfiguration conf) throws ConfigurationException {
+//        EntityFactory entityFactory;
+//        HierarchicalConfiguration factoryConf =conf.configurationAt("factory");
+//        if (factoryConf != null) {
+//            entityFactory = createEntityFactory(factoryConf);
+//        }
+//        else {
+//            entityFactory = new SimpleExternalEntityFactory();
+//        }
+//        ows.setEntityFactory(entityFactory);
+//    }
 
-    private EntityFactory createEntityFactory(
-            HierarchicalConfiguration conf) throws ConfigurationException {
-        String factoryName = conf.getString("[@name]");
-        if (factoryName == null) {
-            throw new ConfigurationException("No name attribute supplied for the factory element");
-        }
-        Class<?> factoryClass = ODS.getClass("entityFactory", factoryName);
-        try {
-            return (EntityFactory) factoryClass.newInstance();
-        } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
-            throw new ConfigurationException("Unable to create a class of type " + factoryClass.getName());
-        }
-    }
+//    private EntityFactory createEntityFactory(
+//            HierarchicalConfiguration conf) throws ConfigurationException {
+//        String factoryName = conf.getString("[@name]");
+//        if (factoryName == null) {
+//            throw new ConfigurationException("No name attribute supplied for the factory element");
+//        }
+//        Class<?> factoryClass = ODS.getClass("entityFactory", factoryName);
+//        try {
+//            return (EntityFactory) factoryClass.newInstance();
+//        } catch (ClassCastException | InstantiationException | IllegalAccessException e) {
+//            throw new ConfigurationException("Unable to create a class of type " + factoryClass.getName());
+//        }
+//    }
 
-//    private void configureActions(OdsWorkingSet layer,
+//    private void configureActions(OdsModule layer,
 //            HierarchicalConfiguration conf) throws ConfigurationException {
 //        for (HierarchicalConfiguration c : conf.configurationsAt("action")) {
 //            configureAction(layer, c);
 //        }
 //    }
 
-//    private void configureAction(OdsWorkingSet layer,
+//    private void configureAction(OdsModule layer,
 //            HierarchicalConfiguration conf) throws ConfigurationException {
 //        String name = conf.getString("[@name]", null);
 //        String type = conf.getString("[@type]");

@@ -4,15 +4,15 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.filter.Filter;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
-public abstract class AbstractOdsDataSource implements OdsDataSource {
+public class DefaultOdsDataSource implements OdsDataSource {
 	protected OdsFeatureSource odsFeatureSource;
 	private Filter filter;
 	private IdFactory idFactory;
 	private boolean initialized;
-	private String entityType;
+//	private String entityType;
 	private boolean required;
 
-	protected AbstractOdsDataSource(OdsFeatureSource odsFeatureSource) {
+	public DefaultOdsDataSource(OdsFeatureSource odsFeatureSource) {
 		super();
 		this.odsFeatureSource = odsFeatureSource;
 	}
@@ -29,14 +29,14 @@ public abstract class AbstractOdsDataSource implements OdsDataSource {
 		}
 	}
 
-	@Override
-	public void setEntityType(String entityType) {
-	    this.entityType = entityType;
-	}
-	
-	public String getEntityType() {
-        return entityType;
-    }
+//	@Override
+//	public void setEntityType(String entityType) {
+//	    this.entityType = entityType;
+//	}
+//	
+//	public String getEntityType() {
+//        return entityType;
+//    }
 
     @Override
     public void setRequired(boolean required) {

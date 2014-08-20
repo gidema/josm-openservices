@@ -36,16 +36,20 @@ public class GtDownloadTask implements ExternalDownloadTask {
     private String message = null;
     private Exception exception = null;
 
-    protected GtDownloadTask(GtDataSource dataSource, Boundary boundary) {
+    public GtDownloadTask(GtDataSource dataSource) {
         super();
         this.dataSource = dataSource;
-        this.boundary = boundary;
         this.metaData = dataSource.getMetaData();
     }
     
     @Override
     public GtDataSource getDataSource() {
         return dataSource;
+    }
+
+    @Override
+    public void setBoundary(Boundary boundary) {
+        this.boundary = boundary;
     }
 
     @Override
@@ -130,7 +134,7 @@ public class GtDownloadTask implements ExternalDownloadTask {
                         cancelled = true;
                     }
                     else if (features.isEmpty() && getDataSource().isRequired()) {
-                        String featureType = getDataSource().getEntityType();
+                        String featureType = getDataSource().getFeatureType();
                         message = I18n.tr("The selected download area contains no {0} objects.",
                             featureType);
                         cancelled = true;

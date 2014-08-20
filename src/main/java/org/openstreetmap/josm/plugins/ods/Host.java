@@ -16,7 +16,14 @@ public abstract class Host {
   private final List<MetaDataLoader> metaDataLoaders = new LinkedList<MetaDataLoader>();
   private Boolean initialized = false;
 
-  public final String getName() {
+  public Host(String name, String url, Integer maxFeatures) {
+    super();
+    this.name = name;
+    this.url = url;
+    this.maxFeatures = maxFeatures;
+}
+
+public final String getName() {
     return name;
   }
 

@@ -22,7 +22,7 @@ public class BuildingCompletenessAnalyzer implements Analyzer {
         Iterator<Building> it = entitySet.getBuildings().iterator();
         while (it.hasNext()) {
             Building building = it.next();
-            building.setIncomplete(!entitySet.getBoundary().covers(building.getGeometry()));
+//            building.setIncomplete(!entitySet.getBoundary().covers(building.getGeometry()));
         }
     }
 }

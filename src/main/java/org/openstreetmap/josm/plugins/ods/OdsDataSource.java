@@ -2,12 +2,10 @@ package org.openstreetmap.josm.plugins.ods;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.filter.Filter;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
-import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
- * An OdsDataSource is the interface between the OdsWorkingSet and the
+ * An OdsDataSource is the interface between the OdsModule and the
  * OdsFeatureSource. It performs the following tasks.
  * 
  * - Maintain a filter used when downloading features - Create a unique id for
@@ -36,13 +34,11 @@ public interface OdsDataSource {
 
     public MetaData getMetaData();
 
-    public ExternalDownloadTask createDownloadTask(Boundary boundary);
-
     public void setRequired(boolean required);
 
     public boolean isRequired();
 
-    public void setEntityType(String entityType);
-
-    public String getEntityType();
+//    public void setEntityType(String entityType);
+//
+//    public String getEntityType();
 }

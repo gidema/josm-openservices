@@ -10,7 +10,7 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 public class SimpleExternalEntityFactory implements EntityFactory {
 
     @Override
-    public ExternalEntity buildEntity(String type, MetaData metaData, SimpleFeature feature) throws BuildException {
+    public ExternalEntity buildEntity(MetaData metaData, SimpleFeature feature) throws BuildException {
         ExternalEntity entity = new SimpleExternalEntity(feature);
         entity.init(metaData);
         return entity;

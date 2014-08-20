@@ -55,9 +55,11 @@ public class DefaultEntitySet implements EntitySet {
 
     @Override
     public void extendBoundary(Geometry boundary) {
-        if (boundary == null) {
+        if (this.boundary == null) {
             this.boundary = boundary;
         }
-        boundary = boundary.union(boundary);
+        else {
+            this.boundary = this.boundary.union(boundary);
+        }
     }
 }

@@ -1,20 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
-import org.openstreetmap.josm.plugins.ods.AbstractOdsDataSource;
+import org.openstreetmap.josm.plugins.ods.DefaultOdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadTask;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
-import com.vividsolutions.jts.geom.LinearRing;
-
-public class GtDataSource extends AbstractOdsDataSource {
+public class GtDataSource extends DefaultOdsDataSource {
   
-  protected GtDataSource(OdsFeatureSource odsFeatureSource) {
+  public GtDataSource(OdsFeatureSource odsFeatureSource) {
     super(odsFeatureSource);
   }
 
-  @Override
-  public ExternalDownloadTask createDownloadTask(Boundary boundary) {
-    return new GtDownloadTask(this, boundary);
-  }
+//  @Override
+//  public ExternalDownloadTask createDownloadTask(Boundary boundary) {
+//    return new GtDownloadTask(this, boundary);
+//  }
 }

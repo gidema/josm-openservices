@@ -1,8 +1,7 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.gui;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.beans.PropertyChangeEvent;
@@ -11,9 +10,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExpertToggleAction;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.GBC;
 
 /**
@@ -29,28 +28,15 @@ public class FixedBoundsDownloadDialog extends AbstractDownloadDialog {
      */
     private static final long serialVersionUID = 1L;
 
-    private static FixedBoundsDownloadDialog instance = null;
-    /**
-     * Replies the unique instance of this download dialog
-     * 
-     * @return the unique instance of this download dialog
-     */
-    static public FixedBoundsDownloadDialog getInstance() {
-        if (instance == null) {
-                instance = new FixedBoundsDownloadDialog(Main.parent);
-        }
-        return instance;
-    }
-
-    public FixedBoundsDownloadDialog(Component parent) {
-        super(parent, tr("Download ODS with polygon"));
+    public FixedBoundsDownloadDialog(OdsModule module) {
+        super(module, tr("Download ODS with polygon"));
     }
 
     protected JPanel buildMainPanel() {
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
 
-        String moduleName = ODS.getModule().getName();
+        String moduleName = module.getName();
         cbDownloadOSM = new JCheckBox(tr("Download OSM data"));
         cbDownloadOSM.setToolTipText(tr("<html>Select to download OSM data.<br>"
                         + "Unselect to skip downloading of OSM data.</html>"));

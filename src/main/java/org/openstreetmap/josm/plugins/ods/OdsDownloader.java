@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
@@ -18,7 +19,9 @@ import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
+import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
+import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.I18n;
@@ -26,31 +29,46 @@ import org.openstreetmap.josm.tools.I18n;
 public class OdsDownloader {
     private static final int NTHREADS = 10;
 
-    private OdsWorkingSet workingSet;
+//    private OdsModuleConfig module;
+//    private OdsModule module;
     
-    private InternalDownloadJob internalDownloadJob;
-    private ExternalDownloadJob externalDownloadJob;
+//    private InternalDownloadJob internalDownloadJob;
+//    private ExternalDownloadJob externalDownloadJob;
     private boolean downloadOsm;
     private boolean downloadOds;
     
     private List<DownloadTask> downloadTasks;
     private Boundary boundary;
     
-    private ProgressMonitor pm;
+//    private ProgressMonitor pm;
     
     boolean cancelled = false;
     boolean interrupted = false;
     
+    private InternalDownloadJob internalDownloadJob;
+    private ExternalDownloadJob externalDownloadJob;
+    private InternalDataLayer internalDataLayer;
+    private ExternalDataLayer externalDataLayer;
+    
     private ExecutorService executor;
 
-    protected OdsDownloader(Boundary boundary, ProgressMonitor progressMonitor) {
+
+    @Inject
+    public OdsDownloader(InternalDownloadJob internalDownloadJob, 
+            ExternalDownloadJob externalDownloadJob,
+            ExternalDataLayer externalDataLayer,
+            InternalDataLayer internalDataLayer
+            ) {
         super();
-        this.workingSet = ODS.getModule().getWorkingSet();
-        this.boundary = boundary;
-        this.pm = progressMonitor;
+//        this.module = module;
+        this.internalDownloadJob = internalDownloadJob;
+        this.externalDownloadJob = externalDownloadJob;
+        this.internalDataLayer = internalDataLayer;
+        this.externalDataLayer = externalDataLayer;
     }
 
-    public void run(boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
+    public void run(ProgressMonitor pm, Boundary boundary, boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
+        this.boundary = boundary;
         this.downloadOsm = downloadOsm;
         this.downloadOds = downloadOds;
         pm.indeterminateSubTask(I18n.tr("Setup"));
@@ -75,18 +93,11 @@ public class OdsDownloader {
         
         Bounds bounds = boundary.getBounds();
         DataSource ds = new DataSource(bounds, "Import");
-        OsmDataLayer exernalDataLayer = workingSet.getExternalDataLayer().getOsmDataLayer();
-        exernalDataLayer.data.dataSources.add(ds);
-//        pm.finishTask();
+        OsmDataLayer osmDataLayer =externalDataLayer.getOsmDataLayer();
+        osmDataLayer.data.dataSources.add(ds);
         computeBboxAndCenterScale(bounds);
         pm.finishTask();
-        workingSet.activate();
-//        if (downloadOds) {
-//            downloadTasks.addAll(externalDownloadJob.getDownloadTasks());
-//        }
-//        else {
-//            downloadTasks.addAll(internalDownloadJob.getDownloadTasks());            
-//        }
+//        module.activate();
     }
 
     /**
@@ -96,13 +107,11 @@ public class OdsDownloader {
     private void setup() {
         downloadTasks = new LinkedList<DownloadTask>();
         if (downloadOsm) {
-            internalDownloadJob = new InternalDownloadJob(boundary);
-            internalDownloadJob.setup();
+            internalDownloadJob.setBoundary(boundary);
             downloadTasks.addAll(internalDownloadJob.getDownloadTasks());
         }
         if (downloadOds) {
-            externalDownloadJob = new ExternalDownloadJob(boundary);
-            externalDownloadJob.setup();
+            externalDownloadJob.setBoundary(boundary);
             downloadTasks.addAll(externalDownloadJob.getDownloadTasks());
         }
     }
@@ -166,7 +175,7 @@ public class OdsDownloader {
     }
 
     private void download() throws ExecutionException, InterruptedException {
-        workingSet.activate();
+//        module.activate();
         List<Future<?>> futures = new ArrayList<Future<?>>(downloadTasks.size());
 
         executor = Executors.newFixedThreadPool(NTHREADS);
@@ -227,7 +236,7 @@ public class OdsDownloader {
     
     private void build() throws BuildException {
         if (downloadOsm) {
-            internalDownloadJob.build();
+           internalDownloadJob.build();
         }
         if (downloadOds) {
             externalDownloadJob.build();

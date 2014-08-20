@@ -11,14 +11,13 @@ import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.DownloadTask;
-import org.openstreetmap.josm.plugins.ods.OdsWorkingSet;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 
 public class InternalDownloadTask implements DownloadTask {
-    final OdsWorkingSet workingSet;
-    final Boundary boundary;
+//    final OdsModule module;
+    Boundary boundary;
     OsmServerReader osmServerReader;
     private static String overpassQuery = 
         "(node($bbox);rel(bn)->.x;way($bbox);" +
@@ -31,9 +30,12 @@ public class InternalDownloadTask implements DownloadTask {
     private DownloadSource downloadSource=  DownloadSource.OSM;
     private DataSet dataSet;
 
-    protected InternalDownloadTask(OdsWorkingSet workingSet, Boundary boundary) {
+    protected InternalDownloadTask() {
         super();
-        this.workingSet = workingSet;
+//        this.module = module;
+    }
+    
+    public void setBoundary(Boundary boundary) {
         this.boundary = boundary;
     }
 
