@@ -38,13 +38,13 @@ public class OdsEnableAction extends AbstractAction {
                 return;
             }
             module = modules.get(0);
-            module.activate();
+            ods.activate(module);
             putValue(Action.NAME, "Disable ODS");
             menu.setText("ODS "+ module.getName());
             menu.repaint();
         }
         else {
-            module.deActivate();
+            ods.deactivate(module);
             putValue(Action.NAME, "Enable ODS");
             menu.setText("ODS "+ module.getName());
         }

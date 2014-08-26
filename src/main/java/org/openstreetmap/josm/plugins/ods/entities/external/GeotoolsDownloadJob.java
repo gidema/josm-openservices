@@ -3,13 +3,10 @@ package org.openstreetmap.josm.plugins.ods.entities.external;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
 import org.opengis.feature.simple.SimpleFeature;
-import org.openstreetmap.josm.plugins.ods.DownloadJob;
-import org.openstreetmap.josm.plugins.ods.DownloadTask;
 import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
 import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
@@ -21,29 +18,31 @@ import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressToBui
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingCompletenessAnalyzer;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuildingSimplifier;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.CrossingBuildingAnalyzer;
+import org.openstreetmap.josm.plugins.ods.geotools.GtDownloader;
+import org.openstreetmap.josm.plugins.ods.io.DownloadJob;
+import org.openstreetmap.josm.plugins.ods.io.Downloader;
+import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.issue.Issue;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 
-public class ExternalDownloadJob implements DownloadJob {
-//    private OdsModule module;
+public class GeotoolsDownloadJob implements DownloadJob {
+//    private OdsWorkingSet workingSet;
     private ExternalDataLayer dataLayer;
     private Boundary boundary;
-    private List<ExternalDownloadTask> downloadTasks;
+    private List<GtDownloader> downloaders;
     private EntitySet entities;
     private EntityFactory entityFactory;
     private List<Analyzer> analyzers;
+    private Status status = new Status();
 
     @Inject
-    public ExternalDownloadJob(ExternalDataLayer dataLayer, List<ExternalDownloadTask> downloadTasks, EntityFactory entityFactory) {
+    public GeotoolsDownloadJob(ExternalDataLayer dataLayer, List<GtDownloader> downloaders, EntityFactory entityFactory) {
         this.dataLayer = dataLayer;
-        this.downloadTasks = downloadTasks;
+        this.downloaders = downloaders;
         this.entityFactory = entityFactory;
-//        this.module = OpenDataServices.INSTANCE.getActiveModule();
-//        this.dataLayer = module.getExternalDataLayer();
-//        this.entityFactory = module.getEntityFactory();
         Double tolerance = 2e-7;
         analyzers = new ArrayList<>(5);
         analyzers.add(new BuildingSimplifier(tolerance));
@@ -54,34 +53,22 @@ public class ExternalDownloadJob implements DownloadJob {
         //analyzers.add(new AddressToStreetMatcher());
     }
 
+    
+    @Override
+    public List<? extends Downloader> getDownloaders() {
+        return downloaders;
+    }
+
+
     public void setBoundary(Boundary boundary) {
-        for (ExternalDownloadTask downloadTask : downloadTasks) {
-            downloadTask.setBoundary(boundary);
+        for (GtDownloader downloader : downloaders) {
+            downloader.setBoundary(boundary);
         }
         this.boundary = boundary;
     }
-
-    @Override
-    public List<Callable<?>> getPrepareCallables() {
-        List<Callable<?>> callables = new ArrayList<>(downloadTasks.size());
-        for (DownloadTask downloadTask : downloadTasks) {
-            callables.add(downloadTask.getPrepareCallable());
-        }
-        return callables;
-    }
-
-    @Override
-    public List<Callable<?>> getDownloadCallables() {
-        List<Callable<?>> callables = new ArrayList<>(downloadTasks.size());
-        for (DownloadTask downloadTask : downloadTasks) {
-            callables.add(downloadTask.getDownloadCallable());
-        }
-        return callables;
-    }
-
-    @Override
-    public List<? extends DownloadTask> getDownloadTasks() {
-        return downloadTasks;
+    
+    public Status getStatus() {
+        return status;
     }
 
     /** 
@@ -89,13 +76,13 @@ public class ExternalDownloadJob implements DownloadJob {
      * First create individual entities for each feature type
      * Then build the relations between the entities
      * 
-     * @see org.openstreetmap.josm.plugins.ods.DownloadJob#build()
+     * @see org.openstreetmap.josm.plugins.ods.io.DownloadJob#build()
      */
     public void build() throws BuildException {
         // First create entities for all downloaded features
         entities = new DefaultEntitySet();
-        for (ExternalDownloadTask downloadTask : downloadTasks) {
-            buildEntities(downloadTask);
+        for (GtDownloader downloader : downloaders) {
+            buildEntities(downloader);
         }
         // Retrieve the results
         entities.extendBoundary(boundary.getMultiPolygon());
@@ -117,13 +104,11 @@ public class ExternalDownloadJob implements DownloadJob {
      * @param task
      * @throws BuildException 
      */
-    private void buildEntities(ExternalDownloadTask task) throws BuildException {
-//        String entityType = task.getDataSource().getEntityType();
-//        EntityStore store = dataLayer.getEntitySet().getStore(entityType);
-        MetaData metaData = task.getDataSource().getMetaData();
+    private void buildEntities(GtDownloader downloader) throws BuildException {
+        MetaData metaData = downloader.getDataSource().getMetaData();
         List<Issue> issues = new LinkedList<>();
         PreparedPolygon preparedBoundary = new PreparedPolygon(boundary.getMultiPolygon());
-        for (SimpleFeature feature : task.getFeatures()) {
+        for (SimpleFeature feature : downloader.getNewFeatures()) {
             try {
                 Entity entity = entityFactory.buildEntity(metaData, feature);
                 if (boundary.isRectangular()) {

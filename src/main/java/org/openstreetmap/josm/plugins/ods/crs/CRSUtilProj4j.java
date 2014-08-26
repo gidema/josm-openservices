@@ -67,7 +67,7 @@ public class CRSUtilProj4j extends CRSUtil {
         }
     }
 
-    private static JTSCoordinateTransform getToOsmTransform(
+    private static synchronized JTSCoordinateTransform getToOsmTransform(
             CoordinateReferenceSystem crs) {
         JTSCoordinateTransform transform = toOsmTransforms.get(crs);
         if (transform == null) {

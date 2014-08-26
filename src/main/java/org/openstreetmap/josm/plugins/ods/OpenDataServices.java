@@ -26,12 +26,8 @@ import org.openstreetmap.josm.gui.download.DownloadDialog;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.PluginInformation;
-import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.crs.CRSUtilProj4j;
 import org.openstreetmap.josm.plugins.ods.gui.OdsEnableAction;
 import org.openstreetmap.josm.tools.I18n;
-
-import com.google.inject.AbstractModule;
 
 public class OpenDataServices {
     public static OpenDataServices INSTANCE;
@@ -85,7 +81,20 @@ public class OpenDataServices {
     public OdsModule getActiveModule() {
         return activeModule;
     }
-    
+    public void activate(OdsModule module) {
+        if (activeModule == null) {
+            this.activeModule = module;
+            module.activate();
+        }
+    }
+
+    public void deactivate(OdsModule module) {
+        if (module.equals(activeModule)) {
+            activeModule.deActivate();
+            activeModule = null;
+        }
+    }
+
     private void initializeMenu() {
         if (menu == null) {
             menu = Main.main.menu.addMenu(marktr("ODS"), KeyEvent.VK_UNDEFINED,
@@ -175,25 +184,5 @@ public class OpenDataServices {
                         Main.map.mapView.setActiveLayer(newLayer);
                     }
                 });
-    }
-    
-    /**
-     * Inner class to do the Guice initialization.
-     * This is needed because the Josm plug-in system doesn't use Guice,
-     * so the constructor of the OpenDataServicesPlugin class is the
-     * earliest moment to initialize the Guice module.
-     * 
-     * @author Gertjan Idema <mail@gertjanidema.nl>
-     *
-     */
-    static class GuiceModule extends AbstractModule {
-
-        @Override
-        protected void configure() {
-            // Use an instance of CRSUtilProj4j to implement CRSUtil
-            bind(CRSUtil.class).toInstance(new CRSUtilProj4j());
-            
-        }
-        
     }
 }

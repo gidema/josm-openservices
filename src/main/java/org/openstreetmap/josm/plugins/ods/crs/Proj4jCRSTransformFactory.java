@@ -89,7 +89,7 @@ public class Proj4jCRSTransformFactory implements JTSCoordinateTransformFactory 
             return coordinate(transform(projCoordinate(coord)));
         }
 
-        private ProjCoordinate transform(ProjCoordinate coord) {
+        private synchronized ProjCoordinate transform(ProjCoordinate coord) {
             try {
                 return ct.transform(coord, new ProjCoordinate());
             } catch (IllegalStateException e) {

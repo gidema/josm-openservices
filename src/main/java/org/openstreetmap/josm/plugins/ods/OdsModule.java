@@ -24,10 +24,11 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStore;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStoreImpl;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDownloadJob;
+import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDownloadJob;
+import org.openstreetmap.josm.plugins.ods.entities.internal.OsmDownloadJob;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
+import org.openstreetmap.josm.plugins.ods.io.OdsDownloader;
 
 /**
  * TODO update this comment The OdsModule is the main component of the ODS
@@ -42,20 +43,15 @@ import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 public abstract class OdsModule implements LayerChangeListener {
     private final OdsModulePlugin plugin;
     
-//    private OdsModuleConfig module;
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private final ExternalDataLayer externalDataLayer;
     private final InternalDataLayer internalDataLayer;
-    private InternalDownloadJob internalDownloadJob;
-    private ExternalDownloadJob externalDownloadJob;
+    private OsmDownloadJob osmDownloadJob;
+    private GeotoolsDownloadJob gtDownloadJob;
     private OsmDataLayer polygonLayer;
     private final OdsDownloader downloader;
-    // private boolean useToolbox = false;
-    // private JDialog toolbox;
-    // private final List<OldOdsAction> actions = new LinkedList<>();
     String osmQuery;
     private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<>();
-    // OdsDownloadAction downloadAction;
     private boolean active = false;
     private EntityFactory entityFactory;
     // TODO this is a dependency on the BuiltEnvironment submodule
@@ -177,40 +173,10 @@ public abstract class OdsModule implements LayerChangeListener {
         for (OdsAction action : getActions()) {
 //            menu.remove(action);
         }
-
-        // toolbox.setVisible(false);
-        // toolbox = null;
         active = false;
     }
 
     public abstract List<OdsAction> getActions();
-    // public JDialog getToolbox() {
-    // return toolbox;
-    // }
-    //
-    // private void initToolbox() {
-    // toolbox = new JDialog((Frame) Main.parent, "ODS");
-    // if (useToolbox) {
-    // toolbox.setLayout(new BoxLayout(toolbox.getContentPane(),
-    // BoxLayout.Y_AXIS));
-    // toolbox.setLocation(300, 300);
-    // toolbox.setMinimumSize(new Dimension(110, 0));
-    // toolbox.add(new JButton(downloadAction));
-    // for (Action action : actions) {
-    // toolbox.add(new JButton(action));
-    // }
-    // int width = toolbox.getContentPane().getWidth();
-    // for (Component comp : toolbox.getComponents()) {
-    // comp.setSize(width, comp.getHeight());
-    // }
-    // toolbox.pack();
-    // }
-    // }
-
-//    public void download(Boundary boundary, boolean downloadOsmData)
-//            throws ExecutionException, InterruptedException {
-//        new OdsDownloadAction().run();
-//    }
 
     void activateOsmLayer() {
         Main.map.mapView.setActiveLayer(internalDataLayer.getOsmDataLayer());
@@ -349,13 +315,13 @@ public abstract class OdsModule implements LayerChangeListener {
         // // TODO Auto-generated method stub
     }
 
-    public InternalDownloadJob getInternalDownloadJob() {
-        return internalDownloadJob;
-    }
+//    public OsmDownloadJob getOsmDownloadJob() {
+//        return osmDownloadJob;
+//    }
 
-    public ExternalDownloadJob getExternalDownloadJob() {
-        return externalDownloadJob;
-    }
+//    public GeotoolsDownloadJob getGeotoolsDownloadJob() {
+//        return gtDownloadJob;
+//    }
 
     public OdsDownloader getDownloader() {
         return downloader;
@@ -373,8 +339,4 @@ public abstract class OdsModule implements LayerChangeListener {
         return new File(pluginDir, "polygons.osm");
     }
 
-    public boolean isEnabled() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }
