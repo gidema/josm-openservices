@@ -11,15 +11,15 @@ import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.OpenDataServices;
+import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OdsEnableAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
-    private final OpenDataServices ods;
+    private final OpenDataServicesPlugin ods;
 
-    public OdsEnableAction(OpenDataServices ods) {
+    public OdsEnableAction(OpenDataServicesPlugin ods) {
         super("Enable ODS");
         super.putValue("description", "Switch ODS between enabled and disabled state");
         this.ods = ods;

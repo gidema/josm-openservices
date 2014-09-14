@@ -2,9 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import java.util.Iterator;
 
-import org.openstreetmap.josm.plugins.ods.DataLayer;
-import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
+import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -21,17 +19,18 @@ import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
  * @author gertjan
  *
  */
-public class BuildingSimplifier implements Analyzer {
+public class BuildingSimplifier implements Task {
     private Double tolerance;
+    private GtBuildingStore buildingStore;
     
-    public BuildingSimplifier(Double tolerance) {
+    public BuildingSimplifier(GtBuildingStore buildingStore, Double tolerance) {
         super();
+        this.buildingStore = buildingStore;
         this.tolerance = tolerance;
     }
 
-    public void analyze(DataLayer dataLayer, EntitySet newEntities) {
-        BuiltEnvironment newEnvironment = new BuiltEnvironment(newEntities);
-        Iterator<Building> buildings = newEnvironment.getBuildings().iterator();
+    public void run() {
+        Iterator<Building> buildings = buildingStore.iterator();
         while (buildings.hasNext()) {
             Building building = buildings.next();
             Geometry geom = building.getGeometry();
@@ -44,7 +43,7 @@ public class BuildingSimplifier implements Analyzer {
                 building.setGeometry(geom);
             }
             else {
-                System.out.println(I18n.tr("Could not simply building {0}", building.getId()));
+                System.out.println(I18n.tr("Could not simply building {0}", building.getReferenceId()));
             }
         }
     }

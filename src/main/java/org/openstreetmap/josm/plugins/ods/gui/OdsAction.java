@@ -9,7 +9,7 @@ public abstract class OdsAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
 
-    private OdsModule module;
+    private final OdsModule module;
     
     public OdsAction(OdsModule module, String name, String description) {
         super(name);

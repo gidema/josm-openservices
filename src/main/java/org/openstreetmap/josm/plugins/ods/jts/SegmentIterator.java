@@ -11,6 +11,7 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LinearRing;
 
 public class SegmentIterator {
+    private GeoUtil geoUtil;
     private LinearRing ring;
     // Use an arrayList because we use the get(i) method a lot.
     private ArrayList<Coordinate> coords;
@@ -25,7 +26,8 @@ public class SegmentIterator {
     private int index;
     private int startIndex; //
 
-    public SegmentIterator(LinearRing ring, boolean ccw) {
+    public SegmentIterator(GeoUtil geoUtil, LinearRing ring, boolean ccw) {
+        this.geoUtil = geoUtil;
         this.ring = ring;
         int size = ring.getNumPoints();
         coords = new ArrayList<Coordinate>(size + 5);
@@ -186,7 +188,6 @@ public class SegmentIterator {
         if (!modified) {
             return ring;
         }
-        GeoUtil geoUtil = GeoUtil.getInstance();
         if (reversed) {
             Collections.reverse(coords);
         }
@@ -223,7 +224,7 @@ public class SegmentIterator {
     }
 
     /**
-     * Null safe LineSegment cone operation
+     * Null safe LineSegment clone operation
      * 
      * @param ls
      * The LineSegment to clone

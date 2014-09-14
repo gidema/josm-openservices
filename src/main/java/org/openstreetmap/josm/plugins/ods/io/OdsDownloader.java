@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -9,20 +7,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.entities.BuildException;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.internal.OsmDownloadJob;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OdsDownloader {
@@ -43,25 +39,21 @@ public class OdsDownloader {
     
     private OsmDownloadJob osmDownloadJob;
     private GeotoolsDownloadJob geotoolsDownloadJob;
-    private InternalDataLayer internalDataLayer;
-    private ExternalDataLayer externalDataLayer;
+    
+    private List<Task> postDownloadTasks;
     
     private ExecutorService executor;
 
     private Status status = new Status();
 
-    @Inject
     public OdsDownloader(OsmDownloadJob osmDownloadJob, 
             GeotoolsDownloadJob geotoolsDownloadJob,
-            ExternalDataLayer externalDataLayer,
-            InternalDataLayer internalDataLayer
-            ) {
+            List<Task> postDownloadTasks) {
         super();
 //        this.module = module;
         this.osmDownloadJob = osmDownloadJob;
         this.geotoolsDownloadJob = geotoolsDownloadJob;
-        this.internalDataLayer = internalDataLayer;
-        this.externalDataLayer = externalDataLayer;
+        this.postDownloadTasks = postDownloadTasks;
     }
 
     public void run(ProgressMonitor pm, Boundary boundary, boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
@@ -71,36 +63,28 @@ public class OdsDownloader {
         this.downloadOds = downloadOds;
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup();
-        task("prepare");
+        run(Fase.PREPARE);
         if (!status.isSucces()) {
             pm.finishTask();
             return;
         }
         pm.indeterminateSubTask(I18n.tr("Downloading"));
-        task("download");
+        run(Fase.DOWNLOAD);
         if (!status.isSucces()) {
             pm.finishTask();
             return;
         }
         pm.indeterminateSubTask(I18n.tr("Processing data"));
-        task("process");
+        run(Fase.PROCESS);
         if (!status.isSucces()) {
             pm.finishTask();
             return;
         }
-        try {
-            build();
-        } catch (BuildException e) {
-            throw new ExecutionException(e);
-        }
+        process();
         
         Bounds bounds = boundary.getBounds();
-        DataSource ds = new DataSource(bounds, "Import");
-        OsmDataLayer osmDataLayer =externalDataLayer.getOsmDataLayer();
-        osmDataLayer.data.dataSources.add(ds);
         computeBboxAndCenterScale(bounds);
         pm.finishTask();
-//        module.activate();
     }
 
     /**
@@ -111,159 +95,20 @@ public class OdsDownloader {
         status.clear();
         downloaders = new LinkedList<Downloader>();
         if (downloadOsm) {
-//            osmDownloadJob.setBoundary(boundary);
+            osmDownloadJob.setBoundary(boundary);
             for (Downloader downloader : osmDownloadJob.getDownloaders()) {
-                downloader.setBoundary(boundary);
                 downloaders.add(downloader);
             }
         }
-        geotoolsDownloadJob.setBoundary(boundary);
-        for (Downloader downloader : geotoolsDownloadJob.getDownloaders()) {
-            downloader.setBoundary(boundary);
-            downloaders.add(downloader);
+        if (downloadOds) {
+            geotoolsDownloadJob.setBoundary(boundary);
+            for (Downloader downloader : geotoolsDownloadJob.getDownloaders()) {
+                downloaders.add(downloader);
+            }
         }
     }
 
-//    /**
-//     * @throws ExecutionException
-//     * @throws InterruptedException
-//     */
-//    private void prepare() {
-//        task("prepare");
-//        executor = Executors.newFixedThreadPool(NTHREADS);
-//        status.clear();
-//        List<Runnable> tasks = new LinkedList<>();
-//        for (final Downloader downloader : downloaders) {
-//            Runnable task = new Runnable() {
-//                @Override
-//                public void run() {
-//                    downloader.prepare();
-//                }
-//            };
-//            tasks.add(task);
-//            executor.execute(task);
-//        }
-//        executor.shutdown();
-//        try {
-//            executor.awaitTermination(1, TimeUnit.MINUTES);
-//        }
-//        catch (InterruptedException e) {
-//            executor.shutdownNow();
-//            for (Downloader downloader : downloaders) {
-//                downloader.getStatus().setCancelled(true);
-//            }
-//        }
-//        for (Downloader downloader : downloaders) {
-//            Status status = downloader.getStatus();
-//            if (!status.isSucces()) {
-//                this.status = status;
-//            }
-//        }
-//        if (!status.isSucces()) return;
-//    }
-//
-//    private void download() throws ExecutionException, InterruptedException {
-//        executor = Executors.newFixedThreadPool(NTHREADS);
-//        List<Runnable> tasks = new LinkedList<>();
-//        for (final Downloader downloader : downloaders) {
-//            Runnable task = new Runnable() {
-//                @Override
-//                public void run() {
-//                    downloader.download();
-//                }
-//            };
-//            tasks.add(task);
-//            executor.execute(task);
-//        }
-//        executor.shutdown();
-//        try {
-//            executor.awaitTermination(1, TimeUnit.MINUTES);
-//        }
-//        catch (InterruptedException e) {
-//            executor.shutdownNow();
-//            for (Downloader downloader : downloaders) {
-//                downloader.getStatus().setCancelled(true);
-//            }
-//        }
-//        for (Downloader downloader : downloaders) {
-//            Status status = downloader.getStatus();
-//            if (status.isFailed()) {
-//                cancelled = true;
-//                if (status.getMessage() != null) {
-//                    JOptionPane.showMessageDialog(Main.parent, status.getMessage());
-//                }
-//            }
-//        }
-//        for (Downloader downloader : downloaders) {
-//            Status status = downloader.getStatus();
-//            if (status.isCancelled()) {
-//                cancelled = true;
-//                if (status.getMessage() != null) {
-//                    JOptionPane.showMessageDialog(Main.parent, status.getMessage());
-//                }
-//            }
-//        }
-//        if (cancelled) return;
-//        for (Downloader downloader : downloaders) {
-//            Status status = downloader.getStatus();
-//            if (status.getMessage() != null) {
-//                JOptionPane.showMessageDialog(Main.parent, status.getMessage());
-//            }
-//        }
-//    }
-//    
-//    private void process() throws ExecutionException, InterruptedException {
-//        executor = Executors.newFixedThreadPool(NTHREADS);
-//        interrupted = false;
-//        List<Runnable> tasks = new LinkedList<>();
-//        for (final Downloader downloader : downloaders) {
-//            Runnable task = new Runnable() {
-//                @Override
-//                public void run() {
-//                    downloader.process();
-//                }
-//            };
-//            tasks.add(task);
-//            executor.execute(task);
-//        }
-//        executor.shutdown();
-//        try {
-//            executor.awaitTermination(1, TimeUnit.MINUTES);
-//        }
-//        catch (InterruptedException e) {
-//            executor.shutdownNow();
-//            for (Downloader downloader : downloaders) {
-//                downloader.getStatus().setCancelled(true);
-//            }
-//        }
-//        for (Downloader downloader : downloaders) {
-//            Status status = downloader.getStatus();
-//            if (status.isFailed()) {
-//                cancelled = true;
-//                if (status.getMessage() != null) {
-//                    JOptionPane.showMessageDialog(Main.parent, status.getMessage());
-//                }
-//            }
-//        }
-//        for (Downloader downloader : downloaders) {
-//            Status status = downloader.getStatus();
-//            if (status.isCancelled()) {
-//                cancelled = true;
-//                if (status.getMessage() != null) {
-//                    JOptionPane.showMessageDialog(Main.parent, status.getMessage());
-//                }
-//            }
-//        }
-//        if (cancelled) return;
-//        for (Downloader downloader : downloaders) {
-//            Status status = downloader.getStatus();
-//            if (status.getMessage() != null) {
-//                JOptionPane.showMessageDialog(Main.parent, status.getMessage());
-//            }
-//        }
-//    }
-    
-    private void task(final String methodName) {
+    private void run(final Fase fase) {
         executor = Executors.newFixedThreadPool(NTHREADS);
         System.out.println("Executor:" + Thread.currentThread());
         System.out.println("Executor:" + Thread.currentThread().getThreadGroup());
@@ -274,22 +119,19 @@ public class OdsDownloader {
                 @Override
                 public void run() {
                     try {
-                        Method method = Downloader.class.getDeclaredMethod(methodName);
-                        method.invoke(downloader);
-                    } catch (NoSuchMethodException e) {
-                        throw new RuntimeException("Unable to run method '" + methodName + "'. " +
-                                "This must be a programming error");
-                    } catch (SecurityException e) {
-                        throw new RuntimeException("Unable to run method '" + methodName + "'. " +
-                                "This must be a programming error");
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Unable to run method '" + methodName + "'. " +
-                                "This must be a programming error");
-                    } catch (IllegalArgumentException e) {
-                        throw new RuntimeException("Unable to run method '" + methodName + "'. " +
-                                "This must be a programming error");
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException("Unable to run method '" + methodName + "'. " +
+                        switch (fase) {
+                        case PREPARE:
+                            downloader.prepare();
+                            break;
+                        case DOWNLOAD:
+                            downloader.download();
+                            break;
+                        case PROCESS:
+                            downloader.process();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("Unable to run dowload process. " +
                                 "This must be a programming error");
                     }
                 }
@@ -315,12 +157,19 @@ public class OdsDownloader {
         }
     }
     
-    private void build() throws BuildException {
+    /**
+     * Run the tasks that depend on more than one entity store.
+     * 
+     */
+    private void process() {
         if (downloadOsm) {
-           osmDownloadJob.build();
+            osmDownloadJob.process();
         }
         if (downloadOds) {
-            geotoolsDownloadJob.build();
+            geotoolsDownloadJob.process();
+        }
+        for (Task task : postDownloadTasks) {
+            task.run();
         }
     }
 
@@ -348,5 +197,11 @@ public class OdsDownloader {
 //                e.printStackTrace();
 //            }
 //        }
+    }
+    
+    private enum Fase {
+        PREPARE,
+        DOWNLOAD,
+        PROCESS;
     }
 }

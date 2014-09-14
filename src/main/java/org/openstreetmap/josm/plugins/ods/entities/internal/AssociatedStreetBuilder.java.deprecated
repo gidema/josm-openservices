@@ -10,15 +10,12 @@ import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AssociatedStreet;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.AssociatedStreetImpl;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BuiltEnvironment;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Street;
 
 public class AssociatedStreetBuilder {
     private List<AssociatedStreet> associatedStreets;
-    private BuiltEnvironment be;
      
     public void build(DataLayer dataLayer) {
-        be = new BuiltEnvironment(dataLayer.getEntitySet());
         DataSet data = dataLayer.getOsmDataLayer().data;
         for (Relation relation : data.getRelations()) {
             if ("associatedStreet".equals(relation.get("type"))) {

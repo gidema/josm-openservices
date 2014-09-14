@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -8,7 +8,6 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import com.vividsolutions.jts.geom.Geometry;
 
 public interface Building extends Entity {
-    public void setGeometry(Geometry geometry);
 	public Geometry getGeometry();
 	public City getCity();
 	
@@ -23,12 +22,12 @@ public interface Building extends Entity {
 	 * Return the address nodes associated with this building.
 	 * @return empty collection if no address nodes are associated with this building.
 	 */
-    public Collection<AddressNode> getAddressNodes();
+    public List<AddressNode> getAddressNodes();
     
-    public void setBlock(Block block);
-	public Block getBlock();
+//    public void setBlock(Block block);
+//	public Block getBlock();
 	public Set<Building> getNeighbours();
-	public void addNeighbour(Building building);
+//	public void addNeighbour(Building building);
 
 	
 	/**
@@ -38,9 +37,13 @@ public interface Building extends Entity {
 	 * 
 	 * @return
 	 */
-    public void setIncomplete(boolean incomplete);
 
 	public boolean isUnderConstruction();
 	
 	public String getStartDate();
+    public BuildingType getBuildingType();
+    
+    // Setters
+    public void setBuildingType(BuildingType buildingType);
+    public void setIncomplete(boolean incomplete);
 }

@@ -10,10 +10,8 @@ import java.util.Map;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
-import org.openstreetmap.josm.plugins.ods.DataLayer;
-import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -22,33 +20,31 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * This analyzer finds overlapping nodes in the data and distibutes them, so
- * they are no longer overlapping. The AddressToBuildingMatcher analyzer must
+ * they are no longer overlapping. The MatchAddressToBuildingTask must
  * run before this class, so when can distribute over the line pointing to the
  * center of the building.
  * 
  * @author Gertjan Idema <mail@gertjanidema.nl>
  * 
  */
-public class AddressNodeDistributor implements Analyzer {
-    private static GeoUtil geoUtil = GeoUtil.getInstance();
-
-    public AddressNodeDistributor() {
+public class DistributeAddressNodesTask implements Task {
+    private GeoUtil geoUtil;
+    private GtBuildingStore buildingStore;
+    
+    public DistributeAddressNodesTask(GeoUtil geoUtil,
+            GtBuildingStore buildingStore) {
         super();
+        this.geoUtil = geoUtil;
+        this.buildingStore = buildingStore;
     }
 
-    @Override
-    public void analyze(DataLayer dataLayer, EntitySet newEntities) {
-        EntitySet entities = newEntities;
-        if (entities == null) {
-            entities = dataLayer.getEntitySet();
-        }
-        BuiltEnvironment environment = new BuiltEnvironment(entities);
-        Iterator<Building> it = environment.getBuildings().iterator();
+    public void run() {
+        Iterator<Building> it = buildingStore.iterator();
         while (it.hasNext()) {
             Building building = it.next();
             for (AddressNodeGroup group : buildGroups(building).values()) {
                 if (group.getAddressNodes().size() > 1) {
-                    distribute(group);
+                    distribute(group, false);
                 }
             }
         }
@@ -75,7 +71,7 @@ public class AddressNodeDistributor implements Analyzer {
         return groups;
     }
 
-    private void distribute(AddressNodeGroup group) {
+    private void distribute(AddressNodeGroup group, boolean withUndo) {
         List<AddressNode> nodes = group.getAddressNodes();
         Collections.sort(nodes);
         if (group.getBuilding().getGeometry().isEmpty()) {
@@ -94,10 +90,15 @@ public class AddressNodeDistributor implements Analyzer {
         List<Command> cmds = new LinkedList<>();
         for (AddressNode node : nodes) {
             Point point = geoUtil.toPoint(new Coordinate(x, y));
-            Command cmd = node.updateGeometry(point);            
-            if (cmd != null) {
-                cmds.add(cmd);
-            }
+//            if (withUndo) {
+//                Command cmd = node.updateGeometry(point);            
+//                if (cmd != null) {
+//                    cmds.add(cmd);
+//                }
+//            }
+//            else {
+                node.setGeometry(point);
+//            }
             x = x + dx;
             y = y + dy;
         }

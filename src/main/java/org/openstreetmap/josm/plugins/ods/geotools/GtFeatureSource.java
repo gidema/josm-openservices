@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
@@ -42,7 +43,7 @@ public class GtFeatureSource implements OdsFeatureSource {
         if (initialized)
             return;
         host.initialize();
-        metaData = host.getMetaData();
+        metaData = new MetaData(host.getMetaData());
         if (!host.hasFeatureType(featureName)) {
             throw new InitializationException(String.format(
                     "Unknown featureName type: '%s'", featureName));
@@ -52,6 +53,9 @@ public class GtFeatureSource implements OdsFeatureSource {
             crs = featureSource.getInfo().getCRS();
         } catch (IOException e) {
             throw new InitializationException(e);
+        }
+        if (!metaData.containsKey("bag.source.data")) {
+            metaData.put("bag.source.data", new Date());
         }
         initialized = true;
     }

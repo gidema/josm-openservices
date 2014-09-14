@@ -2,9 +2,10 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import org.apache.commons.lang.ObjectUtils;
 
-public class AddressDataImpl implements Address {
+public class AddressImpl implements Address {
+    private Integer houseNumber;
+    private String fullHouseNumber;
     private String postcode;
-    private String houseNumber;
     private String houseName;
     private String streetName;
     private Street street;
@@ -16,17 +17,14 @@ public class AddressDataImpl implements Address {
         return city;
     }
     
-    @Override
     public void setHouseName(String houseName) {
         this.houseName = houseName;
     }
 
-    @Override
     public void setCityName(String cityName) {
         this.cityName = cityName;
     }
 
-    @Override
     public void setStreetName(String streetName) {
         this.streetName = streetName;
     }
@@ -41,7 +39,6 @@ public class AddressDataImpl implements Address {
         return street;
     }
 
-    @Override
     public void setPostcode(String postcode) {
         this.postcode = postcode;
     }
@@ -51,18 +48,26 @@ public class AddressDataImpl implements Address {
         return postcode;
     }
 
-    @Override
-    public void setHouseNumber(String houseNumber) {
+    public void setHouseNumber(Integer houseNumber) {
         this.houseNumber = houseNumber;
+    }
+    
+    public void setFullHouseNumber(String fullHouseNumber) {
+        this.fullHouseNumber = fullHouseNumber;
         this.parseHouseNumber();
     }
     
     @Override
-    public String getHouseNumber() {
-        if (houseNumber == null) {
-            houseNumber = formatHouseNumber();
-        }
+    public Integer getHouseNumber() {
         return houseNumber;
+    }
+
+    @Override
+    public String getFullHouseNumber() {
+        if (fullHouseNumber == null) {
+            fullHouseNumber = formatHouseNumber();
+        }
+        return fullHouseNumber;
     }
 
     @Override
@@ -75,7 +80,6 @@ public class AddressDataImpl implements Address {
         return cityName;
     }
 
-    @Override
     public void setStreet(Street street) {
         this.street = street;
         this.streetName = street.getName();
@@ -95,12 +99,22 @@ public class AddressDataImpl implements Address {
             result = ObjectUtils.compare(getStreetName(), a.getStreetName());
         };
         if (result == 0) {
-            result = ObjectUtils.compare(getHouseName(), a.getHouseName());
+            result = ObjectUtils.compare(getHouseName(), a.getFullHouseNumber());
         };
         return result;
     }
 
     public void parseHouseNumber() {
         // Override if required
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getStreetName()).append(" ");
+        sb.append(getHouseNumber()).append(" ");
+        sb.append(getPostcode()).append(" ");
+        sb.append(getCityName()).append(" ");       
+        return sb.toString();
     }
 }

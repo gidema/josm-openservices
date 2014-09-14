@@ -16,22 +16,24 @@ import com.vividsolutions.jts.geom.LinearRing;
  *
  */
 public class LinearRingAligner {
+    private GeoUtil geoUtil;
     private LinearRing ring1;
     private LinearRing ring2;
     private SegmentIterator it1;
     private SegmentIterator it2;
     private Double tolerance;
 
-    public LinearRingAligner(LinearRing ring1, LinearRing ring2,
+    public LinearRingAligner(GeoUtil geoUtil, LinearRing ring1, LinearRing ring2,
             Double tolerance) {
+        this.geoUtil = geoUtil;
         this.ring1 = ring1;
         this.ring2 = ring2;
         this.tolerance = tolerance;
     }
     
     public void run() {
-        it1 = new SegmentIterator(ring1, true);
-        it2 = new SegmentIterator(ring2, false);
+        it1 = new SegmentIterator(geoUtil, ring1, true);
+        it2 = new SegmentIterator(geoUtil, ring2, false);
         fix(it1, it2);
         fix(it2, it1);    
         if (it1.isModified()) {
