@@ -15,9 +15,9 @@ public abstract class OdsModulePlugin extends Plugin {
     public OdsModulePlugin(PluginInformation info) throws Exception {
         super(info);
         OpenDataServicesPlugin ods = OpenDataServicesPlugin.INSTANCE;
-        ods.registerModule(getModuleConfig());
+        ods.registerModule(getModule());
     }
     
-    public abstract OdsModuleConfig getModuleConfig();
+    public abstract OdsModule getModule();
 
 }

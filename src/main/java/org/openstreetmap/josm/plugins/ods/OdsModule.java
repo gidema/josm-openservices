@@ -21,8 +21,6 @@ import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.io.OsmImporter;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStore;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.BlockStoreImpl;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
@@ -46,17 +44,14 @@ public abstract class OdsModule implements LayerChangeListener {
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private final ExternalDataLayer externalDataLayer;
     private final InternalDataLayer internalDataLayer;
-    private OsmDownloadJob osmDownloadJob;
-    private GeotoolsDownloadJob gtDownloadJob;
     private OsmDataLayer polygonLayer;
     private final OdsDownloader downloader;
     String osmQuery;
-    private final Map<OsmPrimitive, Feature> relatedFeatures = new HashMap<>();
     private boolean active = false;
     private EntityFactory entityFactory;
     // TODO this is a dependency on the BuiltEnvironment submodule
     // Change to a more generic solution like a Container pattern
-    private BlockStore blockStore = new BlockStoreImpl();
+//    private BlockStore blockStore = new BlockStoreImpl();
 
     public OdsModule(OdsModulePlugin plugin, OdsDownloader downloader, ExternalDataLayer externalDataLayer, InternalDataLayer internalDataLayer) {
         this.plugin = plugin;
@@ -66,9 +61,9 @@ public abstract class OdsModule implements LayerChangeListener {
         MapView.addLayerChangeListener(this);
     }
 
-    public BlockStore getBlockStore() {
-        return blockStore;
-    }
+//    public BlockStore getBlockStore() {
+//        return blockStore;
+//    }
 
     // public void addAction(OldOdsAction action) {
     // action.setWorkingSet(this);
@@ -98,10 +93,6 @@ public abstract class OdsModule implements LayerChangeListener {
 
     public final String getOsmQuery() {
         return osmQuery;
-    }
-
-    public Feature getRelatedFeature(OsmPrimitive primitive) {
-        return relatedFeatures.get(primitive);
     }
 
     public ExternalDataLayer getExternalDataLayer() {
@@ -143,7 +134,7 @@ public abstract class OdsModule implements LayerChangeListener {
     }
     
     public void activate() {
-        JMenu menu = OpenDataServices.INSTANCE.getMenu();
+        JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
         for (OdsAction action : getActions()) {
             menu.add(action);
         }
@@ -169,7 +160,7 @@ public abstract class OdsModule implements LayerChangeListener {
         if (polygonLayer != null) {
             Main.map.mapView.removeLayer(polygonLayer);
         }
-        JMenu menu = OpenDataServices.INSTANCE.getMenu();
+        JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
         for (OdsAction action : getActions()) {
 //            menu.remove(action);
         }

@@ -24,13 +24,13 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class DefaultGeometryMapper implements GeometryMapper {
-  private PrimitiveBuilder primitiveBuilder;
+  private PrimitiveBuilder abstractPrimitiveBuilder;
   private String targetPrimitive;
   private final Boolean merge = false;
   
   @Override
-  public final void setObjectFactory(PrimitiveBuilder primitiveBuilder) {
-    this.primitiveBuilder = primitiveBuilder;
+  public final void setObjectFactory(PrimitiveBuilder abstractPrimitiveBuilder) {
+    this.abstractPrimitiveBuilder = abstractPrimitiveBuilder;
   }
 
   public final void setTargetPrimitive(String targetPrimitive) {
@@ -51,28 +51,28 @@ public class DefaultGeometryMapper implements GeometryMapper {
     OsmPrimitive primitive = null;
     if (targetPrimitive.equals("WAY")) {
       if (geometry instanceof LineString) {
-        primitive = primitiveBuilder.buildWay((LineString)geometry);
+        primitive = abstractPrimitiveBuilder.buildWay((LineString)geometry);
       }
       else if (geometry instanceof Polygon) {
         Polygon polygon = (Polygon) geometry;
         if (polygon.getNumInteriorRing() == 0) {
-          primitive = primitiveBuilder.buildWay(polygon);
+          primitive = abstractPrimitiveBuilder.buildWay(polygon);
         }
         else {
-          primitive = primitiveBuilder.buildMultiPolygon(polygon);
+          primitive = abstractPrimitiveBuilder.buildMultiPolygon(polygon);
         }
       }
     } else if (targetPrimitive.equals("MULTIPOLYGON")) {
       if (geometry instanceof Polygon) {
-        primitive = primitiveBuilder.buildMultiPolygon((Polygon) geometry);
+        primitive = abstractPrimitiveBuilder.buildMultiPolygon((Polygon) geometry);
       } else if (geometry instanceof MultiPolygon) {
-        primitive = primitiveBuilder.buildMultiPolygon((MultiPolygon) geometry);
+        primitive = abstractPrimitiveBuilder.buildMultiPolygon((MultiPolygon) geometry);
       }
     }
     else if (targetPrimitive.equals("NODE")) {
-      primitive = primitiveBuilder.buildNode((Point)geometry, merge);
+      primitive = abstractPrimitiveBuilder.buildNode((Point)geometry, merge);
     } else if (targetPrimitive.equals("POLYGON")) {
-      primitive = primitiveBuilder.buildArea((MultiPolygon)geometry);
+      primitive = abstractPrimitiveBuilder.buildArea((MultiPolygon)geometry);
     }
     if (primitive != null) {
       for (Entry<String, String> entry : tags.entrySet()) {

@@ -2,10 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import java.util.Iterator;
 
-import org.openstreetmap.josm.plugins.ods.DataLayer;
-import org.openstreetmap.josm.plugins.ods.analysis.Analyzer;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 
 /**
@@ -14,22 +11,31 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
  * @author gertjan
  *
  */
-public class AddressToBuildingMatcher implements Analyzer {
+public class MatchAddressToBuildingTask implements Task {
+    private GtBuildingStore buildingStore;
+    private GtAddressNodeStore addressNodeStore;
     
-    public void analyze(DataLayer dataLayer, EntitySet newEntities) {
-        BuiltEnvironment bes = new BuiltEnvironment(newEntities);
-        EntityStore<AddressNode> newAddresses = bes.getAddresses();
-        EntityStore<Building> newBuildings = bes.getBuildings();
-        Iterator<AddressNode> it = newAddresses.iterator();
+    public MatchAddressToBuildingTask(GtBuildingStore buildingStore,
+            GtAddressNodeStore addressNodeStore) {
+        super();
+        this.buildingStore = buildingStore;
+        this.addressNodeStore = addressNodeStore;
+    }
+
+    public void run() {
+//        BuiltEnvironment bes = new BuiltEnvironment(newEntities);
+//        EntityStore<AddressNode> newAddresses = bes.getAddresses();
+//        EntityStore<Building> newBuildings = bes.getBuildings();
+        Iterator<AddressNode> it = addressNodeStore.iterator();
         while (it.hasNext()) {
             AddressNode addressNode = (AddressNode) it.next();
             assert addressNode.getBuilding() == null;
             Object buildingRef = addressNode.getBuildingRef();
             if (buildingRef != null) {
-                analyzeAddressBuildingByRef(addressNode, newBuildings);
+                analyzeAddressBuildingByRef(addressNode);
             }
             else {
-                analyzeAddressBuildingByGeometry(addressNode, newBuildings);
+                analyzeAddressBuildingByGeometry(addressNode);
             }
         }
     }
@@ -40,9 +46,9 @@ public class AddressToBuildingMatcher implements Analyzer {
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByRef(AddressNode address, EntityStore<Building> newBuildings) {
+    private void analyzeAddressBuildingByRef(AddressNode address) {
         Object buildingRef = address.getBuildingRef();
-        Building building = newBuildings.get(buildingRef);
+        Building building = buildingStore.getByReference(buildingRef);
         // TODO create issue if the building is not found
         if (building != null) {
             address.setBuilding(building);
@@ -56,8 +62,8 @@ public class AddressToBuildingMatcher implements Analyzer {
      * 
      * @param address
      */
-    private void analyzeAddressBuildingByGeometry(AddressNode address, EntityStore<Building> newBuildings) {
-        Iterator<Building> iterator = newBuildings.iterator();
+    private void analyzeAddressBuildingByGeometry(AddressNode address) {
+        Iterator<Building> iterator = buildingStore.iterator();
         boolean found = false;
         while (iterator.hasNext() && !found) {
             Building building = iterator.next();

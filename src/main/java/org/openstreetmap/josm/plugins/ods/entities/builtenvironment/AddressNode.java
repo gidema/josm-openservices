@@ -1,17 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
-import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Point;
 
-public interface AddressNode extends Entity, Comparable<AddressNode> {
-	public final static String TYPE = "ods:address";
+public interface AddressNode extends Entity, Address {
 
     public Address getAddress();
 
-	public Block getBlock();
-	
 	public Object getBuildingRef();
 
     public void setBuilding(Building building);
@@ -20,7 +16,5 @@ public interface AddressNode extends Entity, Comparable<AddressNode> {
 
     public void setGeometry(Point point);
     
-    public Command updateGeometry(Point point);
-
     public Point getGeometry();
 }

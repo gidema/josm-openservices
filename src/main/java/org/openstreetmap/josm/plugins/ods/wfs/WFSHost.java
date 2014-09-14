@@ -9,8 +9,6 @@ import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
 
-import com.google.inject.Inject;
-
 /**
  * Class to represent a WFS odsFeatureSource host.
  * 
@@ -19,7 +17,6 @@ import com.google.inject.Inject;
  */
 public class WFSHost extends GtHost {
 
-    @Inject
     public WFSHost(String name, String url, Integer maxFeatures) {
         super(name, url, maxFeatures);
     }

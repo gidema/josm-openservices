@@ -3,8 +3,6 @@ package org.openstreetmap.josm.plugins.ods.entities.internal;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.DataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.DefaultEntitySet;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 
 /**
  * To distinct the ODS DataLayer from a normal Osm datalayer, we create a
@@ -17,7 +15,7 @@ import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
  */
 public class InternalDataLayer implements DataLayer {
     private OsmDataLayer osmDataLayer;
-    private EntitySet entitySet;
+//    private EntitySet entitySet;
 
     /**
      * Simple constructor providing a new (empty) dataset and a new
@@ -27,7 +25,7 @@ public class InternalDataLayer implements DataLayer {
     public InternalDataLayer(String name) {
         DataSet dataSet = new DataSet();
         osmDataLayer = new OsmDataLayer(dataSet, name, null);
-        entitySet = new DefaultEntitySet();
+//        entitySet = new DefaultEntitySet();
     }
 
     
@@ -43,7 +41,7 @@ public class InternalDataLayer implements DataLayer {
     }
 
 
-    public EntitySet getEntitySet() {
-        return entitySet;
-    }
+//    public EntitySet getEntitySet() {
+//        return entitySet;
+//    }
 }

@@ -1,8 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
-
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
@@ -16,34 +16,45 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 import org.openstreetmap.josm.plugins.ods.Host;
+import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
+import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public class GtDownloader implements Downloader {
-    private GtDataSource dataSource;
-    private CRSUtil crsUtil;
+    private final GtDataSource dataSource;
+    private final CRSUtil crsUtil;
     private Boundary boundary;
     private SimpleFeatureSource featureSource;
     private Filter filter;
     private DefaultFeatureCollection downloadedFeatures;
-    private UniqueFeatureCollection allFeatures;
-    private DefaultFeatureCollection newFeatures = new DefaultFeatureCollection();
+    private final UniqueFeatureCollection allFeatures;
+//    private DefaultFeatureCollection newFeatures = new DefaultFeatureCollection();
     private final Status status = new Status();
+    private final GeotoolsEntityBuilder<?> entityBuilder;
+    private final EntityStore<?> entityStore;
+    private final List<Task> tasks;
 
     private ProgressListener listener;
     
-    @Inject
-    public GtDownloader(GtDataSource dataSource, UniqueFeatureCollection features, CRSUtil crsUtil) {
+    public GtDownloader(GtDataSource dataSource, UniqueFeatureCollection features, CRSUtil crsUtil,
+            GeotoolsEntityBuilder<?> entityBuilder, EntityStore<?> entityStore ,List<Task> tasks) {
         super();
         this.dataSource = dataSource;
         allFeatures = features;
         this.crsUtil = crsUtil;
+        this.entityBuilder = entityBuilder;
+        this.entityStore = entityStore;
+        this.tasks = (tasks != null ? tasks : new ArrayList<Task>());
     }
     
     @Override
@@ -59,6 +70,7 @@ public class GtDownloader implements Downloader {
     @Override
     public void prepare() {
         status.clear();
+        entityStore.clear();
         this.downloadedFeatures = new DefaultFeatureCollection();
         try {
             // TODO rename dataSource.initialize() to prepare()
@@ -188,17 +200,22 @@ public class GtDownloader implements Downloader {
     
     @Override
     public void process() {
-        newFeatures = new DefaultFeatureCollection();
+        MetaData metaData = dataSource.getMetaData();
+        entityBuilder.setMetaData(metaData);
         for (SimpleFeature feature : downloadedFeatures) {
             if (allFeatures.add(feature)) {
-                newFeatures.add(feature);
+                entityBuilder.buildGtEntity(feature);
             }
+        }
+        entityStore.extendBoundary(boundary.getMultiPolygon());
+        for (Task task : tasks) {
+            task.run();
         }
     }
 
-    public DefaultFeatureCollection getNewFeatures() {
-        return newFeatures;
-    }
+//    public DefaultFeatureCollection getNewFeatures() {
+//        return newFeatures;
+//    }
 
     public GtDataSource getDataSource() {
         return dataSource;

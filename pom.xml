@@ -50,11 +50,6 @@
   		<artifactId>proj4j</artifactId>
   		<version>2408</version>
   	</dependency>
-  	<dependency>
-  		<groupId>com.google.inject</groupId>
-  		<artifactId>guice</artifactId>
-  		<version>3.0</version>
-  	</dependency>
   </dependencies>
   <repositories>
        <repository>

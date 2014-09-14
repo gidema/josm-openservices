@@ -1,8 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * The EntityStore stores entities of a single entity type.
@@ -10,46 +12,57 @@ import java.util.Map;
  * @author gertjan
  *
  */
-public class EntityStore<T extends Entity> {
-    private Map<Object, T> entities = new HashMap<>();
-    private Map<String, T> namedEntities = new HashMap<>();
-    private Map<Object, T> referencedEntities = new HashMap<>();
-	
-	public boolean add(T entity) {
-		if (!entities.containsKey(entity.getId())) {
-            entities.put(entity.getId(), entity);
-            if (entity.hasName()) {
-      		    namedEntities.put(entity.getName(), entity);
-            }
-            if (entity.hasReferenceId()) {
-                referencedEntities.put(entity.getReferenceId(), entity);
-            }
-            return true;
-		}
-		return false;
+public abstract class EntityStore<T extends Entity> implements Iterable<T> {
+    private List<Index<T>> indexes = new LinkedList<>();
+    private Geometry boundary;
+    
+	protected List<Index<T>> getIndexes() {
+        return indexes;
+    }
+
+    public void add(T entity) {
+	    for (Index<T> index : indexes) {
+	        index.insert(entity);
+	    }
 	}
 	
-	public T get(Object id) {
-		return entities.get(id);
-	}
-	
-    public T getByReference(Object id) {
-        return referencedEntities.get(id);
+    public Geometry getBoundary() {
+        return boundary;
     }
     
-	public T getByName(String name) {
-	    return namedEntities.get(name);
-	}
+    public void extendBoundary(Geometry boundary) {
+        if (this.boundary == null) {
+            this.boundary = boundary;
+        }
+        else {
+            this.boundary = this.boundary.union(boundary);
+        }
+    }
+    
+	public abstract UniqueIndexImpl<T> getPrimaryIndex();
 	
-	public Iterator<T> iterator() {
-	    return entities.values().iterator();
-	}
+    public abstract GeoIndex<T> getGeoIndex();
+    
+    public Iterator<T> iterator() {
+        return getPrimaryIndex().iterator();
+    }
 
-    public boolean contains(T entity) {
-        return get(entity.getId()) != null;
+	public T getByReference(Object id) {
+        return getPrimaryIndex().get(id);
     }
     
     public void remove(T entity) {
-        entities.remove(entity.getId());
+        for (Index<T> index : indexes) {
+            index.remove(entity);
+        }
+    }
+
+    /**
+     * Clear the entity store. Remove all entities
+     */
+    public void clear() {
+        for (Index<T> index : indexes) {
+            index.clear();
+        }
     }
 }

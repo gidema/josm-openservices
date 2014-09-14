@@ -30,5 +30,5 @@ public interface GeometryMapper {
   public List<OsmPrimitive> createPrimitives(Geometry geometry, Map<String, String> tags, DataSet dataSet);
 
   // TODO remove this method and use a GeometryMapperFactory instead 
-  public void setObjectFactory(PrimitiveBuilder primitiveBuilder);
+  public void setObjectFactory(PrimitiveBuilder abstractPrimitiveBuilder);
 }

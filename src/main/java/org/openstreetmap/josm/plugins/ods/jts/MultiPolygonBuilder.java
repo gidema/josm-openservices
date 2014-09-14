@@ -16,8 +16,8 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 
 public class MultiPolygonBuilder {
-    private GeoUtil geoUtil = GeoUtil.getInstance();
-    private Relation relation;
+    private final GeoUtil geoUtil;
+    private final Relation relation;
 //    private final List<Way> outerWays = new LinkedList<Way>();
 //    private final List<Way> innerWays = new LinkedList<Way>();
 //    private final List<List<Node>> nonClosedWays = new ArrayList<List<Node>>();
@@ -26,7 +26,8 @@ public class MultiPolygonBuilder {
 //    private JosmIssue issue;
     private Geometry geometry;
 
-    public MultiPolygonBuilder(Relation relation) {
+    public MultiPolygonBuilder(GeoUtil geoUtil, Relation relation) {
+        this.geoUtil = geoUtil;
         this.relation = relation;
     }
     

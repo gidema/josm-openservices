@@ -6,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
-
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
@@ -36,7 +34,6 @@ public class OdsDownloadAction extends OdsAction {
     private SlippyMapDownloadDialog slippyDialog;
     private FixedBoundsDownloadDialog fixedDialog;
     
-    @Inject
     public OdsDownloadAction(OdsModule module) {
         super(module, "Download", ImageProvider.get("download"));
         slippyDialog = new SlippyMapDownloadDialog(module);

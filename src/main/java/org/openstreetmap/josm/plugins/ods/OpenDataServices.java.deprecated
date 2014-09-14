@@ -13,7 +13,6 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -41,7 +40,6 @@ public class OpenDataServices {
     private OdsModule activeModule;
     private JMenu menu;
 
-    @Inject
     public OpenDataServices(OpenDataServicesPlugin plugin) {
         if (INSTANCE != null) {
             throw new java.lang.RuntimeException(I18n.tr(

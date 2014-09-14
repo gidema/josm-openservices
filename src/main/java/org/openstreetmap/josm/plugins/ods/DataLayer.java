@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
 
 /**
  * The DataLayer combines the Osm Datalayer that is shown in the 
@@ -13,6 +12,6 @@ import org.openstreetmap.josm.plugins.ods.entities.EntitySet;
  */
 public interface DataLayer {
     public OsmDataLayer getOsmDataLayer();
-    public EntitySet getEntitySet();
+//    public EntitySet getEntitySet();
     public boolean isInternal();
 }

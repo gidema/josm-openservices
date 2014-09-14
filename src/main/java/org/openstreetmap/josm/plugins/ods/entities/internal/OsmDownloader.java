@@ -1,7 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.entities.internal;
 
+import java.util.List;
+
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmApiException;
@@ -19,6 +22,8 @@ public class OsmDownloader implements Downloader {
     private Boundary boundary;
     private DownloadSource downloadSource=  DownloadSource.OSM;
     private OsmServerReader osmServerReader;
+    private List<OsmEntityBuilder<?>> entityBuilders;
+
     private static String overpassQuery = 
         "(node($bbox);rel(bn)->.x;way($bbox);" +
         "node(w)->.x;rel(bw);)";
@@ -27,6 +32,11 @@ public class OsmDownloader implements Downloader {
     static enum DownloadSource {
         OSM,
         OVERPASS;
+    }
+    
+    public OsmDownloader(List<OsmEntityBuilder<?>> entityBuilders) {
+        super();
+        this.entityBuilders = entityBuilders;
     }
 
     @Override
@@ -86,7 +96,11 @@ public class OsmDownloader implements Downloader {
 
     @Override
     public void process() {
-        // No processing required
+        for (OsmPrimitive primitive : dataSet.allPrimitives()) {
+            for (OsmEntityBuilder<?> builder : entityBuilders) {
+                builder.buildOsmEntity(primitive);
+            }
+        }
     }
 
     private DataSet parseDataSet() throws OsmTransferException {

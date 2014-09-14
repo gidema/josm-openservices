@@ -1,5 +1,9 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import javax.inject.Singleton;
+
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+
 import com.google.inject.AbstractModule;
 
 /**
@@ -15,8 +19,13 @@ public class OdsModuleConfig extends AbstractModule {
         this.plugin = plugin;
     }
 
+    public OdsModulePlugin getPlugin() {
+        return plugin;
+    }
+
     @Override
     protected void configure() {
         bind(OdsModulePlugin.class).toInstance(plugin);
+        bind(GeoUtil.class).in(Singleton.class);
     }
 }

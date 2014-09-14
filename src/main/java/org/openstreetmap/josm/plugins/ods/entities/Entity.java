@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 
@@ -19,65 +20,27 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public interface Entity {
-    /**
-     * Create relations to other objects
-     * @throws BuildException 
-     */
-    void build() throws BuildException;
-    
-	/**
-	 * Get the entityType of this object
-	 * 
-	 * @return
-	 */
-	public Class<? extends Entity> getType();
-	
 	public String getSource();
-	
-	public boolean isInternal();
-	
+	public String getSourceDate();
     boolean isIncomplete();
-
     public boolean isDeleted();
-    
-    public boolean hasReferenceId();
-    
     public Object getReferenceId();
-    
-    public boolean hasGeometry();
-    
+    public Long getPrimitiveId();
     public Geometry getGeometry();
+    public void setGeometry(Geometry geometry);
+    
     /**
-	 * Get the unique id of this entity with respect to its datasource
-	 * 
-	 * @return
-	 */
-	public <T> Comparable<T> getId();
-	
-	public boolean hasName();
-	
-	/**
-	 * Get the unique name of this entity
-	 * 
-	 * @return
-	 */
-	public String getName();
-
-    Collection<OsmPrimitive> getPrimitives();
-
-	/**
-	 * Set the containing environment property of this entity
-	 * 
-	 * @param environment
-	 */
-//	public void setEntitySet(EntitySet environment);
-	
+    * Get the OSM primitive(s) from which this entity was constructed,
+    * or that was/were constructed from this entity.
+    * In most cases the list contains 1 item.
+    *
+    */
+    public List<OsmPrimitive> getPrimitives();
+    
     /**
-     * Get the containing environment of this entity
-     * 
-     * @return
+     * Get the tags that are not associated with any of the entity's properties.
      */
-//    public EntitySet getEntitySet();
+    public Map<String, String> getOtherTags();
     
-    
+    public void setPrimitives(List<OsmPrimitive> primitives);
 }

@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
@@ -27,4 +28,6 @@ public interface OdsFeatureSource {
     public OdsDataSource newDataSource();
 
     public MetaData getMetaData();
+
+//    public SimpleFeatureSource getFeatureSource();
 }

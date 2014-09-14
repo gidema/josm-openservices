@@ -8,12 +8,15 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class CrossingBuildingFixer {
+    private final GeoUtil geoUtil;
+    private final Double tolerance;
+
     private Building building1;
     private Building building2;
-    private final Double tolerance;
     
-    public CrossingBuildingFixer(Double tolerance) {
+    public CrossingBuildingFixer(GeoUtil geoUtil, Double tolerance) {
         super();
+        this.geoUtil = geoUtil;
         this.tolerance = tolerance;
     }
 
@@ -34,7 +37,7 @@ public class CrossingBuildingFixer {
         Polygon polygon2 = (Polygon) geom2;
         LinearRing ring1 = (LinearRing)polygon1.getExteriorRing();
         LinearRing ring2 = (LinearRing)polygon2.getExteriorRing();
-        LinearRingAligner aligner = new LinearRingAligner(ring1, ring2, tolerance);
+        LinearRingAligner aligner = new LinearRingAligner(geoUtil, ring1, ring2, tolerance);
         aligner.run();
         GeoUtil geoUtil = GeoUtil.getInstance();
         if (aligner.ring1Modified()) {

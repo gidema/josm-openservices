@@ -46,7 +46,7 @@ public class GeoUtil {
     public final static WKTReader OSM_WKT_READER = new WKTReader(OSM_GEOMETRY_FACTORY);
     private static GeoUtil instance = new GeoUtil();
     
-    private GeoUtil() {
+    public GeoUtil() {
         // Hide public constructor
     }
 
@@ -124,7 +124,7 @@ public class GeoUtil {
     }
 
     public Geometry toMultiPolygon(Relation relation) throws InvalidMultiPolygonException {
-        MultiPolygonBuilder builder = new MultiPolygonBuilder(relation);
+        MultiPolygonBuilder builder = new MultiPolygonBuilder(this, relation);
         builder.build();
         return builder.getGeometry();
     }
