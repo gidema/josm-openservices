@@ -13,7 +13,6 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private boolean underConstruction;
     private boolean deleted = false;
-    private boolean incomplete = false;
     private String startDate;
     private Set<Building> neighbours = new HashSet<>();
     private City city;
@@ -43,16 +42,6 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
 
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
-    }
-
-    @Override
-    public void setIncomplete(boolean incomplete) {
-        this.incomplete = incomplete;
-    }
-    
-    @Override
-    public boolean isIncomplete() {
-        return incomplete;
     }
 
     public void setDeleted(boolean deleted) {

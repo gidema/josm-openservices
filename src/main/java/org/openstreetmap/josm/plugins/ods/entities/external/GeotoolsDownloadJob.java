@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.external;
 
 import java.util.List;
 
-import org.openstreetmap.josm.data.osm.DataSource;
+import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.io.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
