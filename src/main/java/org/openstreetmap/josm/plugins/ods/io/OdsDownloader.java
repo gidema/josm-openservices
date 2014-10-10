@@ -9,13 +9,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.osm.DataSource;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsDownloadJob;
-import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.internal.OsmDownloadJob;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;

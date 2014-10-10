@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.entities.internal;
 import java.util.Collections;
 import java.util.List;
 
-import org.openstreetmap.josm.data.osm.DataSource;
+import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.plugins.ods.io.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
