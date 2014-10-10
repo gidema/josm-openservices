@@ -13,7 +13,7 @@ public abstract class AbstractEntity implements Entity {
     private String sourceDate;
     private String source;
     private Geometry geometry;
-    private Boolean incomplete;
+    private boolean incomplete;
     private Map<String, String> otherTags = new HashMap<>();
     private List<OsmPrimitive> primitives;
     private Long primitiveId;
@@ -51,11 +51,12 @@ public abstract class AbstractEntity implements Entity {
         return geometry;
     }
     
-    public Boolean getIncomplete() {
+    @Override
+    public boolean isIncomplete() {
         return incomplete;
     }
 
-    public void setIncomplete(Boolean incomplete) {
+    public void setIncomplete(boolean incomplete) {
         this.incomplete = incomplete;
     }
 
@@ -75,12 +76,6 @@ public abstract class AbstractEntity implements Entity {
         for (OsmPrimitive primitive : primitives) {
             primitiveId = Math.min(primitiveId, primitive.getId());
         }
-    }
-
-    @Override
-    public boolean isIncomplete() {
-        // TODO Auto-generated method stub
-        return false;
     }
 
     @Override

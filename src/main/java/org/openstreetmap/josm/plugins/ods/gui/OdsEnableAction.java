@@ -1,53 +1,30 @@
 package org.openstreetmap.josm.plugins.ods.gui;
 
 import java.awt.event.ActionEvent;
-import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
-import org.openstreetmap.josm.tools.I18n;
 
 public class OdsEnableAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
     private final OpenDataServicesPlugin ods;
+    private final OdsModule module;
 
-    public OdsEnableAction(OpenDataServicesPlugin ods) {
-        super("Enable ODS");
+    public OdsEnableAction(OpenDataServicesPlugin ods, OdsModule module) {
+        super(module.getName());
         super.putValue("description", "Switch ODS between enabled and disabled state");
         this.ods = ods;
+        this.module = module;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JMenu menu = ods.getMenu();
-        OdsModule module = ods.getActiveModule();
-        if (module == null) {
-            List<OdsModule> modules = ods.getModules();
-            if (modules.isEmpty()) {
-                JOptionPane.showMessageDialog(Main.parent, 
-                    I18n.tr("No ODS module is available."),
-                    I18n.tr("Missing module"), JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            module = modules.get(0);
-            ods.activate(module);
-            putValue(Action.NAME, "Disable ODS");
-            menu.setText("ODS "+ module.getName());
-            menu.repaint();
-        }
-        else {
-            ods.deactivate(module);
-            putValue(Action.NAME, "Enable ODS");
-            menu.setText("ODS "+ module.getName());
-        }
+        ods.activate(module);
         
     	Layer activeLayer = null;
     	if (Main.map != null) {
