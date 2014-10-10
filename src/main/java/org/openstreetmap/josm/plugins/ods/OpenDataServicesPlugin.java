@@ -70,6 +70,7 @@ public class OpenDataServicesPlugin extends Plugin {
     public OdsModule getActiveModule() {
         return activeModule;
     }
+    
     public void activate(OdsModule module) {
         if (activeModule == null) {
             this.activeModule = module;
@@ -81,10 +82,11 @@ public class OpenDataServicesPlugin extends Plugin {
     }
 
     public void deactivate(OdsModule module) {
-        if (module.equals(activeModule)) {
+        if (module != null && module.equals(activeModule)) {
             activeModule.deActivate();
             activeModule = null;
         }
+        initializeMenu();
     }
 
     private void initializeMenu() {
@@ -92,8 +94,11 @@ public class OpenDataServicesPlugin extends Plugin {
             menu = Main.main.menu.addMenu(marktr("ODS"), KeyEvent.VK_UNDEFINED,
                     4, ht("/Plugin/ODS"));
             moduleMenu = new JMenu(I18n.tr("Enable"));
-            menu.add(moduleMenu);
         }
+        for (int i= menu.getPopupMenu().getComponentCount() - 1; i>=0; i--) {
+            menu.remove(i);
+        }
+        menu.add(moduleMenu);
     }
     
     public JMenu getMenu() {
