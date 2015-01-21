@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version='0.6' upload='false' generator='JOSM'>
+  <node id='-31009' action='modify' visible='true' lat='52.0847297041' lon='5.12296199581' />
+  <node id='-31007' action='modify' visible='true' lat='52.08472576273' lon='5.12296330352' />
+  <node id='-31006' action='modify' visible='true' lat='52.08472136217' lon='5.12296473577' />
+  <node id='-30981' action='modify' visible='true' lat='52.08472447959' lon='5.12295690888' />
+  <node id='-30979' action='modify' visible='true' lat='52.08471997834' lon='5.1229761209' />
+  <node id='-30977' action='modify' visible='true' lat='52.08472738755' lon='5.12296934595' />
+  <node id='-30975' action='modify' visible='true' lat='52.08474629604' lon='5.12296533335' />
+  <node id='-30973' action='modify' visible='true' lat='52.08473281931' lon='5.12300173016' />
+  <node id='-30971' action='modify' visible='true' lat='52.08472735274' lon='5.12296933887' />
+  <node id='-30969' action='modify' visible='true' lat='52.08473379881' lon='5.12303934886'>
+    <tag k='ref:test' v='node4-0' />
+  </node>
+  <node id='-30967' action='modify' visible='true' lat='52.08473425957' lon='5.12304131143'>
+    <tag k='ref:test' v='node4-1' />
+  </node>
+  <node id='-30965' action='modify' visible='true' lat='52.08473536805' lon='5.12304630357'>
+    <tag k='ref:test' v='node4-2' />
+  </node>
+  <node id='-30963' action='modify' visible='true' lat='52.08473379159' lon='5.12303945204'>
+    <tag k='ref:test' v='node3-0' />
+  </node>
+  <node id='-30961' action='modify' visible='true' lat='52.08473423156' lon='5.12304133974'>
+    <tag k='ref:test' v='node3-1' />
+  </node>
+  <node id='-30959' action='modify' visible='true' lat='52.08473479472' lon='5.12304381822'>
+    <tag k='ref:test' v='node3-2' />
+  </node>
+  <node id='-30957' action='modify' visible='true' lat='52.08473535278' lon='5.12304632413'>
+    <tag k='ref:test' v='node3-3' />
+  </node>
+  <node id='-30955' action='modify' visible='true' lat='52.0847357755' lon='5.12304817527'>
+    <tag k='ref:test' v='node3-4' />
+  </node>
+  <node id='-30953' action='modify' visible='true' lat='52.0847355917' lon='5.12304730062'>
+    <tag k='ref:test' v='node4-3' />
+  </node>
+  <node id='-30951' action='modify' visible='true' lat='52.08473376095' lon='5.12303938357'>
+    <tag k='ref:test' v='node5-5' />
+  </node>
+  <node id='-30949' action='modify' visible='true' lat='52.0847342217' lon='5.12304134614'>
+    <tag k='ref:test' v='node5-4' />
+  </node>
+  <node id='-30947' action='modify' visible='true' lat='52.08473533018' lon='5.12304633828'>
+    <tag k='ref:test' v='node5-3' />
+  </node>
+  <node id='-30945' action='modify' visible='true' lat='52.08473555383' lon='5.12304733533'>
+    <tag k='ref:test' v='node5-2' />
+  </node>
+  <node id='-30943' action='modify' visible='true' lat='52.08473568794' lon='5.12304770823'>
+    <tag k='ref:test' v='node4-4' />
+  </node>
+  <node id='-30941' action='modify' visible='true' lat='52.08473590315' lon='5.12304860254'>
+    <tag k='ref:test' v='node4-5' />
+  </node>
+  <node id='-30939' action='modify' visible='true' lat='52.08473564951' lon='5.1230477395'>
+    <tag k='ref:test' v='node5-1' />
+  </node>
+  <node id='-30937' action='modify' visible='true' lat='52.08473585319' lon='5.12304862755'>
+    <tag k='ref:test' v='node5-0' />
+  </node>
+  <way id='-31008' action='modify' visible='true'>
+    <nd ref='-31006' />
+    <nd ref='-31007' />
+    <nd ref='-31009' />
+    <tag k='ref:test' v='way3' />
+  </way>
+  <way id='-30991' action='modify' visible='true'>
+    <nd ref='-30975' />
+    <nd ref='-30977' />
+    <nd ref='-30979' />
+    <tag k='ref:test' v='way2' />
+  </way>
+  <way id='-30989' action='modify' visible='true'>
+    <nd ref='-30981' />
+    <nd ref='-30971' />
+    <nd ref='-30973' />
+    <tag k='ref:test' v='way1' />
+  </way>
+  <way id='-30987' action='modify' visible='true'>
+    <nd ref='-30969' />
+    <nd ref='-30967' />
+    <nd ref='-30965' />
+    <nd ref='-30953' />
+    <nd ref='-30943' />
+    <nd ref='-30941' />
+    <tag k='ref:test' v='way6' />
+  </way>
+  <way id='-30985' action='modify' visible='true'>
+    <nd ref='-30963' />
+    <nd ref='-30961' />
+    <nd ref='-30959' />
+    <nd ref='-30957' />
+    <nd ref='-30955' />
+    <tag k='ref:test' v='way5' />
+  </way>
+  <way id='-30983' action='modify' visible='true'>
+    <nd ref='-30937' />
+    <nd ref='-30939' />
+    <nd ref='-30945' />
+    <nd ref='-30947' />
+    <nd ref='-30949' />
+    <nd ref='-30951' />
+    <tag k='ref:test' v='way7' />
+  </way>
+</osm>

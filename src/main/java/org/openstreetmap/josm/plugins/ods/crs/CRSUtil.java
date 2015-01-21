@@ -22,8 +22,9 @@ public abstract class CRSUtil {
     private final static CRSUtil instance = new CRSUtilProj4j();
     private final static int OSM_SRID = 4326;
     public final static CoordinateReferenceSystem OSM_CRS;
-    protected final static PrecisionModel OSM_PRECISION_MODEL = new PrecisionModel(
-            10000000);
+    protected final static PrecisionModel OSM_PRECISION_MODEL = new PrecisionModel();
+//    protected final static PrecisionModel OSM_PRECISION_MODEL = new PrecisionModel(
+//            10000000);
     protected final static GeometryFactory OSM_GEOMETRY_FACTORY = new GeometryFactory(
             OSM_PRECISION_MODEL, OSM_SRID);
     private static Map<String, CoordinateReferenceSystem> coordinateReferenceSystems = new HashMap<>();

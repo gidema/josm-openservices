@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 public class BuildingMatcher implements Task {
@@ -23,7 +24,7 @@ public class BuildingMatcher implements Task {
         }
 
         @Override
-        public void run() {
+        public void run(Context ctx) {
             for (Building building : gtBuildingStore) {
                 processGtBuilding(building);
             }

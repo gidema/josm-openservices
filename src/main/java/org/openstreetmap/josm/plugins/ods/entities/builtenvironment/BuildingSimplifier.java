@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import java.util.Iterator;
 
+import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -29,7 +30,7 @@ public class BuildingSimplifier implements Task {
         this.tolerance = tolerance;
     }
 
-    public void run() {
+    public void run(Context ctx) {
         Iterator<Building> buildings = buildingStore.iterator();
         while (buildings.hasNext()) {
             Building building = buildings.next();

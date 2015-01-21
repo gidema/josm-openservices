@@ -1,30 +1,20 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JMenu;
 
-import org.opengis.feature.Feature;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
-import org.openstreetmap.josm.io.IllegalDataException;
-import org.openstreetmap.josm.io.OsmImporter;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.internal.OsmDownloadJob;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.OdsDownloader;
 
@@ -43,8 +33,8 @@ public abstract class OdsModule implements LayerChangeListener {
     
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private final ExternalDataLayer externalDataLayer;
+    private PolygonDataLayer polygonDataLayer;
     private final InternalDataLayer internalDataLayer;
-    private OsmDataLayer polygonLayer;
     private final OdsDownloader downloader;
     String osmQuery;
     private boolean active = false;
@@ -58,6 +48,7 @@ public abstract class OdsModule implements LayerChangeListener {
         this.downloader = downloader;
         this.externalDataLayer = externalDataLayer;
         this.internalDataLayer = internalDataLayer;
+        this.polygonDataLayer = new PolygonDataLayer(this);
         MapView.addLayerChangeListener(this);
     }
 
@@ -99,31 +90,31 @@ public abstract class OdsModule implements LayerChangeListener {
         return externalDataLayer;
     }
     
-    public void initExternalDatalayer() {
-        Layer oldLayer = null;
-        if (Main.map != null) {
-            oldLayer = Main.main.getActiveLayer();
-        }
-        Main.main.addLayer(externalDataLayer.getOsmDataLayer());
-        if (oldLayer != null) {
-            Main.map.mapView.setActiveLayer(oldLayer);
-        }
-    }
+//    public void initExternalDatalayer() {
+//        Layer oldLayer = null;
+//        if (Main.map != null) {
+//            oldLayer = Main.main.getActiveLayer();
+//        }
+//        Main.main.addLayer(externalDataLayer.getOsmDataLayer());
+//        if (oldLayer != null) {
+//            Main.map.mapView.setActiveLayer(oldLayer);
+//        }
+//    }
     
     public InternalDataLayer getInternalDataLayer() {
         return internalDataLayer;
     }
     
-    private void initInternalDatalayer() {
-        Layer oldLayer = null;
-        if (Main.map != null) {
-            oldLayer = Main.main.getActiveLayer();
-        }
-        Main.main.addLayer(internalDataLayer.getOsmDataLayer());
-        if (oldLayer != null) {
-            Main.map.mapView.setActiveLayer(oldLayer);
-        }
-    }
+//    private void initInternalDatalayer() {
+//        Layer oldLayer = null;
+//        if (Main.map != null) {
+//            oldLayer = Main.main.getActiveLayer();
+//        }
+//        Main.main.addLayer(internalDataLayer.getOsmDataLayer());
+//        if (oldLayer != null) {
+//            Main.map.mapView.setActiveLayer(oldLayer);
+//        }
+//    }
 
     public void addDataSource(OdsDataSource dataSource) {
         dataSources.put(dataSource.getFeatureType(), dataSource);
@@ -138,13 +129,11 @@ public abstract class OdsModule implements LayerChangeListener {
         for (OdsAction action : getActions()) {
             menu.add(action);
         }
-        // if (!active) {
-        // downloadAction = new OdsDownloadAction();
-        // initToolbox();
-        // }
-        initExternalDatalayer();
-        initInternalDatalayer();
-        getPolygonLayer();
+        internalDataLayer.initialize();
+        externalDataLayer.initialize();
+        if (usePolygonFile()) {
+            polygonDataLayer.initialize();
+        }
         active = true;
     }
 
@@ -157,12 +146,9 @@ public abstract class OdsModule implements LayerChangeListener {
             OsmDataLayer externalOsmLayer = externalDataLayer.getOsmDataLayer();
             Main.map.mapView.removeLayer(externalOsmLayer);
         }
-        if (polygonLayer != null) {
-            Main.map.mapView.removeLayer(polygonLayer);
-        }
-        JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
-        for (OdsAction action : getActions()) {
-//            menu.remove(action);
+        if (polygonDataLayer != null) {
+            OsmDataLayer osmLayer = polygonDataLayer.getOsmDataLayer();
+            Main.map.mapView.removeLayer(osmLayer);
         }
         active = false;
     }
@@ -178,17 +164,7 @@ public abstract class OdsModule implements LayerChangeListener {
 
     @Override
     public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-        // if (!active) return;
-        // if (newLayer != null
-        // && (newLayer == externalDataLayer.getOsmDataLayer() ||
-        // newLayer == internalDataLayer.getOsmDataLayer())) {
-        // if (useToolbox) {
-        // getToolbox().setVisible(true);
-        // }
-        // }
-        // else if (active) {
-        // getToolbox().setVisible(false);
-        // }
+        // No action required
     }
 
     @Override
@@ -198,58 +174,24 @@ public abstract class OdsModule implements LayerChangeListener {
 
     @Override
     public void layerRemoved(Layer oldLayer) {
-        // boolean deActivate = false;
-        if (!active)
-            return;
-        OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
-                : externalDataLayer.getOsmDataLayer());
-        OsmDataLayer internalOsmLayer = (internalDataLayer == null ? null
-                : internalDataLayer.getOsmDataLayer());
-        //
-        // if (oldLayer == externalOsmLayer) {
-        // if (Main.map != null &&
-        // Main.map.mapView.getAllLayers().contains(internalOsmLayer)) {
-        // if
-        // (!Main.saveUnsavedModifications(Collections.singletonList(internalOsmLayer),
-        // false))
-        // return;
-        // Main.map.mapView.removeLayer(internalOsmLayer);
-        // deActivate = true;
-        // internalDataLayer = null;
-        // externalDataLayer = null;
-        // }
-        // } else if (oldLayer == internalOsmLayer) {
-        // if (Main.map != null &&
-        // Main.map.mapView.getAllLayers().contains(externalOsmLayer)) {
-        // Main.map.mapView.removeLayer(externalOsmLayer);
-        // deActivate = true;
-        // externalDataLayer = null;
-        // internalDataLayer = null;
-        // }
-        // }
-        // if (deActivate) {
-        // deActivate();
-        // }
+        if (active) {
+            OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
+                    : externalDataLayer.getOsmDataLayer());
+            OsmDataLayer internalOsmLayer = (internalDataLayer == null ? null
+                    : internalDataLayer.getOsmDataLayer());
+            OsmDataLayer polygonOsmLayer = (polygonDataLayer == null ? null
+                    : polygonDataLayer.getOsmDataLayer());
+            if (oldLayer.equals(externalOsmLayer)) {
+                externalDataLayer.reset();
+            }
+            if (oldLayer.equals(internalOsmLayer)) {
+                internalDataLayer.reset();
+            }
+            if (oldLayer.equals(polygonOsmLayer)) {
+                polygonDataLayer.reset();
+            }
+        }
     }
-
-    // public Action getActivateAction() {
-    // return new ActivateAction();
-    // }
-
-    // public OdsDownloadAction getDownloadAction() {
-    // return downloadAction;
-    // }
-    //
-    // private class ActivateAction extends AbstractAction {
-    //
-    // private static final long serialVersionUID = -4943320068119307331L;
-    //
-    // @Override
-    // public void actionPerformed(ActionEvent e) {
-    // activate();
-    // // downloadAction.actionPerformed(e);
-    // }
-    // }
 
     public void setEntityFactory(EntityFactory entityFactory) {
         this.entityFactory = entityFactory;
@@ -261,59 +203,6 @@ public abstract class OdsModule implements LayerChangeListener {
 
     public abstract Bounds getBounds();
 
-    public OsmDataLayer getPolygonLayer() {
-        if (polygonLayer == null) {
-            String layerName = "ODS Polygons";
-            File polygonFile = getPolygonFilePath();
-            if (polygonFile.exists()) {
-                OsmImporter importer = new OsmImporter();
-                try {
-                    polygonLayer = importer.loadLayer(
-                            new FileInputStream(polygonFile), polygonFile,
-                            layerName, NullProgressMonitor.INSTANCE).getLayer();
-                    polygonLayer.setUploadDiscouraged(true);
-                    Main.map.mapView.addLayer(polygonLayer);
-                    // Main.map.mapView.zoomTo(polygonLayer.data.);
-                    Main.info("");
-                } catch (FileNotFoundException e) {
-                    // Won't happen as we checked this
-                    e.printStackTrace();
-                } catch (IllegalDataException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        return polygonLayer;
-        // else {
-        //
-        // File dir = polygonFile.getParentFile();
-        // if (!dir.isDirectory()) {
-        // dir.mkdirs();
-        // }
-        // File polygonFile = new File(pluginDir, "polygons.osm");
-        // if (!polygonFile.exists()) {
-        // if (!createIfMissing) {
-        // return null;
-        // }
-        //
-        // }
-        // if (pluginDir == null) {
-        // Files.createDirectory(dir, attrs)
-        // pluginDir.
-        // }
-        //
-        // // TODO Auto-generated method stub
-    }
-
-//    public OsmDownloadJob getOsmDownloadJob() {
-//        return osmDownloadJob;
-//    }
-
-//    public GeotoolsDownloadJob getGeotoolsDownloadJob() {
-//        return gtDownloadJob;
-//    }
-
     public OdsDownloader getDownloader() {
         return downloader;
     }
@@ -321,13 +210,8 @@ public abstract class OdsModule implements LayerChangeListener {
     public boolean usePolygonFile() {
         return false;
     }
-
-    public File getPolygonFilePath() {
-        if (!usePolygonFile()) {
-            return null;
-        }
-        File pluginDir = new File(plugin.getPluginDir());
-        return new File(pluginDir, "polygons.osm");
+    
+    public String getPluginDir() {
+        return plugin.getPluginDir();
     }
-
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.Host;
@@ -54,8 +55,8 @@ public class GtFeatureSource implements OdsFeatureSource {
         } catch (IOException e) {
             throw new InitializationException(e);
         }
-        if (!metaData.containsKey("bag.source.data")) {
-            metaData.put("bag.source.data", new Date());
+        if (!metaData.containsKey("source.date")) {
+            metaData.put("source.date", new Date());
         }
         initialized = true;
     }
@@ -95,7 +96,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     }
 
     @Override
-    public OdsDataSource newDataSource() {
-        return new GtDataSource(this);
+    public OdsDataSource newDataSource(Filter filter) {
+        return new GtDataSource(this, filter);
     }
 }

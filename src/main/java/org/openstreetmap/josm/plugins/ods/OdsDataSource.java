@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.opengis.filter.Filter;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
@@ -18,13 +17,7 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 public interface OdsDataSource {
     public String getFeatureType();
 
-//    public ExternalEntityBuilder getEntityBuilder();
-
-//    public FeatureMapper getFeatureMapper();
-
     public OdsFeatureSource getOdsFeatureSource();
-
-    public void setFilter(Filter filter) throws ConfigurationException;
 
     public Filter getFilter();
 

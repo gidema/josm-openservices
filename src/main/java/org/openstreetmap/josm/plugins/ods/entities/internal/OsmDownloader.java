@@ -11,15 +11,16 @@ import org.openstreetmap.josm.io.OsmApiException;
 import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
+import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
-import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OsmDownloader implements Downloader {
     private Status status = new Status();
-    private Boundary boundary;
+    private EntitySource entitySource;
     private DownloadSource downloadSource=  DownloadSource.OSM;
     private OsmServerReader osmServerReader;
     private List<OsmEntityBuilder<?>> entityBuilders;
@@ -39,25 +40,26 @@ public class OsmDownloader implements Downloader {
         this.entityBuilders = entityBuilders;
     }
 
-    @Override
-    public void setBoundary(Boundary boundary) {
-        this.boundary = boundary;
-    }
-
+//    @Override
+//    public void setBoundary(Boundary boundary) {
+//        this.boundary = boundary;
+//    }
+//
     @Override
     public Status getStatus() {
         return status;
     }
 
     @Override
-    public void prepare() {
+    public void prepare(Context ctx) {
+        this.entitySource = (EntitySource) ctx.get("entitySource");
         status.clear();
         switch (downloadSource) {
         case OSM:
-            osmServerReader = new BoundingBoxDownloader(boundary.getBounds());
+            osmServerReader = new BoundingBoxDownloader(entitySource.getBoundary().getBounds());
             break;
         case OVERPASS:
-            String url = Overpass.getURL(overpassQuery, boundary);
+            String url = Overpass.getURL(overpassQuery, entitySource.getBoundary());
             osmServerReader = new OsmServerLocationReader(url);
             break;
         }
@@ -68,7 +70,7 @@ public class OsmDownloader implements Downloader {
         try {
             dataSet = parseDataSet();
             if (downloadSource == DownloadSource.OSM) {
-                MultiPolygonFilter filter = new MultiPolygonFilter(boundary.getMultiPolygon());
+                MultiPolygonFilter filter = new MultiPolygonFilter(entitySource.getBoundary().getMultiPolygon());
                 dataSet = filter.filter(dataSet);
             }
             if (dataSet.allPrimitives().isEmpty()) {

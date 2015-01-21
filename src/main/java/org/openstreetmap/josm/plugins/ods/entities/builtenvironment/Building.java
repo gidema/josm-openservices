@@ -46,4 +46,5 @@ public interface Building extends Entity {
     // Setters
     public void setBuildingType(BuildingType buildingType);
     public void setIncomplete(boolean incomplete);
+    public String getStatus();
 }

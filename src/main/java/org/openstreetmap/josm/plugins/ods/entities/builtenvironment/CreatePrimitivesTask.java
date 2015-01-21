@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
+import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
@@ -24,9 +25,11 @@ public class CreatePrimitivesTask<T extends Entity> implements Task {
 
 
     @Override
-    public void run() {
+    public void run(Context ctx) {
         for (T entity : entityStore) {
-            primitiveBuilder.createPrimitives(entity);
+            if (entity.getPrimitive() == null) {
+                primitiveBuilder.createPrimitive(entity);
+            }
         }
     }
 }

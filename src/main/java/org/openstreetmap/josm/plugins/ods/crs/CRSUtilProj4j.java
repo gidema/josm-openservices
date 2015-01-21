@@ -29,8 +29,10 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 public class CRSUtilProj4j extends CRSUtil {
     private final static Long OSM_SRID = 4326L;
     private final static JTSCoordinateTransformFactory ctFactory = new Proj4jCRSTransformFactory();
-    private final static PrecisionModel OSM_PRECISION_MODEL = new PrecisionModel(
-            10000000);
+//    private final static Double OSM_SCALE = 10000000;
+    private final static Double OSM_SCALE = null;
+    private final static PrecisionModel OSM_PRECISION_MODEL =
+        (OSM_SCALE == null ? new PrecisionModel() : new PrecisionModel(OSM_SCALE));
     public final static GeometryFactory OSM_GEOMETRY_FACTORY = new GeometryFactory(
             OSM_PRECISION_MODEL, OSM_SRID.intValue());
     private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> toOsmTransforms = new HashMap<>();
@@ -80,7 +82,7 @@ public class CRSUtilProj4j extends CRSUtil {
             CoordinateReferenceSystem crs) {
         Long sourceSRID = getSRID(crs);
         JTSCoordinateTransform transform = ctFactory
-                .createJTSCoordinateTransform(sourceSRID, OSM_SRID, 10000000.0);
+                .createJTSCoordinateTransform(sourceSRID, OSM_SRID, OSM_SCALE);
         toOsmTransforms.put(crs, transform);
         return transform;
     }

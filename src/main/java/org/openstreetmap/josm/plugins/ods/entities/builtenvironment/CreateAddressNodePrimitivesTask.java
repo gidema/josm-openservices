@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
+import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
@@ -22,10 +23,10 @@ public class CreateAddressNodePrimitivesTask implements Task {
 
 
     @Override
-    public void run() {
+    public void run(Context ctx) {
         for (AddressNode addressNode : addressNodeStore) {
             if (!addressNode.isIncomplete()) {
-                primitiveBuilder.createPrimitives(addressNode);
+                primitiveBuilder.createPrimitive(addressNode);
             }
         }
     }

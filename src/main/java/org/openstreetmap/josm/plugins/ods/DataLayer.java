@@ -11,7 +11,10 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
  *
  */
 public interface DataLayer {
+    // Get the current OsmDataLayer
     public OsmDataLayer getOsmDataLayer();
-//    public EntitySet getEntitySet();
     public boolean isInternal();
+    
+    // Clear the current OsmDataLayer
+    public void reset();
 }

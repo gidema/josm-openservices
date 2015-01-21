@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import java.util.Iterator;
 
+import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 
@@ -22,20 +23,16 @@ public class MatchAddressToBuildingTask implements Task {
         this.addressNodeStore = addressNodeStore;
     }
 
-    public void run() {
-//        BuiltEnvironment bes = new BuiltEnvironment(newEntities);
-//        EntityStore<AddressNode> newAddresses = bes.getAddresses();
-//        EntityStore<Building> newBuildings = bes.getBuildings();
-        Iterator<AddressNode> it = addressNodeStore.iterator();
-        while (it.hasNext()) {
-            AddressNode addressNode = (AddressNode) it.next();
-            assert addressNode.getBuilding() == null;
-            Object buildingRef = addressNode.getBuildingRef();
-            if (buildingRef != null) {
-                analyzeAddressBuildingByRef(addressNode);
-            }
-            else {
-                analyzeAddressBuildingByGeometry(addressNode);
+    public void run(Context ctx) {
+        for (AddressNode addressNode : addressNodeStore) {
+            if (addressNode.getBuilding() == null) {
+                Object buildingRef = addressNode.getBuildingRef();
+                if (buildingRef != null) {
+                    analyzeAddressBuildingByRef(addressNode);
+                }
+                else {
+                    analyzeAddressBuildingByGeometry(addressNode);
+                }
             }
         }
     }

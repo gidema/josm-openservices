@@ -21,9 +21,11 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
     }
 
     public void add(T entity) {
-	    for (Index<T> index : indexes) {
-	        index.insert(entity);
-	    }
+        if (getByReference(entity.getReferenceId()) == null) {
+	        for (Index<T> index : indexes) {
+	            index.insert(entity);
+	        }
+        }
 	}
 	
     public Geometry getBoundary() {

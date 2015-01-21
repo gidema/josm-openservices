@@ -4,6 +4,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.Main;
@@ -14,7 +15,9 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
+import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
 import org.openstreetmap.josm.plugins.ods.io.OdsDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.ImageProvider;
@@ -27,6 +30,7 @@ public class OdsDownloadAction extends OdsAction {
     private static final long serialVersionUID = 1L;
 
     private OdsDownloader downloader;
+    private Date startDate;
     private boolean cancelled = false;
     private Boundary boundary;
     private boolean downloadOsm;
@@ -54,15 +58,6 @@ public class OdsDownloadAction extends OdsAction {
             Main.worker.submit(task);
 
         }
-//        try {
-//            module.download(boundary, true);
-//        } catch (ExecutionException e1) {
-//            JOptionPane.showMessageDialog(Main.parent, e1.getMessage(),
-//                    tr("Error during download"), JOptionPane.ERROR_MESSAGE);
-//        } catch (InterruptedException e1) {
-//            JOptionPane.showMessageDialog(Main.parent, e1.getMessage(),
-//                    tr("Error during download"), JOptionPane.ERROR_MESSAGE);
-//        }
     }
 
     private Boundary getBoundary() {
@@ -110,29 +105,24 @@ public class OdsDownloadAction extends OdsAction {
     }
     
     private class DownloadTask extends PleaseWaitRunnable {
-        private boolean cancelled = false;
-//        private Boundary boundary;
-//        private boolean downloadOsm;
-//        private boolean downloadOds;
         
         public DownloadTask() {
             super(tr("Downloading data"));
-//            this.boundary = boundary;
-//            this.downloadOsm = downloadOsm;
-//            this.downloadOds = downloadOds;
         }
 
         @Override
         protected void cancel() {
             downloader.cancel();
-            this.cancelled = true;
         }
 
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
             try {
-                downloader.run(getProgressMonitor(), boundary, downloadOsm, downloadOds);
+                EntitySource entitySource = new EntitySource(startDate, boundary);
+                Context ctx = new Context();
+                ctx.put("entitySource", entitySource);
+                downloader.run(getProgressMonitor(), ctx, downloadOsm, downloadOds);
             } catch (ExecutionException|InterruptedException e) {
                 throw new OsmTransferException(e);
             }

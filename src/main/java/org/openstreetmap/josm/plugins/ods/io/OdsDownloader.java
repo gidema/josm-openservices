@@ -11,9 +11,10 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
 import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsDownloadJob;
 import org.openstreetmap.josm.plugins.ods.entities.internal.OsmDownloadJob;
-import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -29,7 +30,6 @@ public class OdsDownloader {
     private boolean downloadOds;
     
     private List<Downloader> downloaders;
-    private Boundary boundary;
     
 //    private ProgressMonitor pm;
     
@@ -41,6 +41,8 @@ public class OdsDownloader {
     private ExecutorService executor;
 
     private Status status = new Status();
+    private Context ctx;
+    private EntitySource entitySource;
 
     public OdsDownloader(OsmDownloadJob osmDownloadJob, 
             GeotoolsDownloadJob geotoolsDownloadJob,
@@ -52,9 +54,10 @@ public class OdsDownloader {
         this.postDownloadTasks = postDownloadTasks;
     }
 
-    public void run(ProgressMonitor pm, Boundary boundary, boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
+    public void run(ProgressMonitor pm, Context ctx, boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
         status.clear();
-        this.boundary = boundary;
+        this.ctx = ctx;
+        this.entitySource = (EntitySource) ctx.get("entitySource");
         this.downloadOsm = downloadOsm;
         this.downloadOds = downloadOds;
         pm.indeterminateSubTask(I18n.tr("Setup"));
@@ -78,7 +81,7 @@ public class OdsDownloader {
         }
         process();
         
-        Bounds bounds = boundary.getBounds();
+        Bounds bounds = entitySource.getBoundary().getBounds();
         computeBboxAndCenterScale(bounds);
         pm.finishTask();
     }
@@ -91,13 +94,13 @@ public class OdsDownloader {
         status.clear();
         downloaders = new LinkedList<Downloader>();
         if (downloadOsm) {
-            osmDownloadJob.setBoundary(boundary);
+//            osmDownloadJob.setEntitySource(entitySource);
             for (Downloader downloader : osmDownloadJob.getDownloaders()) {
                 downloaders.add(downloader);
             }
         }
         if (downloadOds) {
-            geotoolsDownloadJob.setBoundary(boundary);
+//            geotoolsDownloadJob.setEntitySource(entitySource);
             for (Downloader downloader : geotoolsDownloadJob.getDownloaders()) {
                 downloaders.add(downloader);
             }
@@ -106,8 +109,6 @@ public class OdsDownloader {
 
     private void run(final Fase fase) {
         executor = Executors.newFixedThreadPool(NTHREADS);
-        System.out.println("Executor:" + Thread.currentThread());
-        System.out.println("Executor:" + Thread.currentThread().getThreadGroup());
         status.clear();
         List<Runnable> tasks = new LinkedList<>();
         for (final Downloader downloader : downloaders) {
@@ -117,7 +118,7 @@ public class OdsDownloader {
                     try {
                         switch (fase) {
                         case PREPARE:
-                            downloader.prepare();
+                            downloader.prepare(ctx);
                             break;
                         case DOWNLOAD:
                             downloader.download();
@@ -159,13 +160,13 @@ public class OdsDownloader {
      */
     private void process() {
         if (downloadOsm) {
-            osmDownloadJob.process();
+            osmDownloadJob.process(ctx);
         }
         if (downloadOds) {
-            geotoolsDownloadJob.process();
+            geotoolsDownloadJob.process(ctx);
         }
         for (Task task : postDownloadTasks) {
-            task.run();
+            task.run(ctx);
         }
     }
 

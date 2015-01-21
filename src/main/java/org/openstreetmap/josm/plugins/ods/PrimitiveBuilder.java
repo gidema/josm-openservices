@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import java.util.List;
+import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -18,31 +18,31 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public interface PrimitiveBuilder<T extends Entity> {
 
-    public List<OsmPrimitive> build(Geometry geometry);
+    public OsmPrimitive build(Geometry geometry, Map<String, String> tags);
 
-    public List<OsmPrimitive> build(Polygon polygon);
+    public OsmPrimitive build(Polygon polygon, Map<String, String> tags);
 
-    public List<OsmPrimitive> build(MultiPolygon mpg);
+    public OsmPrimitive build(MultiPolygon mpg, Map<String, String> tags);
 
-    public List<OsmPrimitive> build(Point point);
+    public OsmPrimitive build(Point point, Map<String, String> tags);
 
-    public List<OsmPrimitive> build(LineString ls);
+    public OsmPrimitive build(LineString ls, Map<String, String> tags);
 
-    public List<OsmPrimitive> build(MultiLineString mls);
+    public OsmPrimitive build(MultiLineString mls, Map<String, String> tags);
 
     /**
      * Create a josm Object from a MultiPolygon object The resulting Object depends
      * on whether the input Multipolygon consists of multiple polygons. If so, the result will be a
      * Relation of type Multipolyon. Otherwise the single polygon will be built.
      */
-    public OsmPrimitive buildArea(MultiPolygon mpg);
+    public OsmPrimitive buildArea(MultiPolygon mpg, Map<String, String> tags);
 
     /**
      * Create a josm Object from a Polygon object The resulting Object depends
      * on whether the input polygon has inner rings. If so, the result will be a
      * Relation of type Multipolyon. Otherwise the result will be a Way
      */
-    public OsmPrimitive buildArea(Polygon polygon);
+    public OsmPrimitive buildArea(Polygon polygon, Map<String, String> tags);
 
     /**
      * Create a josm MultiPolygon relation from a Polygon object.
@@ -50,7 +50,7 @@ public interface PrimitiveBuilder<T extends Entity> {
      * @param polygon
      * @return the relation
      */
-    public Relation buildMultiPolygon(Polygon polygon);
+    public Relation buildMultiPolygon(Polygon polygon, Map<String, String> tags);
 
     /**
      * Create a josm MultiPolygon relation from a MultiPolygon object.
@@ -58,7 +58,7 @@ public interface PrimitiveBuilder<T extends Entity> {
      * @param mpg
      * @return the relation
      */
-    public Relation buildMultiPolygon(MultiPolygon mpg);
+    public Relation buildMultiPolygon(MultiPolygon mpg, Map<String, String> tags);
 
     /**
      * Create a josm Way from the exterior ring of a Polygon object
@@ -66,7 +66,7 @@ public interface PrimitiveBuilder<T extends Entity> {
      * @param polygon
      * @return the way
      */
-    public Way buildWay(Polygon polygon);
+    public Way buildWay(Polygon polygon, Map<String, String> tags);
 
     /**
      * Create a josm way from a LineString object
@@ -74,7 +74,7 @@ public interface PrimitiveBuilder<T extends Entity> {
      * @param line
      * @return
      */
-    public Way buildWay(LineString line);
+    public Way buildWay(LineString line, Map<String, String> tags);
 
     /**
      * Create a josm Node from a Coordinate object. Optionally merge with
@@ -85,7 +85,7 @@ public interface PrimitiveBuilder<T extends Entity> {
      *            if true, merge this node with an existing node
      * @return the node
      */
-    public Node buildNode(Coordinate coordinate, boolean merge);
+    public Node buildNode(Coordinate coordinate, Map<String, String> tags, boolean merge);
 
     /**
      * Create a josm Node from a Point object. Optionally merge with existing
@@ -95,8 +95,7 @@ public interface PrimitiveBuilder<T extends Entity> {
      * @param merge
      * @return
      */
-    public Node buildNode(Point point, boolean merge);
+    public Node buildNode(Point point, Map<String, String> tags, boolean merge);
 
-    public void createPrimitives(T entity);
-
+    public void createPrimitive(T entity);
 }

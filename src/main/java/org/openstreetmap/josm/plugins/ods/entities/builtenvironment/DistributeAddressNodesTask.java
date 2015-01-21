@@ -10,6 +10,8 @@ import java.util.Map;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
+import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
@@ -20,8 +22,8 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * This analyzer finds overlapping nodes in the data and distibutes them, so
- * they are no longer overlapping. The MatchAddressToBuildingTask must
- * run before this class, so when can distribute over the line pointing to the
+ * they are no longer overlapping. The MatchAddressToBuildingTask must run
+ * before this class, so when can distribute over the line pointing to the
  * center of the building.
  * 
  * @author Gertjan Idema <mail@gertjanidema.nl>
@@ -30,7 +32,7 @@ import com.vividsolutions.jts.geom.Point;
 public class DistributeAddressNodesTask implements Task {
     private GeoUtil geoUtil;
     private GtBuildingStore buildingStore;
-    
+
     public DistributeAddressNodesTask(GeoUtil geoUtil,
             GtBuildingStore buildingStore) {
         super();
@@ -38,13 +40,15 @@ public class DistributeAddressNodesTask implements Task {
         this.buildingStore = buildingStore;
     }
 
-    public void run() {
-        Iterator<Building> it = buildingStore.iterator();
-        while (it.hasNext()) {
-            Building building = it.next();
-            for (AddressNodeGroup group : buildGroups(building).values()) {
-                if (group.getAddressNodes().size() > 1) {
-                    distribute(group, false);
+    @Override
+    public void run(Context ctx) {
+        EntitySource entitySource = (EntitySource) ctx.get("entitySource");
+        for (Building building : buildingStore) {
+            if (building.getEntitySource() == entitySource) {
+                for (AddressNodeGroup group : buildGroups(building).values()) {
+                    if (group.getAddressNodes().size() > 1) {
+                        distribute(group, false);
+                    }
                 }
             }
         }
@@ -75,7 +79,7 @@ public class DistributeAddressNodesTask implements Task {
         List<AddressNode> nodes = group.getAddressNodes();
         Collections.sort(nodes);
         if (group.getBuilding().getGeometry().isEmpty()) {
-            // Happens rarely, 
+            // Happens rarely,
             // for now return to prevent null pointer Exception
             return;
         }
@@ -90,21 +94,21 @@ public class DistributeAddressNodesTask implements Task {
         List<Command> cmds = new LinkedList<>();
         for (AddressNode node : nodes) {
             Point point = geoUtil.toPoint(new Coordinate(x, y));
-//            if (withUndo) {
-//                Command cmd = node.updateGeometry(point);            
-//                if (cmd != null) {
-//                    cmds.add(cmd);
-//                }
-//            }
-//            else {
-                node.setGeometry(point);
-//            }
+            // if (withUndo) {
+            // Command cmd = node.updateGeometry(point);
+            // if (cmd != null) {
+            // cmds.add(cmd);
+            // }
+            // }
+            // else {
+            node.setGeometry(point);
+            // }
             x = x + dx;
             y = y + dy;
         }
         if (!cmds.isEmpty()) {
             final SequenceCommand sequenceCommand = new SequenceCommand(
-                I18n.tr("Distribute {0} address nodes.", cmds.size()), cmds);
+                    I18n.tr("Distribute {0} address nodes.", cmds.size()), cmds);
             Main.main.undoRedo.add(sequenceCommand);
         }
     }

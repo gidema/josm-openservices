@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openstreetmap.josm.data.DataSource;
+import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
 import org.openstreetmap.josm.plugins.ods.io.DownloadJob;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
@@ -14,8 +16,9 @@ public class OsmDownloadJob implements DownloadJob {
     private final InternalDataLayer dataLayer;
     private final OsmDownloader downloader;
     private final List<Task> tasks;
-    private Boundary boundary;
     private final Status status = new Status();
+//    private Context ctx;
+//    private EntitySource entitySource;
 
     public OsmDownloadJob(InternalDataLayer dataLayer, OsmDownloader downloader, List<Task> tasks) {
         super();
@@ -26,19 +29,18 @@ public class OsmDownloadJob implements DownloadJob {
     }
 
     @Override
-    public void setBoundary(Boundary boundary) {
-        this.boundary = boundary;
-        downloader.setBoundary(boundary);
-    }
-    
-    @Override
     public List<? extends Downloader> getDownloaders() {
         return Collections.singletonList(downloader);
     }
 
-    public void process() {
+//    public void prepare(Context ctx) {
+//        this.ctx = ctx;
+//        this.entitySource = (EntitySource) ctx.get("entitySource");
+//    }
+//    
+    public void process(Context ctx) {
         for (Task task : tasks) {
-            task.run();
+            task.run(ctx);
         }
     }
     
@@ -50,8 +52,10 @@ public class OsmDownloadJob implements DownloadJob {
     class MergeTask implements Task {
 
         @Override
-        public void run() {
+        public void run(Context ctx) {
             dataLayer.getOsmDataLayer().mergeFrom(downloader.getDataSet());
+            EntitySource entitySource = (EntitySource) ctx.get("entitySource");
+            Boundary boundary = entitySource.getBoundary();
             DataSource ds = new DataSource(boundary.getBounds(), "OSM");
             dataLayer.getOsmDataLayer().data.dataSources.add(ds);
         }       

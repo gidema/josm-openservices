@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -20,6 +19,7 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public interface Entity {
+    public EntitySource getEntitySource();
 	public String getSource();
 	public String getSourceDate();
     boolean isIncomplete();
@@ -35,12 +35,12 @@ public interface Entity {
     * In most cases the list contains 1 item.
     *
     */
-    public List<OsmPrimitive> getPrimitives();
+    public OsmPrimitive getPrimitive();
     
     /**
      * Get the tags that are not associated with any of the entity's properties.
      */
     public Map<String, String> getOtherTags();
     
-    public void setPrimitives(List<OsmPrimitive> primitives);
+    public void setPrimitive(OsmPrimitive primitive);
 }

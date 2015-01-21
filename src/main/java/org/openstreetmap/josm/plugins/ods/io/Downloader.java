@@ -1,13 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.Context;
 
 public interface Downloader {
-    void setBoundary(Boundary boundary);
-
     Status getStatus();
 
-    void prepare() throws InterruptedException;
+    void prepare(Context ctx) throws InterruptedException;
 
     void download() throws InterruptedException;
 
