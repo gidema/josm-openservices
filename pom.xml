@@ -7,7 +7,7 @@
   	<dependency>
   		<groupId>org.geotools</groupId>
   		<artifactId>gt-wfs</artifactId>
-  		<version>10.3</version>
+  		<version>12.1</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>commons-codec</artifactId>
@@ -18,7 +18,7 @@
   	<dependency>
   	  <groupId>org.geotools</groupId>
   	  <artifactId>gt-epsg-hsql</artifactId>
-  	  <version>10.3</version>
+  	  <version>12.1</version>
   	</dependency>
   	<dependency>
   		<groupId>commons-configuration</groupId>
@@ -28,12 +28,12 @@
   	<dependency>
   		<groupId>org.geotools</groupId>
   		<artifactId>gt-cql</artifactId>
-  		<version>10.3</version>
+  		<version>12.1</version>
   	</dependency>
   	<dependency>
   		<groupId>org.geotools.xsd</groupId>
   		<artifactId>gt-xsd-kml</artifactId>
-  		<version>10.3</version>
+  		<version>12.1</version>
   	</dependency>
   	<dependency>
   		<groupId>org.jsoup</groupId>
@@ -51,9 +51,9 @@
   		<version>0.9</version>
   	</dependency>
   	<dependency>
-  		<groupId>proj4j</groupId>
+  		<groupId>org.osgeo</groupId>
   		<artifactId>proj4j</artifactId>
-  		<version>2408</version>
+  		<version>0.1.0</version>
   	</dependency>
   </dependencies>
   <repositories>
