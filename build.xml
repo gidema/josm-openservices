@@ -29,12 +29,16 @@
 -->
 <project name="opendataservices" default="dist" basedir="."
 	xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	
+	<!-- run the ant timestamp task -->
+	<tstamp/>
+
   <artifact:pom id="mypom" file="pom.xml" />
 
     <!-- enter the SVN commit message -->
     <property name="commit.message" value="Commit message"/>
     <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-    <property name="plugin.main.version" value="7575"/>
+    <property name="plugin.main.version" value="7906"/>
 	  <property name="plugin.class" value="org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin"/>
     <property name="plugin.version" value="${mypom.version}"/>
     <property name="plugin.build.dir" value="build/deploy"/>
@@ -57,17 +61,17 @@
     <target name="init" depends="clean">
       <mkdir dir="${plugin.build.dir}"/>
       <artifact:dependencies filesetId="dependency.fileset">
-        <dependency groupId="org.geotools" artifactId="gt-wfs" version="10.3"/>
-        <dependency groupId="org.geotools" artifactId="gt-xml" version="10.3"/>
-        <dependency groupId="org.geotools" artifactId="gt-cql" version="10.3"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="10.3"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="10.3"/>
+        <dependency groupId="org.geotools" artifactId="gt-wfs" version="12.1"/>
+        <dependency groupId="org.geotools" artifactId="gt-xml" version="12.1"/>
+        <dependency groupId="org.geotools" artifactId="gt-cql" version="12.1"/>
+        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="12.1"/>
+        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="12.1"/>
         <dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
         <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
         <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
-      	<dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>
-      	<dependency groupId="org.threeten" artifactId="threetenbp" version="0.9"/>
-        <dependency groupId="proj4j" artifactId="proj4j" version="2408"/>
+        <dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>
+        <dependency groupId="org.threeten" artifactId="threetenbp" version="0.9"/>
+        <dependency groupId="org.osgeo" artifactId="proj4j" version="0.1.0"/>
       </artifact:dependencies>
     </target>
 
@@ -95,12 +99,12 @@
         <fileset file="${commons-lang:commons-lang:jar}"/>
         <fileset file="${commons-logging:commons-logging:jar}"/>
         <fileset file="${commons-collections:commons-collections:jar}"/>
-<!--      	<fileset file="${com.fasterxml.jackson.core:jackson-core:jar}"/>
-      	<fileset file="${com.fasterxml.jackson.core:jackson-databind:jar}"/>
-        <fileset file="${com.fasterxml.jackson.core:jackson-annotations:jar}"-->
-      	<fileset file="${org.jsoup:jsoup:jar}"/>
-      	<fileset file="${org.threeten:threetenbp:jar}"/>
-        <fileset file="${proj4j:proj4j:jar}"/>
+<!--        <fileset file="${com.fasterxml.jackson.core:jackson-core:jar}"/>
+        <fileset file="${com.fasterxml.jackson.core:jackson-databind:jar}"/>
+        <fileset file="${com.fasterxml.jackson.core:jackson-annotations:jar}"/>
+        <fileset file="${org.jsoup:jsoup:jar}"/>-->
+        <fileset file="${org.threeten:threetenbp:jar}"/>
+        <fileset file="${org.osgeo:proj4j:jar}"/>
       </unjar>
       <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
       <!--
@@ -114,7 +118,7 @@
       <manifest>
         <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;"/>
         <attribute name="Plugin-Class" value="${plugin.class}"/>
-        <attribute name="Plugin-Date" value="${time}"/>
+        <attribute name="Plugin-Date" value="${TODAY}"/>
         <attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS"/>
         <attribute name="Plugin-Icon" value="images/wfs.png"/>
         <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
