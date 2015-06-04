@@ -126,12 +126,12 @@ public class GtDownloader implements Downloader {
         listener = new DefaultProgressListener();
         try {
             featureSource.getFeatures(filter).accepts(new FeatureVisitor() {
-                int i=0;
+//                int i=0;
 
                 @Override
                 public void visit(Feature feature) {
                     downloadedFeatures.add((SimpleFeature) feature);
-                    System.out.println(i++);
+//                    System.out.println(i++);
                 }
             }, listener);
             if (status.isCancelled()) {

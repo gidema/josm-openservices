@@ -4,13 +4,17 @@ import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 
 import com.vividsolutions.jts.geom.Point;
 
-public abstract class AddressNodeImpl extends AbstractEntity implements AddressNode {
+public abstract class AddressNodeImpl extends AbstractEntity implements MutableAddressNode {
     private Address address;
     private Object buildingRef;
     private Building building;
     
-    public AddressNodeImpl(Address address) {
+    public AddressNodeImpl() {
         super();
+    }
+    
+    @Override
+    public void setAddress(Address address) {
         this.address = address;
     }
 
@@ -18,7 +22,6 @@ public abstract class AddressNodeImpl extends AbstractEntity implements AddressN
     public Address getAddress() {
         return address;
     }
-
 
     @Override
     public Integer getHouseNumber() {
@@ -75,6 +78,7 @@ public abstract class AddressNodeImpl extends AbstractEntity implements AddressN
         return buildingRef;
     }
     
+    @Override
     public void setBuildingRef(Object buildingRef) {
         this.buildingRef = buildingRef;
     }

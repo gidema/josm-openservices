@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import org.apache.commons.lang.ObjectUtils;
 
-public class AddressImpl implements Address {
+public class AddressImpl implements MutableAddress {
     private Integer houseNumber;
     private String fullHouseNumber;
     private String postcode;
@@ -13,18 +13,16 @@ public class AddressImpl implements Address {
     private City city;
 
     @Override
-    public City getCity() {
-        return city;
-    }
-    
     public void setHouseName(String houseName) {
         this.houseName = houseName;
     }
 
+    @Override
     public void setCityName(String cityName) {
         this.cityName = cityName;
     }
 
+    @Override
     public void setStreetName(String streetName) {
         this.streetName = streetName;
     }
@@ -39,6 +37,7 @@ public class AddressImpl implements Address {
         return street;
     }
 
+    @Override
     public void setPostcode(String postcode) {
         this.postcode = postcode;
     }
@@ -48,10 +47,12 @@ public class AddressImpl implements Address {
         return postcode;
     }
 
+    @Override
     public void setHouseNumber(Integer houseNumber) {
         this.houseNumber = houseNumber;
     }
     
+    @Override
     public void setFullHouseNumber(String fullHouseNumber) {
         this.fullHouseNumber = fullHouseNumber;
         this.parseHouseNumber();
@@ -80,9 +81,16 @@ public class AddressImpl implements Address {
         return cityName;
     }
 
+    @Override
+    public City getCity() {
+        return city;
+    }
+    
+
+    @Override
     public void setStreet(Street street) {
         this.street = street;
-        this.streetName = street.getName();
+        this.setStreetName(street.getName());
     }
     
     public String formatHouseNumber() {
