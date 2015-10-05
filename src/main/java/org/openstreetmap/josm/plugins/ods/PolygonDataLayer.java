@@ -23,7 +23,7 @@ public class PolygonDataLayer extends AbstractDataLayer {
     }
 
     @Override
-    public OsmDataLayer createOsmDataLayer() {
+    protected OsmDataLayer createOsmDataLayer() {
         OsmDataLayer osmDataLayer = null;
         String layerName = "ODS Polygons";
         File polygonFile = getPolygonFilePath();

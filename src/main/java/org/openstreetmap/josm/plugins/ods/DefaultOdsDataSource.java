@@ -3,6 +3,10 @@ package org.openstreetmap.josm.plugins.ods;
 import org.opengis.filter.Filter;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
+/**
+ * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ */
 public class DefaultOdsDataSource implements OdsDataSource {
 	protected OdsFeatureSource odsFeatureSource;
 	private Filter filter;
@@ -48,10 +52,13 @@ public class DefaultOdsDataSource implements OdsDataSource {
 		this.idFactory = idFactory;
 	}
 
+	/**
+	 * @see org.openstreetmap.josm.plugins.ods.OdsDataSource#getIdFactory()
+	 */
 	@Override
 	public IdFactory getIdFactory() {
 		if (idFactory == null) {
-			idFactory = new DefaultIdFactory(this);
+			idFactory = new DefaultIdFactory(getOdsFeatureSource().getIdAttribute());
 		}
 		return idFactory;
 	}

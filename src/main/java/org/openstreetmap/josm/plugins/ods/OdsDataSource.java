@@ -4,12 +4,12 @@ import org.opengis.filter.Filter;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
- * An OdsDataSource is the interface between the OdsModule and the
- * OdsFeatureSource. It performs the following tasks.
- * 
- * - Maintain a filter used when downloading features - Create a unique id for
- * each downloaded feature - Maintain a list of downloaded feature to prevent
- * duplicates
+ * <p>An OdsDataSource is the interface between the OdsModule and the
+ * OdsFeatureSource. It performs the following tasks.</p>
+ * <ul>
+ * <li>Maintain a filter used when downloading features</li>
+ * <li>Create a unique id for each downloaded feature</li>
+ * <li>Maintain a list of downloaded feature to prevent duplicates</li>
  * 
  * @author Gertjan Idema
  * 
@@ -23,6 +23,12 @@ public interface OdsDataSource {
 
     public void setIdFactory(DefaultIdFactory idFactory);
 
+    /**
+     * Get an IdFactory that can extract a unique Id for the features
+     * Retrieved from this dataSource.<br>
+     * 
+     * @return The IdFactory
+     */
     public IdFactory getIdFactory();
 
     public MetaData getMetaData();

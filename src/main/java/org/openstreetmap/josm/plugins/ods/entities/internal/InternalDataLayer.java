@@ -12,7 +12,6 @@ import org.openstreetmap.josm.plugins.ods.AbstractDataLayer;
  * 
  */
 public class InternalDataLayer extends AbstractDataLayer {
-
     public InternalDataLayer(String name) {
         super(name);
     }

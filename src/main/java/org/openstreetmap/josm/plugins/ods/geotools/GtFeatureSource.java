@@ -17,16 +17,18 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 public class GtFeatureSource implements OdsFeatureSource {
 
     private boolean initialized = false;
-    GtHost host;
-    String featureName;
+    private final GtHost host;
+    private final String featureName;
+    private final String idAttribute;
     SimpleFeatureSource featureSource;
     CoordinateReferenceSystem crs;
     MetaData metaData;
 
-    public GtFeatureSource(GtHost host, String featureName) {
+    public GtFeatureSource(GtHost host, String featureName, String idAttribute) {
         super();
         this.host = host;
         this.featureName = featureName;
+        this.idAttribute = idAttribute;
     }
 
     @Override
@@ -74,6 +76,11 @@ public class GtFeatureSource implements OdsFeatureSource {
     public FeatureType getFeatureType() {
         assert initialized;
         return getFeatureSource().getSchema();
+    }
+
+    @Override
+    public String getIdAttribute() {
+        return idAttribute;
     }
 
     @Override

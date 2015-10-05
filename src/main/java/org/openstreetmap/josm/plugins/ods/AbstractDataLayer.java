@@ -16,8 +16,8 @@ import org.openstreetmap.josm.plugins.ods.DataLayer;
  * 
  */
 public abstract class AbstractDataLayer implements DataLayer {
-    private OsmDataLayer osmDataLayer;
     private String name;
+    private OsmDataLayer osmDataLayer;
 
     public AbstractDataLayer(String name) {
         this.name = name;
@@ -27,9 +27,16 @@ public abstract class AbstractDataLayer implements DataLayer {
         return name;
     }
 
-    @Override
     public OsmDataLayer getOsmDataLayer() {
+        if (osmDataLayer == null) {
+            osmDataLayer = createOsmDataLayer();
+            Main.main.addLayer(osmDataLayer);
+        }
         return osmDataLayer;
+    }
+    
+    protected OsmDataLayer createOsmDataLayer() {
+        return new OsmDataLayer(new DataSet(), getName(), null);
     }
 
     public void initialize() {
@@ -37,23 +44,13 @@ public abstract class AbstractDataLayer implements DataLayer {
         if (Main.map != null) {
             oldLayer = Main.main.getActiveLayer();
         }
-        osmDataLayer = createOsmDataLayer();
-        Main.main.addLayer(osmDataLayer);
+        this.getOsmDataLayer();
         if (oldLayer != null) {
             Main.map.mapView.setActiveLayer(oldLayer);
         }
     }
     
-    /**
-     * Create a new OsmDataLayer.
-     * @return the new OsmDataLayer
-     */
-    protected OsmDataLayer createOsmDataLayer() {
-        return new OsmDataLayer(new DataSet(), name, null);
-    }
-
-    @Override
     public void reset() {
-        osmDataLayer = null;
+        this.osmDataLayer = null;
     }
 }

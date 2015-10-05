@@ -130,8 +130,10 @@ public class GtDownloader implements Downloader {
 
                 @Override
                 public void visit(Feature feature) {
+//                    if (featureEnhancer != null) {
+//                        feature = featureEnhancer.enhance(feature);
+//                    }
                     downloadedFeatures.add((SimpleFeature) feature);
-//                    System.out.println(i++);
                 }
             }, listener);
             if (status.isCancelled()) {
