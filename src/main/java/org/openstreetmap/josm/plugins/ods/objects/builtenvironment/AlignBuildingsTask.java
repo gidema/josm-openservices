@@ -4,7 +4,7 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 
@@ -30,8 +30,6 @@ public class AlignBuildingsTask implements Task {
     @Override
     public void run(Context ctx) {
         EntitySource entitySource = (EntitySource) ctx.get("entitySource");
-        Building firstBuilding = buildingStore.iterator().next();
-        if (firstBuilding == null) return;
 //        dataSet.beginUpdate();
         for (Building building : buildingStore) {
             long start = System.currentTimeMillis();

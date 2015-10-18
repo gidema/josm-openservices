@@ -11,7 +11,10 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.plugins.ods.Context;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
+import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeGroup;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
@@ -31,10 +34,10 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class DistributeAddressNodesTask implements Task {
     private GeoUtil geoUtil;
-    private GtBuildingStore buildingStore;
+    private OpenDataBuildingStore buildingStore;
 
     public DistributeAddressNodesTask(GeoUtil geoUtil,
-            GtBuildingStore buildingStore) {
+            OpenDataBuildingStore buildingStore) {
         super();
         this.geoUtil = geoUtil;
         this.buildingStore = buildingStore;
@@ -42,15 +45,15 @@ public class DistributeAddressNodesTask implements Task {
 
     @Override
     public void run(Context ctx) {
-        EntitySource entitySource = (EntitySource) ctx.get("entitySource");
+//        EntitySource entitySource = (EntitySource) ctx.get("entitySource");
         for (Building building : buildingStore) {
-            if (building.getEntitySource() == entitySource) {
+//            if (building.getEntitySource() == entitySource) {
                 for (AddressNodeGroup group : buildGroups(building).values()) {
                     if (group.getAddressNodes().size() > 1) {
                         distribute(group, false);
                     }
                 }
-            }
+//            }
         }
     }
 

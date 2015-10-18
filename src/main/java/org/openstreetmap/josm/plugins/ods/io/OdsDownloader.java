@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -18,14 +19,13 @@ import org.openstreetmap.josm.plugins.ods.entities.internal.OsmDownloadJob;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
-public class OdsDownloader {
+@Deprecated
+public abstract class OdsDownloader {
     private static final int NTHREADS = 10;
 
 //    private OdsModuleConfig module;
 //    private OdsModule module;
     
-//    private OsmDownloadJob osmDownloadJob;
-//    private GeotoolsDownloadJob geotoolsDownloadJob;
     private boolean downloadOsm;
     private boolean downloadOds;
     
@@ -33,10 +33,10 @@ public class OdsDownloader {
     
 //    private ProgressMonitor pm;
     
-    private OsmDownloadJob osmDownloadJob;
-    private GeotoolsDownloadJob geotoolsDownloadJob;
+//    private OsmDownloadJob osmDownloadJob;
+//    private GeotoolsDownloadJob geotoolsDownloadJob;
     
-    private List<Task> postDownloadTasks;
+    private List<Task> postDownloadTasks = new ArrayList<>(0);
     
     private ExecutorService executor;
 
@@ -44,15 +44,19 @@ public class OdsDownloader {
     private Context ctx;
     private EntitySource entitySource;
 
-    public OdsDownloader(OsmDownloadJob osmDownloadJob, 
-            GeotoolsDownloadJob geotoolsDownloadJob,
-            List<Task> postDownloadTasks) {
-        super();
-//        this.module = module;
-        this.osmDownloadJob = osmDownloadJob;
-        this.geotoolsDownloadJob = geotoolsDownloadJob;
-        this.postDownloadTasks = postDownloadTasks;
-    }
+//    public OdsDownloader(OsmDownloadJob osmDownloadJob, 
+//            GeotoolsDownloadJob geotoolsDownloadJob,
+//            List<Task> postDownloadTasks) {
+//        super();
+////        this.module = module;
+//        this.osmDownloadJob = osmDownloadJob;
+//        this.geotoolsDownloadJob = geotoolsDownloadJob;
+//        this.postDownloadTasks = postDownloadTasks;
+//    }
+
+    protected abstract OsmDownloadJob getOsmDownloadJob();
+
+    public abstract GeotoolsDownloadJob getGeotoolsDownloadJob();
 
     public void run(ProgressMonitor pm, Context ctx, boolean downloadOsm, boolean downloadOds) throws ExecutionException, InterruptedException {
         status.clear();
@@ -95,13 +99,13 @@ public class OdsDownloader {
         downloaders = new LinkedList<Downloader>();
         if (downloadOsm) {
 //            osmDownloadJob.setEntitySource(entitySource);
-            for (Downloader downloader : osmDownloadJob.getDownloaders()) {
+            for (Downloader downloader : getOsmDownloadJob().getDownloaders()) {
                 downloaders.add(downloader);
             }
         }
         if (downloadOds) {
 //            geotoolsDownloadJob.setEntitySource(entitySource);
-            for (Downloader downloader : geotoolsDownloadJob.getDownloaders()) {
+            for (Downloader downloader : getGeotoolsDownloadJob().getDownloaders()) {
                 downloaders.add(downloader);
             }
         }
@@ -160,10 +164,10 @@ public class OdsDownloader {
      */
     private void process() {
         if (downloadOsm) {
-            osmDownloadJob.process(ctx);
+            getOsmDownloadJob().process(ctx);
         }
         if (downloadOds) {
-            geotoolsDownloadJob.process(ctx);
+            getGeotoolsDownloadJob().process(ctx);
         }
         for (Task task : postDownloadTasks) {
             task.run(ctx);

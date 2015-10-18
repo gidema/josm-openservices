@@ -18,6 +18,7 @@ import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 
+@Deprecated
 public class OsmDownloader implements Downloader {
     private Status status = new Status();
     private EntitySource entitySource;

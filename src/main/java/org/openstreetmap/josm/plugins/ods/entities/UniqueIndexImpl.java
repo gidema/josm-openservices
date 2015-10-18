@@ -2,21 +2,22 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
-public class UniqueIndexImpl<T extends Entity> implements Index<T>  {
+public class UniqueIndexImpl<T extends Entity> implements Index<T> {
     private Map<Object, T> map = new HashMap<>();
     private Class<T> clazz;
-//    private Class<U> keyClass;
     private Method[] getters;
     private String[] properties; 
     
     public UniqueIndexImpl(Class<T> clazz, String... properties) {
         super();
         this.clazz = clazz;
-//        this.keyClass = keyClass;
         this.properties = properties;
         getters = createGetters();
     }
@@ -61,11 +62,20 @@ public class UniqueIndexImpl<T extends Entity> implements Index<T>  {
         return map.values().iterator();
     }
 
-    /* (non-Javadoc)
-     * @see org.openstreetmap.josm.plugins.ods.entities.Index#get(U)
-     */
+    public Stream<T> stream() {
+        return map.values().stream();
+    }
+
     public T get(Object key) {
         return map.get(key);
+    }
+    
+    public List<T> getAll(Object key) {
+        T result = map.get(key);
+        if (result == null) {
+            return Collections.emptyList();
+        }
+        return Collections.singletonList(result);
     }
     
     @Override

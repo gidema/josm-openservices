@@ -27,7 +27,7 @@ public interface GeotoolsEntityBuilder<T extends Entity>  {
     
     /**
      * Create the entity and store somewhere.
-     * Typically this is in and EntityStore<T>
+     * Typically this is in an EntityStore<T>
      * 
      * @param feature
      */

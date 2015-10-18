@@ -2,6 +2,8 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataAddressNodeStore;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 /**
@@ -11,10 +13,10 @@ import org.openstreetmap.josm.plugins.ods.tasks.Task;
  *
  */
 public class CreateAddressNodePrimitivesTask implements Task {
-    private GtAddressNodeStore addressNodeStore;
+    private OpenDataAddressNodeStore addressNodeStore;
     private PrimitiveBuilder<AddressNode> primitiveBuilder;
 
-    public CreateAddressNodePrimitivesTask(GtAddressNodeStore addressNodeStore,
+    public CreateAddressNodePrimitivesTask(OpenDataAddressNodeStore addressNodeStore,
             PrimitiveBuilder<AddressNode> primitiveBuilder) {
         super();
         this.addressNodeStore = addressNodeStore;

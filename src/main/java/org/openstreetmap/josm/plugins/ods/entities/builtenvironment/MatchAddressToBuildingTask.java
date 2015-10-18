@@ -1,8 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataAddressNodeStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 
@@ -13,11 +18,11 @@ import org.openstreetmap.josm.plugins.ods.tasks.Task;
  *
  */
 public class MatchAddressToBuildingTask implements Task {
-    private GtBuildingStore buildingStore;
-    private GtAddressNodeStore addressNodeStore;
+    private OpenDataBuildingStore buildingStore;
+    private OpenDataAddressNodeStore addressNodeStore;
     
-    public MatchAddressToBuildingTask(GtBuildingStore buildingStore,
-            GtAddressNodeStore addressNodeStore) {
+    public MatchAddressToBuildingTask(OpenDataBuildingStore buildingStore,
+            OpenDataAddressNodeStore addressNodeStore) {
         super();
         this.buildingStore = buildingStore;
         this.addressNodeStore = addressNodeStore;
@@ -45,17 +50,18 @@ public class MatchAddressToBuildingTask implements Task {
      */
     private void analyzeAddressBuildingByRef(AddressNode address) {
         Object buildingRef = address.getBuildingRef();
-        Building building = buildingStore.getByReference(buildingRef);
+        List<Building> buildings = buildingStore.getById(buildingRef);
         // TODO create issue if the building is not found
-        if (building != null) {
-            address.setBuilding(building);
-            building.getAddressNodes().add(address);
+        if (buildings.size() == 1) {
+            address.setBuilding(buildings.get(0));
+            buildings.get(0).getAddressNodes().add(address);
         }
     }
 
     /**
      * Use the geometry (point) of this address to find the building to
-     * which this address belongs
+     * which this address belongs.
+     * TODO Use a geometry index to do the matching 
      * 
      * @param address
      */

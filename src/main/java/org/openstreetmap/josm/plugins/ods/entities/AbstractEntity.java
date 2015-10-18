@@ -8,6 +8,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class AbstractEntity implements Entity {
+    private Object primaryId;
     private Object referenceId;
     private EntitySource entitySource;
     private String sourceDate;
@@ -16,6 +17,15 @@ public abstract class AbstractEntity implements Entity {
     private boolean incomplete = true;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
+
+    public void setPrimaryId(Object primaryId) {
+        this.primaryId = primaryId;
+    }
+
+    @Override
+    public Object getPrimaryId() {
+        return primaryId;
+    }
 
     public Object getReferenceId() {
         return referenceId;

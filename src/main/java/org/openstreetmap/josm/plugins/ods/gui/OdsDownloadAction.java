@@ -15,10 +15,9 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
-import org.openstreetmap.josm.plugins.ods.io.OdsDownloader;
+import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
+import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.xml.sax.SAXException;
@@ -29,7 +28,7 @@ public class OdsDownloadAction extends OdsAction {
      */
     private static final long serialVersionUID = 1L;
 
-    private OdsDownloader downloader;
+    private MainDownloader downloader;
     private Date startDate;
     private boolean cancelled = false;
     private Boundary boundary;
@@ -119,10 +118,11 @@ public class OdsDownloadAction extends OdsAction {
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
             try {
-                EntitySource entitySource = new EntitySource(startDate, boundary);
-                Context ctx = new Context();
-                ctx.put("entitySource", entitySource);
-                downloader.run(getProgressMonitor(), ctx, downloadOsm, downloadOds);
+                DownloadRequest request = new DownloadRequest(startDate, boundary,
+                    downloadOsm, downloadOds);
+//                Context ctx = new Context();
+//                ctx.put("entitySource", entitySource);
+                downloader.run(getProgressMonitor(), request);
             } catch (ExecutionException|InterruptedException e) {
                 throw new OsmTransferException(e);
             }
@@ -136,6 +136,6 @@ public class OdsDownloadAction extends OdsAction {
             else {
                 Main.map.mapView.setActiveLayer(getModule().getExternalDataLayer().getOsmDataLayer());
             }
-        }        
+        }
     }
 }

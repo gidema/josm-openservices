@@ -4,7 +4,7 @@ import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 
 /**
  * The DataLayer combines the Osm Datalayer that is shown in the 
- * user interface, with the ODS EntitySet that contains the undelaying
+ * user interface, with the ODS EntitySet that contains the underlaying
  * data.
  * 
  * @author gertjan

@@ -2,6 +2,8 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
@@ -16,10 +18,10 @@ import org.openstreetmap.josm.plugins.ods.tasks.Task;
  *
  */
 public class FindBuildingNeighboursTask implements Task {
-    private final GtBuildingStore buildingStore;
+    private final OpenDataBuildingStore buildingStore;
     private final Double tolerance;
     
-    public FindBuildingNeighboursTask(GtBuildingStore buildingStore, GeoUtil geoUtil, Double tolerance) {
+    public FindBuildingNeighboursTask(OpenDataBuildingStore buildingStore, GeoUtil geoUtil, Double tolerance) {
         super();
         this.buildingStore = buildingStore;
         this.tolerance = tolerance;

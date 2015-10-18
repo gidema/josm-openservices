@@ -7,7 +7,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
-import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.osm.SmallSegmentRemover;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
@@ -19,7 +19,6 @@ import org.openstreetmap.josm.plugins.ods.tasks.Task;
  * TODO There are 2 issues with this approach
  * 1. If a node is close to, but not yet connected to a neighboring building.
  *   This algorithm might choose the wrong coordinates for the new point.
- * 2. TODO what was the other issue again?
  * Anyway, we might consider to move this functionality into the building aligner.
  *
  * @author Gertjan Idema <mail@gertjanidema.nl>

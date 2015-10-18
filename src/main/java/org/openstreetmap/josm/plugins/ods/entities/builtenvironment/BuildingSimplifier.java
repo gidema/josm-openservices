@@ -3,6 +3,8 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 import java.util.Iterator;
 
 import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -22,9 +24,9 @@ import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
  */
 public class BuildingSimplifier implements Task {
     private Double tolerance;
-    private GtBuildingStore buildingStore;
+    private OpenDataBuildingStore buildingStore;
     
-    public BuildingSimplifier(GtBuildingStore buildingStore, Double tolerance) {
+    public BuildingSimplifier(OpenDataBuildingStore buildingStore, Double tolerance) {
         super();
         this.buildingStore = buildingStore;
         this.tolerance = tolerance;

@@ -1,15 +1,17 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
 import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 
 public class CheckBuildingCompletenessTask implements Task {
-    private final GtBuildingStore buildingStore;
+    private final OpenDataBuildingStore buildingStore;
     
-    public CheckBuildingCompletenessTask(GtBuildingStore buildingStore) {
+    public CheckBuildingCompletenessTask(OpenDataBuildingStore buildingStore) {
         super();
         this.buildingStore = buildingStore;
     }

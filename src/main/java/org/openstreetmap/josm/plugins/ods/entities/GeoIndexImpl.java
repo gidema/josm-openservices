@@ -46,6 +46,11 @@ public class GeoIndexImpl<T extends Entity, V extends T> implements GeoIndex<T> 
         }
     }
     
+    @Override
+    public List<T> getAll(Object id) {
+        throw new UnsupportedOperationException();
+    }
+
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.entities.GeoIndex#intersection(com.vividsolutions.jts.geom.Geometry)
      */

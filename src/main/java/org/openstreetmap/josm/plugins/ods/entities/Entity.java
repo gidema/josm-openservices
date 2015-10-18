@@ -7,13 +7,11 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * ODS entities are represent entities like buildings, address nodes,
+ * ODS entities represent entities like buildings, address nodes,
  * or streets. They are the interface between imported features and 
- * Josm entities.
+ * Josm primitives.
  * Using these entities gives the possibility to build object relations
  * from geometric relations.
- * The method 'getPrimitives' creates the nodes, ways and relations to
- * represent this on a Josm layer.
  *   
  * @author gertjan
  *
@@ -24,6 +22,7 @@ public interface Entity {
 	public String getSourceDate();
     boolean isIncomplete();
     public boolean isDeleted();
+    public Object getPrimaryId();
     public Object getReferenceId();
     public Long getPrimitiveId();
     public Geometry getGeometry();

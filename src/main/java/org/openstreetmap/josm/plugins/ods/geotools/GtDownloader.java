@@ -1,13 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.util.DefaultProgressListener;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
@@ -15,14 +14,12 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
-import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.EntitySource;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.external.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsEntityBuilder;
-import org.openstreetmap.josm.plugins.ods.io.Downloader;
+import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
@@ -30,52 +27,40 @@ import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GtDownloader implements Downloader {
+public class GtDownloader implements FeatureDownloader {
     private final GtDataSource dataSource;
     private final CRSUtil crsUtil;
-    private Context ctx;
-    private EntitySource entitySource;
+    private DownloadRequest request;
     private SimpleFeatureSource featureSource;
     private Filter filter;
     private DefaultFeatureCollection downloadedFeatures;
-//    private final UniqueFeatureCollection allFeatures;
-//    private DefaultFeatureCollection newFeatures = new DefaultFeatureCollection();
     private final Status status = new Status();
     private final GeotoolsEntityBuilder<?> entityBuilder;
-    private final EntityStore<?> entityStore;
     private final List<Task> tasks;
 
     private ProgressListener listener;
     
-//    public GtDownloader(GtDataSource dataSource, UniqueFeatureCollection features, CRSUtil crsUtil,
-//            GeotoolsEntityBuilder<?> entityBuilder, EntityStore<?> entityStore ,List<Task> tasks) {
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            GeotoolsEntityBuilder<?> entityBuilder, EntityStore<?> entityStore ,List<Task> tasks) {
+            GeotoolsEntityBuilder<?> entityBuilder, List<Task> tasks) {
         super();
         this.dataSource = dataSource;
-//        allFeatures = features;
         this.crsUtil = crsUtil;
         this.entityBuilder = entityBuilder;
-        this.entityStore = entityStore;
-        this.tasks = (tasks != null ? tasks : new ArrayList<Task>());
+        this.tasks = (tasks != null ? tasks : Collections.emptyList());
     }
     
-//    @Override
-//    public void setBoundary(Boundary boundary) {
-//        this.boundary = boundary;
-//    }
-//    
     @Override
+    public void setup(DownloadRequest request) {
+        this.request = request;
+    }
+
     public Status getStatus() {
         return status;
     }
 
     @Override
-    public void prepare(Context ctx) {
-        this.ctx = ctx;
-        this.entitySource = (EntitySource) ctx.get("entitySource");
+    public void prepare() {
         status.clear();
-        entityStore.clear();
         this.downloadedFeatures = new DefaultFeatureCollection();
         try {
             // TODO rename dataSource.initialize() to prepare()
@@ -107,7 +92,7 @@ public class GtDownloader implements Downloader {
      */
     private Geometry getArea() {
         CoordinateReferenceSystem targetCRS = featureSource.getInfo().getCRS();
-        Geometry area = entitySource.getBoundary().getMultiPolygon();
+        Geometry area = request.getBoundary().getMultiPolygon();
         if (!targetCRS.equals(CRSUtil.OSM_CRS)) {
             try {
                 area = crsUtil.fromOsm(area, targetCRS);
@@ -119,20 +104,13 @@ public class GtDownloader implements Downloader {
     }
     
     @Override
-    public void download() throws InterruptedException {
+    public void download() {
         downloadedFeatures = new DefaultFeatureCollection();
-//        System.out.println(featureSource.getName() + ":" + Thread.currentThread());
-//        System.out.println(featureSource.getName() + ":" + Thread.currentThread().getThreadGroup());
-        listener = new DefaultProgressListener();
         try {
             featureSource.getFeatures(filter).accepts(new FeatureVisitor() {
-//                int i=0;
 
                 @Override
                 public void visit(Feature feature) {
-//                    if (featureEnhancer != null) {
-//                        feature = featureEnhancer.enhance(feature);
-//                    }
                     downloadedFeatures.add((SimpleFeature) feature);
                 }
             }, listener);
@@ -147,7 +125,6 @@ public class GtDownloader implements Downloader {
             }
             else {
                 Host host = dataSource.getOdsFeatureSource().getHost();
-                host.getMaxFeatures();
                 Integer maxFeatures = host.getMaxFeatures();
                 if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
                     String featureType = dataSource.getFeatureType();
@@ -164,61 +141,22 @@ public class GtDownloader implements Downloader {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-//        try (SimpleFeatureIterator it = featureSource.getFeatures(filter).features()) {
-//            System.out.println(featureSource.getName() + " OK");
-//            // retrieve all allFeatures
-//            while (it.hasNext()) {
-//                if (Thread.currentThread().isInterrupted()) {
-//                    status.setCancelled(true);
-//                    break;
-//                }
-//                downloadedFeatures.add(it.next());
-//            }
-//            if (status.isCancelled()) {
-//                return;
-//            }
-//            if (downloadedFeatures.isEmpty() && dataSource.isRequired()) {
-//                String featureType = dataSource.getFeatureType();
-//                status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
-//                            featureType));
-//                status.setCancelled(true);
-//            }
-//            else {
-//                Host host = dataSource.getOdsFeatureSource().getHost();
-//                host.getMaxFeatures();
-//                Integer maxFeatures = host.getMaxFeatures();
-//                if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
-//                    String featureType = dataSource.getFeatureType();
-//                    status.setMessage(I18n.tr(
-//                        "To many {0} objects. Please choose a smaller download area.", featureType));
-//                    status.setCancelled(true);
-//                }
-//            }
-//            if (!status.isSucces()) {
-//                 Thread.currentThread().interrupt();
-//                 return;
-//            }
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//            status.setException(e);
-//        }
     };
     
     @Override
     public void process() {
         MetaData metaData = dataSource.getMetaData();
         entityBuilder.setMetaData(metaData);
-        entityBuilder.setContext(ctx);
+//        entityBuilder.setContext(ctx);
         for (SimpleFeature feature : downloadedFeatures) {
-            Object id = entityBuilder.getReferenceId(feature);
-            if (entityStore.getByReference(id) == null) {
+//            Object id = entityBuilder.getReferenceId(feature);
+//            if (entityStore.getByReference(id) == null) {
                entityBuilder.buildGtEntity(feature);
-            }
+//            }
         }
-        entityStore.extendBoundary(entitySource.getBoundary().getMultiPolygon());
+//        entityStore.extendBoundary(entitySource.getBoundary().getMultiPolygon());
         for (Task task : tasks) {
-            task.run(ctx);
+//            task.run(ctx);
         }
     }
 

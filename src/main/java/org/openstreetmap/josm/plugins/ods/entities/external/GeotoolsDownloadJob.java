@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.external;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openstreetmap.josm.Main;
@@ -13,6 +14,7 @@ import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
+@Deprecated
 public class GeotoolsDownloadJob implements DownloadJob {
     private final ExternalDataLayer dataLayer;
     private final List<Downloader> downloaders;
@@ -22,7 +24,7 @@ public class GeotoolsDownloadJob implements DownloadJob {
     public GeotoolsDownloadJob(ExternalDataLayer dataLayer, List<Downloader> downloaders, List<Task> tasks) {
         this.dataLayer = dataLayer;
         this.downloaders = downloaders;
-        this.tasks = tasks;
+        this.tasks = (tasks == null ? new ArrayList<>(0) : tasks);
     }
     
     @Override

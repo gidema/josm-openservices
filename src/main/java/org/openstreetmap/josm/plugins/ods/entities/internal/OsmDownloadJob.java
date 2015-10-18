@@ -12,6 +12,7 @@ import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
+@Deprecated
 public class OsmDownloadJob implements DownloadJob {
     private final InternalDataLayer dataLayer;
     private final OsmDownloader downloader;
@@ -58,6 +59,6 @@ public class OsmDownloadJob implements DownloadJob {
             Boundary boundary = entitySource.getBoundary();
             DataSource ds = new DataSource(boundary.getBounds(), "OSM");
             dataLayer.getOsmDataLayer().data.dataSources.add(ds);
-        }       
+        }
     }
 }
