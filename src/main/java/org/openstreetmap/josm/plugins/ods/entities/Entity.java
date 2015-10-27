@@ -3,6 +3,8 @@ package org.openstreetmap.josm.plugins.ods.entities;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.matching.Match;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -17,17 +19,27 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public interface Entity {
-    public EntitySource getEntitySource();
-	public String getSource();
-	public String getSourceDate();
+//    public void setEntitySource(EntitySource source);
+//    public EntitySource getEntitySource();
+    public void setDownloadResponse(DownloadResponse response);
+    public DownloadResponse getDownloadResponse();
+    public void setSource(String source);
+    public String getSource();
+    public void setSourceDate(String sourceDate);
+    public String getSourceDate();
     boolean isIncomplete();
     public boolean isDeleted();
+    public void setPrimaryId(Object id);
     public Object getPrimaryId();
+    public void setReferenceId(Object id);
     public Object getReferenceId();
     public Long getPrimitiveId();
     public Geometry getGeometry();
     public void setGeometry(Geometry geometry);
     
+    public Match<? extends Entity> getMatch();
+    
+    public <E extends Entity> void setMatch(Match<E> match);
     /**
     * Get the OSM primitive(s) from which this entity was constructed,
     * or that was/were constructed from this entity.

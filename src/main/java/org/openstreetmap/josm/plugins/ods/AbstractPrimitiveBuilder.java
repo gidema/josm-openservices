@@ -33,9 +33,9 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  */
 public abstract class AbstractPrimitiveBuilder<T extends Entity> implements PrimitiveBuilder<T> {
-    private final DataLayer dataLayer;
+    private final LayerManager dataLayer;
 
-    public AbstractPrimitiveBuilder(DataLayer dataLayer) {
+    public AbstractPrimitiveBuilder(LayerManager dataLayer) {
         this.dataLayer = dataLayer;
     }
 

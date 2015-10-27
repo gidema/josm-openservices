@@ -52,10 +52,10 @@ public class OdsDownloadAction extends OdsAction {
     public void run() {
         cancelled = false;
         boundary = getBoundary();
+        startDate = new Date();
         if (!cancelled) {
             DownloadTask task = new DownloadTask();
             Main.worker.submit(task);
-
         }
     }
 
@@ -89,18 +89,26 @@ public class OdsDownloadAction extends OdsAction {
             return null;
         }
         Layer activeLayer = Main.map.mapView.getActiveLayer();
+        // Make sure the active layer is an Osm datalayer
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
         }
+        // Make sure only one object was selected
         OsmDataLayer layer = (OsmDataLayer) activeLayer;
         if (layer.data.getAllSelected().size() != 1) {
             return null;
         }
+        // If the selected object is a closed way an it is not a building
+        // than we can assume is was intended to be used as a polygon for
+        // the download area
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
-        if (primitive.getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {
-            return null;
+        if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
+            && primitive.get("building") == null 
+            && primitive.get("building:part") == null
+            && !"building".equals(primitive.get("construction"))) {
+            return new Boundary((Way)primitive);
         }
-        return new Boundary((Way)primitive);
+        return null;
     }
     
     private class DownloadTask extends PleaseWaitRunnable {
@@ -134,7 +142,7 @@ public class OdsDownloadAction extends OdsAction {
                 Main.map.mapView.setActiveLayer(getModule().getInternalDataLayer().getOsmDataLayer());
             }
             else {
-                Main.map.mapView.setActiveLayer(getModule().getExternalDataLayer().getOsmDataLayer());
+                Main.map.mapView.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
             }
         }
     }

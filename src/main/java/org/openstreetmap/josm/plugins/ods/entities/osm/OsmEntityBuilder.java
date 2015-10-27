@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.internal;
+package org.openstreetmap.josm.plugins.ods.entities.osm;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;

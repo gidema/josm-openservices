@@ -9,7 +9,7 @@ import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.io.OsmImporter;
 
-public class PolygonDataLayer extends AbstractDataLayer {
+public class PolygonDataLayer extends AbstractLayerManager {
     private OdsModule module;
 
     public PolygonDataLayer(OdsModule module) {
@@ -18,7 +18,7 @@ public class PolygonDataLayer extends AbstractDataLayer {
     }
 
     @Override
-    public boolean isInternal() {
+    public boolean isOsm() {
         return false;
     }
 

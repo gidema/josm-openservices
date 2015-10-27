@@ -24,9 +24,9 @@ public class OsmAddressNodeStore extends EntityStore<AddressNode> {
     private Index<AddressNode> zipHousnrIndex = new IndexImpl<>(AddressNode.class, "postcode", "houseNumber");
 
     public OsmAddressNodeStore() {
-        getIndexes().add(primitiveIndex);
-        getIndexes().add(zipHousnrIndex);
-        getIndexes().add(geoIndex);
+        addIndex(primitiveIndex);
+        addIndex(zipHousnrIndex);
+        addIndex(geoIndex);
     }
     
     @Override

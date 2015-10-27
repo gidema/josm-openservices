@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JOptionPane;
+
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
@@ -75,12 +77,17 @@ public abstract class MainDownloader {
         download();
         if (!status.isSucces()) {
             pm.finishTask();
+            JOptionPane.showMessageDialog(Main.parent, 
+                "An error occurred: " + status.getMessage());
             return;
         }
         pm.indeterminateSubTask(I18n.tr("Processing data"));
-        process();
+        DownloadResponse response = new DownloadResponse(request);
+        process(response);
         if (!status.isSucces()) {
             pm.finishTask();
+            JOptionPane.showMessageDialog(Main.parent, 
+                    "An error occurred: " + status.getMessage());
             return;
         }
         
@@ -173,9 +180,31 @@ public abstract class MainDownloader {
      * Run the tasks that depend on more than one entity store.
      * 
      */
-    private void process() {
+    protected void process(DownloadResponse response) {
+        status.clear();
+        executor = Executors.newFixedThreadPool(NTHREADS);
+        for (final LayerDownloader downloader : enabledDownloaders) {
+            downloader.setResponse(response);
+            executor.execute(downloader::process);
+        }
+        
+        executor.shutdown();
+        try {
+            executor.awaitTermination(1, TimeUnit.MINUTES);
+        }
+        catch (InterruptedException e) {
+            executor.shutdownNow();
+            for (LayerDownloader downloader : enabledDownloaders) {
+                downloader.cancel();
+            }
+            status.setException(e);
+            status.setFailed(true);
+        }
         for (LayerDownloader downloader : enabledDownloaders) {
-            downloader.process();
+            Status status = downloader.getStatus();
+            if (!status.isSucces()) {
+                this.status = status;
+            }
         }
         for (Task task : postDownloadTasks) {
 //            task.run(ctx);

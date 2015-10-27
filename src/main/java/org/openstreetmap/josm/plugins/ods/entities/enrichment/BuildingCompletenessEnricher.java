@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
 
 import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.prep.PreparedPolygon;

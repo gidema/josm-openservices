@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.openstreetmap.josm.Main;
+
 public class UniqueIndexImpl<T extends Entity> implements Index<T> {
     private Map<Object, T> map = new HashMap<>();
     private Class<T> clazz;
@@ -36,7 +38,7 @@ public class UniqueIndexImpl<T extends Entity> implements Index<T> {
         Object key = getKey(entity);
         if (key != null) {
             if (map.get(key) != null) {
-                System.out.println("Duplicate value for unique index");
+                Main.warn("Duplicate value for unique index " + key.toString() + " of " + entity.getClass().getSimpleName());
                 // TODO handle duplicates
             }
             else {

@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.external;
+package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
 import java.util.ArrayList;
 import java.util.List;

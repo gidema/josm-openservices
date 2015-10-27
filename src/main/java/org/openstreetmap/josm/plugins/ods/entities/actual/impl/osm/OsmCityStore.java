@@ -14,8 +14,8 @@ public class OsmCityStore extends EntityStore<City> {
 
     public OsmCityStore() {
         super();
-        getIndexes().add(idIndex);
-        getIndexes().add(geoIndex);
+        addIndex(idIndex);
+        addIndex(geoIndex);
     }
 
     @Override

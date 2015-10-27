@@ -4,22 +4,18 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.DataLayer;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 /**
- * To distinct the ODS DataLayer from a normal Osm datalayer, we create a
- * subclass of OsmDataLayer. I'd prefer to subclass Layer instead, but if we did
- * so, we would lose to much functionality that depends directly on the
- * OsmDataLayer class.
  * 
  * @author Gertjan Idema
  * 
  */
-public abstract class AbstractDataLayer implements DataLayer {
+public abstract class AbstractLayerManager implements LayerManager {
     private String name;
     private OsmDataLayer osmDataLayer;
 
-    public AbstractDataLayer(String name) {
+    public AbstractLayerManager(String name) {
         this.name = name;
     }
 
@@ -51,6 +47,8 @@ public abstract class AbstractDataLayer implements DataLayer {
     }
     
     public void reset() {
+        // TODO close the osm datalayer properly
         this.osmDataLayer = null;
+        // TODO clear the ODS data stores
     }
 }

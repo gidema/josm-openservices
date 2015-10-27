@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataAddressNodeStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataAddressNodeStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmAddressNodeStore;
 import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 
@@ -37,7 +37,7 @@ public class AddressNodeManager {
         return osmAddressNodes;
     }
 
-    public OpenDataAddressNodeStore getForeignAddressNodes() {
+    public OpenDataAddressNodeStore getOpenDataAddressNodes() {
         return foreignAddressNodes;
     }
 

@@ -24,9 +24,9 @@ public class OsmBuildingStore extends EntityStore<Building> {
 
     public OsmBuildingStore() {
         super();
-        getIndexes().add(primitiveIndex);
-        getIndexes().add(idIndex);
-        getIndexes().add(geoIndexImpl);
+        addIndex(primitiveIndex);
+        addIndex(idIndex);
+        addIndex(geoIndexImpl);
     }
 
     @Override

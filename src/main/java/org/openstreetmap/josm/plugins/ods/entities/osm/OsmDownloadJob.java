@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.internal;
+package org.openstreetmap.josm.plugins.ods.entities.osm;
 
 import java.util.Collections;
 import java.util.List;

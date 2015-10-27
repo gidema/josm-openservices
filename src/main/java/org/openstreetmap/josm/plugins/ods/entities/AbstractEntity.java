@@ -4,19 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.matching.Match;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class AbstractEntity implements Entity {
     private Object primaryId;
     private Object referenceId;
-    private EntitySource entitySource;
+    private DownloadResponse response;
     private String sourceDate;
     private String source;
     private Geometry geometry;
     private boolean incomplete = true;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
+    private Match<? extends Entity> match;
 
     public void setPrimaryId(Object primaryId) {
         this.primaryId = primaryId;
@@ -35,12 +38,12 @@ public abstract class AbstractEntity implements Entity {
         this.referenceId = referenceId;
     }
 
-    public void setEntitySource(EntitySource entitySource) {
-        this.entitySource = entitySource;
+    public void setDownloadResponse(DownloadResponse response) {
+        this.response = response;
     }
     
-    public EntitySource getEntitySource() {
-        return entitySource;
+    public DownloadResponse getDownloadResponse() {
+        return response;
     }
 
     public void setSourceDate(String string) {
@@ -103,5 +106,15 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public OsmPrimitive getPrimitive() {
         return primitive;
+    }
+
+    @Override
+    public Match<? extends Entity> getMatch() {
+        return match;
+    }
+
+    @Override
+    public <E extends Entity> void setMatch(Match<E> match) {
+        this.match = match;
     }
 }

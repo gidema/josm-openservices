@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign;
+package org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata;
 
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
@@ -9,15 +9,16 @@ import org.openstreetmap.josm.plugins.ods.entities.UniqueIndexImpl;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 
 public class OpenDataAddressNodeStore extends EntityStore<AddressNode> {
-    private UniqueIndexImpl<AddressNode> primaryIndex = new UniqueIndexImpl<>(AddressNode.class, "referenceId");
+    private UniqueIndexImpl<AddressNode> primaryIndex = new UniqueIndexImpl<>(AddressNode.class, "primaryId");
     private IndexImpl<AddressNode> idIndex = new IndexImpl<>(AddressNode.class, "referenceId");
     private GeoIndex<AddressNode> geoIndex = new GeoIndexImpl<>(AddressNode.class, "geometry");
     private Index<AddressNode> postcodeNumberIndex = new IndexImpl<>(AddressNode.class, "postcode", "houseNumber");
 
     public OpenDataAddressNodeStore() {
-        getIndexes().add(idIndex);
-        getIndexes().add(geoIndex);
-        getIndexes().add(postcodeNumberIndex);
+        addIndex(primaryIndex);
+        addIndex(idIndex);
+        addIndex(geoIndex);
+        addIndex(postcodeNumberIndex);
     }
     
     @Override
@@ -26,7 +27,7 @@ public class OpenDataAddressNodeStore extends EntityStore<AddressNode> {
     }
 
     @Override
-    public IndexImpl<AddressNode> getIdIndex() {
+    public Index<AddressNode> getIdIndex() {
         return idIndex;
     }
 

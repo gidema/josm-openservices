@@ -1,9 +1,8 @@
-package org.openstreetmap.josm.plugins.ods.entities.external;
+package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
 import org.opengis.feature.simple.SimpleFeature;
-import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
+import org.openstreetmap.josm.plugins.ods.entities.EntityBuilder;
 
 /**
  * A GeotoolsEntityBuilder creates an Entity of type <T> from a SimpleFeature object.
@@ -16,7 +15,7 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
  *
  * @param <T>
  */
-public interface GeotoolsEntityBuilder<T extends Entity>  {
+public interface GeotoolsEntityBuilder<T extends Entity> extends EntityBuilder<SimpleFeature, T>{
     
     /**
      * Get the referenceId for T from the given feature
@@ -25,13 +24,13 @@ public interface GeotoolsEntityBuilder<T extends Entity>  {
      */
     public Object getReferenceId(SimpleFeature feature);
     
-    /**
-     * Create the entity and store somewhere.
-     * Typically this is in an EntityStore<T>
-     * 
-     * @param feature
-     */
-    public void buildGtEntity(SimpleFeature feature);
+//    /**
+//     * Create the entity and store somewhere.
+//     * Typically this is in an EntityStore<T>
+//     * 
+//     * @param feature
+//     */
+//    public T build(SimpleFeature feature);
     
     /**
      * Set the metaData.
@@ -40,7 +39,7 @@ public interface GeotoolsEntityBuilder<T extends Entity>  {
      * 
      * @param metaData
      */
-    public void setMetaData(MetaData metaData);
+//    public void setMetaData(MetaData metaData);
     
     
     /**
@@ -49,5 +48,5 @@ public interface GeotoolsEntityBuilder<T extends Entity>  {
      * and can be used to check if the Entity was downloaded in the current download  session.
      * @param ctx
      */
-    public void setContext(Context ctx);
+//    public void setContext(Context ctx);
 }

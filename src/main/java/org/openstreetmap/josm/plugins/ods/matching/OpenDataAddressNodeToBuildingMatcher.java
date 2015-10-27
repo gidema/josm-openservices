@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 
 
@@ -50,8 +50,8 @@ public class OpenDataAddressNodeToBuildingMatcher {
      * 
      * @param addressNode
      */
-    private void matchAddressToBuilding(AddressNode addressNode) {
-        OpenDataBuildingStore buildings = dataManager.getBuildingManager().getOpenDataBuildings();
+    public void matchAddressToBuilding(AddressNode addressNode) {
+        OpenDataBuildingStore buildings = (OpenDataBuildingStore) dataManager.getOpenDataEntityStore(Building.class);
         if (addressNode.getBuilding() == null) {
             Object buildingRef = addressNode.getBuildingRef();
             if (buildingRef != null) {

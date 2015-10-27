@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmBuildingStore;
 
 @Deprecated

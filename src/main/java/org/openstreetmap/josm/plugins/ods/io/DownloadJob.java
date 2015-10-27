@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.Context;
 
+@Deprecated
 public interface DownloadJob {
     public List<? extends Downloader> getDownloaders();
     public void process(Context ctx);

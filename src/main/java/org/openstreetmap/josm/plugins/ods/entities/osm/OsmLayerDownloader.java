@@ -1,5 +1,6 @@
-package org.openstreetmap.josm.plugins.ods.entities.internal;
+package org.openstreetmap.josm.plugins.ods.entities.osm;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.Main;
@@ -12,21 +13,23 @@ import org.openstreetmap.josm.io.OsmApiException;
 import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.DataLayer;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
+import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 
-public class OsmDownloaderNg implements LayerDownloader {
+public class OsmLayerDownloader implements LayerDownloader {
     private DownloadRequest request;
+    private DownloadResponse response;
     private Status status = new Status();
     private DownloadSource downloadSource=  DownloadSource.OSM;
     private OsmServerReader osmServerReader;
-    private List<OsmEntityBuilder<?>> entityBuilders;
-    private DataLayer targetLayer;
+    private List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
+    private LayerManager targetLayer;
 
     private static String overpassQuery = 
         "(node($bbox);rel(bn)->.x;way($bbox);" +
@@ -38,13 +41,14 @@ public class OsmDownloaderNg implements LayerDownloader {
         OVERPASS;
     }
     
-    public OsmDownloaderNg(DataLayer targetLayer, List<OsmEntityBuilder<?>> entityBuilders) {
+    public OsmLayerDownloader(LayerManager targetLayer) {
         super();
         this.targetLayer = targetLayer;
-        this.entityBuilders = entityBuilders;
     }
 
-
+    protected void addEntityBuilder(OsmEntityBuilder<?> builder) {
+        entityBuilders.add(builder);
+    }
     //    @Override
 //    public void setBoundary(Boundary boundary) {
 //        this.boundary = boundary;
@@ -55,7 +59,12 @@ public class OsmDownloaderNg implements LayerDownloader {
         return status;
     }
 
-    
+    @Override
+    public void setResponse(DownloadResponse response) {
+        this.response = response;
+    }
+
+
     @Override
     public void setup(DownloadRequest request) {
         this.request = request;

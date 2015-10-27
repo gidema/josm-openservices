@@ -1,6 +1,6 @@
-package org.openstreetmap.josm.plugins.ods.entities.internal;
+package org.openstreetmap.josm.plugins.ods.entities.osm;
 
-import org.openstreetmap.josm.plugins.ods.AbstractDataLayer;
+import org.openstreetmap.josm.plugins.ods.AbstractLayerManager;
 
 /**
  * The InternalDataLayer is the layer for the data that has been
@@ -11,13 +11,13 @@ import org.openstreetmap.josm.plugins.ods.AbstractDataLayer;
  * @author Gertjan Idema
  * 
  */
-public class InternalDataLayer extends AbstractDataLayer {
+public class InternalDataLayer extends AbstractLayerManager {
     public InternalDataLayer(String name) {
         super(name);
     }
 
     @Override
-    public boolean isInternal() {
+    public boolean isOsm() {
         return false;
     }
 }

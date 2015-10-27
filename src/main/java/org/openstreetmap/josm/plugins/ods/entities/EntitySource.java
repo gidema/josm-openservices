@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
+@Deprecated
 public class EntitySource {
     private Date downloadTime;
     private Boundary boundary;

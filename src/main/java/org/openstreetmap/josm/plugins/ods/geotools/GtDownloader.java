@@ -1,52 +1,50 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.util.ProgressListener;
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.external.FeatureDownloader;
-import org.openstreetmap.josm.plugins.ods.entities.external.GeotoolsEntityBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.GeotoolsEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
+import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
-import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GtDownloader implements FeatureDownloader {
+public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private final GtDataSource dataSource;
     private final CRSUtil crsUtil;
     private DownloadRequest request;
+    private DownloadResponse response;
     private SimpleFeatureSource featureSource;
     private Filter filter;
     private DefaultFeatureCollection downloadedFeatures;
+    private EntityStore<T> entityStore;
     private final Status status = new Status();
-    private final GeotoolsEntityBuilder<?> entityBuilder;
-    private final List<Task> tasks;
-
-    private ProgressListener listener;
+    private final GeotoolsEntityBuilder<T> entityBuilder;
     
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            GeotoolsEntityBuilder<?> entityBuilder, List<Task> tasks) {
+            GeotoolsEntityBuilder<T> entityBuilder, EntityStore<T> entityStore) {
         super();
         this.dataSource = dataSource;
         this.crsUtil = crsUtil;
         this.entityBuilder = entityBuilder;
-        this.tasks = (tasks != null ? tasks : Collections.emptyList());
+        this.entityStore = entityStore;
     }
     
     @Override
@@ -54,6 +52,11 @@ public class GtDownloader implements FeatureDownloader {
         this.request = request;
     }
 
+    public void setResponse(DownloadResponse response) {
+        this.response = response;
+    }
+
+    @Override
     public Status getStatus() {
         return status;
     }
@@ -61,7 +64,6 @@ public class GtDownloader implements FeatureDownloader {
     @Override
     public void prepare() {
         status.clear();
-        this.downloadedFeatures = new DefaultFeatureCollection();
         try {
             // TODO rename dataSource.initialize() to prepare()
             dataSource.initialize();
@@ -105,59 +107,53 @@ public class GtDownloader implements FeatureDownloader {
     
     @Override
     public void download() {
-        downloadedFeatures = new DefaultFeatureCollection();
-        try {
-            featureSource.getFeatures(filter).accepts(new FeatureVisitor() {
-
-                @Override
-                public void visit(Feature feature) {
-                    downloadedFeatures.add((SimpleFeature) feature);
-                }
-            }, listener);
-            if (status.isCancelled()) {
-                return;
-            }
-            if (downloadedFeatures.isEmpty() && dataSource.isRequired()) {
+        String key = dataSource.getOdsFeatureSource().getIdAttribute();
+        downloadedFeatures = new DefaultFeatureCollection(key);
+        try (
+            SimpleFeatureIterator it = featureSource.getFeatures(filter).features();
+        )  {
+           while (it.hasNext()) {
+               downloadedFeatures.add((SimpleFeature) it.next());
+               // TODO check for interruption
+           };
+        } catch (IOException e) {
+            Main.warn(e);
+            status.setException(e);
+            return;
+        }
+        if (downloadedFeatures.isEmpty() && dataSource.isRequired()) {
+            String featureType = dataSource.getFeatureType();
+            status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
+                        featureType));
+            status.setCancelled(true);
+        }
+        else {
+            // Check if the data is complete
+            Host host = dataSource.getOdsFeatureSource().getHost();
+            Integer maxFeatures = host.getMaxFeatures();
+            if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
                 String featureType = dataSource.getFeatureType();
-                status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
-                            featureType));
+                status.setMessage(I18n.tr(
+                    "To many {0} objects. Please choose a smaller download area.", featureType));
                 status.setCancelled(true);
             }
-            else {
-                Host host = dataSource.getOdsFeatureSource().getHost();
-                Integer maxFeatures = host.getMaxFeatures();
-                if (maxFeatures != null && downloadedFeatures.size() >= maxFeatures) {
-                    String featureType = dataSource.getFeatureType();
-                    status.setMessage(I18n.tr(
-                        "To many {0} objects. Please choose a smaller download area.", featureType));
-                    status.setCancelled(true);
-                }
-            }
-            if (!status.isSucces()) {
-                 Thread.currentThread().interrupt();
-                 return;
-            }
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        }
+        if (!status.isSucces()) {
+             Thread.currentThread().interrupt();
+             return;
         }
     };
     
     @Override
     public void process() {
         MetaData metaData = dataSource.getMetaData();
-        entityBuilder.setMetaData(metaData);
-//        entityBuilder.setContext(ctx);
         for (SimpleFeature feature : downloadedFeatures) {
-//            Object id = entityBuilder.getReferenceId(feature);
-//            if (entityStore.getByReference(id) == null) {
-               entityBuilder.buildGtEntity(feature);
-//            }
+            T entity = entityBuilder.build(feature, metaData, response);
+            if (!entityStore.contains(entity.getPrimaryId())) {
+                entityStore.add(entity);
+            }
         }
-//        entityStore.extendBoundary(entitySource.getBoundary().getMultiPolygon());
-        for (Task task : tasks) {
-//            task.run(ctx);
-        }
+        entityStore.extendBoundary(request.getBoundary().getMultiPolygon());
     }
 
     public GtDataSource getDataSource() {
@@ -166,9 +162,6 @@ public class GtDownloader implements FeatureDownloader {
     
     @Override
     public void cancel() {
-        if (listener != null) {
-            listener.setCanceled(true);
-        }
         status.setCancelled(true);
     }
 }

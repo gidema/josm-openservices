@@ -50,7 +50,7 @@ public class OsmAddressNodeToBuildingMatcher {
      * @param addressNode
      */
     private void matchAddressToBuilding(AddressNode addressNode) {
-        OsmBuildingStore buildings = dataManager.getBuildingManager().getOsmBuildings();
+        OsmBuildingStore buildings = (OsmBuildingStore) dataManager.getOsmEntityStore(Building.class);
         if (addressNode.getBuilding() == null) {
             Iterator<Building> iterator = buildings.iterator();
             boolean found = false;

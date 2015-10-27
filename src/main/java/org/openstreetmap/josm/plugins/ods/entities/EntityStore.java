@@ -1,11 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * The EntityStore stores entities of a single entity type.
@@ -17,9 +19,15 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
     private List<Index<T>> indexes = new LinkedList<>();
     private Geometry boundary;
 
-    protected List<Index<T>> getIndexes() {
-        return indexes;
+//    protected List<Index<T>> getIndexes() {
+//        return indexes;
+//    }
+
+    protected void addIndex(Index<T> index) {
+        indexes.add(index);// TODO Auto-generated method stub
+        
     }
+
 
     public void add(T entity) {
         if (getByPrimary(entity.getPrimaryId()) == null) {
@@ -30,6 +38,9 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
     }
 
     public Geometry getBoundary() {
+        if (boundary == null) {
+            boundary = new GeometryFactory().buildGeometry(Collections.emptyList());
+        }
         return boundary;
     }
 
@@ -55,6 +66,10 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
         return getPrimaryIndex().stream();
     }
 
+    public boolean contains(Object primaryId) {
+        return getPrimaryIndex().get(primaryId) != null;
+    }
+    
     public List<T> getById(Object id) {
         return getIdIndex().getAll(id);
     }

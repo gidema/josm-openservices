@@ -15,9 +15,9 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
-import org.openstreetmap.josm.plugins.ods.entities.external.ExternalDataLayer;
-import org.openstreetmap.josm.plugins.ods.entities.internal.InternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
+import org.openstreetmap.josm.plugins.ods.entities.osm.InternalDataLayer;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
@@ -37,7 +37,7 @@ public abstract class OdsModule implements LayerChangeListener {
     private final List<OdsAction> actions = new LinkedList<>();
     
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    private final ExternalDataLayer externalDataLayer;
+    private final OpenDataLayerManager externalDataLayer;
     private PolygonDataLayer polygonDataLayer;
     private final InternalDataLayer internalDataLayer;
     
@@ -47,7 +47,7 @@ public abstract class OdsModule implements LayerChangeListener {
     private boolean active = false;
     private EntityFactory entityFactory;
 
-    public OdsModule(OdsModulePlugin plugin, ExternalDataLayer externalDataLayer, InternalDataLayer internalDataLayer) {
+    public OdsModule(OdsModulePlugin plugin, OpenDataLayerManager externalDataLayer, InternalDataLayer internalDataLayer) {
         this.plugin = plugin;
         this.externalDataLayer = externalDataLayer;
         this.internalDataLayer = internalDataLayer;
@@ -88,7 +88,7 @@ public abstract class OdsModule implements LayerChangeListener {
         return osmQuery;
     }
 
-    public ExternalDataLayer getExternalDataLayer() {
+    public OpenDataLayerManager getOpenDataLayerManager() {
         return externalDataLayer;
     }
 //    
@@ -132,7 +132,7 @@ public abstract class OdsModule implements LayerChangeListener {
             menu.add(action);
         }
         getInternalDataLayer().initialize();
-        getExternalDataLayer().initialize();
+        getOpenDataLayerManager().initialize();
         if (usePolygonFile()) {
             polygonDataLayer.initialize();
         }
@@ -144,8 +144,8 @@ public abstract class OdsModule implements LayerChangeListener {
             OsmDataLayer internalOsmLayer = getInternalDataLayer().getOsmDataLayer();
             Main.map.mapView.removeLayer(internalOsmLayer);
         }
-        if (getExternalDataLayer() != null) {
-            OsmDataLayer externalOsmLayer = getExternalDataLayer().getOsmDataLayer();
+        if (getOpenDataLayerManager() != null) {
+            OsmDataLayer externalOsmLayer = getOpenDataLayerManager().getOsmDataLayer();
             Main.map.mapView.removeLayer(externalOsmLayer);
         }
         if (polygonDataLayer != null) {
@@ -183,7 +183,7 @@ public abstract class OdsModule implements LayerChangeListener {
     @Override
     public void layerRemoved(Layer oldLayer) {
         InternalDataLayer internalDataLayer = getInternalDataLayer();
-        ExternalDataLayer externalDataLayer = getExternalDataLayer();
+        OpenDataLayerManager externalDataLayer = getOpenDataLayerManager();
         if (active) {
             OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
                     : externalDataLayer.getOsmDataLayer());

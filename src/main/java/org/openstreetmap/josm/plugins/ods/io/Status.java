@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 public class Status {
     private boolean failed = false;
+    private boolean timedOut = false;
     private boolean cancelled = false;
     private String message = null;
     private Exception exception = null;
@@ -22,6 +23,14 @@ public class Status {
         this.failed = failed;
     }
 
+    public boolean isTimedOut() {
+        return timedOut;
+    }
+
+    public void setTimedOut(boolean timedOut) {
+        this.timedOut = timedOut;
+    }
+
     public void setMessage(String message) {
         this.message = message;
     }
@@ -32,7 +41,7 @@ public class Status {
     }
 
     public boolean isSucces() {
-        return !(failed || cancelled);
+        return !(failed || cancelled || timedOut);
     }
 
     public String getMessage() {
@@ -46,6 +55,7 @@ public class Status {
     public void clear() {
         this.cancelled = false;
         this.failed = false;
+        this.timedOut = false;
         this.exception = null;
         this.message = null;
     }

@@ -1,9 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import java.util.function.Consumer;
-
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.CrossingBuildingFixer;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
@@ -19,7 +18,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author gertjan
  *
  */
-public class BuildingAligner implements Consumer<Building> {
+public class BuildingAligner {
     private final OpenDataBuildingStore buildingStore;
     private final Double tolerance;
     private final CrossingBuildingFixer fixer;
@@ -31,8 +30,13 @@ public class BuildingAligner implements Consumer<Building> {
         this.fixer = new CrossingBuildingFixer(geoUtil, tolerance);
     }
 
-    @Override
-    public void accept(Building building) {
+    public BuildingAligner(OdsModule module, double tolerance) {
+        this.buildingStore = (OpenDataBuildingStore) module.getDataManager().getOpenDataEntityStore(Building.class);
+        this.tolerance = tolerance;
+        this.fixer = new CrossingBuildingFixer(module.getGeoUtil(), tolerance);
+    }
+
+    public void align(Building building) {
         for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
             if (candidate == building) continue;
             if (building.getNeighbours().contains(candidate)) continue;

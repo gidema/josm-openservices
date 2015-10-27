@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.external;
+package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;

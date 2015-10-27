@@ -1,15 +1,17 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import org.openstreetmap.josm.plugins.ods.Context;
-
+// TODO consider changing the method signatures from Runnable to Callable
+// returning a Status object
 public interface Downloader {
-    Status getStatus();
+    public void setup(DownloadRequest request);
+    
+    public void prepare();
 
-    void prepare(Context ctx) throws InterruptedException;
+    public void download();
 
-    void download() throws InterruptedException;
+    public void process();
 
-    void process() throws InterruptedException;
+    public void cancel();
 
-    void cancel();
+    public Status getStatus();
 }

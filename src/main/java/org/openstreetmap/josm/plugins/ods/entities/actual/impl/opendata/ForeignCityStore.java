@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.entities.actual.impl.foreign;
+package org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata;
 
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
@@ -14,8 +14,9 @@ public class ForeignCityStore extends EntityStore<City> {
 
     public ForeignCityStore() {
         super();
-        getIndexes().add(idIndex);
-        getIndexes().add(geoIndex);
+        addIndex(primaryIndex);
+        addIndex(idIndex);
+        addIndex(geoIndex);
     }
 
     @Override
