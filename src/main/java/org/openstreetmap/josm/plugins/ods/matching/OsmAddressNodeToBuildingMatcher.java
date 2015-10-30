@@ -3,11 +3,10 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmBuildingStore;
-import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
-
 
 /**
  * <p>Try to find a matching building for every AddressNode passed to the AddressNode
@@ -21,12 +20,12 @@ import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
  *
  */
 public class OsmAddressNodeToBuildingMatcher {
-    private DataManager dataManager;
+    private OdsModule module;
     private Consumer<AddressNode> unmatchedAddressNodeHandler;
     
-    public OsmAddressNodeToBuildingMatcher(DataManager dataManager) {
+    public OsmAddressNodeToBuildingMatcher(OdsModule module) {
         super();
-        this.dataManager = dataManager;
+        this.module = module;
     }
 
     public void setUnmatchedAddressNodeHandler(
@@ -50,7 +49,8 @@ public class OsmAddressNodeToBuildingMatcher {
      * @param addressNode
      */
     private void matchAddressToBuilding(AddressNode addressNode) {
-        OsmBuildingStore buildings = (OsmBuildingStore) dataManager.getOsmEntityStore(Building.class);
+        OsmBuildingStore buildings = (OsmBuildingStore)module
+                .getOsmLayerManager().getEntityStore(Building.class);
         if (addressNode.getBuilding() == null) {
             Iterator<Building> iterator = buildings.iterator();
             boolean found = false;

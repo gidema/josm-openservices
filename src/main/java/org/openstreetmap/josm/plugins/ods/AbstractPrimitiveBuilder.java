@@ -33,12 +33,16 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  */
 public abstract class AbstractPrimitiveBuilder<T extends Entity> implements PrimitiveBuilder<T> {
-    private final LayerManager dataLayer;
+    private final LayerManager layerManager;
 
-    public AbstractPrimitiveBuilder(LayerManager dataLayer) {
-        this.dataLayer = dataLayer;
+    public AbstractPrimitiveBuilder(LayerManager layerManager) {
+        this.layerManager = layerManager;
     }
 
+    @Override
+    public LayerManager getLayerManager() {
+        return layerManager;
+    }
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Geometry)
      */
@@ -222,7 +226,7 @@ public abstract class AbstractPrimitiveBuilder<T extends Entity> implements Prim
     }
 
     private DataSet getDataSet() {
-        return dataLayer.getOsmDataLayer().data;
+        return layerManager.getOsmDataLayer().data;
     }
     
     /* (non-Javadoc)

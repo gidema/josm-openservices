@@ -9,10 +9,10 @@ import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.io.OsmImporter;
 
-public class PolygonDataLayer extends AbstractLayerManager {
+public class PolygonLayerManager extends AbstractLayerManager {
     private OdsModule module;
 
-    public PolygonDataLayer(OdsModule module) {
+    public PolygonLayerManager(OdsModule module) {
         super("ODS Polygons");
         this.module = module;
     }

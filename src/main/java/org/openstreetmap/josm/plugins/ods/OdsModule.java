@@ -15,9 +15,9 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
-import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
+//import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
-import org.openstreetmap.josm.plugins.ods.entities.osm.InternalDataLayer;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
@@ -37,21 +37,21 @@ public abstract class OdsModule implements LayerChangeListener {
     private final List<OdsAction> actions = new LinkedList<>();
     
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    private final OpenDataLayerManager externalDataLayer;
-    private PolygonDataLayer polygonDataLayer;
-    private final InternalDataLayer internalDataLayer;
+    private final OpenDataLayerManager openDataLayerManager;
+    private PolygonLayerManager polygonDataLayer;
+    private final OsmLayerManager osmLayerManager;
     
-    private DataManager dataManager = new DataManager();
+//    private DataManager dataManager = new DataManager();
 
     String osmQuery;
     private boolean active = false;
     private EntityFactory entityFactory;
 
-    public OdsModule(OdsModulePlugin plugin, OpenDataLayerManager externalDataLayer, InternalDataLayer internalDataLayer) {
+    public OdsModule(OdsModulePlugin plugin, OsmLayerManager osmLayerManager, OpenDataLayerManager openDataLayerManager) {
         this.plugin = plugin;
-        this.externalDataLayer = externalDataLayer;
-        this.internalDataLayer = internalDataLayer;
-        this.polygonDataLayer = new PolygonDataLayer(this);
+        this.osmLayerManager = osmLayerManager;
+        this.openDataLayerManager = openDataLayerManager;
+        this.polygonDataLayer = new PolygonLayerManager(this);
         MapView.addLayerChangeListener(this);
     }
 
@@ -63,9 +63,9 @@ public abstract class OdsModule implements LayerChangeListener {
 
     public abstract String getDescription();
 
-    public DataManager getDataManager() {
-        return dataManager;
-    }
+//    public DataManager getDataManager() {
+//        return dataManager;
+//    }
     
     public final Map<String, OdsDataSource> getDataSources() {
         return dataSources;
@@ -89,35 +89,23 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     public OpenDataLayerManager getOpenDataLayerManager() {
-        return externalDataLayer;
-    }
-//    
-//    public void initExternalDatalayer() {
-//        Layer oldLayer = null;
-//        if (Main.map != null) {
-//            oldLayer = Main.main.getActiveLayer();
-//        }
-//        Main.main.addLayer(externalDataLayer.getOsmDataLayer());
-//        if (oldLayer != null) {
-//            Main.map.mapView.setActiveLayer(oldLayer);
-//        }
-//    }
-    
-    public InternalDataLayer getInternalDataLayer() {
-        return internalDataLayer;
+        return openDataLayerManager;
     }
     
-//    private void initInternalDatalayer() {
-//        Layer oldLayer = null;
-//        if (Main.map != null) {
-//            oldLayer = Main.main.getActiveLayer();
-//        }
-//        Main.main.addLayer(internalDataLayer.getOsmDataLayer());
-//        if (oldLayer != null) {
-//            Main.map.mapView.setActiveLayer(oldLayer);
-//        }
-//    }
+    public OsmLayerManager getOsmLayerManager() {
+        return osmLayerManager;
+    }
 
+    public LayerManager getLayerManager(OsmDataLayer layer) {
+        if (openDataLayerManager.getOsmDataLayer() == layer) {
+            return openDataLayerManager;
+        }
+        if (osmLayerManager.getOsmDataLayer() == layer) {
+            return osmLayerManager;
+        }
+        return null;
+    }
+    
     public void addDataSource(OdsDataSource dataSource) {
         dataSources.put(dataSource.getFeatureType(), dataSource);
     }
@@ -131,7 +119,7 @@ public abstract class OdsModule implements LayerChangeListener {
         for (OdsAction action : getActions()) {
             menu.add(action);
         }
-        getInternalDataLayer().initialize();
+        getOsmLayerManager().initialize();
         getOpenDataLayerManager().initialize();
         if (usePolygonFile()) {
             polygonDataLayer.initialize();
@@ -140,8 +128,8 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     public void deActivate() {
-        if (getInternalDataLayer() != null) {
-            OsmDataLayer internalOsmLayer = getInternalDataLayer().getOsmDataLayer();
+        if (getOsmLayerManager() != null) {
+            OsmDataLayer internalOsmLayer = getOsmLayerManager().getOsmDataLayer();
             Main.map.mapView.removeLayer(internalOsmLayer);
         }
         if (getOpenDataLayerManager() != null) {
@@ -164,7 +152,7 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     void activateOsmLayer() {
-        Main.map.mapView.setActiveLayer(getInternalDataLayer().getOsmDataLayer());
+        Main.map.mapView.setActiveLayer(getOsmLayerManager().getOsmDataLayer());
     }
 
 
@@ -182,7 +170,7 @@ public abstract class OdsModule implements LayerChangeListener {
 
     @Override
     public void layerRemoved(Layer oldLayer) {
-        InternalDataLayer internalDataLayer = getInternalDataLayer();
+        OsmLayerManager internalDataLayer = getOsmLayerManager();
         OpenDataLayerManager externalDataLayer = getOpenDataLayerManager();
         if (active) {
             OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
@@ -214,8 +202,6 @@ public abstract class OdsModule implements LayerChangeListener {
     public abstract Bounds getBounds();
 
     public abstract MainDownloader getDownloader();
-
-//    public abstract OdsDownloader getDownloader();
 
     public boolean usePolygonFile() {
         return false;

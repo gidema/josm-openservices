@@ -17,6 +17,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public interface PrimitiveBuilder<T extends Entity> {
+    public LayerManager getLayerManager();
 
     public OsmPrimitive build(Geometry geometry, Map<String, String> tags);
 
@@ -98,4 +99,5 @@ public interface PrimitiveBuilder<T extends Entity> {
     public Node buildNode(Point point, Map<String, String> tags, boolean merge);
 
     public void createPrimitive(T entity);
+
 }

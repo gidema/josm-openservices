@@ -139,7 +139,7 @@ public class OdsDownloadAction extends OdsAction {
         @Override
         protected void finish() {
             if (downloadOsm) {
-                Main.map.mapView.setActiveLayer(getModule().getInternalDataLayer().getOsmDataLayer());
+                Main.map.mapView.setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
             }
             else {
                 Main.map.mapView.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());

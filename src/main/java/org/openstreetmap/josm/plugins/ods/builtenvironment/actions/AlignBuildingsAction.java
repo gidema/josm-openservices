@@ -12,7 +12,7 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
-import org.openstreetmap.josm.plugins.ods.objects.builtenvironment.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.osm.WayAligner;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -41,8 +41,8 @@ public class AlignBuildingsAction extends OdsAction {
             new Notification(I18n.tr("Please select 2 buildings.")).show();
             return;
         }
-        BuildingAligner aligner = new BuildingAligner(0.05, true);
-        aligner.align(building1, building2);
+//        BuildingAligner aligner = new BuildingAligner(0.05, true);
+//        aligner.align(building1, building2);
     }
 
     private static OsmPrimitive getBuilding(Collection<OsmPrimitive> primitives, int i) {
