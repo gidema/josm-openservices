@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
-public class MatchImpl<E extends Entity> implements Match<E> {
+public abstract class MatchImpl<E extends Entity> implements Match<E> {
     private List<E> osmEntities = new LinkedList<>();
     private List<E> openDataEntities = new LinkedList<>();
     

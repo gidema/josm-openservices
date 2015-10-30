@@ -27,4 +27,10 @@ public interface Match<E extends Entity> {
     public <E2 extends E> void addOsmEntity(E2 entity);
     
     public <E2 extends E> void addOpenDataEntity(E2 entity);
+
+    public boolean isGeometryMatch();
+    
+    public boolean isAttributeMatch();
+
+    public void analyze();
 }

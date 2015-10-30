@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
-import static org.openstreetmap.josm.tools.I18n.marktr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,6 +50,7 @@ public class OpenDataServicesPlugin extends Plugin {
             throw new java.lang.RuntimeException(
                     I18n.tr("The Open Data Services plug-in has allready been started"));
         }
+        setUninterestingTags();
         INSTANCE = this;
         readInfo();
         checkVersion(info);
@@ -91,7 +92,7 @@ public class OpenDataServicesPlugin extends Plugin {
 
     private void initializeMenu() {
         if (menu == null) {
-            menu = Main.main.menu.addMenu(marktr("ODS"), KeyEvent.VK_UNDEFINED,
+            menu = Main.main.menu.addMenu("ODS", "ODS", KeyEvent.VK_UNDEFINED,
                     4, ht("/Plugin/ODS"));
             moduleMenu = new JMenu(I18n.tr("Enable"));
         }
@@ -184,6 +185,17 @@ public class OpenDataServicesPlugin extends Plugin {
                 });
     }
 
+    /**
+     * Add the tags that shouldn't be uploaded to the OSM server.
+     */
+    private void setUninterestingTags() {
+        Collection<String> collection = Main.pref.getCollection("tags.discardable");
+        if (!collection.contains("ODS:")) {
+            collection.add("ODS:");
+            Main.pref.putCollection("tags.discardable", collection);
+        }
+        
+    }
     private class DeactivateAction extends AbstractAction {
         
         /**

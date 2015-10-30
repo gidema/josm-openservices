@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
@@ -31,18 +32,24 @@ public class BuildingAligner {
     }
 
     public BuildingAligner(OdsModule module, double tolerance) {
-        this.buildingStore = (OpenDataBuildingStore) module.getDataManager().getOpenDataEntityStore(Building.class);
+        this.buildingStore = (OpenDataBuildingStore) module
+                .getOpenDataLayerManager().getEntityStore(Building.class);
         this.tolerance = tolerance;
         this.fixer = new CrossingBuildingFixer(module.getGeoUtil(), tolerance);
     }
 
     public void align(Building building) {
-        for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
-            if (candidate == building) continue;
-            if (building.getNeighbours().contains(candidate)) continue;
-            building.getNeighbours().add(candidate);
-            candidate.getNeighbours().add(building);
-            analyzeCrossing(building, candidate);
+        try {
+            for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
+                if (candidate == building) continue;
+                if (building.getNeighbours().contains(candidate)) continue;
+                building.getNeighbours().add(candidate);
+                candidate.getNeighbours().add(building);
+                analyzeCrossing(building, candidate);
+            }
+        }
+        catch (Exception e) {
+            Main.warn(e);
         }
     }
     

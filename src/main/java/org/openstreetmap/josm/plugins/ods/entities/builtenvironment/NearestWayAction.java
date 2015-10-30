@@ -42,7 +42,7 @@ public class NearestWayAction extends OdsAction {
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        final OsmDataLayer osmDataLayer = module.getInternalDataLayer().getOsmDataLayer();
+        final OsmDataLayer osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
         Collection<Way> selected = Main.map.mapView.getEditLayer().data
                 .getSelectedWays();
         OsmPrimitive building = selected.iterator().next();

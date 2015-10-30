@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -47,4 +48,6 @@ public interface Building extends Entity {
     public void setBuildingType(BuildingType buildingType);
     public void setIncomplete(boolean incomplete);
     public String getStatus();
+    public BuildingMatch getMatch();
+
 }

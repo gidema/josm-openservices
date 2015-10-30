@@ -37,7 +37,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (getModule().getInternalDataLayer() == null) {
+        if (getModule().getOsmLayerManager() == null) {
             new Notification(I18n.tr("The OSM datalayer is missing")).show();
             return;
         }
@@ -59,7 +59,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
-            OsmDataLayer dataLayer = getModule().getInternalDataLayer()
+            OsmDataLayer dataLayer = getModule().getOsmLayerManager()
                     .getOsmDataLayer();
             for (Relation relation : dataLayer.data.getRelations()) {
                 if ("associatedStreet".equals(relation.get("type"))) {

@@ -11,6 +11,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
+import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 public abstract class BuildingImpl extends AbstractEntity implements Building {
     private Address address;
@@ -80,6 +81,11 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
     @Override
     public Set<Building> getNeighbours() {
         return neighbours;
+    }
+
+    @Override
+    public BuildingMatch getMatch() {
+        return (BuildingMatch) super.getMatch();
     }
 
     @Override

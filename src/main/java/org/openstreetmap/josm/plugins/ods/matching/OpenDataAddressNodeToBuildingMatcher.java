@@ -3,10 +3,11 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
-import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
+//import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 
 
 /**
@@ -22,12 +23,12 @@ import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
  *
  */
 public class OpenDataAddressNodeToBuildingMatcher {
-    private DataManager dataManager;
+    private OdsModule module;
     private Consumer<AddressNode> unmatchedAddressNodeHandler;
     
-    public OpenDataAddressNodeToBuildingMatcher(DataManager dataManager) {
+    public OpenDataAddressNodeToBuildingMatcher(OdsModule module) {
         super();
-        this.dataManager = dataManager;
+        this.module = module;
     }
 
     public void setUnmatchedAddressNodeHandler(
@@ -51,7 +52,8 @@ public class OpenDataAddressNodeToBuildingMatcher {
      * @param addressNode
      */
     public void matchAddressToBuilding(AddressNode addressNode) {
-        OpenDataBuildingStore buildings = (OpenDataBuildingStore) dataManager.getOpenDataEntityStore(Building.class);
+        OpenDataBuildingStore buildings = (OpenDataBuildingStore) module
+                .getOpenDataLayerManager().getEntityStore(Building.class);
         if (addressNode.getBuilding() == null) {
             Object buildingRef = addressNode.getBuildingRef();
             if (buildingRef != null) {

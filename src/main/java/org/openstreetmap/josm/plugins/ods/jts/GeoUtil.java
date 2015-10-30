@@ -102,7 +102,7 @@ public class GeoUtil {
         LinearRing shell;
         try {
             shell = toLinearRing(way);
-        } catch (UnclosedWayException e) {
+        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
             throw new IllegalArgumentException(
                 "The way that describes this polygon is not closed");
         }

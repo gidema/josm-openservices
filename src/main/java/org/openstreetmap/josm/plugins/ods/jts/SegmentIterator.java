@@ -194,7 +194,7 @@ public class SegmentIterator {
         try {
             return geoUtil.toLinearRing(coords);
         }
-        catch (IllegalArgumentException e) {
+        catch (@SuppressWarnings("unused") IllegalArgumentException e) {
             Main.warn("Invalid ring. Not fixed.");
             return ring;
         }
@@ -221,18 +221,5 @@ public class SegmentIterator {
 
     public LineSegment getNext() {
         return nextLs;
-    }
-
-    /**
-     * Null safe LineSegment clone operation
-     * 
-     * @param ls
-     * The LineSegment to clone
-     * @return
-     */
-    @Deprecated
-    private static LineSegment cloneLs(LineSegment ls) {
-        if (ls == null) return null;
-        return new LineSegment(ls.p0, ls.p1);
     }
 }

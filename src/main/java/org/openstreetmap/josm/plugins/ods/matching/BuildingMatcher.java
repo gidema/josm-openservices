@@ -5,9 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
+//import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 
 public class BuildingMatcher {
     private Map<Long, Match<Building>> buildingMatches = new HashMap<>();
@@ -17,10 +18,10 @@ public class BuildingMatcher {
     private List<Building> unmatchedOpenDataBuildings = new LinkedList<>();
     private List<Building> unmatchedOsmBuildings = new LinkedList<>();
 
-    public BuildingMatcher(DataManager dataManager) {
+    public BuildingMatcher(OdsModule module) {
         super();
-        odBuildingStore = dataManager.getOpenDataEntityStore(Building.class);
-        osmBuildingStore = dataManager.getOsmEntityStore(Building.class);
+        odBuildingStore = module.getOpenDataLayerManager().getEntityStore(Building.class);
+        osmBuildingStore = module.getOsmLayerManager().getEntityStore(Building.class);
     }
 
     public void run() {
@@ -30,6 +31,7 @@ public class BuildingMatcher {
         for (Building building : osmBuildingStore) {
             processOsmBuilding(building);
         }
+        analyze();
     }
 
     private void processOpenDataBuilding(Building odBuilding) {
@@ -42,7 +44,7 @@ public class BuildingMatcher {
         }
         List<Building> osmBuildings = osmBuildingStore.getById(id);
         if (osmBuildings.size() > 0) {
-            match = new MatchImpl<>(osmBuildings.get(0), odBuilding);
+            match = new BuildingMatch(osmBuildings.get(0), odBuilding);
             for (int i=1; i<osmBuildings.size() ; i++) {
                 Building osmBuilding = osmBuildings.get(i);
                 osmBuilding.setMatch(match);
@@ -70,7 +72,7 @@ public class BuildingMatcher {
         }
         List<Building> odBuildings = odBuildingStore.getById(l);
         if (odBuildings.size() > 0) {
-            Match<Building> match = new MatchImpl<>(osmBuilding, odBuildings.get(0));
+            Match<Building> match = new BuildingMatch(osmBuilding, odBuildings.get(0));
             for (int i=1; i<odBuildings.size(); i++) {
                 match.addOpenDataEntity(odBuildings.get(i));
             }
@@ -79,4 +81,13 @@ public class BuildingMatcher {
             unmatchedOsmBuildings.add(osmBuilding);
         }
     }
+    
+    public void analyze() {
+        for (Match<Building> match : buildingMatches.values()) {
+            if (match.isSimple()) {
+                match.analyze();
+            }
+        }
+    }
+
 }
