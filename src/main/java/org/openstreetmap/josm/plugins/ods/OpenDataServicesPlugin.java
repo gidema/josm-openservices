@@ -6,7 +6,6 @@ package org.openstreetmap.josm.plugins.ods;
 //import static nl.gertjanidema.josm.bag.BAGDataType.STANDPLAATS;
 //import static nl.gertjanidema.josm.bag.BAGDataType.WEGVAK;
 import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
-import static org.openstreetmap.josm.tools.I18n.marktr;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -62,7 +61,7 @@ public class OpenDataServicesPlugin extends Plugin {
     public static JMenu initializeMenu() {
         JMenu menu = ODS.getMenu();
         if (menu == null) {
-            menu = Main.main.menu.addMenu(marktr("ODS"), KeyEvent.VK_UNDEFINED,
+            menu = Main.main.menu.addMenu("ODS", "ODS", KeyEvent.VK_UNDEFINED,
                     4, ht("/Plugin/ODS"));
             menu.add(new OdsAction());
             menu.add(new OdsDownloadAction());

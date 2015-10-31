@@ -351,7 +351,7 @@ public class OdsDownloader {
         BoundingXYVisitor v = new BoundingXYVisitor();
         if (bounds != null) {
             v.visit(bounds);
-            Main.map.mapView.recalculateCenterScale(v);
+            Main.map.mapView.zoomTo(bounds);
         }
     }
 
