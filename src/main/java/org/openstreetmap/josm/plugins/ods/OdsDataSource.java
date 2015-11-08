@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import org.opengis.filter.Filter;
+import org.geotools.data.Query;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
@@ -19,7 +19,7 @@ public interface OdsDataSource {
 
     public OdsFeatureSource getOdsFeatureSource();
 
-    public Filter getFilter();
+    public Query getQuery();
 
     public void setIdFactory(DefaultIdFactory idFactory);
 

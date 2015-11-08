@@ -19,7 +19,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
  *
  */
 public class OsmAddressNodeStore extends EntityStore<AddressNode> {
-    private UniqueIndexImpl<AddressNode> primitiveIndex = new UniqueIndexImpl<>(AddressNode.class, "referenceId");
+    private UniqueIndexImpl<AddressNode> primitiveIndex = new UniqueIndexImpl<>(AddressNode.class, "primaryId");
     private GeoIndex<AddressNode> geoIndex = new GeoIndexImpl<>(AddressNode.class, "geometry");
     private Index<AddressNode> zipHousnrIndex = new IndexImpl<>(AddressNode.class, "postcode", "houseNumber");
 

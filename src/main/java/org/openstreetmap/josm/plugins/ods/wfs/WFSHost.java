@@ -34,7 +34,7 @@ public class WFSHost extends GtHost {
                     capabilitiesUrl);
             connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 60000);
             connectionParameters.put(WFSDataStoreFactory.BUFFER_SIZE.key, 1000);
-            connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, "FALSE");
+            connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, false);
             return connectionParameters;
         } catch (MalformedURLException e) {
             throw new InitializationException(e.getMessage(), e);

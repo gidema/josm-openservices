@@ -5,4 +5,6 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public interface OsmEntityBuilder<T extends Entity> {
     public void buildOsmEntity(OsmPrimitive primitive);
+
+    public Class<T> getEntityClass();
 }

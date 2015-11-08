@@ -8,6 +8,8 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Street;
 
 public class AddressImpl implements MutableAddress {
     private Integer houseNumber;
+    private Character houseLetter;
+    private String houseNumberExtra;
     private String fullHouseNumber;
     private String postcode;
     private String houseName;
@@ -59,7 +61,7 @@ public class AddressImpl implements MutableAddress {
     @Override
     public void setFullHouseNumber(String fullHouseNumber) {
         this.fullHouseNumber = fullHouseNumber;
-        this.parseHouseNumber();
+        this.parseHouseNumberParts();
     }
     
     @Override
@@ -73,6 +75,23 @@ public class AddressImpl implements MutableAddress {
             fullHouseNumber = formatHouseNumber();
         }
         return fullHouseNumber;
+    }
+
+    
+    public Character getHouseLetter() {
+        return houseLetter;
+    }
+
+    public void setHouseLetter(Character houseLetter) {
+        this.houseLetter = houseLetter;
+    }
+
+    public String getHouseNumberExtra() {
+        return houseNumberExtra;
+    }
+
+    public void setHouseNumberExtra(String houseNumberExtra) {
+        this.houseNumberExtra = houseNumberExtra;
     }
 
     @Override
@@ -89,7 +108,6 @@ public class AddressImpl implements MutableAddress {
     public City getCity() {
         return city;
     }
-    
 
     @Override
     public void setStreet(Street street) {
@@ -98,7 +116,17 @@ public class AddressImpl implements MutableAddress {
     }
     
     public String formatHouseNumber() {
-        return null;
+        StringBuilder sb = new StringBuilder(10);
+        if (getHouseNumber() != null) {
+            sb.append(getHouseNumber());
+        }
+        if (getHouseLetter() != null) {
+            sb.append(getHouseLetter());
+        }
+        if (getHouseNumberExtra() != null) {
+            sb.append("-").append(getHouseNumberExtra());
+        }
+        return sb.toString();
     }
 
     @Override
@@ -116,17 +144,46 @@ public class AddressImpl implements MutableAddress {
         return result;
     }
 
-    public void parseHouseNumber() {
-        // Override if required
+    protected void parseHouseNumberParts() {
+        String s = this.fullHouseNumber;
+        int i=0;
+        while (i<s.length() && Character.isDigit(s.charAt(i))) {
+            i++;
+        }
+        if (i > 0) {
+            setHouseNumber(Integer.valueOf(s.substring(0, i)));
+        }
+        if (i >= s.length()) return;
+        if (Character.isAlphabetic(s.charAt(i))) {
+            setHouseLetter(s.charAt(i));
+            i++;
+        }
+        if (i >= s.length()) return;
+        if (s.charAt(i) == '-' || s.charAt(i) == ' ') {
+            i++;
+        }
+        if (i < s.length()) {
+            setHouseNumberExtra(s.substring(i));
+        }
     }
     
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getStreetName()).append(" ");
-        sb.append(getHouseNumber()).append(" ");
-        sb.append(getPostcode()).append(" ");
-        sb.append(getCityName()).append(" ");       
+        sb.append(getHouseNumber());
+        if (getHouseLetter() != null) {
+            sb.append(getHouseLetter());
+        }
+        if (getHouseNumberExtra() != null) {
+            sb.append('-').append(getHouseNumberExtra());
+        }
+        if (getPostcode() != null) {
+            sb.append(' ').append(getPostcode());
+        }
+        if (getCityName() != null) {
+            sb.append(' ').append(getCityName());
+        }
         return sb.toString();
     }
 }

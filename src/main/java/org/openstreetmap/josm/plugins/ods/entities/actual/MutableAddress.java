@@ -12,6 +12,10 @@ public interface MutableAddress extends Address {
 
     void setHouseNumber(Integer houseNumber);
 
+    void setHouseLetter(Character houseLetter);
+    
+    void setHouseNumberExtra(String extra);
+
     void setFullHouseNumber(String fullHouseNumber);
 
     void setStreet(Street street);

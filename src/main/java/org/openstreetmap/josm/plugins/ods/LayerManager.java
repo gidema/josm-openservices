@@ -32,6 +32,11 @@ public interface LayerManager {
     /**
      * Remove the underlying Osm Datalayer and clear the ODS data stores
      */
+    public void deActivate();
+
+    /**
+     * Clear the underlying Osm DataLayer an the ODS data stores
+     */
     public void reset();
     
     public void register(OsmPrimitive primitive, Entity entity);
@@ -50,5 +55,4 @@ public interface LayerManager {
      * @return The store for this Entity type
      */
     public <E extends Entity> EntityStore<E> getEntityStore(Class<E> clazz);
-
 }

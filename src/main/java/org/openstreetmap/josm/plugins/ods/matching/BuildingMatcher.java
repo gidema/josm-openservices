@@ -5,12 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-//import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 
-public class BuildingMatcher {
+public class BuildingMatcher implements Matcher<Building> {
     private Map<Long, Match<Building>> buildingMatches = new HashMap<>();
     private EntityStore<Building> odBuildingStore;
     private EntityStore<Building> osmBuildingStore;

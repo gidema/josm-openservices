@@ -4,6 +4,7 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndexImpl;
 import org.openstreetmap.josm.plugins.ods.entities.Index;
+import org.openstreetmap.josm.plugins.ods.entities.IndexImpl;
 import org.openstreetmap.josm.plugins.ods.entities.UniqueIndexImpl;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingImpl;
@@ -17,14 +18,14 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingImpl;
  *
  */
 public class OpenDataBuildingStore extends EntityStore<Building> {
-    private UniqueIndexImpl<Building> primaryIndex = new UniqueIndexImpl<>(Building.class, "referenceId");
-//    private IndexImpl<Building> idIndex = new IndexImpl<>(Building.class, "referenceId");
+    private UniqueIndexImpl<Building> primaryIndex = new UniqueIndexImpl<>(Building.class, "primaryId");
+    private IndexImpl<Building> idIndex = new IndexImpl<>(Building.class, "referenceId");
     private GeoIndex<Building> geoIndexImpl = new GeoIndexImpl<Building, BuildingImpl>(BuildingImpl.class, "geometry");
 
     public OpenDataBuildingStore() {
         super();
         addIndex(primaryIndex);
-//        addIndex(idIndex);
+        addIndex(idIndex);
         addIndex(geoIndexImpl);
     }
 
@@ -35,9 +36,8 @@ public class OpenDataBuildingStore extends EntityStore<Building> {
 
     @Override
     public Index<Building> getIdIndex() {
-        return primaryIndex;
+        return idIndex;
     }
-
 
     @Override
     public GeoIndex<Building> getGeoIndex() {

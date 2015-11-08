@@ -33,22 +33,12 @@ public class OsmAddressNodeToBuildingMatcher {
         this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
     }
 
-    public Consumer<AddressNode> getAddressNodeConsumer() {
-        return new Consumer<AddressNode>() {
-
-            @Override
-            public void accept(AddressNode addressNode) {
-                matchAddressToBuilding(addressNode);
-            }
-        };
-    }
-
     /**
      * Find a matching building for an address.
      * 
      * @param addressNode
      */
-    private void matchAddressToBuilding(AddressNode addressNode) {
+    public void match(AddressNode addressNode) {
         OsmBuildingStore buildings = (OsmBuildingStore)module
                 .getOsmLayerManager().getEntityStore(Building.class);
         if (addressNode.getBuilding() == null) {

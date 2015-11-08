@@ -15,8 +15,10 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 //import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
@@ -35,24 +37,40 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 public abstract class OdsModule implements LayerChangeListener {
     private final OdsModulePlugin plugin;
     private final List<OdsAction> actions = new LinkedList<>();
+    private final List<EntityType<?>> entityTypes = new LinkedList<>();
+    private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
     
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private final OpenDataLayerManager openDataLayerManager;
     private PolygonLayerManager polygonDataLayer;
     private final OsmLayerManager osmLayerManager;
-    
-//    private DataManager dataManager = new DataManager();
+    private MatcherManager matcherManager;
 
     String osmQuery;
     private boolean active = false;
     private EntityFactory entityFactory;
 
-    public OdsModule(OdsModulePlugin plugin, OsmLayerManager osmLayerManager, OpenDataLayerManager openDataLayerManager) {
+    public OdsModule(OdsModulePlugin plugin) {
         this.plugin = plugin;
-        this.osmLayerManager = osmLayerManager;
-        this.openDataLayerManager = openDataLayerManager;
-        this.polygonDataLayer = new PolygonLayerManager(this);
+        this.osmLayerManager = createOsmLayerManager();
+        this.openDataLayerManager = createOpenDataLayerManager();
         MapView.addLayerChangeListener(this);
+    }
+
+    protected void addEntityType(EntityType<?> entityType) {
+        entityTypes.add(entityType);
+    }
+    
+    public List<EntityType<?>> getEntityTypes() {
+        return entityTypes;
+    }
+
+    protected void addOsmEntityBuilder(OsmEntityBuilder<?> entityBuilder) {
+        this.entityBuilders.add(entityBuilder);
+    }
+    
+    public List<OsmEntityBuilder<?>> getEntityBuilders() {
+        return entityBuilders;
     }
 
     public abstract GeoUtil getGeoUtil();
@@ -88,6 +106,11 @@ public abstract class OdsModule implements LayerChangeListener {
         return osmQuery;
     }
 
+    protected abstract OpenDataLayerManager createOpenDataLayerManager();
+
+    protected abstract OsmLayerManager createOsmLayerManager();
+
+
     public OpenDataLayerManager getOpenDataLayerManager() {
         return openDataLayerManager;
     }
@@ -96,11 +119,16 @@ public abstract class OdsModule implements LayerChangeListener {
         return osmLayerManager;
     }
 
-    public LayerManager getLayerManager(OsmDataLayer layer) {
-        if (openDataLayerManager.getOsmDataLayer() == layer) {
+    public MatcherManager getMatcherManager() {
+        return matcherManager;
+    }
+
+    public LayerManager getLayerManager(Layer activeLayer) {
+        if (!isActive()) return null;
+        if (openDataLayerManager.getOsmDataLayer() == activeLayer) {
             return openDataLayerManager;
         }
-        if (osmLayerManager.getOsmDataLayer() == layer) {
+        if (osmLayerManager.getOsmDataLayer() == activeLayer) {
             return osmLayerManager;
         }
         return null;
@@ -114,7 +142,7 @@ public abstract class OdsModule implements LayerChangeListener {
         return active;
     }
     
-    public void activate() {
+    public boolean activate() {
         JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
         for (OdsAction action : getActions()) {
             menu.add(action);
@@ -122,23 +150,23 @@ public abstract class OdsModule implements LayerChangeListener {
         getOsmLayerManager().initialize();
         getOpenDataLayerManager().initialize();
         if (usePolygonFile()) {
+            polygonDataLayer = new PolygonLayerManager(this);
             polygonDataLayer.initialize();
         }
+        this.matcherManager = new MatcherManager(this);
         active = true;
+        return true;
     }
 
     public void deActivate() {
         if (getOsmLayerManager() != null) {
-            OsmDataLayer internalOsmLayer = getOsmLayerManager().getOsmDataLayer();
-            Main.map.mapView.removeLayer(internalOsmLayer);
+            getOsmLayerManager().deActivate();
         }
         if (getOpenDataLayerManager() != null) {
-            OsmDataLayer externalOsmLayer = getOpenDataLayerManager().getOsmDataLayer();
-            Main.map.mapView.removeLayer(externalOsmLayer);
+            getOpenDataLayerManager().deActivate();
         }
         if (polygonDataLayer != null) {
-            OsmDataLayer osmLayer = polygonDataLayer.getOsmDataLayer();
-            Main.map.mapView.removeLayer(osmLayer);
+            polygonDataLayer.deActivate();
         }
         active = false;
     }
@@ -160,19 +188,22 @@ public abstract class OdsModule implements LayerChangeListener {
 
     @Override
     public void activeLayerChange(Layer oldLayer, Layer newLayer) {
-        // No action required
+        if (!isActive()) return;
+        for (OdsAction action : actions) {
+            action.activeLayerChange(oldLayer, newLayer);
+        }
     }
 
     @Override
     public void layerAdded(Layer newLayer) {
-        // No action required
+        if (!isActive()) return;
     }
 
     @Override
     public void layerRemoved(Layer oldLayer) {
-        OsmLayerManager internalDataLayer = getOsmLayerManager();
-        OpenDataLayerManager externalDataLayer = getOpenDataLayerManager();
-        if (active) {
+        if (isActive()) {
+            OsmLayerManager internalDataLayer = getOsmLayerManager();
+            OpenDataLayerManager externalDataLayer = getOpenDataLayerManager();
             OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
                     : externalDataLayer.getOsmDataLayer());
             OsmDataLayer internalOsmLayer = (internalDataLayer == null ? null

@@ -35,6 +35,7 @@ public abstract class AbstractLayerManager implements LayerManager {
     public <T extends Entity> void addEntityStore(Class<T> clazz, EntityStore<T> entityStore) {
         this.entityStoreMap.put(clazz, entityStore);
     }
+    
     public OsmDataLayer getOsmDataLayer() {
         if (osmDataLayer == null) {
             osmDataLayer = createOsmDataLayer();
@@ -44,7 +45,9 @@ public abstract class AbstractLayerManager implements LayerManager {
     }
     
     protected OsmDataLayer createOsmDataLayer() {
-        return new OsmDataLayer(new DataSet(), getName(), null);
+        OsmDataLayer layer = new OsmDataLayer(new DataSet(), getName(), null);
+        layer.setUploadDiscouraged(!isOsm());
+        return layer;
     }
 
     public void initialize() {
@@ -64,8 +67,7 @@ public abstract class AbstractLayerManager implements LayerManager {
     }
 
     public void reset() {
-        // TODO close the osm datalayer properly
-        this.osmDataLayer = null;
+        this.osmDataLayer.destroy();
         // Clear all data stores
         for (EntityStore<?> store : entityStoreMap.stores.values()) {
             store.clear();
@@ -76,16 +78,22 @@ public abstract class AbstractLayerManager implements LayerManager {
     }
 
     @Override
+    public void deActivate() {
+        this.reset();
+        Main.map.mapView.removeLayer(osmDataLayer);
+    }
+
+    @Override
     public void register(OsmPrimitive primitive, Entity entity) {
         switch (primitive.getType()) {
         case NODE:
-            nodeEntities.put(primitive.getId(), entity);
+            nodeEntities.put(primitive.getUniqueId(), entity);
             break;
         case WAY:
-            wayEntities.put(primitive.getId(), entity);
+            wayEntities.put(primitive.getUniqueId(), entity);
             break;
         case RELATION:
-            relationEntities.put(primitive.getId(), entity);
+            relationEntities.put(primitive.getUniqueId(), entity);
             break;
         default:
             break;
@@ -96,11 +104,11 @@ public abstract class AbstractLayerManager implements LayerManager {
     public Entity getEntity(OsmPrimitive primitive) {
         switch (primitive.getType()) {
         case NODE:
-            return nodeEntities.get(primitive.getId());
+            return nodeEntities.get(primitive.getUniqueId());
         case WAY:
-            return wayEntities.get(primitive.getId());
+            return wayEntities.get(primitive.getUniqueId());
         case RELATION:
-            return relationEntities.get(primitive.getId());
+            return relationEntities.get(primitive.getUniqueId());
         default:
             return null;
         }

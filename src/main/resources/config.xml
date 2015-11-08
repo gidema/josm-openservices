@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ods>
-<!--  <import type="host" name="WFS" class="org.openstreetmap.josm.plugins.ods.wfs.WFSHost"/>
-  <import type="action" name="download" class="org.openstreetmap.josm.plugins.ods.OdsDownloadAction"/>
-  <import type="action" name="nearestWay" class="org.openstreetmap.josm.plugins.ods.entities.builtenvironment.NearestWayAction"/>-->
-</ods>

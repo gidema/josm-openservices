@@ -5,12 +5,10 @@ import java.util.Date;
 
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
-import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
@@ -102,8 +100,8 @@ public class GtFeatureSource implements OdsFeatureSource {
         return Long.parseLong(rid.getCode());
     }
 
-    @Override
-    public OdsDataSource newDataSource(Filter filter) {
-        return new GtDataSource(this, filter);
-    }
+//    @Override
+//    public OdsDataSource newDataSource(Filter filter, List<String> sortOrder, String distinctAttribute) {
+//        return new GtDataSource(this, filter, distinctAttribute);
+//    }
 }

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -14,7 +13,6 @@ import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.tasks.Task;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
@@ -28,35 +26,11 @@ import org.openstreetmap.josm.tools.I18n;
 public abstract class MainDownloader {
     private static final int NTHREADS = 10;
 
-//    private OdsModuleConfig module;
-//    private OdsModule module;
-    
-//    private boolean downloadOsm;
-//    private boolean downloadOds;
-    
     private List<LayerDownloader> enabledDownloaders;
-    
-//    private ProgressMonitor pm;
-    
-//    private OsmDownloadJob osmDownloadJob;
-//    private GeotoolsDownloadJob geotoolsDownloadJob;
-    
-    private List<Task> postDownloadTasks = new ArrayList<>(0);
     
     private ExecutorService executor;
 
     private Status status = new Status();
-//    private EntitySource entitySource;
-
-//    public OdsDownloader(OsmDownloadJob osmDownloadJob, 
-//            GeotoolsDownloadJob geotoolsDownloadJob,
-//            List<Task> postDownloadTasks) {
-//        super();
-////        this.module = module;
-//        this.osmDownloadJob = osmDownloadJob;
-//        this.geotoolsDownloadJob = geotoolsDownloadJob;
-//        this.postDownloadTasks = postDownloadTasks;
-//    }
 
     protected abstract LayerDownloader getOsmLayerDownloader();
 
@@ -68,11 +42,6 @@ public abstract class MainDownloader {
         setup(request);
         pm.indeterminateSubTask(I18n.tr("Preparing"));
         prepare();
-//        run(Fase.PREPARE);
-//        if (!status.isSucces()) {
-//            pm.finishTask();
-//            return;
-//        }
         pm.indeterminateSubTask(I18n.tr("Downloading"));
         download();
         if (!status.isSucces()) {
@@ -105,17 +74,9 @@ public abstract class MainDownloader {
         enabledDownloaders = new LinkedList<LayerDownloader>();
         if (request.isGetOsm()) {
             enabledDownloaders.add(getOsmLayerDownloader());
-//            osmDownloadJob.setEntitySource(entitySource);
-//            for (Downloader downloader : getOsmDownloadJob().getDownloaders()) {
-//                downloaders.add(downloader);
-//            }
         }
         if (request.isGetOds()) {
             enabledDownloaders.add(getOpenDataLayerDownloader());
-////            geotoolsDownloadJob.setEntitySource(entitySource);
-//            for (Downloader downloader : getGeotoolsDownloadJob().getDownloaders()) {
-//                downloaders.add(downloader);
-//            }
         }
         for (LayerDownloader downloader : enabledDownloaders) {
             downloader.setup(request);
@@ -206,16 +167,12 @@ public abstract class MainDownloader {
                 this.status = status;
             }
         }
-        for (Task task : postDownloadTasks) {
-//            task.run(ctx);
-        }
     }
 
     protected void computeBboxAndCenterScale(Bounds bounds) {
         BoundingXYVisitor v = new BoundingXYVisitor();
         if (bounds != null) {
             v.visit(bounds);
-//            Main.map.mapView..recalculateCenterScale(v);
             Main.map.mapView.zoomTo(bounds);
         }
     }
@@ -225,16 +182,5 @@ public abstract class MainDownloader {
         for (LayerDownloader downloader : enabledDownloaders) {
             downloader.cancel();
         }
-//        if (executor != null) {
-//            System.out.println(executor.isTerminated());
-//            executor.shutdownNow();
-//            try {
-//                executor.awaitTermination(60, TimeUnit.SECONDS);
-//                System.out.println(executor.isTerminated());
-//            }
-//            catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 }

@@ -3,6 +3,10 @@ package org.openstreetmap.josm.plugins.ods.entities.actual;
 public interface Address extends Comparable<Address> {
     public Integer getHouseNumber();
     
+    public Character getHouseLetter();
+    
+    public String getHouseNumberExtra();
+    
     public String getFullHouseNumber();
 
     public String getHouseName();

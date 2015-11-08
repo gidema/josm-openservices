@@ -39,6 +39,16 @@ public abstract class AddressNodeImpl extends AbstractEntity implements MutableA
     }
 
     @Override
+    public Character getHouseLetter() {
+        return address.getHouseLetter();
+    }
+
+    @Override
+    public String getHouseNumberExtra() {
+        return address.getHouseNumberExtra();
+    }
+
+    @Override
     public String getHouseName() {
         return address.getHouseName();
     }
@@ -70,7 +80,7 @@ public abstract class AddressNodeImpl extends AbstractEntity implements MutableA
 
     @Override
     public boolean isIncomplete() {
-        return building == null || building.isIncomplete();
+        return building != null && building.isIncomplete();
     }
 
     @Override
@@ -106,5 +116,9 @@ public abstract class AddressNodeImpl extends AbstractEntity implements MutableA
     @Override
     public Point getGeometry() {
         return (Point) super.getGeometry();
+    }
+    
+    public String toString() {
+        return getAddress().toString();
     }
 }

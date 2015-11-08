@@ -2,10 +2,12 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
 
+import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.NameImpl;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -32,7 +34,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private DownloadRequest request;
     private DownloadResponse response;
     private SimpleFeatureSource featureSource;
-    private Filter filter;
+    private Query query;
     private DefaultFeatureCollection downloadedFeatures;
     private EntityStore<T> entityStore;
     private final Status status = new Status();
@@ -67,20 +69,28 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         try {
             // TODO rename dataSource.initialize() to prepare()
             dataSource.initialize();
-            GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource
-                .getOdsFeatureSource();
+            GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource.getOdsFeatureSource();
             // TODO check if selected boundaries overlap with
             // featureSource boundaries;
+            featureSource = gtFeatureSource.getFeatureSource();
+            query = dataSource.getQuery();
+            if (query instanceof GroupByQuery) {
+                featureSource = new GroupByFeatureSource(new NameImpl("Dummy"), featureSource, (GroupByQuery)query);
+            }
+            // Clone the query, so we can moderate the filter by setting the download area.
+            query = new Query(query);
             FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
             String geometryProperty = gtFeatureSource.getFeatureType()
                 .getGeometryDescriptor().getLocalName();
-            featureSource = gtFeatureSource.getFeatureSource();
+            Filter filter = query.getFilter();
             filter = ff.intersects(ff.property(geometryProperty), ff.literal(getArea()));
-            Filter dataFilter = dataSource.getFilter();
+            Filter dataFilter = dataSource.getQuery().getFilter();
             if (dataFilter != null) {
                  filter = ff.and(filter, dataFilter);
             }
+            query.setFilter(filter);
         } catch (Exception e) {
+            Main.error(e);
             status.setException(e);
         }
         return;
@@ -110,11 +120,14 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         String key = dataSource.getOdsFeatureSource().getIdAttribute();
         downloadedFeatures = new DefaultFeatureCollection(key);
         try (
-            SimpleFeatureIterator it = featureSource.getFeatures(filter).features();
+            SimpleFeatureIterator it = featureSource.getFeatures(query).features();
         )  {
            while (it.hasNext()) {
                downloadedFeatures.add((SimpleFeature) it.next());
-               // TODO check for interruption
+               if (Thread.currentThread().isInterrupted()) {
+                   status.setCancelled(true);
+                   return;
+               }
            };
         } catch (IOException e) {
             Main.warn(e);

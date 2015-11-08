@@ -36,15 +36,15 @@ public class OpenDataAddressNodeToBuildingMatcher {
         this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
     }
 
-    public Consumer<AddressNode> getAddressNodeConsumer() {
-        return new Consumer<AddressNode>() {
-
-            @Override
-            public void accept(AddressNode addressNode) {
-                matchAddressToBuilding(addressNode);
-            }
-        };
-    }
+//    public Consumer<AddressNode> getAddressNodeConsumer() {
+//        return new Consumer<AddressNode>() {
+//
+//            @Override
+//            public void accept(AddressNode addressNode) {
+//                matchAddressToBuilding(addressNode);
+//            }
+//        };
+//    }
 
     /**
      * Find a matching building for an address.
