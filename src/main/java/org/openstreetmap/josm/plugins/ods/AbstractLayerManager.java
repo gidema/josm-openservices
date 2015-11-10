@@ -39,7 +39,9 @@ public abstract class AbstractLayerManager implements LayerManager {
     public OsmDataLayer getOsmDataLayer() {
         if (osmDataLayer == null) {
             osmDataLayer = createOsmDataLayer();
-            Main.main.addLayer(osmDataLayer);
+            if (osmDataLayer != null) {
+                Main.main.addLayer(osmDataLayer);
+            }
         }
         return osmDataLayer;
     }

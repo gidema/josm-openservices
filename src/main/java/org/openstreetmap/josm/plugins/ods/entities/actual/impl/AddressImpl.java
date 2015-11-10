@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
+
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 import org.openstreetmap.josm.plugins.ods.entities.actual.MutableAddress;
@@ -131,15 +132,15 @@ public class AddressImpl implements MutableAddress {
 
     @Override
     public int compareTo(Address a) {
-        int result = ObjectUtils.compare(getCityName(), a.getCityName());
+        int result = Objects.compare(getCityName(), a.getCityName(), String.CASE_INSENSITIVE_ORDER);
         if (result == 0) {
-            result = ObjectUtils.compare(getPostcode(), a.getPostcode());
+            result = Objects.compare(getPostcode(), a.getPostcode(), String.CASE_INSENSITIVE_ORDER);
         };
         if (result == 0) {
-            result = ObjectUtils.compare(getStreetName(), a.getStreetName());
+            result = Objects.compare(getStreetName(), a.getStreetName(), String.CASE_INSENSITIVE_ORDER);
         };
         if (result == 0) {
-            result = ObjectUtils.compare(getHouseName(), a.getFullHouseNumber());
+            result = Objects.compare(getHouseName(), a.getFullHouseNumber(), String.CASE_INSENSITIVE_ORDER);
         };
         return result;
     }

@@ -18,6 +18,14 @@ public class PolygonLayerManager extends AbstractLayerManager {
     }
 
     @Override
+    public void initialize() {
+        if (getOsmDataLayer() != null) {
+            super.initialize();
+        }
+    }
+
+
+    @Override
     public boolean isOsm() {
         return false;
     }
