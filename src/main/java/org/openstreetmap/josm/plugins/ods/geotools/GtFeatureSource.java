@@ -9,23 +9,24 @@ import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
-import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 public class GtFeatureSource implements OdsFeatureSource {
 
     private boolean initialized = false;
-    GtHost host;
-    String featureName;
+    private final GtHost host;
+    private final String featureName;
+    private final String idAttribute;
     SimpleFeatureSource featureSource;
     CoordinateReferenceSystem crs;
     MetaData metaData;
 
-    public GtFeatureSource(GtHost host, String featureName) {
+    public GtFeatureSource(GtHost host, String featureName, String idAttribute) {
         super();
         this.host = host;
         this.featureName = featureName;
+        this.idAttribute = idAttribute;
     }
 
     @Override
@@ -54,8 +55,8 @@ public class GtFeatureSource implements OdsFeatureSource {
         } catch (IOException e) {
             throw new InitializationException(e);
         }
-        if (!metaData.containsKey("bag.source.data")) {
-            metaData.put("bag.source.data", new Date());
+        if (!metaData.containsKey("source.date")) {
+            metaData.put("source.date", new Date());
         }
         initialized = true;
     }
@@ -73,6 +74,11 @@ public class GtFeatureSource implements OdsFeatureSource {
     public FeatureType getFeatureType() {
         assert initialized;
         return getFeatureSource().getSchema();
+    }
+
+    @Override
+    public String getIdAttribute() {
+        return idAttribute;
     }
 
     @Override
@@ -94,8 +100,8 @@ public class GtFeatureSource implements OdsFeatureSource {
         return Long.parseLong(rid.getCode());
     }
 
-    @Override
-    public OdsDataSource newDataSource() {
-        return new GtDataSource(this);
-    }
+//    @Override
+//    public OdsDataSource newDataSource(Filter filter, List<String> sortOrder, String distinctAttribute) {
+//        return new GtDataSource(this, filter, distinctAttribute);
+//    }
 }

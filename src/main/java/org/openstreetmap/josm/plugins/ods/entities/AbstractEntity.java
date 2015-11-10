@@ -1,22 +1,34 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.matching.Match;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class AbstractEntity implements Entity {
+    private Object primaryId;
     private Object referenceId;
+    private DownloadResponse response;
     private String sourceDate;
     private String source;
     private Geometry geometry;
-    private boolean incomplete;
+    private boolean incomplete = true;
     private Map<String, String> otherTags = new HashMap<>();
-    private List<OsmPrimitive> primitives;
-    private Long primitiveId;
+    private OsmPrimitive primitive;
+    private Match<? extends Entity> match;
+
+    public void setPrimaryId(Object primaryId) {
+        this.primaryId = primaryId;
+    }
+
+    @Override
+    public Object getPrimaryId() {
+        return primaryId;
+    }
 
     public Object getReferenceId() {
         return referenceId;
@@ -24,6 +36,14 @@ public abstract class AbstractEntity implements Entity {
 
     public void setReferenceId(Object referenceId) {
         this.referenceId = referenceId;
+    }
+
+    public void setDownloadResponse(DownloadResponse response) {
+        this.response = response;
+    }
+    
+    public DownloadResponse getDownloadResponse() {
+        return response;
     }
 
     public void setSourceDate(String string) {
@@ -69,28 +89,32 @@ public abstract class AbstractEntity implements Entity {
         this.otherTags = otherTags;
     }
 
-    public void setPrimitives(List<OsmPrimitive> primitives) {
-        this.primitives = primitives;
-        if (primitives.isEmpty()) return;
-        primitiveId = Long.MAX_VALUE ;
-        for (OsmPrimitive primitive : primitives) {
-            primitiveId = Math.min(primitiveId, primitive.getId());
-        }
+    public void setPrimitive(OsmPrimitive primitive) {
+        this.primitive = primitive;
     }
 
     @Override
     public boolean isDeleted() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public Long getPrimitiveId() {
-        return primitiveId;
+        return (primitive == null ? null : primitive.getUniqueId());
     }
 
     @Override
-    public List<OsmPrimitive> getPrimitives() {
-        return primitives;
+    public OsmPrimitive getPrimitive() {
+        return primitive;
+    }
+
+    @Override
+    public Match<? extends Entity> getMatch() {
+        return match;
+    }
+
+    @Override
+    public <E extends Entity> void setMatch(Match<E> match) {
+        this.match = match;
     }
 }

@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,8 +59,12 @@ public class IndexImpl<T extends Entity> implements Index<T>  {
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.entities.Index#get(U)
      */
-    public List<T> get(Object key) {
-        return map.get(key);
+    public List<T> getAll(Object key) {
+        List<T> result = map.get(key);
+        if (result == null) {
+            return Collections.emptyList();
+        }
+        return result;
     }
     
     @Override

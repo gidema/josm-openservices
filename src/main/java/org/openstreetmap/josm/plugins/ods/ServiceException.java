@@ -2,7 +2,12 @@ package org.openstreetmap.josm.plugins.ods;
 
 public class ServiceException extends Exception {
 
-  public ServiceException(String message) {
+  /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+public ServiceException(String message) {
     super(message);
   }
 

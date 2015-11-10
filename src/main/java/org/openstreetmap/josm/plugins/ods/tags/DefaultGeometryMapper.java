@@ -23,6 +23,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Gertjan Idema
  *
  */
+@Deprecated
 public class DefaultGeometryMapper implements GeometryMapper {
   private PrimitiveBuilder abstractPrimitiveBuilder;
   private String targetPrimitive;
@@ -51,28 +52,28 @@ public class DefaultGeometryMapper implements GeometryMapper {
     OsmPrimitive primitive = null;
     if (targetPrimitive.equals("WAY")) {
       if (geometry instanceof LineString) {
-        primitive = abstractPrimitiveBuilder.buildWay((LineString)geometry);
+        primitive = abstractPrimitiveBuilder.buildWay((LineString)geometry, tags);
       }
       else if (geometry instanceof Polygon) {
         Polygon polygon = (Polygon) geometry;
         if (polygon.getNumInteriorRing() == 0) {
-          primitive = abstractPrimitiveBuilder.buildWay(polygon);
+          primitive = abstractPrimitiveBuilder.buildWay(polygon, tags);
         }
         else {
-          primitive = abstractPrimitiveBuilder.buildMultiPolygon(polygon);
+          primitive = abstractPrimitiveBuilder.buildMultiPolygon(polygon, tags);
         }
       }
     } else if (targetPrimitive.equals("MULTIPOLYGON")) {
       if (geometry instanceof Polygon) {
-        primitive = abstractPrimitiveBuilder.buildMultiPolygon((Polygon) geometry);
+        primitive = abstractPrimitiveBuilder.buildMultiPolygon((Polygon) geometry, tags);
       } else if (geometry instanceof MultiPolygon) {
-        primitive = abstractPrimitiveBuilder.buildMultiPolygon((MultiPolygon) geometry);
+        primitive = abstractPrimitiveBuilder.buildMultiPolygon((MultiPolygon) geometry, tags);
       }
     }
     else if (targetPrimitive.equals("NODE")) {
-      primitive = abstractPrimitiveBuilder.buildNode((Point)geometry, merge);
+      primitive = abstractPrimitiveBuilder.buildNode((Point)geometry, tags, merge);
     } else if (targetPrimitive.equals("POLYGON")) {
-      primitive = abstractPrimitiveBuilder.buildArea((MultiPolygon)geometry);
+      primitive = abstractPrimitiveBuilder.buildArea((MultiPolygon)geometry, tags);
     }
     if (primitive != null) {
       for (Entry<String, String> entry : tags.entrySet()) {

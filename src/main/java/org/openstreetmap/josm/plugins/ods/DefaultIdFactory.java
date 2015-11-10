@@ -3,36 +3,28 @@ package org.openstreetmap.josm.plugins.ods;
 import java.io.Serializable;
 
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 
 public class DefaultIdFactory implements IdFactory {
-  private final OdsDataSource dataSource;
-  private String keyAttribute;
+    private String idAttribute;
 
-  public DefaultIdFactory(OdsDataSource dataSource) {
-    super();
-    this.dataSource = dataSource;
-  }
-
-  public final void setKeyAttribute(String keyAttribute) {
-    this.keyAttribute = keyAttribute;
-  }
-
-  @Override
-  public Serializable getId(SimpleFeature feature) {
-    if (keyAttribute == null) {
-      return feature.getIdentifier().getID();
+    public DefaultIdFactory(String idAttribute) {
+        this.idAttribute = idAttribute;
     }
-    try {
-      return (Serializable)feature.getAttribute(keyAttribute);
-    } catch (ClassCastException e) {
-      e.printStackTrace();
-      return null;
+    
+    public DefaultIdFactory(OdsDataSource dataSource) {
+        super();
     }
-  }
 
-  @Override
-  public SimpleFeatureType getFeatureType() {
-    return (SimpleFeatureType) dataSource.getOdsFeatureSource().getFeatureType();
-  }
+    @Override
+    public Serializable getId(SimpleFeature feature) {
+        if (idAttribute == null) {
+            return feature.getIdentifier().getID();
+        }
+        try {
+            return (Serializable) feature.getAttribute(idAttribute);
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

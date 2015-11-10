@@ -2,8 +2,9 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
@@ -18,7 +19,7 @@ import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
  * 
  */
 public abstract class GtHost extends Host {
-    private List<String> featureTypes;
+    private Set<String> featureTypes = new HashSet<>();
     private DataStore dataStore;
     private boolean initialized = false;
 
@@ -35,7 +36,7 @@ public abstract class GtHost extends Host {
         Map<?, ?> connectionParameters = getConnectionParameters();
         try {
             dataStore = DataStoreFinder.getDataStore(connectionParameters);
-            featureTypes = Arrays.asList(getDataStore().getTypeNames());
+            featureTypes.addAll(Arrays.asList(getDataStore().getTypeNames()));
             initialized = true;
         } catch (IOException e) {
             throw new InitializationException(
@@ -46,7 +47,7 @@ public abstract class GtHost extends Host {
     protected abstract Map<?, ?> getConnectionParameters()
             throws InitializationException;
 
-    protected List<String> getFeatureTypes() {
+    protected Set<String> getFeatureTypes() {
         return featureTypes;
     }
 
@@ -65,6 +66,6 @@ public abstract class GtHost extends Host {
 
     @Override
     public OdsFeatureSource getOdsFeatureSource(String feature) {
-        return new GtFeatureSource(this, feature);
+        return new GtFeatureSource(this, feature, null);
     }
 }

@@ -54,11 +54,11 @@ public class GeoUtil {
         return instance;
     }
     
-    public Coordinate toCoordinate(Node node) {
+    public static Coordinate toCoordinate(Node node) {
         return toCoordinate(node.getCoor());
     }
     
-    public Coordinate toCoordinate(LatLon latLon) {
+    public static Coordinate toCoordinate(LatLon latLon) {
         return new Coordinate(latLon.getX(), latLon.getY());
     }
     
@@ -76,6 +76,10 @@ public class GeoUtil {
 
     public LatLon toLatLon(Point point) {
         return new LatLon(point.getY(), point.getX());
+    }
+    
+    public static LatLon toLatLon(Coordinate c) {
+        return new LatLon(c.y, c.x);
     }
     
     public Polygon toPolygon(Bounds bounds) {
@@ -98,7 +102,7 @@ public class GeoUtil {
         LinearRing shell;
         try {
             shell = toLinearRing(way);
-        } catch (UnclosedWayException e) {
+        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
             throw new IllegalArgumentException(
                 "The way that describes this polygon is not closed");
         }
@@ -201,6 +205,19 @@ public class GeoUtil {
         Envelope e = boundary.getEnvelopeInternal();
         return new Bounds(e.getMinY(), e.getMinX(), e.getMaxY(), e.getMaxX());
     }
+
+    public static LineSegment toLineSegment(Node n1, Node n2) {
+        return toLineSegment(n1.getCoor(), n2.getCoor());
+    }
+
+    public static LineSegment toLineSegment(LatLon ll1, LatLon ll2) {
+        return new LineSegment(ll1.lon(), ll2.lon(), ll1.lat(), ll2.lat());
+    }
+
+    public Node toNode(Coordinate c) {
+        return new Node(toLatLon(c));
+    }
+
 
 //    public Polygon toPolygon(Relation relation) throws InvalidPolygonException {
 //        MultiPolygon mpg;

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
@@ -24,10 +23,19 @@ public interface OdsFeatureSource {
     public Long getSRID();
 
     public FeatureType getFeatureType();
+    
+    /**
+     * @return The name of the attribute that contains a unique Id
+     *   for this feature type.
+     *   Some services (WFS) return a different feature Id every time a
+     *   feature is down loaded. As a consequence, we can't use the feature Id
+     *   to determine if a feature was down loaded before. For those cases, we
+     *   have to revert to a unique attribute as means to prevent duplicate
+     *   downloads.
+     */
+    public String getIdAttribute();
 
-    public OdsDataSource newDataSource();
+//    public OdsDataSource newDataSource(Filter filter);
 
     public MetaData getMetaData();
-
-//    public SimpleFeatureSource getFeatureSource();
 }

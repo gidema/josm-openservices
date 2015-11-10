@@ -5,7 +5,7 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LinearRing;
 
 /**
- * The LinearRingAligner aligns two linearRings according to a given tolerance.
+ * The WayAligner aligns two linearRings according to a given tolerance.
  * A point in the second ring that is within 'tolerance' distance from a point
  * from the first ring, will get the coordinates of that point.
  * A lineSegment from either of the rings, that is within 'tolerance'

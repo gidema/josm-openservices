@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.jts.LinearRingAligner;
 

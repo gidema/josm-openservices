@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.gui;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
+import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 
 public abstract class OdsAction extends AbstractAction {
@@ -24,5 +25,9 @@ public abstract class OdsAction extends AbstractAction {
 
     public OdsModule getModule() {
         return module;
+    }
+
+    public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+        // Override if the implementing action wants to know about this event.
     }
 }

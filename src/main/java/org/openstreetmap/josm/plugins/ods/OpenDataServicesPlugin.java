@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
-import static org.openstreetmap.josm.tools.I18n.marktr;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
@@ -22,6 +21,7 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.actions.UploadAction;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.download.DownloadDialog;
 import org.openstreetmap.josm.gui.layer.Layer;
@@ -50,11 +50,13 @@ public class OpenDataServicesPlugin extends Plugin {
             throw new java.lang.RuntimeException(
                     I18n.tr("The Open Data Services plug-in has allready been started"));
         }
+        
         INSTANCE = this;
         readInfo();
         checkVersion(info);
         initializeMenu();
         addDownloadDialogListener();
+        UploadAction.registerUploadHook(new DiscardOdsTagsHook());
     }
 
 
@@ -71,14 +73,17 @@ public class OpenDataServicesPlugin extends Plugin {
         return activeModule;
     }
     
-    public void activate(OdsModule module) {
+    public boolean activate(OdsModule module) {
         if (activeModule == null) {
-            this.activeModule = module;
-            module.activate();
-            menu.remove(0);
-            menu.add(new DeactivateAction());
-            menu.repaint();
+            if (module.activate()) {
+                menu.remove(0);
+                menu.add(new DeactivateAction());
+                menu.repaint();
+                this.activeModule = module;
+                return true;
+            }
         }
+        return false;
     }
 
     public void deactivate(OdsModule module) {
@@ -91,7 +96,7 @@ public class OpenDataServicesPlugin extends Plugin {
 
     private void initializeMenu() {
         if (menu == null) {
-            menu = Main.main.menu.addMenu(marktr("ODS"), KeyEvent.VK_UNDEFINED,
+            menu = Main.main.menu.addMenu("ODS", "ODS", KeyEvent.VK_UNDEFINED,
                     4, ht("/Plugin/ODS"));
             moduleMenu = new JMenu(I18n.tr("Enable"));
         }
@@ -133,7 +138,7 @@ public class OpenDataServicesPlugin extends Plugin {
                 JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
                         "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
             }
-        } catch (IOException e) {
+        } catch (@SuppressWarnings("unused") IOException e) {
             JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
                 "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
             
@@ -141,7 +146,7 @@ public class OpenDataServicesPlugin extends Plugin {
             if (is != null)
                 try {
                     is.close();
-                } catch (IOException e) {
+                } catch (@SuppressWarnings("unused") IOException e) {
                     // Ignore
                 }
             if (reader != null) reader.close();
@@ -156,34 +161,36 @@ public class OpenDataServicesPlugin extends Plugin {
      */
     private void addDownloadDialogListener() {
         DownloadDialog.getInstance().addComponentListener(
-                new ComponentAdapter() {
-                    @Override
-                    public void componentShown(ComponentEvent e) {
-                        if (!Main.isDisplayingMapView())
-                            return;
-                        Layer activeLayer = Main.main.getActiveLayer();
-                        if (activeLayer.getName().startsWith("ODS")
-                                || activeLayer.getName().startsWith("OSM")) {
-                            for (Layer layer : Main.map.mapView
-                                    .getAllLayersAsList()) {
-                                if (layer instanceof OsmDataLayer
-                                        && !(layer.getName().startsWith("ODS"))
-                                        && !(layer.getName().startsWith("OSM"))) {
-                                    Main.map.mapView.setActiveLayer(layer);
-                                    return;
-                                }
+            new ComponentAdapter() {
+                @Override
+                public void componentShown(ComponentEvent e) {
+                    if (!Main.isDisplayingMapView())
+                        return;
+                    Layer activeLayer = Main.main.getActiveLayer();
+                    if (activeLayer.getName().startsWith("ODS")
+                            || activeLayer.getName().startsWith("OSM")) {
+                        for (Layer layer : Main.map.mapView
+                                .getAllLayersAsList()) {
+                            if (layer instanceof OsmDataLayer
+                                    && !(layer.getName().startsWith("ODS"))
+                                    && !(layer.getName().startsWith("OSM"))) {
+                                Main.map.mapView.setActiveLayer(layer);
+                                return;
                             }
-                        } else if (activeLayer instanceof OsmDataLayer) {
-                            return;
                         }
-                        Layer newLayer = new OsmDataLayer(new DataSet(),
-                                OsmDataLayer.createNewName(), null);
-                        Main.map.mapView.addLayer(newLayer);
-                        Main.map.mapView.setActiveLayer(newLayer);
+                    } else if (activeLayer instanceof OsmDataLayer) {
+                        return;
                     }
-                });
+                    Layer newLayer = new OsmDataLayer(new DataSet(),
+                            OsmDataLayer.createNewName(), null);
+                    Main.map.mapView.addLayer(newLayer);
+                    Main.map.mapView.setActiveLayer(newLayer);
+                }
+            }
+        );
     }
 
+    
     private class DeactivateAction extends AbstractAction {
         
         /**

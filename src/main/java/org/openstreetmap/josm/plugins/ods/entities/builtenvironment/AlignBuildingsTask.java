@@ -1,5 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 
+import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
@@ -16,11 +19,11 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class AlignBuildingsTask implements Task {
-    private final GtBuildingStore buildingStore;
+    private final OpenDataBuildingStore buildingStore;
     private final Double tolerance;
     private final CrossingBuildingFixer fixer;
     
-    public AlignBuildingsTask(GtBuildingStore buildingStore, GeoUtil geoUtil, Double tolerance) {
+    public AlignBuildingsTask(OpenDataBuildingStore buildingStore, GeoUtil geoUtil, Double tolerance) {
         super();
         this.buildingStore = buildingStore;
         this.tolerance = tolerance;
@@ -28,7 +31,7 @@ public class AlignBuildingsTask implements Task {
     }
 
     @Override
-    public void run() {
+    public void run(Context ctx) {
         for (Building building : buildingStore) {
             for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
                 if (candidate == building) continue;
@@ -48,5 +51,4 @@ public class AlignBuildingsTask implements Task {
             fixer.fix();
         }
     }
-
 }

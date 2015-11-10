@@ -4,6 +4,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.Main;
@@ -15,7 +16,8 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.io.OdsDownloader;
+import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
+import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.xml.sax.SAXException;
@@ -26,11 +28,12 @@ public class OdsDownloadAction extends OdsAction {
      */
     private static final long serialVersionUID = 1L;
 
-    private OdsDownloader downloader;
+    private MainDownloader downloader;
+    private Date startDate;
     private boolean cancelled = false;
     private Boundary boundary;
     private boolean downloadOsm;
-    private boolean downloadOds;
+    private boolean downloadOpenData;
     private SlippyMapDownloadDialog slippyDialog;
     private FixedBoundsDownloadDialog fixedDialog;
     
@@ -49,20 +52,11 @@ public class OdsDownloadAction extends OdsAction {
     public void run() {
         cancelled = false;
         boundary = getBoundary();
+        startDate = new Date();
         if (!cancelled) {
             DownloadTask task = new DownloadTask();
             Main.worker.submit(task);
-
         }
-//        try {
-//            module.download(boundary, true);
-//        } catch (ExecutionException e1) {
-//            JOptionPane.showMessageDialog(Main.parent, e1.getMessage(),
-//                    tr("Error during download"), JOptionPane.ERROR_MESSAGE);
-//        } catch (InterruptedException e1) {
-//            JOptionPane.showMessageDialog(Main.parent, e1.getMessage(),
-//                    tr("Error during download"), JOptionPane.ERROR_MESSAGE);
-//        }
     }
 
     private Boundary getBoundary() {
@@ -83,7 +77,7 @@ public class OdsDownloadAction extends OdsAction {
         }
         dialog.rememberSettings();
         downloadOsm = dialog.cbDownloadOSM.isSelected();
-        downloadOds = dialog.cbDownloadODS.isSelected();
+        downloadOpenData = dialog.cbDownloadODS.isSelected();
         if (selectArea) {
             boundary = new Boundary(dialog.getSelectedDownloadArea());
         }
@@ -95,44 +89,46 @@ public class OdsDownloadAction extends OdsAction {
             return null;
         }
         Layer activeLayer = Main.map.mapView.getActiveLayer();
+        // Make sure the active layer is an Osm datalayer
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
         }
+        // Make sure only one object was selected
         OsmDataLayer layer = (OsmDataLayer) activeLayer;
         if (layer.data.getAllSelected().size() != 1) {
             return null;
         }
+        // If the selected object is a closed way an it is not a building
+        // than we can assume is was intended to be used as a polygon for
+        // the download area
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
-        if (primitive.getDisplayType() != OsmPrimitiveType.CLOSEDWAY) {
-            return null;
+        if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
+            && primitive.get("building") == null 
+            && primitive.get("building:part") == null
+            && !"building".equals(primitive.get("construction"))) {
+            return new Boundary((Way)primitive);
         }
-        return new Boundary((Way)primitive);
+        return null;
     }
     
     private class DownloadTask extends PleaseWaitRunnable {
-        private boolean cancelled = false;
-//        private Boundary boundary;
-//        private boolean downloadOsm;
-//        private boolean downloadOds;
         
         public DownloadTask() {
             super(tr("Downloading data"));
-//            this.boundary = boundary;
-//            this.downloadOsm = downloadOsm;
-//            this.downloadOds = downloadOds;
         }
 
         @Override
         protected void cancel() {
             downloader.cancel();
-            this.cancelled = true;
         }
 
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
             try {
-                downloader.run(getProgressMonitor(), boundary, downloadOsm, downloadOds);
+                DownloadRequest request = new DownloadRequest(startDate, boundary,
+                    downloadOsm, downloadOpenData);
+                downloader.run(getProgressMonitor(), request);
             } catch (ExecutionException|InterruptedException e) {
                 throw new OsmTransferException(e);
             }
@@ -140,12 +136,12 @@ public class OdsDownloadAction extends OdsAction {
 
         @Override
         protected void finish() {
-            if (downloadOsm) {
-                Main.map.mapView.setActiveLayer(getModule().getInternalDataLayer().getOsmDataLayer());
+            if (downloadOpenData) {
+                Main.map.mapView.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
             }
             else {
-                Main.map.mapView.setActiveLayer(getModule().getExternalDataLayer().getOsmDataLayer());
+                Main.map.mapView.setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
             }
-        }        
+        }
     }
 }

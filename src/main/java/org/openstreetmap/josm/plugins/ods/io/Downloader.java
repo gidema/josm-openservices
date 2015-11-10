@@ -1,17 +1,17 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import org.openstreetmap.josm.plugins.ods.jts.Boundary;
-
+// TODO consider changing the method signatures from Runnable to Callable
+// returning a Status object
 public interface Downloader {
-    void setBoundary(Boundary boundary);
+    public void setup(DownloadRequest request);
+    
+    public void prepare();
 
-    Status getStatus();
+    public void download();
 
-    void prepare() throws InterruptedException;
+    public void process();
 
-    void download() throws InterruptedException;
+    public void cancel();
 
-    void process() throws InterruptedException;
-
-    void cancel();
+    public Status getStatus();
 }
