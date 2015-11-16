@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.List;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 
 public interface Match<E extends Entity> {
     
@@ -16,6 +17,8 @@ public interface Match<E extends Entity> {
     
     boolean isSingleSided();
     
+    public EntityType<E> getEntityType();
+    
     public E getOsmEntity();
     
     public E getOpenDataEntity();
@@ -28,9 +31,13 @@ public interface Match<E extends Entity> {
     
     public <E2 extends E> void addOpenDataEntity(E2 entity);
 
-    public boolean isGeometryMatch();
+    public MatchStatus getGeometryMatch();
     
-    public boolean isAttributeMatch();
+    public MatchStatus getAttributeMatch();
 
+    public MatchStatus getStatusMatch();
+    
     public void analyze();
+
+    public void updateMatchTags();
 }

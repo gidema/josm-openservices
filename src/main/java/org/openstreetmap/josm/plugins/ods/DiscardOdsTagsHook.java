@@ -23,30 +23,15 @@ class DiscardOdsTagsHook implements UploadHook {
     @Override
     public boolean checkUpload(APIDataSet apiDataSet) {
         List<OsmPrimitive> objectsToUpload = apiDataSet.getPrimitives();
-        Collection<String> discardableKeys = new HashSet<>();
 
-        boolean needsChange = false;
-        for (OsmPrimitive osm : objectsToUpload) {
-            if (osm.hasKey("ODS:entity")) {
-                for (String key : osm.keySet()) {
-                    if (key.startsWith("ODS:")) {
-                        discardableKeys.add(key);
-                    }
-                }
-            }
-            needsChange = true;
+        Map<String, String> map = new HashMap<>();
+        for (String key : ODS.KEYS) {
+            map.put(key, null);
         }
 
-        if (needsChange) {
-            Map<String, String> map = new HashMap<>();
-            for (String key : discardableKeys) {
-                map.put(key, null);
-            }
-
-            SequenceCommand removeKeys = new SequenceCommand(tr("Removed ODS tags"),
-                    new ChangePropertyCommand(objectsToUpload, map));
-            Main.main.undoRedo.add(removeKeys);
-        }
+        SequenceCommand removeKeys = new SequenceCommand(tr("Removed ODS tags"),
+                new ChangePropertyCommand(objectsToUpload, map));
+        Main.main.undoRedo.add(removeKeys);
         return true;
     }
 }

@@ -3,6 +3,8 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 public abstract class MatchImpl<E extends Entity> implements Match<E> {
@@ -64,4 +66,14 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
         entity.setMatch(this);
     }
 
+    @Override
+    public void updateMatchTags() {
+        OsmPrimitive osm = getOpenDataEntity().getPrimitive();
+        if (osm != null) {
+            osm.put(ODS.KEY.BASE, "true");
+            osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
+            osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
+            osm.put(ODS.KEY.ATTRIBUTE_MATCH, getAttributeMatch().toString());
+        }
+    }
 }

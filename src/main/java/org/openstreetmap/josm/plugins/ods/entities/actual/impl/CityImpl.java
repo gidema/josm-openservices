@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -41,12 +42,13 @@ public class CityImpl extends AbstractEntity implements City {
     }
 
     @Override
-    public boolean isDeleted() {
+    public boolean isIncomplete() {
         return false;
     }
 
     @Override
-    public boolean isIncomplete() {
-        return false;
+    public EntityType<City> getEntityType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

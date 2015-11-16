@@ -16,6 +16,7 @@ public abstract class AbstractEntity implements Entity {
     private String sourceDate;
     private String source;
     private Geometry geometry;
+    private EntityStatus status = EntityStatus.UNKNOWN;
     private boolean incomplete = true;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
@@ -94,8 +95,13 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public boolean isDeleted() {
-        return false;
+    public void setStatus(EntityStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public EntityStatus getStatus() {
+        return status;
     }
 
     @Override

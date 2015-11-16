@@ -1,29 +1,54 @@
 package org.openstreetmap.josm.plugins.ods.entities.osm;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
+import org.openstreetmap.josm.plugins.ods.matching.OsmAddressNodeToBuildingMatcher;
 
 public class OsmEntitiesBuilder {
     private OdsModule module;
+    private OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher;
 
     public OsmEntitiesBuilder(OdsModule module) {
         super();
         this.module = module;
+        this.nodeToBuildingMatcher = new OsmAddressNodeToBuildingMatcher(module);
     }
     
+    /**
+     * Build ODS entities from OSM primitives.
+     * Check all primitives in the OSM layer
+     * 
+     */
     public void build() {
-        List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
         LayerManager layerManager = module.getOsmLayerManager();
         OsmDataLayer dataLayer = layerManager.getOsmDataLayer();
         if (dataLayer == null) return;
-        for (OsmPrimitive primitive : dataLayer.data.allPrimitives()) {
+        build(dataLayer.data.allPrimitives());
+    }
+    
+    /**
+     * Build Ods entities from the provided OSM primitives
+     * 
+     * @param primitives
+     */
+    public void build(Collection<OsmPrimitive> primitives) {
+        List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
+        for (OsmPrimitive primitive : primitives) {
             for (OsmEntityBuilder<?> builder : entityBuilders) {
                 builder.buildOsmEntity(primitive);
             }
+        }
+        OsmLayerManager layerManager = module.getOsmLayerManager();
+        EntityStore<AddressNode> addressNodeStore = layerManager.getEntityStore(AddressNode.class);
+        if (addressNodeStore != null) {
+            addressNodeStore.forEach(nodeToBuildingMatcher::match);
         }
     }
 }

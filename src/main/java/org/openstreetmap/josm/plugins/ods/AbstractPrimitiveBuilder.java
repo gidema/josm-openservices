@@ -48,7 +48,7 @@ public abstract class AbstractPrimitiveBuilder<T extends Entity> implements Prim
      */
     @Override
     public OsmPrimitive build(Geometry geometry, Map<String, String> tags) {
-        tags.put("ODS:entity", "true");
+        tags.put(ODS.KEY.BASE, "true");
         switch (geometry.getGeometryType()) {
         case "Polygon":
             return build((Polygon)geometry, tags);

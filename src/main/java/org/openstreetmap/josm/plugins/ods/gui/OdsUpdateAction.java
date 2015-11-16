@@ -7,29 +7,29 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporter;
-import org.openstreetmap.josm.tools.ImageProvider;
+import org.openstreetmap.josm.plugins.ods.matching.update.OdsUpdater;
 
-public class OdsImportAction extends OdsAction {
+public class OdsUpdateAction extends OdsAction {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public OdsImportAction(OdsModule module) {
-        super(module, "Import", ImageProvider.get("download"));
+    public OdsUpdateAction(OdsModule module) {
+        super(module, "Update", (String)null);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        OdsImporter importer = new OdsImporter(getModule());
+        // TODO retrieve updater from module context
+        OdsUpdater updater = new OdsUpdater(getModule());
         Layer layer = Main.map.mapView.getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
         // This action should only occur when the OpenData layer is active
         assert (layerManager != null && !layerManager.isOsm());
         
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
-        importer.doImport(osmLayer.data.getAllSelected());
+        updater.doUpdate(osmLayer.data.getAllSelected());
     }
 
     @Override

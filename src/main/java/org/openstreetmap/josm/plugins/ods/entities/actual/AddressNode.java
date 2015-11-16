@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -17,4 +18,6 @@ public interface AddressNode extends Entity, Address {
     public void setGeometry(Point point);
     
     public Point getGeometry();
+    
+    public EntityType<AddressNode> getEntityType();
 }

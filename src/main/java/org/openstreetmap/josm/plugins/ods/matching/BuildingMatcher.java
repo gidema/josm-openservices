@@ -5,7 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.Matcher;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
@@ -24,7 +26,10 @@ public class BuildingMatcher implements Matcher<Building> {
         osmBuildingStore = module.getOsmLayerManager().getEntityStore(Building.class);
     }
 
+    @Override
     public void run() {
+        unmatchedOpenDataBuildings.clear();
+        unmatchedOsmBuildings.clear();
         for (Building building : odBuildingStore) {
             processOpenDataBuilding(building);
         }
@@ -86,6 +91,14 @@ public class BuildingMatcher implements Matcher<Building> {
         for (Match<Building> match : buildingMatches.values()) {
             if (match.isSimple()) {
                 match.analyze();
+                match.updateMatchTags();
+            }
+        }
+        for (Building building: unmatchedOpenDataBuildings) {
+            OsmPrimitive osm = building.getPrimitive();
+            if (osm != null) {
+                osm.put(ODS.KEY.IDMATCH, "false");
+                osm.put(ODS.KEY.STATUS_MATCH, building.getStatus().toString());
             }
         }
     }

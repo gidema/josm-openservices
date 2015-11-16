@@ -10,15 +10,12 @@ import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
-import org.openstreetmap.josm.plugins.ods.matching.OsmAddressNodeToBuildingMatcher;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OsmLayerDownloader implements LayerDownloader {
@@ -29,7 +26,6 @@ public class OsmLayerDownloader implements LayerDownloader {
     private DownloadSource downloadSource=  DownloadSource.OSM;
     private OsmServerReader osmServerReader;
     private OsmLayerManager layerManager;
-    private OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher;
     private OsmEntitiesBuilder entitiesBuilder;
 
     private static String overpassQuery = 
@@ -46,7 +42,6 @@ public class OsmLayerDownloader implements LayerDownloader {
         super();
         this.layerManager = module.getOsmLayerManager();
         this.entitiesBuilder = layerManager.getEntitiesBuilder();
-        this.nodeToBuildingMatcher = new OsmAddressNodeToBuildingMatcher(module);
         
     }
 
@@ -122,11 +117,6 @@ public class OsmLayerDownloader implements LayerDownloader {
     public void process() {
         merge();
         entitiesBuilder.build();
-        // The following lines are BAG specific and should be moved to the relevant Plug-ins
-        EntityStore<AddressNode> addressNodeStore = layerManager.getEntityStore(AddressNode.class);
-        if (addressNodeStore != null) {
-            addressNodeStore.forEach(nodeToBuildingMatcher::match);
-        }
     }
 
     private void merge() {

@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.Matcher;
+import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
@@ -32,7 +34,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
 
     public void run() {
         matchBuildingAddressNodes();
-//        matchOtherAddressNodes();
+        matchOtherAddressNodes();
     }
     
     /**
@@ -70,19 +72,26 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
                 && Objects.equals(an1.getPostcode(), an2.getPostcode())) {
             AddressNodeMatch match = new AddressNodeMatch(an1, an2);
             match.analyze();
+            match.updateMatchTags();
             addressNodeMatches.put(match.getId(), match);
         }
     }
 
-//    private void matchOtherAddressNodes() {
-//        for (AddressNode addressNode : odAddressNodeStore) {
-//            processOpenDataAddressNode(addressNode);
-//        }
-//        for (AddressNode addressNode : osmAddressNodeStore) {
-//            processOsmAddressNode(addressNode);
-//        }
-//        analyze();
-//    }
+    private void matchOtherAddressNodes() {
+        unmatchedOpenDataAddressNodes.clear();
+        for (AddressNode addressNode : odAddressNodeStore) {
+            if (addressNode.getMatch() == null) {
+                unmatchedOpenDataAddressNodes.add(addressNode);
+            }
+        }
+        unmatchedOsmAddressNodes.clear();
+        for (AddressNode addressNode : osmAddressNodeStore) {
+            if (addressNode.getMatch() == null) {
+                unmatchedOsmAddressNodes.add(addressNode);
+            };
+        }
+        analyze();
+    }
 
 //    private void processOpenDataAddressNode(AddressNode odAddressNode) {
 //        Long id = (Long) odAddressNode.getReferenceId();
@@ -136,6 +145,14 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
         for (Match<AddressNode> match : addressNodeMatches.values()) {
             if (match.isSimple()) {
                 match.analyze();
+                match.updateMatchTags();
+            }
+        }
+        for (AddressNode addressNode: unmatchedOpenDataAddressNodes) {
+            OsmPrimitive osm = addressNode.getPrimitive();
+            if (osm != null) {
+                osm.put(ODS.KEY.IDMATCH, "false");
+                osm.put(ODS.KEY.STATUS_MATCH, addressNode.getStatus().toString());
             }
         }
     }

@@ -28,7 +28,8 @@ public interface Entity {
     public void setSourceDate(String sourceDate);
     public String getSourceDate();
     boolean isIncomplete();
-    public boolean isDeleted();
+    public void setStatus(EntityStatus status);
+    public EntityStatus getStatus();
     public void setPrimaryId(Object id);
     public Object getPrimaryId();
     public void setReferenceId(Object id);
@@ -36,6 +37,7 @@ public interface Entity {
     public Long getPrimitiveId();
     public Geometry getGeometry();
     public void setGeometry(Geometry geometry);
+    public EntityType<?> getEntityType();
     
     public Match<? extends Entity> getMatch();
     
