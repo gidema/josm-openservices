@@ -8,47 +8,49 @@ import org.opengis.feature.simple.SimpleFeature;
 
 public class GroupByFeatureIteratorWrapper implements SimpleFeatureIterator {
     private final SimpleFeatureIterator wrapped;
-    private final List<String> groupBy;
     private int keyIndex;
-    private SimpleFeature currentFeature = null;
-    private boolean done = false;
+    private SimpleFeature cachedFeature = null;
+    private boolean hasNext = false;
 
     public GroupByFeatureIteratorWrapper(SimpleFeatureIterator wrapped, List<String> groupBy) {
         super();
         this.wrapped = wrapped;
-        this.groupBy = groupBy;
+        this.hasNext = wrapped.hasNext();
+        if (hasNext) {
+            cachedFeature = wrapped.next();
+            keyIndex = cachedFeature.getFeatureType().indexOf(groupBy.get(0));
+        }
     }
 
     @Override
     public boolean hasNext() {
-        if (currentFeature == null) {
-            if (!wrapped.hasNext()) {
-                return false;
-            }
-            currentFeature = wrapped.next();
-            keyIndex = currentFeature.getFeatureType().indexOf(groupBy.get(0));
-        }
-        return !done;
+        return hasNext;
     }
 
     @Override
     public SimpleFeature next() throws NoSuchElementException {
-        if (!wrapped.hasNext()) {
-            done = true;
-            return currentFeature;
+        if (!hasNext) {
+            throw  new NoSuchElementException();
         }
-        SimpleFeature nextFeature;
-        do {
-            nextFeature = wrapped.next();
-        } while (wrapped.hasNext() && nextFeature.getAttribute(keyIndex)
-                .equals(currentFeature.getAttribute(keyIndex)));
-        if (!wrapped.hasNext()) {
-            done = true;
-            return currentFeature;
+        if (wrapped.hasNext()) {
+            SimpleFeature nextFeature = wrapped.next();
+            if (!nextFeature.getAttribute(keyIndex)
+                .equals(cachedFeature.getAttribute(keyIndex))) {
+                SimpleFeature result = cachedFeature;
+                cachedFeature = nextFeature;
+                return result;
+            }
+            else {
+                while (wrapped.hasNext() && 
+                    (!nextFeature.getAttribute(keyIndex)
+                .equals(cachedFeature.getAttribute(keyIndex)))) {
+                    cachedFeature = nextFeature;
+                    nextFeature = wrapped.next();
+                }
+            }
         }
-        SimpleFeature result = currentFeature;
-        currentFeature = nextFeature;
-        return result;
+        hasNext = wrapped.hasNext();
+        return cachedFeature;
     }
 
     @Override
