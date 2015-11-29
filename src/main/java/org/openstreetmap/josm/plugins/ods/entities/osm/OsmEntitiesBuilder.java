@@ -36,11 +36,11 @@ public class OsmEntitiesBuilder {
     /**
      * Build Ods entities from the provided OSM primitives
      * 
-     * @param primitives
+     * @param osmPrimitives
      */
-    public void build(Collection<OsmPrimitive> primitives) {
+    public void build(Collection<? extends OsmPrimitive> osmPrimitives) {
         List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
-        for (OsmPrimitive primitive : primitives) {
+        for (OsmPrimitive primitive : osmPrimitives) {
             for (OsmEntityBuilder<?> builder : entityBuilders) {
                 builder.buildOsmEntity(primitive);
             }

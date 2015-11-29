@@ -38,19 +38,20 @@ public class BuildingUpdater implements EntityUpdater<Building> {
         osmPrimitive.put("source:date", odBuilding.getSourceDate());
         osmBuilding.setStartDate(odBuilding.getStartDate());
         osmPrimitive.put("start_date", odBuilding.getStartDate());
+        osmPrimitive.setModified(true);
     }
 
     private void updateStatus(Building odBuilding, Building osmBuilding) {
         OsmPrimitive odPrimitive = odBuilding.getPrimitive();
         OsmPrimitive osmPrimitive = osmBuilding.getPrimitive();
-        osmBuilding.setSourceDate(odBuilding.getSourceDate());
-        osmPrimitive.put("source:date", odBuilding.getSourceDate());
         if (osmBuilding.getStatus().equals(EntityStatus.CONSTRUCTION)
                 && odBuilding.getStatus().equals(EntityStatus.IN_USE)) {
+            osmBuilding.setSourceDate(odBuilding.getSourceDate());
+            osmPrimitive.put("source:date", odBuilding.getSourceDate());
             osmPrimitive.put("building", odPrimitive.get("building"));
             osmPrimitive.put("construction", null);
             osmBuilding.setStatus(odBuilding.getStatus());
+            osmPrimitive.setModified(true);
         }
-       
     }
 }
