@@ -5,4 +5,4 @@
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-package org.openstreetmap.josm.plugins.ods.entities.actual.impl.match;
+package org.openstreetmap.josm.plugins.ods.matching.geometry;

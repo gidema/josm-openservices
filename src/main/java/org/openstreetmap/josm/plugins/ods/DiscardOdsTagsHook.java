@@ -2,9 +2,7 @@ package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 

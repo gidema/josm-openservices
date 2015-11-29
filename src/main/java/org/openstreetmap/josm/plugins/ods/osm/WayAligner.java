@@ -31,7 +31,6 @@ public class WayAligner {
         this.way1 = way1;
         this.way2 = way2;
         this.undoable = undoable;
-//        this.bbox = intersection(way1.getBBox(), way2.getBBox());
         this.tolerance = tolerance;
         this.matcher = new SegmentMatcher(tolerance);
     }

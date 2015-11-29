@@ -5,9 +5,12 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
+import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 public class OdsEnableAction extends AbstractAction {
 
@@ -33,37 +36,15 @@ public class OdsEnableAction extends AbstractAction {
             if (activeLayer != null) {
                 Main.map.mapView.setActiveLayer(activeLayer);
             }
+            try {
+                Bounds bounds = new Bounds(
+                    Main.pref.get("openservices.download.bounds"), ";");
+                // Zoom to the last used bounds
+                Main.map.mapView.zoomTo(bounds);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
         }
     }
-
-    // private void enableModule(OdsModuleConfig module) {
-    // JMenu menu = ODS.getMenu();
-    // if (!checkUser(module)) {
-    // int answer = JOptionPane.showConfirmDialog(Main.parent,
-    // "Je gebruikersnaam eindigt niet op _BAG en is daarom niet geschikt " +
-    // "voor de BAG import.\nWeet je zeker dat je door wilt gaan?",
-    // I18n.tr("Invalid user"), JOptionPane.OK_CANCEL_OPTION,
-    // JOptionPane.INFORMATION_MESSAGE);
-    // if (answer == JOptionPane.CANCEL_OPTION) {
-    // return;
-    // }
-    // }
-    // module.enable();
-    // putValue(Action.NAME, "Disable ODS");
-    // menu.setText("ODS "+ module.getName());
-    // for (int i=1; i<menu.getItemCount(); i++) {
-    // menu.getItem(i).setEnabled(true);
-    // }
-    // menu.repaint();
-    // }
-
-    // private void disableModule(OdsModuleConfig module) {
-    // JMenu menu = ODS.getMenu();
-    // module.disable();
-    // putValue(Action.NAME, "Enable ODS");
-    // menu.setText("ODS "+ module.getName());
-    // for (int i=1; i<menu.getItemCount(); i++) {
-    // menu.getItem(i).setEnabled(false);
-    // }
-    // }
 }

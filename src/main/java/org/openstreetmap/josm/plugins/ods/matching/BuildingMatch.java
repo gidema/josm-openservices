@@ -49,7 +49,7 @@ public class BuildingMatch extends MatchImpl<Building> {
 
     private MatchStatus compareStatuses() {
         EntityStatus osmStatus = getOsmEntity().getStatus();
-        EntityStatus odStatus = getOsmEntity().getStatus();
+        EntityStatus odStatus = getOpenDataEntity().getStatus();
         if (osmStatus.equals(odStatus)) {
             return MatchStatus.MATCH;
         }

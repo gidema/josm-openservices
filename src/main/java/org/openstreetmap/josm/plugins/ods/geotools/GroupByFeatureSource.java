@@ -23,18 +23,13 @@ public class GroupByFeatureSource implements SimpleFeatureSource {
     private final SimpleFeatureType featureType;
     private final LinkedList<FeatureListener> listeners = new LinkedList<>();
     private final GroupByQuery query;
-//    private final String newKey;
-//    private int idIndex;
-//    private int[] attributeMapping;
     
     public GroupByFeatureSource(Name newName, SimpleFeatureSource wrappedSource, GroupByQuery query) {
         super();
         this.query = query;
         this.wrappedSource = wrappedSource;
-//        this.newKey = newKey;
         // TODO use Hints to retrieve FeatureTypeFactory
         this.featureType = wrappedSource.getSchema();
-//        wrappedSource.getSchema().getDescriptor(newKey);
     }
 
     @Override
@@ -114,39 +109,4 @@ public class GroupByFeatureSource implements SimpleFeatureSource {
             SimpleFeatureCollection wrappedFeatures) {
         return new GroupByFeatureCollectionWrapper(wrappedFeatures, query);
     }
-    
-    
-//    private SimpleFeatureCollection getFeatures(SimpleFeatureCollection oldFeatures) {
-//        DefaultFeatureCollection newFeatures = new DefaultFeatureCollection(oldFeatures.getID(), featureType);
-//        SimpleFeatureIterator it = oldFeatures.features();
-//        while (it.hasNext()) {
-//            SimpleFeature oldFeature = it.next();
-//            List<Object> values = new ArrayList<>(attributeMapping.length);
-//            for (int i = 0; i < attributeMapping.length; i++) {
-//                values.add(oldFeature.getAttribute(i));
-//            }
-//            FeatureId featureId = new FeatureIdImpl(oldFeature.getAttribute(idIndex).toString());
-//            SimpleFeature newFeature = new SimpleFeatureImpl(values, featureType, featureId);
-//            newFeatures.add(newFeature);
-//        }
-//        return newFeatures;
-//    }
-
-//    private SimpleFeatureType createFeatureType(Name newName, SimpleFeatureSource wrappedSource, GroupByQuery query) {
-//        FeatureTypeFactory ftf = new FeatureTypeFactoryImpl();
-//        SimpleFeatureType oldType = wrappedSource.getSchema();
-////        List<PropertyDescriptor> newSchema = new ArrayList<>(attributes.size());
-////        attributeMapping = new int[attributes.size()];
-////        for (int i = 0; i < attributes.size(); i++) {
-////            String name = attributes.get(i);
-////            int index = oldType.indexOf(name);
-////            assert index != -1;
-////            attributeMapping[i] = index;
-////            newSchema.add(oldType.getDescriptor(index));
-////        }
-//        idIndex = oldType.indexOf(newKey);
-//        return ftf.createFeatureType(newName, newSchema, oldType.getGeometryDescriptor(),
-//            oldType.isAbstract(), oldType.getRestrictions(),
-//            null, oldType.getDescription());
-//    }
 }

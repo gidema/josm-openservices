@@ -4,7 +4,8 @@ import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.osm.Way;
 
 /**
- * The SmallSegmentRemer removes segments shorter that a given tolerance.
+ * The SmallSegmentRemer removes segments shorter than a given tolerance.
+ * TODO Use angles to determine which node we should keep
  * 
  * @author gertjan
  *

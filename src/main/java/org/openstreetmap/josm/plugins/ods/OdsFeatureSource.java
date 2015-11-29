@@ -35,7 +35,5 @@ public interface OdsFeatureSource {
      */
     public String getIdAttribute();
 
-//    public OdsDataSource newDataSource(Filter filter);
-
     public MetaData getMetaData();
 }

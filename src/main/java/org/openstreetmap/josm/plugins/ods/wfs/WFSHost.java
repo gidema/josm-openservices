@@ -24,7 +24,7 @@ public class WFSHost extends GtHost {
     @Override
     public Map<?, ?> getConnectionParameters() throws InitializationException {
         try {
-            // TODO move to configuration fase
+            // TODO move to configuration phase
             // TODO add possibilities to configure parameters
             URL hostUrl = new URL(getUrl());
             URL capabilitiesUrl = WFSDataStoreFactory

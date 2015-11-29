@@ -47,7 +47,6 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     protected JCheckBox cbDownloadODS;
     protected OdsModule module;
     /** the download button */
-//    private DownloadAction actDownload;
     protected SideButton btnDownload;
 
     public AbstractDownloadDialog(OdsModule module, String title) {

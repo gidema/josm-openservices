@@ -1,9 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.osm.OsmBuildingStore;
@@ -35,28 +36,51 @@ public class OsmAddressNodeToBuildingMatcher {
 
     /**
      * Find a matching building for an address.
+     * TODO use the geometry index to find the building
      * 
      * @param addressNode
      */
     public void match(AddressNode addressNode) {
-        OsmBuildingStore buildings = (OsmBuildingStore)module
+        OsmBuildingStore buildingStore = (OsmBuildingStore)module
                 .getOsmLayerManager().getEntityStore(Building.class);
+        GeoIndex<Building> geoIndex = buildingStore.getGeoIndex();
         if (addressNode.getBuilding() == null) {
-            Iterator<Building> iterator = buildings.iterator();
-            boolean found = false;
-            while (iterator.hasNext() && !found) {
-                Building building = iterator.next();
-                if (building.getGeometry().covers(addressNode.getGeometry())) {
-                    addressNode.setBuilding(building);
-                    building.getAddressNodes().add(addressNode);
-                    found = true;
-                }
-            }
-            if (!found) {
+            List<Building> buildings = geoIndex.intersection(addressNode.getGeometry());
+            if (buildings.size() != 1) {
                 reportUnmatched(addressNode);
+                return;
             }
+            Building building = buildings.get(0);
+            addressNode.setBuilding(building);
+            building.getAddressNodes().add(addressNode);
         }
     }
+    
+//    /**
+//     * Find a matching building for an address.
+//     * Iterate over buildings to find the building
+//     * 
+//     * @param addressNode
+//     */
+//    public void match(AddressNode addressNode) {
+//        OsmBuildingStore buildings = (OsmBuildingStore)module
+//                .getOsmLayerManager().getEntityStore(Building.class);
+//        if (addressNode.getBuilding() == null) {
+//            Iterator<Building> iterator = buildings.iterator();
+//            boolean found = false;
+//            while (iterator.hasNext() && !found) {
+//                Building building = iterator.next();
+//                if (building.getGeometry().covers(addressNode.getGeometry())) {
+//                    addressNode.setBuilding(building);
+//                    building.getAddressNodes().add(addressNode);
+//                    found = true;
+//                }
+//            }
+//            if (!found) {
+//                reportUnmatched(addressNode);
+//            }
+//        }
+//    }
     
     private void reportUnmatched(AddressNode addressNode) {
         if (unmatchedAddressNodeHandler != null) {

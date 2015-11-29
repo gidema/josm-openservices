@@ -99,9 +99,4 @@ public class GtFeatureSource implements OdsFeatureSource {
         ReferenceIdentifier rid = crs.getIdentifiers().iterator().next();
         return Long.parseLong(rid.getCode());
     }
-
-//    @Override
-//    public OdsDataSource newDataSource(Filter filter, List<String> sortOrder, String distinctAttribute) {
-//        return new GtDataSource(this, filter, distinctAttribute);
-//    }
 }

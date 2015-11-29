@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm-tested.jar" sourcepath="/home/gertjan/projects/josm/src"/>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/matching/OdsImporter.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/matching/OdsImporter.java|org/openstreetmap/josm/plugins/ods/Context.java|org/openstreetmap/josm/plugins/ods/entities/MergeTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/CreatePrimitivesTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/AlignBuildingsTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingSimplifier.java|org/openstreetmap/josm/plugins/ods/tasks/Task.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

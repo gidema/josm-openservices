@@ -19,8 +19,6 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public interface Entity {
-//    public void setEntitySource(EntitySource source);
-//    public EntitySource getEntitySource();
     public void setDownloadResponse(DownloadResponse response);
     public DownloadResponse getDownloadResponse();
     public void setSource(String source);

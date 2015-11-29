@@ -7,7 +7,6 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
-//import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 
 
 /**
@@ -35,16 +34,6 @@ public class OpenDataAddressNodeToBuildingMatcher {
             Consumer<AddressNode> unmatchedAddressNodeHandler) {
         this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
     }
-
-//    public Consumer<AddressNode> getAddressNodeConsumer() {
-//        return new Consumer<AddressNode>() {
-//
-//            @Override
-//            public void accept(AddressNode addressNode) {
-//                matchAddressToBuilding(addressNode);
-//            }
-//        };
-//    }
 
     /**
      * Find a matching building for an address.

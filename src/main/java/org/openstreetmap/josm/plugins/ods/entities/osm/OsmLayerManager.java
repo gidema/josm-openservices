@@ -26,10 +26,4 @@ public class OsmLayerManager extends AbstractLayerManager {
     public OsmEntitiesBuilder getEntitiesBuilder() {
         return entitiesBuilder;
     }
-
-//
-//    @SuppressWarnings("unchecked")
-//    public <E extends Entity> OsmEntityBuilder<E> getEntityBuilder(Class<E> clazz) {
-//        return (OsmEntityBuilder<E>) entityBuilders.get(clazz);
-//    }
 }

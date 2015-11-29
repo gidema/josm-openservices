@@ -23,6 +23,7 @@ public abstract class AbstractLayerManager implements LayerManager {
     private Map<Long, Entity> wayEntities = new HashMap<>();
     private Map<Long, Entity> relationEntities = new HashMap<>();
     private EntityStoreMap entityStoreMap = new EntityStoreMap();
+    private boolean active = false;
 
     public AbstractLayerManager(String name) {
         this.name = name;
@@ -37,12 +38,6 @@ public abstract class AbstractLayerManager implements LayerManager {
     }
     
     public OsmDataLayer getOsmDataLayer() {
-        if (osmDataLayer == null) {
-            osmDataLayer = createOsmDataLayer();
-            if (osmDataLayer != null) {
-                Main.main.addLayer(osmDataLayer);
-            }
-        }
         return osmDataLayer;
     }
     
@@ -52,14 +47,22 @@ public abstract class AbstractLayerManager implements LayerManager {
         return layer;
     }
 
-    public void initialize() {
-        Layer oldLayer = null;
-        if (Main.map != null) {
-            oldLayer = Main.main.getActiveLayer();
-        }
-        this.getOsmDataLayer();
-        if (oldLayer != null) {
-            Main.map.mapView.setActiveLayer(oldLayer);
+    public boolean isActive() {
+        return this.active;
+    }
+    
+    public void activate() {
+        if (!active) {
+            Layer oldLayer = null;
+            if (Main.map != null) {
+                oldLayer = Main.main.getActiveLayer();
+            }
+            osmDataLayer = createOsmDataLayer();
+            Main.main.addLayer(osmDataLayer);
+            if (oldLayer != null) {
+                Main.map.mapView.setActiveLayer(oldLayer);
+            }
+            this.active = true;
         }
     }
     
@@ -69,20 +72,26 @@ public abstract class AbstractLayerManager implements LayerManager {
     }
 
     public void reset() {
-        this.osmDataLayer.destroy();
-        // Clear all data stores
-        for (EntityStore<?> store : entityStoreMap.stores.values()) {
-            store.clear();
+        if (isActive()) {
+            // Clear all data stores
+            for (EntityStore<?> store : entityStoreMap.stores.values()) {
+                store.clear();
+            }
+            nodeEntities.clear();
+            wayEntities.clear();
+            relationEntities.clear();
+            this.osmDataLayer.data.clear();
+            this.osmDataLayer.data.dataSources.clear();
         }
-        nodeEntities.clear();
-        wayEntities.clear();
-        relationEntities.clear();
     }
 
     @Override
     public void deActivate() {
-        this.reset();
-        Main.map.mapView.removeLayer(osmDataLayer);
+        if (isActive()) {
+            active = false;
+            this.reset();
+            Main.main.removeLayer(this.osmDataLayer);
+        }
     }
 
     @Override

@@ -27,4 +27,10 @@ public class MatcherManager {
         return (Matcher<? extends E>) matchers.get(clazz);
         
     }
+
+    public void reset() {
+        for (Matcher<?> matcher : matchers.values()) {
+            matcher.reset();
+        }
+    }
 }

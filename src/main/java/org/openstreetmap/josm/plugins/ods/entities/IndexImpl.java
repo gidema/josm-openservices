@@ -11,7 +11,6 @@ import java.util.Map;
 public class IndexImpl<T extends Entity> implements Index<T>  {
     private Map<Object, List<T>> map = new HashMap<>();
     private Class<T> clazz;
-//    private Class<U> keyClass;
     private Method[] getters;
     private String[] properties; 
     

@@ -2,20 +2,18 @@ package org.openstreetmap.josm.plugins.ods.builtenvironment.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
-import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
-import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
-import org.openstreetmap.josm.plugins.ods.osm.WayAligner;
 import org.openstreetmap.josm.tools.I18n;
 
+// Kept for reference purposes
+@Deprecated
 public class AlignBuildingsAction extends OdsAction {
 
     /**

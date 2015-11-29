@@ -19,15 +19,9 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
     private List<Index<T>> indexes = new LinkedList<>();
     private Geometry boundary;
 
-//    protected List<Index<T>> getIndexes() {
-//        return indexes;
-//    }
-
     protected void addIndex(Index<T> index) {
         indexes.add(index);// TODO Auto-generated method stub
-        
     }
-
 
     public void add(T entity) {
         if (getByPrimary(entity.getPrimaryId()) == null) {
@@ -91,5 +85,6 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
         for (Index<T> index : indexes) {
             index.clear();
         }
+        boundary = null;
     }
 }

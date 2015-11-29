@@ -152,9 +152,17 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
             OsmPrimitive osm = addressNode.getPrimitive();
             if (osm != null) {
                 osm.put(ODS.KEY.IDMATCH, "false");
-                osm.put(ODS.KEY.STATUS_MATCH, addressNode.getStatus().toString());
+                osm.put(ODS.KEY.STATUS, addressNode.getStatus().toString());
             }
         }
+    }
+
+    @Override
+    public void reset() {
+        addressNodeMatches.clear();
+        unidentifiedOsmAddressNodes.clear();
+        unmatchedOpenDataAddressNodes.clear();
+        unmatchedOsmAddressNodes.clear();
     }
 
     private static class AddressKey {

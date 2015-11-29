@@ -32,7 +32,7 @@ public abstract class GtHost extends Host {
         if (initialized)
             return;
         super.initialize();
-        // TODO move to next line configuration fase
+        // TODO move next line to configuration phase
         Map<?, ?> connectionParameters = getConnectionParameters();
         try {
             dataStore = DataStoreFinder.getDataStore(connectionParameters);

@@ -48,7 +48,6 @@ public class CityImpl extends AbstractEntity implements City {
 
     @Override
     public EntityType<City> getEntityType() {
-        // TODO Auto-generated method stub
-        return null;
+        return CityEntityType.getInstance();
     }
 }

@@ -70,7 +70,8 @@ public class MultiPolygonBuilder {
                     break;
                 default:
                     Main.warn(I18n.tr("Invalid role '{0}' in building relation {1}", member.getRole(), relation.getUniqueId()));
-            }
+                }
+                break;
             case RELATION:
                 Main.warn(I18n.tr("The relation for building {0} contains a member relation", relation.getUniqueId()));
                 break;

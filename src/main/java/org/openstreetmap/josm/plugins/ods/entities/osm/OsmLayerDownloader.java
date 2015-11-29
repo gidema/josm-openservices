@@ -23,7 +23,7 @@ public class OsmLayerDownloader implements LayerDownloader {
     @SuppressWarnings("unused")
     private DownloadResponse response;
     private Status status = new Status();
-    private DownloadSource downloadSource=  DownloadSource.OSM;
+    private DownloadSource downloadSource=  DownloadSource.OVERPASS;
     private OsmServerReader osmServerReader;
     private OsmLayerManager layerManager;
     private OsmEntitiesBuilder entitiesBuilder;
@@ -45,11 +45,6 @@ public class OsmLayerDownloader implements LayerDownloader {
         
     }
 
-    //    @Override
-//    public void setBoundary(Boundary boundary) {
-//        this.boundary = boundary;
-//    }
-//
     @Override
     public Status getStatus() {
         return status;
@@ -64,7 +59,6 @@ public class OsmLayerDownloader implements LayerDownloader {
     @Override
     public void setup(DownloadRequest request) {
         this.request = request;
-//        this.entitySource = (EntitySource) ctx.get("entitySource");
         status.clear();
         switch (downloadSource) {
         case OSM:

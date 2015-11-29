@@ -1,13 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -17,7 +15,6 @@ import org.openstreetmap.josm.plugins.ods.io.Downloader;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
-import org.openstreetmap.josm.plugins.ods.tasks.Task;
 
 // TODO decide upon and document Class lifecycle
 public class OpenDataLayerDownloader implements LayerDownloader {
@@ -25,24 +22,15 @@ public class OpenDataLayerDownloader implements LayerDownloader {
 
     private final OdsModule module;
     private final List<FeatureDownloader> downloaders;
-    private final List<Task> tasks;
     private Status status = new Status();
     private DownloadRequest request;
     private DownloadResponse response;
 
     private ExecutorService executor;
 
-    @Deprecated
-    public OpenDataLayerDownloader(OdsModule module, List<FeatureDownloader> downloaders, List<Task> tasks) {
-        this.module = module;
-        this.downloaders = downloaders;
-        this.tasks = (tasks == null ? new ArrayList<>(0) : tasks);
-    }
-    
     public OpenDataLayerDownloader(OdsModule module) {
         this.module = module;
         this.downloaders = new LinkedList<>();
-        this.tasks = new LinkedList<>();
     }
     
     @Override
@@ -53,11 +41,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
     protected void addFeatureDownloader(FeatureDownloader featureDownloader) {
         this.downloaders.add(featureDownloader);
     }
-//   
-//    protected List<? extends FeatureDownloader> getDownloaders() {
-//        return downloaders;
-//    }
-//
+
     @Override
     public void setup(DownloadRequest request) {
         this.request = request;
@@ -146,13 +130,6 @@ public class OpenDataLayerDownloader implements LayerDownloader {
             status.setException(e);
             return;
         }
-        long millis = System.currentTimeMillis();
-        for (Task task : tasks) {
-//            task.run(ctx);
-            Main.info("Task: {0} = {1} ms;", task.getClass().getSimpleName(),
-                System.currentTimeMillis() - millis);
-            millis = System.currentTimeMillis();
-        }
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
         OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
@@ -165,7 +142,10 @@ public class OpenDataLayerDownloader implements LayerDownloader {
 
     @Override
     public void cancel() {
-        executor.shutdownNow();
         this.status.setCancelled(true);
+        for (FeatureDownloader downloader : downloaders) {
+            downloader.cancel();
+        }
+        executor.shutdownNow();
     }
 }

@@ -59,20 +59,6 @@ public class NodeIterator {
         return index + n < nodes.size();
     }
     
-//    public boolean hasNextNode() {
-//        if (reversed) {
-//            return index > 0;
-//        }
-//        return index + 1 < nodes.size();
-//    }
-//    
-//    public boolean hasNextSegment() {
-//        if (reversed) {
-//            return index > 1;
-//        }
-//        return index + 2 < nodes.size();
-//    }
-
     /**
      * Check if there is at least 1 node before the current node.
      * 
@@ -128,19 +114,6 @@ public class NodeIterator {
         return null;
     }
     
-//    public LineSegment getSegmentBefore() {
-//        if (hasPrevious()) {
-//            return new LineSegment(peekPrevious(), peek());
-//        }
-//        return null;
-//    }
-    
-//    public LineSegment getSegmentAfter() {
-//        if (hasNextNode()) {
-//            return new LineSegment(peek(), peekNext());
-//        }
-//        return null;
-//    }
     
     /**
      * Insert the given node to list of nodes after the current index;
@@ -200,14 +173,6 @@ public class NodeIterator {
         return nodes.get(index);
     }
 
-//    protected void setModified(boolean modified) {
-//        this.modified = modified;
-//    }
-
-//    public List<Node> getNodes() {
-//        return nodes;
-//    }
-    
     public double distanceToNode(EastNorth en) {
         return en.distance(peek().getEastNorth());
     }

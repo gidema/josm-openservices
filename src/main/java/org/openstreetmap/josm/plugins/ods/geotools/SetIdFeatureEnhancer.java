@@ -11,7 +11,6 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.identity.FeatureId;
 
 public class SetIdFeatureEnhancer implements FeatureEnhancer {
-//    private SimpleFeatureType featureType;
     private int idAttributeIndex;
     private Map<String, Integer> index;
     
@@ -21,7 +20,6 @@ public class SetIdFeatureEnhancer implements FeatureEnhancer {
     
     public SetIdFeatureEnhancer(SimpleFeatureType featureType, int idAttribute) {
         super();
-//        this.featureType = featureType;
         this.idAttributeIndex = idAttribute;
         this.index = getIndex(featureType);
     }

@@ -16,6 +16,7 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -103,9 +104,7 @@ public class OdsDownloadAction extends OdsAction {
         // the download area
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
         if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-            && primitive.get("building") == null 
-            && primitive.get("building:part") == null
-            && !"building".equals(primitive.get("construction"))) {
+            && !BuildingEntityType.getInstance().recognize(primitive)) {
             return new Boundary((Way)primitive);
         }
         return null;

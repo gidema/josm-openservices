@@ -123,4 +123,10 @@ public abstract class AbstractEntity implements Entity {
     public <E extends Entity> void setMatch(Match<E> match) {
         this.match = match;
     }
+
+    @Override
+    public EntityType<?> getEntityType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

@@ -30,7 +30,7 @@ public class Boundary {
         }
         try {
             this.ring = geoUtil.toLinearRing(way);
-        } catch (UnclosedWayException e) {
+        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
             // Won't happen because we know the way is closed
         }
         Polygon polygon = geoUtil.createPolygon(ring, null);

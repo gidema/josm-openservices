@@ -28,7 +28,7 @@ public abstract class MainDownloader {
 
     private List<LayerDownloader> enabledDownloaders;
     
-    private ExecutorService executor;
+    private ExecutorService executorService;
 
     private Status status = new Status();
 
@@ -40,10 +40,19 @@ public abstract class MainDownloader {
         status.clear();
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup(request);
+        if (status.isCancelled()) {
+            return;
+        }
         pm.indeterminateSubTask(I18n.tr("Preparing"));
         prepare();
+        if (status.isCancelled()) {
+            return;
+        }
         pm.indeterminateSubTask(I18n.tr("Downloading"));
         download();
+        if (status.isCancelled()) {
+            return;
+        }
         if (!status.isSucces()) {
             pm.finishTask();
             JOptionPane.showMessageDialog(Main.parent, 
@@ -85,17 +94,17 @@ public abstract class MainDownloader {
 
     private void prepare() {
         status.clear();
-        executor = Executors.newFixedThreadPool(NTHREADS);
+        executorService = Executors.newFixedThreadPool(NTHREADS);
         for (final LayerDownloader downloader : enabledDownloaders) {
-            executor.execute(downloader::prepare);
+            executorService.execute(downloader::prepare);
         }
         
-        executor.shutdown();
+        executorService.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
         }
         catch (InterruptedException e) {
-            executor.shutdownNow();
+            executorService.shutdownNow();
             for (LayerDownloader downloader : enabledDownloaders) {
                 downloader.cancel();
             }
@@ -112,17 +121,17 @@ public abstract class MainDownloader {
 
     private void download() {
         status.clear();
-        executor = Executors.newFixedThreadPool(NTHREADS);
+        executorService = Executors.newFixedThreadPool(NTHREADS);
         for (final LayerDownloader downloader : enabledDownloaders) {
-            executor.execute(downloader::download);
+            executorService.execute(downloader::download);
         }
         
-        executor.shutdown();
+        executorService.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
         }
         catch (InterruptedException e) {
-            executor.shutdownNow();
+            executorService.shutdownNow();
             for (LayerDownloader downloader : enabledDownloaders) {
                 downloader.cancel();
             }
@@ -143,21 +152,21 @@ public abstract class MainDownloader {
      */
     protected void process(DownloadResponse response) {
         status.clear();
-        executor = Executors.newFixedThreadPool(NTHREADS);
+        executorService = Executors.newFixedThreadPool(NTHREADS);
         for (final LayerDownloader downloader : enabledDownloaders) {
             downloader.setResponse(response);
-            executor.execute(downloader::process);
+            executorService.execute(downloader::process);
         }
         
-        executor.shutdown();
+        executorService.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
+            executorService.awaitTermination(1, TimeUnit.MINUTES);
         }
         catch (InterruptedException e) {
-            executor.shutdownNow();
-            for (LayerDownloader downloader : enabledDownloaders) {
-                downloader.cancel();
-            }
+            executorService.shutdownNow();
+//            for (LayerDownloader downloader : enabledDownloaders) {
+//                downloader.cancel();
+//            }
             status.setException(e);
             status.setFailed(true);
         }
@@ -182,5 +191,6 @@ public abstract class MainDownloader {
         for (LayerDownloader downloader : enabledDownloaders) {
             downloader.cancel();
         }
+        executorService.shutdownNow();
     }
 }

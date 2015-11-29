@@ -73,7 +73,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
             osm.put(ODS.KEY.BASE, "true");
             osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
             osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
-            osm.put(ODS.KEY.ATTRIBUTE_MATCH, getAttributeMatch().toString());
+            osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
         }
     }
 }

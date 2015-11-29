@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -23,14 +24,13 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Gertjan Idema
  *
  */
-@Deprecated
-public class DefaultGeometryMapper implements GeometryMapper {
-  private PrimitiveBuilder abstractPrimitiveBuilder;
+public class DefaultGeometryMapper<T extends Entity> implements GeometryMapper<T> {
+  private PrimitiveBuilder<T> abstractPrimitiveBuilder;
   private String targetPrimitive;
   private final Boolean merge = false;
   
   @Override
-  public final void setObjectFactory(PrimitiveBuilder abstractPrimitiveBuilder) {
+  public final void setObjectFactory(PrimitiveBuilder<T> abstractPrimitiveBuilder) {
     this.abstractPrimitiveBuilder = abstractPrimitiveBuilder;
   }
 

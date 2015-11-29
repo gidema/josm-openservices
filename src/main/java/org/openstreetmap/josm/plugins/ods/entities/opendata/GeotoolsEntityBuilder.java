@@ -24,29 +24,4 @@ public interface GeotoolsEntityBuilder<T extends Entity> extends EntityBuilder<S
      */
     public Object getReferenceId(SimpleFeature feature);
     
-//    /**
-//     * Create the entity and store somewhere.
-//     * Typically this is in an EntityStore<T>
-//     * 
-//     * @param feature
-//     */
-//    public T build(SimpleFeature feature);
-    
-    /**
-     * Set the metaData.
-     * TODO There is a lot of overlap between the Context and the MetaData concepts. Maybe we should combine
-     * these concepts.
-     * 
-     * @param metaData
-     */
-//    public void setMetaData(MetaData metaData);
-    
-    
-    /**
-     * Set the context.
-     * Currently there is only 1 relevant context property: EntitySource. Then entity Source get added to each Entity
-     * and can be used to check if the Entity was downloaded in the current download  session.
-     * @param ctx
-     */
-//    public void setContext(Context ctx);
 }

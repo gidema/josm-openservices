@@ -104,10 +104,10 @@ public abstract class CRSUtil {
         } catch (NoSuchAuthorityCodeException e) {
             throw new CRSException(I18n.tr(
                     "The supplied coordinate reference system "
-                            + "{0} is unknown", srs));
+                            + "{0} is unknown", srs), e);
         } catch (FactoryException e) {
             throw new CRSException(I18n.tr("Unable to create a "
-                    + "coordinate reference system for {0}", srs));
+                    + "coordinate reference system for {0}", srs), e);
         }
         return crs;
     }

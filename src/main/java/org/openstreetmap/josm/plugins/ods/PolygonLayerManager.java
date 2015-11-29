@@ -11,6 +11,7 @@ import org.openstreetmap.josm.io.OsmImporter;
 
 public class PolygonLayerManager extends AbstractLayerManager {
     private OdsModule module;
+    private OsmDataLayer osmDataLayer;
 
     public PolygonLayerManager(OdsModule module) {
         super("ODS Polygons");
@@ -18,12 +19,19 @@ public class PolygonLayerManager extends AbstractLayerManager {
     }
 
     @Override
-    public void initialize() {
+    public void activate() {
         if (getOsmDataLayer() != null) {
-            super.initialize();
+            super.activate();
         }
     }
 
+    @Override
+    public OsmDataLayer getOsmDataLayer() {
+        if (osmDataLayer == null) {
+            osmDataLayer = createOsmDataLayer();
+        }
+        return osmDataLayer;
+    }
 
     @Override
     public boolean isOsm() {

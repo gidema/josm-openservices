@@ -36,8 +36,4 @@ public interface OdsDataSource {
     public void setRequired(boolean required);
 
     public boolean isRequired();
-
-//    public void setEntityType(String entityType);
-//
-//    public String getEntityType();
 }

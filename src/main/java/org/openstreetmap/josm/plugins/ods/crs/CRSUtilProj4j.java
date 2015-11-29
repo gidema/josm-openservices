@@ -17,8 +17,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
-//import org.osgeo.proj4j.CoordinateReferenceSystem;
-
 /**
  * A Proj4j based implementation of CRSUtils. The opengis Mathtransform has
  * issues with EPSG:28992

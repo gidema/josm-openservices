@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.gui.help.HelpUtil.ht;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -16,7 +15,6 @@ import java.util.List;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
@@ -77,7 +75,7 @@ public class OpenDataServicesPlugin extends Plugin {
         if (activeModule == null) {
             if (module.activate()) {
                 menu.remove(0);
-                menu.add(new DeactivateAction());
+//                menu.add(new OdsDisableAction(this));
                 menu.repaint();
                 this.activeModule = module;
                 return true;
@@ -188,23 +186,5 @@ public class OpenDataServicesPlugin extends Plugin {
                 }
             }
         );
-    }
-
-    
-    private class DeactivateAction extends AbstractAction {
-        
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-
-        public DeactivateAction() {
-            super("Disable");
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            deactivate(getActiveModule());
-        }
     }
 }

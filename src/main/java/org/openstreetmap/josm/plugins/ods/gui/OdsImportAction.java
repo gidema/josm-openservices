@@ -10,6 +10,7 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporter;
 import org.openstreetmap.josm.tools.ImageProvider;
 
+@Deprecated
 public class OdsImportAction extends OdsAction {
     /**
      * 
@@ -30,6 +31,7 @@ public class OdsImportAction extends OdsAction {
         
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
         importer.doImport(osmLayer.data.getAllSelected());
+        layerManager.getOsmDataLayer().data.clearSelection();
     }
 
     @Override

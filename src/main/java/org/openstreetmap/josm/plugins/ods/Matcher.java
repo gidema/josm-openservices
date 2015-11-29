@@ -6,4 +6,5 @@ public interface Matcher<T extends Entity> {
 
     void run();
 
+    void reset();
 }

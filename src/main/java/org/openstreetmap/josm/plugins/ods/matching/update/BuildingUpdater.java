@@ -1,10 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.matching.update;
 
-import java.util.Map;
-
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
@@ -34,18 +33,24 @@ public class BuildingUpdater implements EntityUpdater<Building> {
     }
 
     private void updateAttributes(Building odBuilding, Building osmBuilding) {
-        OsmPrimitive odPrimitive = odBuilding.getPrimitive();
         OsmPrimitive osmPrimitive = osmBuilding.getPrimitive();
+        osmBuilding.setSourceDate(odBuilding.getSourceDate());
+        osmPrimitive.put("source:date", odBuilding.getSourceDate());
         osmBuilding.setStartDate(odBuilding.getStartDate());
-
-        Map<String, String> keys = osmPrimitive.getKeys();
-        keys.put("start_date", odPrimitive.get("start_date"));
-        osmPrimitive.setKeys(keys);
+        osmPrimitive.put("start_date", odBuilding.getStartDate());
     }
 
     private void updateStatus(Building odBuilding, Building osmBuilding) {
         OsmPrimitive odPrimitive = odBuilding.getPrimitive();
         OsmPrimitive osmPrimitive = osmBuilding.getPrimitive();
+        osmBuilding.setSourceDate(odBuilding.getSourceDate());
+        osmPrimitive.put("source:date", odBuilding.getSourceDate());
+        if (osmBuilding.getStatus().equals(EntityStatus.CONSTRUCTION)
+                && odBuilding.getStatus().equals(EntityStatus.IN_USE)) {
+            osmPrimitive.put("building", odPrimitive.get("building"));
+            osmPrimitive.put("construction", null);
+            osmBuilding.setStatus(odBuilding.getStatus());
+        }
        
     }
 }

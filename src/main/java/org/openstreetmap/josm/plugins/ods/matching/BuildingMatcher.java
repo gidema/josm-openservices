@@ -98,9 +98,16 @@ public class BuildingMatcher implements Matcher<Building> {
             OsmPrimitive osm = building.getPrimitive();
             if (osm != null) {
                 osm.put(ODS.KEY.IDMATCH, "false");
-                osm.put(ODS.KEY.STATUS_MATCH, building.getStatus().toString());
+                osm.put(ODS.KEY.STATUS, building.getStatus().toString());
             }
         }
     }
 
+    @Override
+    public void reset() {
+        buildingMatches.clear();
+        unidentifiedOsmBuildings.clear();
+        unmatchedOpenDataBuildings.clear();
+        unmatchedOsmBuildings.clear();
+    }
 }

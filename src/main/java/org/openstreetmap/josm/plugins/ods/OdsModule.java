@@ -1,20 +1,21 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import static org.openstreetmap.josm.tools.I18n.tr;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.EntityFactory;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 //import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
@@ -25,11 +26,11 @@ import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 /**
- * TODO update this comment The OdsModule is the main component of the ODS
- * plugin. It manages a pair of interrelated layers which are a normal OSM layer
- * and a ODS layer.
+ * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers 
+ * which are a normal OSM layer and a ODS layer containing data retrieved from an external open data source.
+ * A third layer containing polygons to manage download areas is optional.
  * 
- * The data in the ODS layer is retrieved from 1 or more ODS dataSources.
+ * The data in the ODS layer may be retrieved from multiple dataSources.
  * 
  * @author Gertjan Idema
  * 
@@ -48,7 +49,6 @@ public abstract class OdsModule implements LayerChangeListener {
 
     String osmQuery;
     private boolean active = false;
-    private EntityFactory entityFactory;
 
     public OdsModule(OdsModulePlugin plugin) {
         this.plugin = plugin;
@@ -81,10 +81,6 @@ public abstract class OdsModule implements LayerChangeListener {
 
     public abstract String getDescription();
 
-//    public DataManager getDataManager() {
-//        return dataManager;
-//    }
-    
     public final Map<String, OdsDataSource> getDataSources() {
         return dataSources;
     }
@@ -147,11 +143,11 @@ public abstract class OdsModule implements LayerChangeListener {
         for (OdsAction action : getActions()) {
             menu.add(action);
         }
-        getOsmLayerManager().initialize();
-        getOpenDataLayerManager().initialize();
+        getOsmLayerManager().activate();
+        getOpenDataLayerManager().activate();
         if (usePolygonFile()) {
             polygonDataLayer = new PolygonLayerManager(this);
-            polygonDataLayer.initialize();
+            polygonDataLayer.activate();
         }
         this.matcherManager = new MatcherManager(this);
         active = true;
@@ -159,16 +155,12 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     public void deActivate() {
-        if (getOsmLayerManager() != null) {
+        if (isActive()) {
             getOsmLayerManager().deActivate();
-        }
-        if (getOpenDataLayerManager() != null) {
             getOpenDataLayerManager().deActivate();
-        }
-        if (polygonDataLayer != null) {
             polygonDataLayer.deActivate();
+            active = false;
         }
-        active = false;
     }
 
     public List<OdsAction> getActions() {
@@ -200,34 +192,27 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     @Override
-    public void layerRemoved(Layer oldLayer) {
+    public void layerRemoved(Layer removedLayer) {
+        // Hack to prevent this method from running when Josm is exiting.
+        if ("exitJosm".equals(Thread.currentThread().getStackTrace()[5].getMethodName())) {
+            return;
+        }
+        
         if (isActive()) {
-            OsmLayerManager internalDataLayer = getOsmLayerManager();
-            OpenDataLayerManager externalDataLayer = getOpenDataLayerManager();
-            OsmDataLayer externalOsmLayer = (externalDataLayer == null ? null
-                    : externalDataLayer.getOsmDataLayer());
-            OsmDataLayer internalOsmLayer = (internalDataLayer == null ? null
-                    : internalDataLayer.getOsmDataLayer());
-            OsmDataLayer polygonOsmLayer = (polygonDataLayer == null ? null
-                    : polygonDataLayer.getOsmDataLayer());
-            if (oldLayer.equals(externalOsmLayer)) {
-                externalDataLayer.reset();
-            }
-            if (oldLayer.equals(internalOsmLayer)) {
-                internalDataLayer.reset();
-            }
-            if (oldLayer.equals(polygonOsmLayer)) {
-                polygonDataLayer.reset();
+            if (this.getLayerManager(removedLayer) != null) {
+                String message = tr("You removed one of the layers that belong to the {0} module." +
+                        " For the stability of the {0} module, you have to reset the module.", getName());
+                int result = JOptionPane.showOptionDialog(null, message, tr("ODS layer removed."), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                    new String[] {"Reset"}, 0);
+                Main.main.addLayer(removedLayer);
+                if (result == 0) {
+                    reset();
+                }
+                else {
+                    this.deActivate();
+                }
             }
         }
-    }
-
-    public void setEntityFactory(EntityFactory entityFactory) {
-        this.entityFactory = entityFactory;
-    }
-
-    public EntityFactory getEntityFactory() {
-        return entityFactory;
     }
 
     public abstract Bounds getBounds();
@@ -240,5 +225,11 @@ public abstract class OdsModule implements LayerChangeListener {
     
     public String getPluginDir() {
         return plugin.getPluginDir();
+    }
+
+    public void reset() {
+        getOsmLayerManager().reset();
+        getOpenDataLayerManager().reset();
+        getMatcherManager().reset();
     }
 }

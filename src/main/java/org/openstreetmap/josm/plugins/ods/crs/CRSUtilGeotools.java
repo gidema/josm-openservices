@@ -123,7 +123,7 @@ public class CRSUtilGeotools extends CRSUtil {
             throw new CRSException(I18n.tr(
                     "Couldn't create a bounding box for "
                             + "the coordinate reference system {0}.",
-                    crs.getName()));
+                    crs.getName()), e);
         }
     }
 }
