@@ -2,8 +2,8 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
 import org.openstreetmap.josm.plugins.ods.entities.builtenvironment.CrossingBuildingFixer;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
@@ -20,21 +20,21 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public class BuildingAligner {
-    private final OpenDataBuildingStore buildingStore;
+    private final EntityStore<Building> buildingStore;
     private final Double tolerance;
     private final CrossingBuildingFixer fixer;
     
-    public BuildingAligner(OpenDataBuildingStore buildingStore, GeoUtil geoUtil, Double tolerance) {
+    @Deprecated
+    public BuildingAligner(EntityStore<Building> buildingStore, GeoUtil geoUtil, Double tolerance) {
         super();
         this.buildingStore = buildingStore;
         this.tolerance = tolerance;
         this.fixer = new CrossingBuildingFixer(geoUtil, tolerance);
     }
 
-    public BuildingAligner(OdsModule module, double tolerance) {
-        this.buildingStore = (OpenDataBuildingStore) module
-                .getOpenDataLayerManager().getEntityStore(Building.class);
-        this.tolerance = tolerance;
+    public BuildingAligner(OdsModule module, EntityStore<Building> buildingStore) {
+        this.buildingStore = buildingStore;
+        this.tolerance = module.getTolerance();
         this.fixer = new CrossingBuildingFixer(module.getGeoUtil(), tolerance);
     }
 

@@ -28,8 +28,10 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
 
 /**
  * The importer imports objects from the OpenData layer to the Osm layer.
@@ -40,13 +42,18 @@ import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
  *
  */
 public class OdsImporter {
-    private OdsModule module;
+    private final OdsModule module;
     // TODO Make the importfilter(s) configurable
-    private ImportFilter importFilter = new DefaultImportFilter();
+    private final ImportFilter importFilter = new DefaultImportFilter();
+    // TODO Move buildingAligner out of this class in favour of a
+    // Observer pattern
+    private final BuildingAligner buildingAligner;
     
     public OdsImporter(OdsModule module) {
         super();
         this.module = module;
+        this.buildingAligner=new BuildingAligner(module, 
+                module.getOsmLayerManager().getEntityStore(Building.class));
     }
 
     public void doImport(Collection<OsmPrimitive> primitives) {
@@ -60,6 +67,11 @@ public class OdsImporter {
             }
         }
         importEntities(entitiesToImport);
+        for (Entity entity : entitiesToImport) {
+            if (entity.getEntityType() == BuildingEntityType.getInstance()) {
+                buildingAligner.align((Building) entity);
+            }
+        }
     }
 
     private void importEntities(List<Entity> entitiesToImport) {
@@ -88,6 +100,7 @@ public class OdsImporter {
         matcher.run();
     }
 
+    @Deprecated
     private void importPrimitives(PrimitiveDeepCopy deepCopy) {
         OsmLayerManager osmLayerManager = module.getOsmLayerManager();
         DataSet dataSet = osmLayerManager.getOsmDataLayer().data;
@@ -97,7 +110,6 @@ public class OdsImporter {
         Collection<OsmPrimitive> importedPrimitives = new LinkedList<>();
         Map<Long, Long> newNodeIds = new HashMap<>();
         Map<Long, Long> newWayIds = new HashMap<>();
-        Map<Long, Long> newRelationIds = new HashMap<>();
         for (PrimitiveData osmData : deepCopy.getAll()) {
             removeOdsTags(osmData);
             switch (osmData.getType()) {

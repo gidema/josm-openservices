@@ -6,6 +6,7 @@ import java.util.List;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 
 public abstract class MatchImpl<E extends Entity> implements Match<E> {
     private List<E> osmEntities = new LinkedList<>();
@@ -74,6 +75,9 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
             osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
             osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
             osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
+            if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
+                osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
+            }
         }
     }
 }

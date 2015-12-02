@@ -35,6 +35,7 @@ public class OdsUpdateAction extends OdsAction {
         importer.doImport(osmLayer.data.getAllSelected());
         updater.doUpdate(osmLayer.data.getAllSelected());
         layerManager.getOsmDataLayer().data.clearSelection();
+        Main.map.mapView.setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
     }
 
     @Override

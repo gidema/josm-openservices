@@ -231,5 +231,14 @@ public abstract class OdsModule implements LayerChangeListener {
         getOsmLayerManager().reset();
         getOpenDataLayerManager().reset();
         getMatcherManager().reset();
+        Main.map.mapView.repaint();
     }
+
+    /**
+     * Get the tolerance (in degrees) used to match nearby nodes and lines.
+     * TODO provide more versatile configuration option
+     * 
+     * @return
+     */
+    public abstract Double getTolerance();
 }
