@@ -14,11 +14,13 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Host;
+import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.GeotoolsEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
@@ -39,6 +41,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private EntityStore<T> entityStore;
     private final Status status = new Status();
     private final GeotoolsEntityBuilder<T> entityBuilder;
+    private Normalisation normalisation = Normalisation.FULL;
     
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
             GeotoolsEntityBuilder<T> entityBuilder, EntityStore<T> entityStore) {
@@ -49,6 +52,11 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         this.entityStore = entityStore;
     }
     
+    public void setNormalisation(Normalisation normalisation) {
+        this.normalisation = normalisation;
+    }
+
+
     @Override
     public void setup(DownloadRequest request) {
         this.request = request;
@@ -123,7 +131,9 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             SimpleFeatureIterator it = featureSource.getFeatures(query).features();
         )  {
            while (it.hasNext()) {
-               downloadedFeatures.add((SimpleFeature) it.next());
+               SimpleFeature feature = it.next();
+               FeatureUtil.normalizeFeature(feature, normalisation);
+               downloadedFeatures.add(feature);
                if (Thread.currentThread().isInterrupted()) {
                    status.setCancelled(true);
                    return;
@@ -173,6 +183,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         return dataSource;
     }
     
+
     @Override
     public void cancel() {
         status.setCancelled(true);
