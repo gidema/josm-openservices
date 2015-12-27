@@ -32,6 +32,8 @@ public abstract class MainDownloader {
 
     private Status status = new Status();
 
+    public abstract void initialize() throws Exception;
+    
     protected abstract LayerDownloader getOsmLayerDownloader();
 
     protected abstract LayerDownloader getOpenDataLayerDownloader();
@@ -55,8 +57,8 @@ public abstract class MainDownloader {
         }
         if (!status.isSucces()) {
             pm.finishTask();
-            JOptionPane.showMessageDialog(Main.parent, 
-                "An error occurred: " + status.getMessage());
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr(
+                "An error occurred: " + status.getMessage()));
             return;
         }
         pm.indeterminateSubTask(I18n.tr("Processing data"));
@@ -64,8 +66,8 @@ public abstract class MainDownloader {
         process(response);
         if (!status.isSucces()) {
             pm.finishTask();
-            JOptionPane.showMessageDialog(Main.parent, 
-                    "An error occurred: " + status.getMessage());
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr(
+                    "An error occurred: " + status.getMessage()));
             return;
         }
         
@@ -141,8 +143,29 @@ public abstract class MainDownloader {
         for (LayerDownloader downloader : enabledDownloaders) {
             Status status = downloader.getStatus();
             if (!status.isSucces()) {
-                this.status = status;
+                if (status.isFailed()) {
+                    this.status.setFailed(true);
+                }
+                if (status.isCancelled()) {
+                    this.status.setCancelled(true);
+                }
+                if (status.isTimedOut()) {
+                    this.status.setTimedOut(true);
+                }
+                this.status.setMessage(this.status.getMessage() + "\n" + status.getMessage());
             }
+            if (this.status.isFailed()) {
+                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
+                    status.getMessage()));
+            }
+            else if (this.status.isTimedOut()) {
+                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download timed out"));
+            }
+            else if (this.status.isCancelled()) {
+                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download was cancelled because of the following reason(s):\n" +
+                    status.getMessage()));
+            }
+
         }
     }
     

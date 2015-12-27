@@ -36,22 +36,25 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
  * 
  */
 public abstract class OdsModule implements LayerChangeListener {
-    private final OdsModulePlugin plugin;
+    private OdsModulePlugin plugin;
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<EntityType<?>> entityTypes = new LinkedList<>();
     private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
     
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    private final OpenDataLayerManager openDataLayerManager;
+    private OpenDataLayerManager openDataLayerManager;
     private PolygonLayerManager polygonDataLayer;
-    private final OsmLayerManager osmLayerManager;
+    private OsmLayerManager osmLayerManager;
     private MatcherManager matcherManager;
 
     String osmQuery;
     private boolean active = false;
 
-    public OdsModule(OdsModulePlugin plugin) {
+    protected void setPlugin(OdsModulePlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void initialize() throws Exception {
         this.osmLayerManager = createOsmLayerManager();
         this.openDataLayerManager = createOpenDataLayerManager();
         MapView.addLayerChangeListener(this);

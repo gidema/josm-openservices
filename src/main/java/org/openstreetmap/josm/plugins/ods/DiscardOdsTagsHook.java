@@ -19,7 +19,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 class DiscardOdsTagsHook implements UploadHook {
 
     @Override
-    public boolean checkUpload(APIDataSet apiDataSet) {
+    public final boolean checkUpload(APIDataSet apiDataSet) {
         List<OsmPrimitive> objectsToUpload = apiDataSet.getPrimitives();
 
         Map<String, String> map = new HashMap<>();

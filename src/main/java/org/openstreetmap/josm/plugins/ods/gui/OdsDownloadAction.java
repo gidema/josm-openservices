@@ -104,7 +104,7 @@ public class OdsDownloadAction extends OdsAction {
         // the download area
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
         if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-            && !BuildingEntityType.getInstance().recognize(primitive)) {
+            && !BuildingEntityType.IsBuilding.evaluate(primitive)) {
             return new Boundary((Way)primitive);
         }
         return null;

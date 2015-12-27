@@ -1,17 +1,17 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import org.openstreetmap.josm.data.coor.EastNorth;
+import org.openstreetmap.josm.data.osm.Node;
 
 public class SegmentMatcher {
     private static double HALF_PI = Math.PI / 2;
-    private double tolerance;
+    private NodeDWithin dWithin;
     private boolean reversed;
     private MatchType startMatch;
     private MatchType endMatch;
     
-    public SegmentMatcher(double tolerance) {
+    public SegmentMatcher(NodeDWithin dWithin) {
         super();
-        this.tolerance = tolerance;
+        this.dWithin = dWithin;
     }
 
     /**
@@ -25,13 +25,13 @@ public class SegmentMatcher {
      * @return true if the segments match
      */
     public boolean match(NodeIterator it1, NodeIterator it2) {
-        if (!matchLine(it1, it2)) {
-            return false;
-        }
-        EastNorth start1 = it1.peek().getEastNorth();
-        EastNorth start2 = it2.peek().getEastNorth();
-        EastNorth end2 = it2.peekNext().getEastNorth();
-        EastNorth end1 = it1.peekNext().getEastNorth();
+//        if (!matchLine(it1, it2)) {
+//            return false;
+//        }
+        Node start1 = it1.peek();
+        Node start2 = it2.peek();
+        Node end2 = it2.peekNext();
+        Node end1 = it1.peekNext();
         reversed = (Math.abs(it1.angle(it2)) > HALF_PI);
         if (!reversed && matchPointToPoint(start1, start2) ||
              (reversed && matchPointToPoint(start1, end2))) {
@@ -67,44 +67,44 @@ public class SegmentMatcher {
     }
 
     public boolean matchLine(NodeIterator it1, NodeIterator it2) {
-        EastNorth start1 = it1.peek().getEastNorth();
-        EastNorth end1 = it1.peekNext().getEastNorth();
-        EastNorth start2 = it2.peek().getEastNorth();
-        EastNorth end2 = it2.peekNext().getEastNorth();
-        return distanceToLine(start1, end1, start2) <= tolerance &&
-            distanceToLine(start1, end1, end2) <= tolerance;    
+        Node start1 = it1.peek();
+        Node end1 = it1.peekNext();
+        Node start2 = it2.peek();
+        Node end2 = it2.peekNext();
+        return dWithin.check(start2, start1, end1) &&
+            dWithin.check(end2, start1, end1);
     }
     
-    private boolean matchPointToPoint(EastNorth en1, EastNorth en2) {
-        return en1.equals(en2) || en1.distance(en2) <= tolerance;
+    private boolean matchPointToPoint(Node n1, Node n2) {
+        return n1.equals(n2) || dWithin.check(n1, n2);
     }
 
-    private boolean matchPointToSegment(EastNorth en, EastNorth en1, EastNorth en2) {
-        return (!matchPointToPoint(en1, en) && !matchPointToPoint(en2, en)
-             && Util.distancePointLine(en, en1, en2) <= tolerance); 
+    private boolean matchPointToSegment(Node n, Node n1, Node n2) {
+        return (!matchPointToPoint(n1, n) && !matchPointToPoint(n2, n)
+             && dWithin.check(n, n1, n2)); 
     }
 
     
-    /**
-     * Calculate the distance from point en0 to the line through en1 and en2
-     * @param en1
-     * @param en2
-     * @param en0
-     * @return
-     */
-    public double distanceToLine(EastNorth en1, EastNorth en2, EastNorth en0) {
-        double x0 = en0.getX();
-        double y0 = en0.getY();
-        double x1 = en1.getX();
-        double y1 = en1.getY();
-        double x2 = en2.getX();
-        double y2 = en2.getY();
-        double dx = x2 - x1;
-        double dy = y2 - y1;
-        double distance = Math.abs(dy * x0 - dx * y0 - x1 * y2 + x2 * y1) /
-                Math.sqrt(dx * dx + dy * dy);
-        return distance;
-    }
+//    /**
+//     * Calculate the distance from node n0 to the line through n1 and n2
+//     * @param n1
+//     * @param n2
+//     * @param n0
+//     * @return
+//     */
+//    public double distanceToLine(Node n1, Node n2, Node n0) {
+//        double x0 = en0.getX();
+//        double y0 = en0.getY();
+//        double x1 = en1.getX();
+//        double y1 = en1.getY();
+//        double x2 = en2.getX();
+//        double y2 = en2.getY();
+//        double dx = x2 - x1;
+//        double dy = y2 - y1;
+//        double distance = Math.abs(dy * x0 - dx * y0 - x1 * y2 + x2 * y1) /
+//                Math.sqrt(dx * dx + dy * dy);
+//        return distance;
+//    }
 
     public boolean isreversed() {
         return reversed;

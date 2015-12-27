@@ -11,13 +11,18 @@ import org.openstreetmap.josm.plugins.PluginInformation;
  *
  */
 public abstract class OdsModulePlugin extends Plugin {
+    private OdsModule module;
     
-    public OdsModulePlugin(PluginInformation info) throws Exception {
+    public OdsModulePlugin(PluginInformation info, OdsModule module) throws Exception {
         super(info);
-        OpenDataServicesPlugin ods = OpenDataServicesPlugin.INSTANCE;
-        ods.registerModule(getModule());
+        this.module = module;
+        OpenDataServicesPlugin.INSTANCE.registerModule(getModule());
+        module.setPlugin(this);
+        module.initialize();
     }
     
-    public abstract OdsModule getModule();
+    public OdsModule getModule() {
+        return module;
+    };
 
 }

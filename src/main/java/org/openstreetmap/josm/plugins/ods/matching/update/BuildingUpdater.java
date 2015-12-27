@@ -1,35 +1,46 @@
 package org.openstreetmap.josm.plugins.ods.matching.update;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.matching.MatchStatus;
+import org.openstreetmap.josm.plugins.ods.osm.update.BuildingGeometryUpdaterNg;
 
-public class BuildingUpdater implements EntityUpdater<Building> {
-    private OdsModule module;
+public class BuildingUpdater implements EntityUpdater {
+//    private final BuildingGeometryUpdater geometryUpdater;
+    private final BuildingGeometryUpdaterNg geometryUpdater;
     
     public BuildingUpdater(OdsModule module) {
         super();
-        this.module = module;
+        this.geometryUpdater = new BuildingGeometryUpdaterNg(module);
     }
 
-    public void update(Match<? extends Entity> _match) {
-        // TODO force this assert at compile time
-        assert (_match.getEntityType().equals(BuildingEntityType.getInstance()));
-        @SuppressWarnings("unchecked")
-        Match<Building> match = (Match<Building>) _match;
-        Building osmBuilding = match.getOsmEntity();
-        Building odBuilding = match.getOpenDataEntity();
-        if (match.getAttributeMatch().equals(MatchStatus.NO_MATCH)) {
-            updateAttributes(odBuilding, osmBuilding);
+    public void update(List<Match<?>> matches) {
+        List<Match<Building>> geometryUpdateNeeded = new LinkedList<>();
+        for (Match<?> match : matches) {
+            if (match.getEntityType().equals(BuildingEntityType.getInstance())) {
+                @SuppressWarnings("unchecked")
+                Match<Building> buildingMatch = (Match<Building>) match;
+                if (match.getGeometryMatch() == MatchStatus.NO_MATCH) {
+                    geometryUpdateNeeded.add(buildingMatch);
+                }
+                Building osmBuilding = buildingMatch.getOsmEntity();
+                Building odBuilding = buildingMatch.getOpenDataEntity();
+                if (match.getAttributeMatch().equals(MatchStatus.NO_MATCH)) {
+                    updateAttributes(odBuilding, osmBuilding);
+                }
+                if (!match.getStatusMatch().equals(MatchStatus.MATCH)) {
+                    updateStatus(odBuilding, osmBuilding);
+                }
+            }
         }
-        if (!match.getStatusMatch().equals(MatchStatus.MATCH)) {
-            updateStatus(odBuilding, osmBuilding);
-        }
+        geometryUpdater.updateGeometries(geometryUpdateNeeded);
     }
 
     private void updateAttributes(Building odBuilding, Building osmBuilding) {

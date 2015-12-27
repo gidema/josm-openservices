@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.command.ChangeCommand;
 import org.openstreetmap.josm.command.ChangeNodesCommand;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.DeleteCommand;
+import org.openstreetmap.josm.command.MoveCommand;
 import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.coor.LatLon;
@@ -30,7 +30,7 @@ public class NodeIterator {
         this.reversed = reversed;
         this.nodes = new ArrayList<Node>(way.getNodesCount() + 5);
         this.nodes.addAll(way.getNodes());
-        this.closed = nodes.get(0).equals(nodes.get(nodes.size() - 1));
+        this.closed = way.isClosed();
     }
     
     public void reset() {
@@ -133,10 +133,23 @@ public class NodeIterator {
         return true;
     }
     
+    /*
+     * Replace the node at index with the provided node.
+     * If the way is closed and the index is at the first or last node
+     * then replace the node at the other end as well
+     */
     public boolean updateNode(int index, Node node) {
         if (index < 0 || index >= nodes.size()) return false;
         nodes.set(index, node);
         modified = true;
+        if (closed) {
+            if (index == 0) {
+                nodes.set(nodes.size() - 1, node);
+            }
+            else if (index == nodes.size() - 1) {
+                nodes.set(0,  node);
+            }
+        }
         return true;
     }
     
@@ -173,12 +186,12 @@ public class NodeIterator {
         return nodes.get(index);
     }
 
-    public double distanceToNode(EastNorth en) {
-        return en.distance(peek().getEastNorth());
+    public boolean dWithin(NodeDWithin dWithin, Node n) {
+        return dWithin.check(peek(), n);
     }
 
-    public double distanceToSegment(EastNorth en) {
-        return Util.distancePointLine(en, peek().getEastNorth(), peekNext().getEastNorth());
+    public boolean dSegmentWithin(NodeDWithin dWithin, Node n) {
+        return dWithin.check(n, peek(), peekNext());
     }
 
     /**
@@ -210,6 +223,9 @@ public class NodeIterator {
         return new EastNorth(east, north);
     }
     
+    /*
+     * Close the iterator and perform the necessary updates.
+     */
     public void close(boolean undoable) {
         if (!modified) return;
         List<Command> commands = new LinkedList<>(); 
@@ -249,15 +265,16 @@ public class NodeIterator {
         }
     }
 
+    /*
+     * Move the node at index to the given coordinates.
+     */
     public void moveNode(int index, LatLon coor) {
         Node node = nodes.get(index);
         moveNode(node, coor);
     }
     
     public void moveNode(Node node, LatLon coor) {
-        Node newNode = new Node(node);
-        newNode.setCoor(coor);
-        movedNodes.add(new ChangeCommand(node, newNode));
+        movedNodes.add(new MoveCommand(node, coor));
     }
     
     public void moveNode(int index, EastNorth en) {
@@ -266,9 +283,7 @@ public class NodeIterator {
     }
     
     public void moveNode(Node node, EastNorth en) {
-        Node newNode = new Node(node);
-        newNode.setEastNorth(en);
-        movedNodes.add(new ChangeCommand(node, newNode));
+        movedNodes.add(new MoveCommand(node, node.getEastNorth(), en));
     }
     
     private void mergeAdjacentNodes(int index1, int index2, boolean toMiddle) {

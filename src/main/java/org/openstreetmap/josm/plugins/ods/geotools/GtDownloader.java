@@ -83,7 +83,8 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             featureSource = gtFeatureSource.getFeatureSource();
             query = dataSource.getQuery();
             if (query instanceof GroupByQuery) {
-                featureSource = new GroupByFeatureSource(new NameImpl("Dummy"), featureSource, (GroupByQuery)query);
+                featureSource = new GroupByFeatureSource(new NameImpl("Dummy"), featureSource, 
+                     (GroupByQuery)query);
             }
             // Clone the query, so we can moderate the filter by setting the download area.
             query = new Query(query);
