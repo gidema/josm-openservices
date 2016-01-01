@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
@@ -58,7 +58,7 @@ public class GtFeatureSource implements OdsFeatureSource {
             throw new InitializationException(e);
         }
         if (!metaData.containsKey("source.date")) {
-            metaData.put("source.date", new Date());
+            metaData.put("source.date", LocalDate.now());
         }
         initialized = true;
     }
