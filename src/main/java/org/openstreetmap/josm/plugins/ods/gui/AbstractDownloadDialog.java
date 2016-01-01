@@ -51,6 +51,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     public AbstractDownloadDialog(OdsModule module, String title) {
         super(JOptionPane.getFrameForComponent(Main.panel), title, ModalityType.DOCUMENT_MODAL);
+        this.addWindowListener(new WindowEventHandler());
         this.module = module;
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(buildMainPanel(), BorderLayout.CENTER);
