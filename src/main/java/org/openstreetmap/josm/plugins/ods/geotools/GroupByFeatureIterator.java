@@ -52,13 +52,8 @@ public class GroupByFeatureIterator extends OdsFeatureIterator {
             nextFeature = super.next();
         }
         SimpleFeature result = getAggregate(currentGroup);
-        if (super.hasNext()) {
-            currentGroup.clear();
-            currentGroup.add(nextFeature);
-        }
-        else {
-            hasNext = false;
-        }
+        currentGroup.clear();
+        currentGroup.add(nextFeature);
         return result;
     }
     
