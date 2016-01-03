@@ -2,7 +2,12 @@ package org.openstreetmap.josm.plugins.ods.metadata;
 
 public class MetaDataException extends Exception {
 
-  public MetaDataException() {
+  /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+public MetaDataException() {
     // TODO Auto-generated constructor stub
   }
 

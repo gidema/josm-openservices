@@ -25,7 +25,6 @@ import org.openstreetmap.josm.plugins.ods.entities.opendata.GeotoolsEntityBuilde
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Status;
-import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -170,9 +169,8 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     
     @Override
     public void process() {
-        MetaData metaData = dataSource.getMetaData();
         for (SimpleFeature feature : downloadedFeatures) {
-            T entity = entityBuilder.build(feature, metaData, response);
+            T entity = entityBuilder.build(feature, response);
             if (!entityStore.contains(entity.getPrimaryId())) {
                 entityStore.add(entity);
             }
