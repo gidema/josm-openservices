@@ -40,7 +40,7 @@ public class BuildingUpdater implements EntityUpdater {
                 }
             }
         }
-        geometryUpdater.updateGeometries(geometryUpdateNeeded);
+//        geometryUpdater.updateGeometries(geometryUpdateNeeded);
     }
 
     private void updateAttributes(Building odBuilding, Building osmBuilding) {
