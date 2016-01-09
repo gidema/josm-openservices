@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.opengis.feature.Feature;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataException;
+import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
 
 /**
  * A FeatureMapper maps GeoTools features to a Collection of Josm primitives.
@@ -41,7 +41,7 @@ public interface FeatureMapper {
      * @return
      */
     public List<OsmPrimitive> mapFeature(Feature feature,
-            PrimitiveBuilder builder);
+            OsmPrimitiveFactory builder);
 
     public Map<String, String> getKeys();
 }

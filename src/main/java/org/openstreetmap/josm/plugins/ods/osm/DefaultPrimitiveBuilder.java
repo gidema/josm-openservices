@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.osm;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,8 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
+import org.openstreetmap.josm.plugins.ods.ODS;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -23,19 +24,15 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * The AbstractPrimitiveBuilder provides methods to create josm primitives from JTS
- * geometries and add them to a josm dataset. The JTS geometries must be in the
- * josm crs (epsg:4326) The methods take care of removal of duplicate nodes in
- * ways, and merging of nodes that refer to the same point.
- * TODO split Interface and implementation
+ * The default implementation of PrimitiveBuilder.
  * 
  * @author Gertjan Idema
  * 
  */
-public abstract class AbstractPrimitiveBuilder<T extends Entity> implements PrimitiveBuilder<T> {
+public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
     private final LayerManager layerManager;
 
-    public AbstractPrimitiveBuilder(LayerManager layerManager) {
+    public DefaultPrimitiveBuilder(LayerManager layerManager) {
         this.layerManager = layerManager;
     }
 
@@ -47,11 +44,11 @@ public abstract class AbstractPrimitiveBuilder<T extends Entity> implements Prim
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Geometry)
      */
     @Override
-    public OsmPrimitive build(Geometry geometry, Map<String, String> tags) {
+    public OsmPrimitive create(Geometry geometry, Map<String, String> tags) {
         tags.put(ODS.KEY.BASE, "true");
         switch (geometry.getGeometryType()) {
         case "Polygon":
-            return build((Polygon)geometry, tags);
+            return create((Polygon)geometry, tags);
         case "MultiPolygon":
             return build((MultiPolygon)geometry, tags);
         case "Point":
@@ -68,7 +65,7 @@ public abstract class AbstractPrimitiveBuilder<T extends Entity> implements Prim
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Polygon)
      */
     @Override
-    public OsmPrimitive build(Polygon polygon, Map<String, String> tags) {
+    public OsmPrimitive create(Polygon polygon, Map<String, String> tags) {
         return buildArea(polygon, tags);
     }
 
@@ -229,10 +226,4 @@ public abstract class AbstractPrimitiveBuilder<T extends Entity> implements Prim
     private DataSet getDataSet() {
         return layerManager.getOsmDataLayer().data;
     }
-    
-    /* (non-Javadoc)
-     * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#createPrimitives(T)
-     */
-    @Override
-    public abstract void createPrimitive(T entity);
 }

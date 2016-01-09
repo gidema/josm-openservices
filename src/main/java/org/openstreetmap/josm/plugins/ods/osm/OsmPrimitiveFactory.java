@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.osm;
 
 import java.util.Map;
 
@@ -6,7 +6,7 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.LayerManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -16,12 +16,20 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public interface PrimitiveBuilder<T extends Entity> {
+/**
+ * Build OsmPrimitives from a JTS geometry and a set of tags and add them to a josm dataset.
+ * The JTS geometries must be in the josm crs (epsg:4326)
+ * The methods take care of removal of duplicate nodes in ways, and merging of nodes that refer to the same point.
+ * 
+ * @author Gertjan Idema <mail@gertjanidema.nl>
+ *
+ */
+public interface OsmPrimitiveFactory {
     public LayerManager getLayerManager();
 
-    public OsmPrimitive build(Geometry geometry, Map<String, String> tags);
+    public OsmPrimitive create(Geometry geometry, Map<String, String> tags);
 
-    public OsmPrimitive build(Polygon polygon, Map<String, String> tags);
+    public OsmPrimitive create(Polygon polygon, Map<String, String> tags);
 
     public OsmPrimitive build(MultiPolygon mpg, Map<String, String> tags);
 
@@ -97,7 +105,4 @@ public interface PrimitiveBuilder<T extends Entity> {
      * @return
      */
     public Node buildNode(Point point, Map<String, String> tags, boolean merge);
-
-    public void createPrimitive(T entity);
-
 }
