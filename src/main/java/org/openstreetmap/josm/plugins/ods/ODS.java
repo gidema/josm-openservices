@@ -12,7 +12,7 @@ public class ODS {
         
     }
     
-    public static String[] KEYS = {KEY.BASE, KEY.IDMATCH, KEY.STATUS_MATCH, 
+    public static String[] KEYS = {KEY.BASE, KEY.IDMATCH, KEY.STATUS, KEY.STATUS_MATCH, 
             KEY.GEOMETRY_MATCH, KEY.TAG_MATCH};
 
 }

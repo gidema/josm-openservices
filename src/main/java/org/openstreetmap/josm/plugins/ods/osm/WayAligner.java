@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
 import org.openstreetmap.josm.Main;
-import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
@@ -20,19 +19,19 @@ import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
 public class WayAligner {
     private Way way1;
     private Way way2;
+    private NodeDWithin dWithin;
     private boolean undoable;
     private NodeIterator it1;
     private NodeIterator it2;
-    private Double tolerance;
     private SegmentMatcher matcher;
 
     public WayAligner(Way way1, Way way2,
-            Double tolerance, boolean undoable) {
+            NodeDWithin dWithin, boolean undoable) {
         this.way1 = way1;
         this.way2 = way2;
+        this.dWithin = dWithin;
         this.undoable = undoable;
-        this.tolerance = tolerance;
-        this.matcher = new SegmentMatcher(tolerance);
+        this.matcher = new SegmentMatcher(dWithin);
     }
     
     public void run() {
@@ -143,17 +142,17 @@ public class WayAligner {
         Node n1 = it1.getNode(index1);
         Node n2 = it2.getNode(index2);
         if (n1 == n2) return;
-        // Check for coordinate equality
-        // Determine geometry source
-        // Determine preferred node
+        /*
+         * n1 is a new node. Merge the nodes, keeping the location of the new node and the id and tags of the old one.
+         */
         if (n1.getUniqueId() < 0) {
-            it2.moveNode(index2, n1.getCoor());
-            it1.updateNode(index1, it2.getNode(index2));
+            it2.moveNode(n2, n1.getCoor());
+            it1.updateNode(index1, n2);
             return;
         }
-        if (n1.getUniqueId() < 0) {
-            it1.moveNode(index1, n2.getCoor());
-            it2.updateNode(index2, it2.getNode(index2));
+        if (n2.getUniqueId() < 0) {
+            it1.moveNode(n1, n2.getCoor());
+            it2.updateNode(index2, n1);
             return;
         }
         if (!n1.hasKeys()) {
@@ -209,27 +208,27 @@ public class WayAligner {
      * @return
      */
     private MatchType matchEnd() {
-        EastNorth end1 = it1.peekNext().getEastNorth();
-        EastNorth end2 = it2.peekNext().getEastNorth();
-        if (match(end1, end2, tolerance)) {
+        Node end1 = it1.peekNext();
+        Node end2 = it2.peekNext();
+        if (match(end1, end2)) {
             return MatchType.NodeToNode;
         }
-        if (matchToSegment(it2, end1, tolerance)) {
+        if (matchToSegment(it2, end1)) {
             return MatchType.NodeToSegment;
         }
-        if (matchToSegment(it1, end2, tolerance)) {
+        if (matchToSegment(it1, end2)) {
             return MatchType.SegmentToNode;
         }
         return MatchType.NoMatch;
     }
     
-    private boolean match(EastNorth e1, EastNorth e2, double toleranceEN) {
-        return e1.equals(e2) || e1.distance(e2) <= toleranceEN;
+    private boolean match(Node n1, Node n2) {
+        return n1.equals(n2) || dWithin.check(n1, n2);
     }
 
-    private boolean matchToSegment(NodeIterator it, EastNorth en, double tolerance) {
-        return (it.distanceToSegment(en) <= tolerance) && !match(it.peek().getEastNorth(), en, tolerance) &&
-             !match(it.peekNext().getEastNorth(), en, tolerance); 
+    private boolean matchToSegment(NodeIterator it, Node n) {
+        return (it.dSegmentWithin(dWithin, n)) && !match(it.peek(), n) &&
+             !match(it.peekNext(), n); 
     }
     
     enum MatchTypeV2 {

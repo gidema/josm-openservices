@@ -4,7 +4,7 @@ public class Status {
     private boolean failed = false;
     private boolean timedOut = false;
     private boolean cancelled = false;
-    private String message = null;
+    private String message = "";
     private Exception exception = null;
 
     public boolean isCancelled() {

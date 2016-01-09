@@ -23,5 +23,4 @@ public interface GeotoolsEntityBuilder<T extends Entity> extends EntityBuilder<S
      * @return
      */
     public Object getReferenceId(SimpleFeature feature);
-    
 }

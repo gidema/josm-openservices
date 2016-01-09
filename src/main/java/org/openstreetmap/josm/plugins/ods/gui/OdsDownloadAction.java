@@ -4,7 +4,7 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.Main;
@@ -30,7 +30,7 @@ public class OdsDownloadAction extends OdsAction {
     private static final long serialVersionUID = 1L;
 
     private MainDownloader downloader;
-    private Date startDate;
+    private LocalDateTime startDate;
     private boolean cancelled = false;
     private Boundary boundary;
     private boolean downloadOsm;
@@ -53,7 +53,7 @@ public class OdsDownloadAction extends OdsAction {
     public void run() {
         cancelled = false;
         boundary = getBoundary();
-        startDate = new Date();
+        startDate = LocalDateTime.now();
         if (!cancelled) {
             DownloadTask task = new DownloadTask();
             Main.worker.submit(task);
@@ -104,7 +104,7 @@ public class OdsDownloadAction extends OdsAction {
         // the download area
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
         if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-            && !BuildingEntityType.getInstance().recognize(primitive)) {
+            && !BuildingEntityType.IsBuilding.evaluate(primitive)) {
             return new Boundary((Way)primitive);
         }
         return null;

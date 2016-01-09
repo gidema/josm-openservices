@@ -1,12 +1,15 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 
 public interface Match<E extends Entity> {
+    final static AtomicLong idCounter = new AtomicLong(0);
     
+    public Object getId();
     /**
      * A match is considered simple, if it contains exactly one OSM
      * entity and one Open Data entity
@@ -40,4 +43,8 @@ public interface Match<E extends Entity> {
     public void analyze();
 
     public void updateMatchTags();
+    
+    static Long generateUniqueId() {
+        return idCounter.decrementAndGet();
+    }
 }

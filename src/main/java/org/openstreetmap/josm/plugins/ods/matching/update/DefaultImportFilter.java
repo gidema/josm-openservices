@@ -22,6 +22,7 @@ public class DefaultImportFilter implements ImportFilter {
         case NOT_REALIZED:
         case REMOVED:
         case UNKNOWN:
+        case PLANNED:
             return false;
         case CONSTRUCTION:
             if (entity instanceof AddressNode) {

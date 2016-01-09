@@ -6,12 +6,29 @@ import java.util.List;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
+import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 
 public abstract class MatchImpl<E extends Entity> implements Match<E> {
+    private Object id;
     private List<E> osmEntities = new LinkedList<>();
     private List<E> openDataEntities = new LinkedList<>();
     
     public MatchImpl(E osmEntity, E openDataEntity) {
+        if (osmEntity != null && osmEntity.getReferenceId() != null) {
+            id = osmEntity.getReferenceId();
+            if (openDataEntity != null) {
+                assert openDataEntity.getReferenceId().equals(id);
+            }
+        }
+        else {
+            if (openDataEntity.getReferenceId() != null) {
+                id = openDataEntity.getReferenceId();
+            }
+        }
+        if (id == null) {
+            id = Match.generateUniqueId();
+        }
         osmEntities.add(osmEntity);
         openDataEntities.add(openDataEntity);
         osmEntity.setMatch(this);
@@ -74,6 +91,58 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
             osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
             osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
             osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
+            if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
+                osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
+            }
         }
+    }
+
+    @Override
+    public Object getId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public EntityType<E> getEntityType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public MatchStatus getGeometryMatch() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public MatchStatus getAttributeMatch() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public MatchStatus getStatusMatch() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void analyze() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Match)) {
+            return false;
+        }
+        return (id.equals(((Match<?>)obj).getId()));
     }
 }

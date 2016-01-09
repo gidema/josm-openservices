@@ -211,7 +211,7 @@ public class BuildingPassageAction extends JosmAction {
         LineString highway = geoUtil.toLineString(pair.getHighway());
         try {
             building = geoUtil.toLinearRing(pair.getBuilding());
-        } catch (UnclosedWayException e) {
+        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
             new Notification(tr("The building ring is not closed."))
                 .setIcon(JOptionPane.INFORMATION_MESSAGE)
                 .setDuration(Notification.TIME_SHORT).show();

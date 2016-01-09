@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.type.FeatureType;
@@ -18,6 +18,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     private final GtHost host;
     private final String featureName;
     private final String idAttribute;
+    private final long maxFeatures;
     SimpleFeatureSource featureSource;
     CoordinateReferenceSystem crs;
     MetaData metaData;
@@ -25,6 +26,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     public GtFeatureSource(GtHost host, String featureName, String idAttribute) {
         super();
         this.host = host;
+        this.maxFeatures = host.getMaxFeatures();
         this.featureName = featureName;
         this.idAttribute = idAttribute;
     }
@@ -56,7 +58,7 @@ public class GtFeatureSource implements OdsFeatureSource {
             throw new InitializationException(e);
         }
         if (!metaData.containsKey("source.date")) {
-            metaData.put("source.date", new Date());
+            metaData.put("source.date", LocalDate.now());
         }
         initialized = true;
     }
@@ -76,6 +78,10 @@ public class GtFeatureSource implements OdsFeatureSource {
         return getFeatureSource().getSchema();
     }
 
+    public long getMaxFeatureCount() {
+        return maxFeatures;
+    }
+    
     @Override
     public String getIdAttribute() {
         return idAttribute;

@@ -1,16 +1,16 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
 public class DownloadRequest {
-    private Date downloadTime;
+    private LocalDateTime downloadTime;
     private Boundary boundary;
     private boolean getOsm;
     private boolean getOds;
 
-    public DownloadRequest(Date downloadTime, Boundary boundary,boolean getOsm, boolean getOds) {
+    public DownloadRequest(LocalDateTime downloadTime, Boundary boundary,boolean getOsm, boolean getOds) {
         super();
         this.downloadTime = downloadTime;
         this.boundary = boundary;
@@ -18,7 +18,7 @@ public class DownloadRequest {
         this.getOds = getOds;
     }
 
-    public Date getDownloadTime() {
+    public LocalDateTime getDownloadTime() {
         return downloadTime;
     }
 

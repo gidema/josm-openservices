@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.openservices.crs.test;
+package org.openstreetmap.josm.plugins.ods.crs.test;
 
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;

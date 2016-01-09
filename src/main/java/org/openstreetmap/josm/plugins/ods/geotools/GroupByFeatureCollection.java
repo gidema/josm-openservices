@@ -4,25 +4,28 @@ import java.util.Iterator;
 
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.feature.collection.AbstractFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 
-public class GroupByFeatureCollectionWrapper extends AbstractFeatureCollection {
+public class GroupByFeatureCollection extends OdsFeatureCollection {
     private final SimpleFeatureCollection wrapped;
     private final GroupByQuery query;
 
-    public GroupByFeatureCollectionWrapper(SimpleFeatureCollection wrapped, GroupByQuery query) {
-        super(wrapped.getSchema());
+    public GroupByFeatureCollection(SimpleFeatureCollection wrapped, GroupByQuery query) {
+        super(wrapped);
         this.wrapped = wrapped;
         this.query = query;
     }
 
     @Override
-    protected Iterator<SimpleFeature> openIterator() {
-        return new SimpleFeatureIteratorIterator(
-            new GroupByFeatureIteratorWrapper(wrapped.features(), query.getGroupBy()));
+    protected OdsFeatureIterator getFeatureIterator(SimpleFeatureIterator wrappedFeatures) {
+        return new GroupByFeatureIterator(wrapped.features(), query);
     }
+    
+//    @Override
+//    protected Iterator<SimpleFeature> openIterator() {
+//        return new SimpleFeatureIteratorIterator(
+//    }
     
     @Override
     public int size() {

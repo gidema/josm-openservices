@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.PrimitiveBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -31,5 +31,5 @@ public interface GeometryMapper<T extends Entity> {
   public List<OsmPrimitive> createPrimitives(Geometry geometry, Map<String, String> tags, DataSet dataSet);
 
   // TODO remove this method and use a GeometryMapperFactory instead 
-  public void setObjectFactory(PrimitiveBuilder<T> abstractPrimitiveBuilder);
+  public void setObjectFactory(OsmPrimitiveFactory primitiveBuilder);
 }

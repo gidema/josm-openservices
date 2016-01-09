@@ -16,16 +16,15 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
-public class GroupByFeatureSource implements SimpleFeatureSource {
+public class GroupByFeatureSource extends OdsFeatureSource<GroupByFeatureCollection> {
     private final SimpleFeatureSource wrappedSource;
     private final SimpleFeatureType featureType;
     private final LinkedList<FeatureListener> listeners = new LinkedList<>();
     private final GroupByQuery query;
     
     public GroupByFeatureSource(Name newName, SimpleFeatureSource wrappedSource, GroupByQuery query) {
-        super();
+        super(wrappedSource);
         this.query = query;
         this.wrappedSource = wrappedSource;
         // TODO use Hints to retrieve FeatureTypeFactory
@@ -87,26 +86,26 @@ public class GroupByFeatureSource implements SimpleFeatureSource {
         return wrappedSource.getSupportedHints();
     }
 
-    @Override
-    public SimpleFeatureCollection getFeatures() throws IOException {
-        SimpleFeatureCollection oldFeatures = wrappedSource.getFeatures();
-        return getFeatures(oldFeatures);
+    protected OdsFeatureCollection getFeatureCollection(SimpleFeatureCollection wrappedFeatureCollection) {
+        return new GroupByFeatureCollection(wrappedFeatureCollection, query);
     }
 
-    @Override
-    public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
-        SimpleFeatureCollection oldFeatures = wrappedSource.getFeatures(filter);
-        return getFeatures(oldFeatures);
-    }
+//    @Override
+//    public SimpleFeatureCollection getFeatures() throws IOException {
+//        SimpleFeatureCollection wrappedFeatures = wrappedSource.getFeatures();
+//        return getFeatures(wrappedFeatures);
+//    }
+//
+//    @Override
+//    public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
+//        SimpleFeatureCollection wrappedFeatures = wrappedSource.getFeatures(filter);
+//        return getFeatures(wrappedFeatures);
+//    }
+//
+//    @Override
+//    public SimpleFeatureCollection getFeatures(Query query) throws IOException {
+//        SimpleFeatureCollection wrappedFeatures = wrappedSource.getFeatures(query);
+//        return getFeatures(wrappedFeatures);
+//    }
 
-    @Override
-    public SimpleFeatureCollection getFeatures(Query query) throws IOException {
-        SimpleFeatureCollection oldFeatures = wrappedSource.getFeatures(query);
-        return getFeatures(oldFeatures);
-    }
-
-    private SimpleFeatureCollection getFeatures(
-            SimpleFeatureCollection wrappedFeatures) {
-        return new GroupByFeatureCollectionWrapper(wrappedFeatures, query);
-    }
 }
