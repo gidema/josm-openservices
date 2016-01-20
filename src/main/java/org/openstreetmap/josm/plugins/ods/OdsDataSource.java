@@ -3,6 +3,8 @@ package org.openstreetmap.josm.plugins.ods;
 import org.geotools.data.Query;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
+import exceptions.OdsException;
+
 /**
  * <p>An OdsDataSource is the interface between the OdsModule and the
  * OdsFeatureSource. It performs the following tasks.</p>
@@ -15,6 +17,8 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
  * 
  */
 public interface OdsDataSource {
+    public void initialize() throws OdsException;
+
     public String getFeatureType();
 
     public OdsFeatureSource getOdsFeatureSource();

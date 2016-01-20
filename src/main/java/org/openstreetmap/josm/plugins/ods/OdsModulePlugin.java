@@ -18,7 +18,7 @@ public abstract class OdsModulePlugin extends Plugin {
         this.module = module;
         OpenDataServicesPlugin.INSTANCE.registerModule(getModule());
         module.setPlugin(this);
-        module.initialize();
+//        module.initialize();
     }
     
     public OdsModule getModule() {

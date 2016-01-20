@@ -14,13 +14,18 @@ import org.openstreetmap.josm.tools.I18n;
 
 public class GroupByQuery extends Query {
     // TODO Use Hints to discover the default filterFactory 
-    private FilterFactory ff = new FilterFactoryImpl();
-    private List<String> groupBy;
+    private final GtFeatureSource featureSource;
+    private final FilterFactory ff = new FilterFactoryImpl();
+    private final List<String> groupBy;
     private SortBy[] sortByArr = null;
 
-    public GroupByQuery(GtFeatureSource featureSource, List<String> groupBy) throws InvalidQueryException {
+    public GroupByQuery(GtFeatureSource featureSource, List<String> groupBy) {
         super(featureSource.getFeatureName(), Filter.INCLUDE);
+        this.featureSource = featureSource;
         this.groupBy = groupBy;
+    }
+    
+    public void initialize() throws InvalidQueryException {
         checkAttributes(featureSource);
     }
 

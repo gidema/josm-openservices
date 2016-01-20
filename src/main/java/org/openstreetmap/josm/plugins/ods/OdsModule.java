@@ -22,8 +22,11 @@ import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
+import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+
+import exceptions.OdsException;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers 
@@ -37,6 +40,7 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
  */
 public abstract class OdsModule implements LayerChangeListener {
     private OdsModulePlugin plugin;
+    
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<EntityType<?>> entityTypes = new LinkedList<>();
     private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
@@ -48,16 +52,79 @@ public abstract class OdsModule implements LayerChangeListener {
     private MatcherManager matcherManager;
 
     String osmQuery;
+    private boolean initialized = false;
     private boolean active = false;
 
     protected void setPlugin(OdsModulePlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void initialize() throws Exception {
-        this.osmLayerManager = createOsmLayerManager();
-        this.openDataLayerManager = createOpenDataLayerManager();
-        MapView.addLayerChangeListener(this);
+    public abstract OdsModuleConfiguration getConfiguration();
+    
+    public void initialize() throws OdsException {
+        if (!initialized) {
+            OdsModuleConfiguration configuration = getConfiguration();
+            initializeHosts(configuration);
+            initializeFeatureSources(configuration);
+            this.osmLayerManager = createOsmLayerManager();
+            this.openDataLayerManager = createOpenDataLayerManager();
+            MapView.addLayerChangeListener(this);
+            initialized = true;
+        }
+    }
+    
+    public void initializeHosts(OdsModuleConfiguration configuration) throws OdsException {
+        StringBuilder sb = new StringBuilder(100);
+        for (Host host : configuration.getHosts()) {
+            try {
+                host.initialize();
+            }
+            catch (OdsException e) {
+                if (sb.length() == 0) {
+                    sb.append("The following problems(s) occured while trying to initialize this module:\n");
+                }
+                sb.append(e.getMessage()).append("\n");
+            }
+        }
+        if (sb.length() > 0) {
+            throw new OdsException(sb.toString());
+        }
+    }
+
+    public void initializeFeatureSources(OdsModuleConfiguration configuration) throws OdsException {
+        StringBuilder sb = new StringBuilder(100);
+        for (OdsFeatureSource featureSource : configuration.getFeatureSources()) {
+            try {
+                featureSource.initialize();
+            }
+            catch (OdsException e) {
+                if (sb.length() == 0) {
+                    sb.append("The following problems(s) occured while trying to initialize this module:\n");
+                }
+                sb.append(e.getMessage()).append("\n");
+            }
+        }
+        if (sb.length() > 0) {
+            throw new OdsException(sb.toString());
+        }
+    }
+
+    public void initializeDataSources(OdsModuleConfiguration configuration) throws OdsException {
+        StringBuilder sb = new StringBuilder(100);
+        for (OdsDataSource dataSource : configuration.getDataSources()) {
+            try {
+                dataSource.initialize();
+            }
+            catch (OdsException e) {
+                if (sb.length() == 0) {
+                    sb.append("The following problems(s) occured while trying to initialize this module:\n");
+                }
+                sb.append(e.getMessage()).append("\n");
+            }
+        }
+        if (sb.length() > 0) {
+            throw new OdsException(sb.toString());
+        }
     }
 
     protected void addEntityType(EntityType<?> entityType) {
@@ -141,7 +208,13 @@ public abstract class OdsModule implements LayerChangeListener {
         return active;
     }
     
-    public boolean activate() {
+    public void activate() throws ModuleActivationException {
+        try {
+            this.initialize();
+        }
+        catch (Exception e) {
+            throw new ModuleActivationException(e);
+        }
         JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
         for (OdsAction action : getActions()) {
             menu.add(action);
@@ -154,7 +227,6 @@ public abstract class OdsModule implements LayerChangeListener {
         }
         this.matcherManager = new MatcherManager(this);
         active = true;
-        return true;
     }
 
     public void deActivate() {

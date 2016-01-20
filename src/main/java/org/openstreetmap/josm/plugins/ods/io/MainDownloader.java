@@ -15,6 +15,8 @@ import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.tools.I18n;
 
+import exceptions.OdsException;
+
 /**
  * Main downloader that retrieves data from multiple sources. Currently only a OSM source
  * and a single OpenData source are supported.
@@ -32,7 +34,7 @@ public abstract class MainDownloader {
 
     private Status status = new Status();
 
-    public abstract void initialize() throws Exception;
+    public abstract void initialize() throws OdsException;
     
     protected abstract LayerDownloader getOsmLayerDownloader();
 

@@ -12,7 +12,10 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
+import exceptions.OdsException;
+
 public class BuildingMatcher implements Matcher<Building> {
+    private final OdsModule module;
     private Map<Long, Match<Building>> buildingMatches = new HashMap<>();
     private EntityStore<Building> odBuildingStore;
     private EntityStore<Building> osmBuildingStore;
@@ -22,6 +25,11 @@ public class BuildingMatcher implements Matcher<Building> {
 
     public BuildingMatcher(OdsModule module) {
         super();
+        this.module = module;
+    }
+    
+    @Override
+    public void initialize() throws OdsException {
         odBuildingStore = module.getOpenDataLayerManager().getEntityStore(Building.class);
         osmBuildingStore = module.getOsmLayerManager().getEntityStore(Building.class);
     }
