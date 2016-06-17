@@ -252,7 +252,7 @@ public class NodeIterator {
         }
         // If undoable, undo the commands in reverse order and the execute them as 1 SequenceCommand.
         if (undoable) {
-            if (undoable && commands != null) {
+            if (undoable && !commands.isEmpty()) {
                 for (int i = commands.size() -1; i>=0; i--) {
                     commands.get(i).undoCommand();
                 }
@@ -260,7 +260,7 @@ public class NodeIterator {
                 
             }
         }
-        if (commands != null && Main.map != null) {
+        if (!commands.isEmpty() && Main.map != null) {
             Main.map.mapView.repaint();
         }
     }

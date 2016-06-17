@@ -60,7 +60,7 @@ public abstract class AbstractLayerManager implements LayerManager {
             osmDataLayer = createOsmDataLayer();
             Main.main.addLayer(osmDataLayer);
             if (oldLayer != null) {
-                Main.map.mapView.setActiveLayer(oldLayer);
+                Main.getLayerManager().setActiveLayer(oldLayer);
             }
             this.active = true;
         }

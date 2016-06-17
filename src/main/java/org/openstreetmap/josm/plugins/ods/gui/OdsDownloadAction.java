@@ -61,7 +61,7 @@ public class OdsDownloadAction extends OdsAction {
     }
 
     private Boundary getBoundary() {
-        Boundary boundary = getPolygonBoundary();
+        boundary = getPolygonBoundary();
         boolean selectArea = (boundary == null);
         AbstractDownloadDialog dialog;
         if (selectArea) {
@@ -85,11 +85,11 @@ public class OdsDownloadAction extends OdsAction {
         return boundary;
     }
     
-    private Boundary getPolygonBoundary() {
+    private static Boundary getPolygonBoundary() {
         if (Main.map == null) {
             return null;
         }
-        Layer activeLayer = Main.map.mapView.getActiveLayer();
+        Layer activeLayer = Main.getLayerManager().getActiveLayer();
         // Make sure the active layer is an Osm datalayer
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
@@ -116,11 +116,13 @@ public class OdsDownloadAction extends OdsAction {
             super(tr("Downloading data"));
         }
 
+        @SuppressWarnings("synthetic-access")
         @Override
         protected void cancel() {
             downloader.cancel();
         }
 
+        @SuppressWarnings("synthetic-access")
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
@@ -133,13 +135,14 @@ public class OdsDownloadAction extends OdsAction {
             }
         }
 
+        @SuppressWarnings("synthetic-access")
         @Override
         protected void finish() {
             if (downloadOpenData) {
-                Main.map.mapView.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
+                Main.getLayerManager().setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
             }
             else {
-                Main.map.mapView.setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
+                Main.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
             }
         }
     }

@@ -126,28 +126,19 @@ public class OpenDataServicesPlugin extends Plugin {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        InputStream is = null;
-        JsonReader reader = null;
-        try {
-            is = url.openStream();
-            reader = Json.createReader(is);
+        try (
+            InputStream is = url.openStream();
+            JsonReader reader = Json.createReader(is);
+        )  {
             metaInfo = reader.readObject().getJsonObject("ods");
             if (metaInfo == null) {
                 JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
                         "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
             }
-        } catch (@SuppressWarnings("unused") IOException e) {
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
                 "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
             
-        } finally {
-            if (is != null)
-                try {
-                    is.close();
-                } catch (@SuppressWarnings("unused") IOException e) {
-                    // Ignore
-                }
-            if (reader != null) reader.close();
         }
     }
     
@@ -157,7 +148,7 @@ public class OpenDataServicesPlugin extends Plugin {
      * AbstractDownloadDialog and make sure an OsmData layer is active before
      * continuing;
      */
-    private void addDownloadDialogListener() {
+    private static void addDownloadDialogListener() {
         DownloadDialog.getInstance().addComponentListener(
             new ComponentAdapter() {
                 @Override
@@ -167,12 +158,12 @@ public class OpenDataServicesPlugin extends Plugin {
                     Layer activeLayer = Main.main.getActiveLayer();
                     if (activeLayer.getName().startsWith("ODS")
                             || activeLayer.getName().startsWith("OSM")) {
-                        for (Layer layer : Main.map.mapView
-                                .getAllLayersAsList()) {
+                        for (Layer layer : Main.getLayerManager()
+                                .getLayers()) {
                             if (layer instanceof OsmDataLayer
                                     && !(layer.getName().startsWith("ODS"))
                                     && !(layer.getName().startsWith("OSM"))) {
-                                Main.map.mapView.setActiveLayer(layer);
+                                Main.getLayerManager().setActiveLayer(layer);
                                 return;
                             }
                         }
@@ -181,8 +172,8 @@ public class OpenDataServicesPlugin extends Plugin {
                     }
                     Layer newLayer = new OsmDataLayer(new DataSet(),
                             OsmDataLayer.createNewName(), null);
-                    Main.map.mapView.addLayer(newLayer);
-                    Main.map.mapView.setActiveLayer(newLayer);
+                    Main.getLayerManager().addLayer(newLayer);
+                    Main.getLayerManager().setActiveLayer(newLayer);
                 }
             }
         );

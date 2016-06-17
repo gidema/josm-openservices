@@ -43,12 +43,12 @@ public class NearestWayAction extends OdsAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final OsmDataLayer osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
-        Collection<Way> selected = Main.map.mapView.getEditLayer().data
+        Collection<Way> selected = Main.getLayerManager().getEditLayer().data
                 .getSelectedWays();
         OsmPrimitive building = selected.iterator().next();
         Node center = new Node(building.getBBox().getCenter());
         WaySegment nearestWaySegment = nearestWaySegment(osmDataLayer.data, center);
-        Main.map.mapView.setActiveLayer(osmDataLayer);
+        Main.getLayerManager().setActiveLayer(osmDataLayer);
         if (nearestWaySegment != null) {
             osmDataLayer.data.setSelected(nearestWaySegment.way);
         }
@@ -58,7 +58,7 @@ public class NearestWayAction extends OdsAction {
         GeoUtil geoUtil = GeoUtil.getInstance();
         Double minDistance = Double.POSITIVE_INFINITY;
         WaySegment nearestWaySegment = null;
-        Coordinate coord = geoUtil.toCoordinate(node);
+        Coordinate coord = GeoUtil.toCoordinate(node);
         for (Way way : dataSet.getWays()) {
             if (!validWay(way))
                 continue;

@@ -12,9 +12,13 @@ import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.gui.MapView;
-import org.openstreetmap.josm.gui.MapView.LayerChangeListener;
 import org.openstreetmap.josm.gui.layer.Layer;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
+import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
+import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
+import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 //import org.openstreetmap.josm.plugins.ods.entities.managers.DataManager;
@@ -35,7 +39,7 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
  * @author Gertjan Idema
  * 
  */
-public abstract class OdsModule implements LayerChangeListener {
+public abstract class OdsModule implements ActiveLayerChangeListener, LayerChangeListener {
     private OdsModulePlugin plugin;
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<EntityType<?>> entityTypes = new LinkedList<>();
@@ -57,7 +61,8 @@ public abstract class OdsModule implements LayerChangeListener {
     public void initialize() throws Exception {
         this.osmLayerManager = createOsmLayerManager();
         this.openDataLayerManager = createOpenDataLayerManager();
-        MapView.addLayerChangeListener(this);
+        Main.getLayerManager().addActiveLayerChangeListener(this, false);
+        Main.getLayerManager().addLayerChangeListener(this);
     }
 
     protected void addEntityType(EntityType<?> entityType) {
@@ -175,14 +180,15 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     void activateOsmLayer() {
-        Main.map.mapView.setActiveLayer(getOsmLayerManager().getOsmDataLayer());
+        Main.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
     }
 
 
-    // Implement LayerChangeListener
-
+    // Implement ActiveLayerChangeListener
     @Override
-    public void activeLayerChange(Layer oldLayer, Layer newLayer) {
+    public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
+        Layer oldLayer = e.getPreviousActiveLayer();
+        Layer newLayer = Main.getLayerManager().getActiveLayer();
         if (!isActive()) return;
         for (OdsAction action : actions) {
             action.activeLayerChange(oldLayer, newLayer);
@@ -190,34 +196,54 @@ public abstract class OdsModule implements LayerChangeListener {
     }
 
     @Override
-    public void layerAdded(Layer newLayer) {
-        if (!isActive()) return;
+    public void layerAdded(LayerAddEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 
     @Override
-    public void layerRemoved(Layer removedLayer) {
+    public void layerOrderChanged(LayerOrderChangeEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void layerRemoving(LayerRemoveEvent event) {
         // Hack to prevent this method from running when Josm is exiting.
-        if ("exitJosm".equals(Thread.currentThread().getStackTrace()[5].getMethodName())) {
+        if (isExiting()) {
             return;
         }
-        
         if (isActive()) {
-            if (this.getLayerManager(removedLayer) != null) {
+            LayerManager layerManager = this.getLayerManager(event.getRemovedLayer());
+            if (layerManager != null) {
                 String message = tr("You removed one of the layers that belong to the {0} module." +
                         " For the stability of the {0} module, you have to reset the module.", getName());
-                int result = JOptionPane.showOptionDialog(null, message, tr("ODS layer removed."), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                    new String[] {"Reset"}, 0);
-                Main.main.addLayer(removedLayer);
-                if (result == 0) {
-                    reset();
-                }
-                else {
-                    this.deActivate();
-                }
+                JOptionPane.showMessageDialog(null, message, tr("ODS layer removed."), JOptionPane.OK_OPTION);
+//                if (result == 0) {
+//                    reset();
+//                }
+//                else {
+//                    this.deActivate();
+//                }
             }
         }
     }
 
+    /**
+     * Check if the Josm application is exiting.
+     * 
+     * @return if Josm is exiting
+     */
+    private static boolean isExiting() {
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if ("org.openstreetmap.josm.Main".equals(element.getClassName()) &&
+                    "exitJosm".equals(element.getMethodName())) {
+                return true;
+            }
+        }
+        return false;
+
+    }
     public abstract Bounds getBounds();
 
     public abstract MainDownloader getDownloader();
