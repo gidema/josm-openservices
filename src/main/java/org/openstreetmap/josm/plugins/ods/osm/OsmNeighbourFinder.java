@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.osm;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -11,9 +12,6 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
-import org.openstreetmap.josm.tools.Geometry;
-import org.openstreetmap.josm.tools.Geometry.PolygonIntersection;
-import org.openstreetmap.josm.tools.Predicate;
 
 /**
  * Find neighbours for a Building using the Osm primitive.
@@ -36,7 +34,7 @@ public class OsmNeighbourFinder {
 
     
     public void findNeighbours(OsmPrimitive osm) {
-        if (!isBuilding.evaluate(osm)) {
+        if (!isBuilding.test(osm)) {
             return;
         }
         if (osm.getDisplayType().equals(OsmPrimitiveType.CLOSEDWAY)) {
@@ -50,7 +48,7 @@ public class OsmNeighbourFinder {
             if (way2.equals(way1)) {
                 continue;
             }
-            if (isBuilding.evaluate(way2)) {
+            if (isBuilding.test(way2)) {
                 buildingAligner.align(way1, way2);
 //                PolygonIntersection pi = Geometry.polygonIntersection(way1.getNodes(), way2.getNodes());
 //                if (pi.equals(PolygonIntersection.CROSSING)) {
@@ -59,7 +57,7 @@ public class OsmNeighbourFinder {
             }
             for (OsmPrimitive osm2 :way2.getReferrers()) {
                 Relation relation = (Relation)osm2;
-                if (isBuilding.evaluate(relation)) {
+                if (isBuilding.test(relation)) {
                     buildingAligner.align(way1, way1);
 //                    neighbourBuildings.add(relation);
                 }
