@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
+import java.math.BigDecimal;
+
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
@@ -16,6 +18,12 @@ public class FeatureUtil {
         Property property = feature.getProperty(name);
         if (property == null) return null;
         return (Double) property.getValue();
+    }
+
+    public static BigDecimal getBigDecimal(SimpleFeature feature, String name ) {
+        Property property = feature.getProperty(name);
+        if (property == null) return null;
+        return (BigDecimal) property.getValue();
     }
 
     public static String getString(SimpleFeature feature, String name ) {

@@ -51,6 +51,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         this.entityStore = entityStore;
     }
     
+    @Override
     public void setNormalisation(Normalisation normalisation) {
         this.normalisation = normalisation;
     }
@@ -61,6 +62,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         this.request = request;
     }
 
+    @Override
     public void setResponse(DownloadResponse response) {
         this.response = response;
     }
@@ -138,7 +140,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
                    status.setCancelled(true);
                    return;
                }
-           };
+           }
         } catch (IOException e) {
             Main.warn(e);
             status.setException(e);
@@ -165,7 +167,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
              Thread.currentThread().interrupt();
              return;
         }
-    };
+    }
     
     @Override
     public void process() {
