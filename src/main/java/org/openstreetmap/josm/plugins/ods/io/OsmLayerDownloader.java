@@ -1,15 +1,17 @@
-package org.openstreetmap.josm.plugins.ods.entities.osm;
+package org.openstreetmap.josm.plugins.ods.io;
+
+import java.net.UnknownHostException;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
-import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmApiException;
-import org.openstreetmap.josm.io.OsmServerLocationReader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
@@ -23,14 +25,12 @@ public class OsmLayerDownloader implements LayerDownloader {
     @SuppressWarnings("unused")
     private DownloadResponse response;
     private Status status = new Status();
-    private DownloadSource downloadSource=  DownloadSource.OVERPASS;
+    private DownloadSource downloadSource =  DownloadSource.OVERPASS;
     private OsmServerReader osmServerReader;
     private OsmLayerManager layerManager;
     private OsmEntitiesBuilder entitiesBuilder;
 
-    private static String overpassQuery = 
-        "(node($bbox);rel(bn)->.x;way($bbox);" +
-        "node(w)->.x;rel(bw);)";
+    private OsmHost host;
     private DataSet dataSet;
 
     static enum DownloadSource {
@@ -62,13 +62,15 @@ public class OsmLayerDownloader implements LayerDownloader {
         status.clear();
         switch (downloadSource) {
         case OSM:
-            osmServerReader = new BoundingBoxDownloader(request.getBoundary().getBounds());
+            host = new PlainOsmHost();
             break;
         case OVERPASS:
-            String url = Overpass.getURL(overpassQuery, request.getBoundary());
-            osmServerReader = new OsmServerLocationReader(url);
+            host = new OverpassHost();
             break;
+        default:
+            return;
         }
+        osmServerReader = host.getServerReader(request);
     }
 
     @Override
@@ -85,17 +87,29 @@ public class OsmLayerDownloader implements LayerDownloader {
                 return;
             }
         }
-        catch(Exception e) {
+        catch(OsmTransferException e) {
             if (status.isCancelled()) {
                 Main.info(I18n.tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
                 return;
             }
             status.setFailed(true);
             if (e instanceof OsmApiException) {
-                if ( ((OsmApiException) e).getResponseCode() == 400) {
+                switch (((OsmApiException) e).getResponseCode()) {
+                case 400:
                     status.setMessage(I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."));
                     return;
+                case 404:
+                    status.setMessage(I18n.tr("No OSM server could be found at this location: {0}", 
+                        host.getHostString().toString()));
+                    return;
+                default:
+                    status.setMessage(I18n.tr(e.getMessage()));
+                    return;
                 }
+            }
+            else if (e.getCause() instanceof UnknownHostException) {
+                status.setMessage(I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString()));
+                return;
             }
             status.setException(e);
         }

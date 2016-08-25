@@ -5,7 +5,6 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -126,13 +125,9 @@ public class OdsDownloadAction extends OdsAction {
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
-            try {
                 DownloadRequest request = new DownloadRequest(startDate, boundary,
                     downloadOsm, downloadOpenData);
                 downloader.run(getProgressMonitor(), request);
-            } catch (ExecutionException|InterruptedException e) {
-                throw new OsmTransferException(e);
-            }
         }
 
         @SuppressWarnings("synthetic-access")

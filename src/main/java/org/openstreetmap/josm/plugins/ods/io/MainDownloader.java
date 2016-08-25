@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +37,7 @@ public abstract class MainDownloader {
 
     protected abstract LayerDownloader getOpenDataLayerDownloader();
 
-    public void run(ProgressMonitor pm, DownloadRequest request) throws ExecutionException, InterruptedException {
+    public void run(ProgressMonitor pm, DownloadRequest request) {
         status.clear();
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup(request);
@@ -82,7 +81,7 @@ public abstract class MainDownloader {
      */
     private void setup(DownloadRequest request) {
         status.clear();
-        enabledDownloaders = new LinkedList<LayerDownloader>();
+        enabledDownloaders = new LinkedList<>();
         if (request.isGetOsm()) {
             enabledDownloaders.add(getOsmLayerDownloader());
         }
@@ -114,9 +113,9 @@ public abstract class MainDownloader {
             status.setFailed(true);
         }
         for (LayerDownloader downloader : enabledDownloaders) {
-            Status status = downloader.getStatus();
-            if (!status.isSucces()) {
-                this.status = status;
+            Status st = downloader.getStatus();
+            if (!st.isSucces()) {
+                this.status = st;
             }
         }
     }
@@ -140,31 +139,39 @@ public abstract class MainDownloader {
             status.setException(e);
             status.setFailed(true);
         }
+        List<String> failureMessages = new LinkedList<>();
+        List<String> cancelMessages = new LinkedList<>();
+        boolean timedOut = false;
         for (LayerDownloader downloader : enabledDownloaders) {
-            Status status = downloader.getStatus();
-            if (!status.isSucces()) {
-                if (status.isFailed()) {
-                    this.status.setFailed(true);
-                }
-                if (status.isCancelled()) {
-                    this.status.setCancelled(true);
-                }
-                if (status.isTimedOut()) {
-                    this.status.setTimedOut(true);
-                }
-                this.status.setMessage(this.status.getMessage() + "\n" + status.getMessage());
+            Status st = downloader.getStatus();
+            if (st.isFailed()) {
+                failureMessages.add(st.getMessage());
             }
-            if (this.status.isFailed()) {
-                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
-                    status.getMessage()));
+            if (status.isCancelled()) {
+                cancelMessages.add(st.getMessage());
             }
-            else if (this.status.isTimedOut()) {
-                JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download timed out"));
+            if (status.isTimedOut()) {
+                timedOut = true;
             }
-            else if (this.status.isCancelled()) {
+        }
+//                this.status.setMessage(this.status.getMessage() + "\n" + status.getMessage());
+        if (!failureMessages.isEmpty()) {
+            String message = String.join("\n", failureMessages);
+            this.status.setMessage(message);
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
+                message));
+            cancel();
+        }
+        else if (timedOut) {
+            status.setTimedOut(true);
+            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download timed out"));
+        }
+        else if (!cancelMessages.isEmpty()) {
+            String message = String.join("\n", cancelMessages);
+            this.status.setCancelled(true);
+            this.status.setMessage(message);
                 JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download was cancelled because of the following reason(s):\n" +
-                    status.getMessage()));
-            }
+                    message));
 
         }
     }
@@ -174,6 +181,9 @@ public abstract class MainDownloader {
      * 
      */
     protected void process(DownloadResponse response) {
+        if (status.isFailed()) {
+            return;
+        }
         status.clear();
         executorService = Executors.newFixedThreadPool(NTHREADS);
         for (final LayerDownloader downloader : enabledDownloaders) {
@@ -194,9 +204,9 @@ public abstract class MainDownloader {
             status.setFailed(true);
         }
         for (LayerDownloader downloader : enabledDownloaders) {
-            Status status = downloader.getStatus();
-            if (!status.isSucces()) {
-                this.status = status;
+            Status st = downloader.getStatus();
+            if (!st.isSucces()) {
+                this.status = st;
             }
         }
     }

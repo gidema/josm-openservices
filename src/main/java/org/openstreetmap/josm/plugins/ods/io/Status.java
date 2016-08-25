@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
+import org.openstreetmap.josm.tools.I18n;
+
 public class Status {
     private boolean failed = false;
     private boolean timedOut = false;
@@ -45,7 +47,13 @@ public class Status {
     }
 
     public String getMessage() {
-        return message;
+        if (message != null) {
+            return message;
+        }
+        if (exception != null) {
+            return exception.getMessage();
+        }
+        return I18n.tr("An unknown error occurred.");
     }
 
     public Exception getException() {
