@@ -28,7 +28,7 @@ public class NodeIterator {
         this.way = way;
         this.index = startIndex;
         this.reversed = reversed;
-        this.nodes = new ArrayList<Node>(way.getNodesCount() + 5);
+        this.nodes = new ArrayList<>(way.getNodesCount() + 5);
         this.nodes.addAll(way.getNodes());
         this.closed = way.isClosed();
     }
@@ -138,15 +138,15 @@ public class NodeIterator {
      * If the way is closed and the index is at the first or last node
      * then replace the node at the other end as well
      */
-    public boolean updateNode(int index, Node node) {
-        if (index < 0 || index >= nodes.size()) return false;
-        nodes.set(index, node);
+    public boolean updateNode(int idx, Node node) {
+        if (idx < 0 || idx >= nodes.size()) return false;
+        nodes.set(idx, node);
         modified = true;
         if (closed) {
-            if (index == 0) {
+            if (idx == 0) {
                 nodes.set(nodes.size() - 1, node);
             }
-            else if (index == nodes.size() - 1) {
+            else if (idx == nodes.size() - 1) {
                 nodes.set(0,  node);
             }
         }
@@ -182,8 +182,8 @@ public class NodeIterator {
         return null;
     }
 
-    protected Node getNode(int index) {
-        return nodes.get(index);
+    protected Node getNode(int idx) {
+        return nodes.get(idx);
     }
 
     public boolean dWithin(NodeDWithin dWithin, Node n) {
@@ -231,11 +231,11 @@ public class NodeIterator {
         List<Command> commands = new LinkedList<>(); 
         List<Node> oldNodes = way.getNodes();
         Command command = new ChangeNodesCommand(way, nodes);
-        command.executeCommand();
+//        command.executeCommand();
         commands.add(command);
         if (!movedNodes.isEmpty()) {
             command = new SequenceCommand("Move nodes", movedNodes);
-            command.executeCommand();
+//            command.executeCommand();
             commands.add(command);
         }
         List<Node> orphanNodes = new LinkedList<>();
@@ -247,29 +247,30 @@ public class NodeIterator {
         }
         if (!orphanNodes.isEmpty()) {
             command = new DeleteCommand(orphanNodes);
-            command.executeCommand();
+//            command.executeCommand();
             commands.add(command);
         }
         // If undoable, undo the commands in reverse order and the execute them as 1 SequenceCommand.
-        if (undoable) {
-            if (undoable && !commands.isEmpty()) {
-                for (int i = commands.size() -1; i>=0; i--) {
-                    commands.get(i).undoCommand();
-                }
-                Main.main.undoRedo.add(new SequenceCommand("Align buildings", commands));
-                
+        if (!commands.isEmpty()) {
+            if (undoable) {
+                Main.main.undoRedo.add(new SequenceCommand("Align buildings", commands));                
             }
-        }
-        if (!commands.isEmpty() && Main.map != null) {
-            Main.map.mapView.repaint();
+            else {
+                for (Command cmd : commands) {
+                    cmd.executeCommand();
+                }
+            }
+            if (Main.map != null) {
+                Main.map.mapView.repaint();
+            }
         }
     }
 
     /*
      * Move the node at index to the given coordinates.
      */
-    public void moveNode(int index, LatLon coor) {
-        Node node = nodes.get(index);
+    public void moveNode(int idx, LatLon coor) {
+        Node node = nodes.get(idx);
         moveNode(node, coor);
     }
     
@@ -277,8 +278,8 @@ public class NodeIterator {
         movedNodes.add(new MoveCommand(node, coor));
     }
     
-    public void moveNode(int index, EastNorth en) {
-        Node node = nodes.get(index);
+    public void moveNode(int idx, EastNorth en) {
+        Node node = nodes.get(idx);
         moveNode(node, en);
     }
     
@@ -289,7 +290,7 @@ public class NodeIterator {
     private void mergeAdjacentNodes(int index1, int index2, boolean toMiddle) {
         EastNorth middle = middle(nodes.get(index1).getEastNorth(), nodes.get(index2).getEastNorth());
         nodes.remove(index1);
-        int index = (index2 > index1 ? index2 - 1 : index2);
+        int idx = (index2 > index1 ? index2 - 1 : index2);
         if (closed && index1 == 0) {
             nodes.set(nodes.size() -1, nodes.get(0));
         }
@@ -297,7 +298,7 @@ public class NodeIterator {
             nodes.set(0, nodes.get(nodes.size() -1));
         }
         if (toMiddle) {
-            moveNode(nodes.get(index), middle);
+            moveNode(nodes.get(idx), middle);
         }
     }
 

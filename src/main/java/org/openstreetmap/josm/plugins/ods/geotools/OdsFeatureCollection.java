@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -39,7 +40,7 @@ public class OdsFeatureCollection implements SimpleFeatureCollection {
     @Override
     public void accepts(FeatureVisitor visitor, ProgressListener progress)
             throws IOException {
-        wrapped.accepts(visitor, progress);
+        DataUtilities.visit(this, visitor, progress);
     }
 
     @Override

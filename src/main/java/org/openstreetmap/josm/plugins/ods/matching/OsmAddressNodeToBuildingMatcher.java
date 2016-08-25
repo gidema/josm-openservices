@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -46,13 +47,36 @@ public class OsmAddressNodeToBuildingMatcher {
         GeoIndex<Building> geoIndex = buildingStore.getGeoIndex();
         if (addressNode.getBuilding() == null) {
             List<Building> buildings = geoIndex.intersection(addressNode.getGeometry());
-            if (buildings.size() != 1) {
-                reportUnmatched(addressNode);
+            if (buildings.size() == 0) {
+//                reportUnmatched(addressNode);
                 return;
             }
-            Building building = buildings.get(0);
-            addressNode.setBuilding(building);
-            building.getAddressNodes().add(addressNode);
+            if (buildings.size() == 1) {
+                Building building = buildings.get(0);
+                addressNode.setBuilding(building);
+                building.getAddressNodes().add(addressNode);
+                return;
+            }
+            List<Building> bagBuildings = new LinkedList<>();
+            List<Building> otherBuildings = new LinkedList<>();
+            for (Building building : buildings) {
+                if (building.getReferenceId() != null) {
+                    bagBuildings.add(building);
+                }
+                else {
+                     otherBuildings.add(building);
+                }
+            }
+            if (bagBuildings.size() == 1) {
+                Building building = bagBuildings.get(0);
+                addressNode.setBuilding(building);
+                building.getAddressNodes().add(addressNode);
+                return;
+            }
+            else {
+                // TODO report duplicateBuildings
+                int x = 0;
+            }
         }
     }
     
