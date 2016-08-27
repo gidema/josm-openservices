@@ -39,6 +39,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         super(module, tr("Download ODS"));
     }
 
+
     protected SlippyMapBBoxChooser slippyMap;
 
     protected JPanel buildMainPanel() {
@@ -73,6 +74,8 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         return pnl;
     }
 
+    
+    
     @Override
     public void rememberSettings() {
         super.rememberSettings();
@@ -82,6 +85,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         }
     }
 
+    
     @Override
     public void restoreSettings() {
         super.restoreSettings();
@@ -98,7 +102,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
             slippyMap.repaint();
         }
     }
-
+        
     public Bounds getSelectedDownloadArea() {
         return currentBounds;
     }
