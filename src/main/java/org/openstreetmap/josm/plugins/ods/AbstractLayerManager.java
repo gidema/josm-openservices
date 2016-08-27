@@ -60,7 +60,7 @@ public abstract class AbstractLayerManager implements LayerManager {
             osmDataLayer = createOsmDataLayer();
             Main.main.addLayer(osmDataLayer);
             if (oldLayer != null) {
-                Main.map.mapView.setActiveLayer(oldLayer);
+                Main.getLayerManager().setActiveLayer(oldLayer);
             }
             this.active = true;
         }
@@ -71,6 +71,7 @@ public abstract class AbstractLayerManager implements LayerManager {
         return entityStoreMap.get(clazz);
     }
 
+    @Override
     public void reset() {
         if (isActive()) {
             // Clear all data stores
@@ -82,6 +83,9 @@ public abstract class AbstractLayerManager implements LayerManager {
             relationEntities.clear();
             this.osmDataLayer.data.clear();
             this.osmDataLayer.data.dataSources.clear();
+            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
+                Main.getLayerManager().addLayer(osmDataLayer);
+            }
         }
     }
 

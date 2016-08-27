@@ -13,16 +13,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.tools.I18n;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class CRSUtilGeotools extends CRSUtil {
     private static Map<CoordinateReferenceSystem, MathTransform> toOsmTransforms = new HashMap<>();

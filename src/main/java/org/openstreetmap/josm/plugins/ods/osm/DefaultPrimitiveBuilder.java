@@ -198,7 +198,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      */
     @Override
     public Node buildNode(Coordinate coordinate, Map<String, String> tags, boolean merge) {
-        LatLon latlon = new LatLon(coordinate.y, coordinate.x);
+        LatLon latlon = new LatLon(coordinate.y, coordinate.x).getRoundedToOsmPrecision();
         Node node = new Node(latlon);
         if (merge) {
             BBox bbox = new BBox(node);

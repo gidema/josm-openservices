@@ -13,13 +13,13 @@ import org.opengis.filter.sort.SortOrder;
 import org.openstreetmap.josm.tools.I18n;
 
 public class GroupByQuery extends Query {
-    // TODO Use Hints to discover the default filterFactory 
+    // TODO Use Hints to discover the default filterFactory
     private FilterFactory ff = new FilterFactoryImpl();
     private List<String> groupBy;
     private SortBy[] sortByArr = null;
 
-    public GroupByQuery(GtFeatureSource featureSource, List<String> groupBy) throws InvalidQueryException {
-        super(featureSource.getFeatureName(), Filter.INCLUDE);
+    public GroupByQuery(GtFeatureSource featureSource, List<String> propertyNames, List<String> groupBy) throws InvalidQueryException {
+        super(featureSource.getFeatureName(), Filter.INCLUDE, propertyNames.toArray(new String[0]));
         this.groupBy = groupBy;
         checkAttributes(featureSource);
     }
@@ -33,9 +33,9 @@ public class GroupByQuery extends Query {
         if (sortByArr == null) {
             List<SortBy> sortList = new LinkedList<>();
             for (String attName : groupBy) {
-                SortBy sortBy = ff.sort(attName, SortOrder.ASCENDING);
-                if (sortBy != null) {
-                    sortList.add(sortBy);
+                SortBy sort = ff.sort(attName, SortOrder.ASCENDING);
+                if (sort != null) {
+                    sortList.add(sort);
                 }
             }
             sortByArr = sortList.toArray(new SortBy[0]);

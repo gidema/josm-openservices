@@ -14,6 +14,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Host;
+import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
@@ -51,6 +52,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         this.entityStore = entityStore;
     }
     
+    @Override
     public void setNormalisation(Normalisation normalisation) {
         this.normalisation = normalisation;
     }
@@ -61,6 +63,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         this.request = request;
     }
 
+    @Override
     public void setResponse(DownloadResponse response) {
         this.response = response;
     }
@@ -97,7 +100,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
                  filter = ff.and(filter, dataFilter);
             }
             query.setFilter(filter);
-        } catch (Exception e) {
+        } catch (InitializationException e) {
             Main.error(e);
             status.setException(e);
         }
@@ -138,17 +141,19 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
                    status.setCancelled(true);
                    return;
                }
-           };
+           }
         } catch (IOException e) {
             Main.warn(e);
             status.setException(e);
             return;
         }
-        if (downloadedFeatures.isEmpty() && dataSource.isRequired()) {
-            String featureType = dataSource.getFeatureType();
-            status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
-                        featureType));
-            status.setCancelled(true);
+        if (downloadedFeatures.isEmpty()) {
+            if (dataSource.isRequired()) {
+                String featureType = dataSource.getFeatureType();
+                status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
+                            featureType));
+            }
+//            status.setCancelled(true);
         }
         else {
             // Check if the data is complete
@@ -165,7 +170,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
              Thread.currentThread().interrupt();
              return;
         }
-    };
+    }
     
     @Override
     public void process() {

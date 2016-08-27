@@ -1,10 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 
@@ -15,17 +18,27 @@ import com.vividsolutions.jts.geom.prep.PreparedPolygon;
  *
  */
 public class BuildingCompletenessEnricher implements Consumer<Building> {
-    PreparedPolygon boundary;
+    List<PreparedPolygon> boundaries = new LinkedList<>();
     
     public BuildingCompletenessEnricher(OpenDataBuildingStore buildingStore) {
         super();
-        this.boundary = new PreparedPolygon((Polygonal) buildingStore.getBoundary());
+        Geometry boundary = buildingStore.getBoundary();
+        for (int i=0; i<boundary.getNumGeometries(); i++) {
+            Polygonal polygonal = (Polygonal)boundary.getGeometryN(i);
+            boundaries.add(new PreparedPolygon(polygonal));
+        }
     }
 
     @Override
     public void accept(Building building) {
-        if (building.isIncomplete() && boundary.covers(building.getGeometry())) {
-            building.setIncomplete(false);
+        if (!building.isIncomplete()) {
+            return;
+        }
+        for (PreparedPolygon prep : boundaries) {
+            if (prep.covers(building.getGeometry())) {
+                building.setIncomplete(false);
+                break;
+            }
         }
     }
 }

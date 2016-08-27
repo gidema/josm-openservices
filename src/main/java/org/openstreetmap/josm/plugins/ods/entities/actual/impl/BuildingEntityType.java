@@ -1,10 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
+import java.util.function.Predicate;
+
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.tools.Predicate;
 
 /**
  * TODO Rewrite this class and EntityType in general.
@@ -33,7 +34,7 @@ public class BuildingEntityType implements EntityType<Building> {
     
     public final static Predicate<OsmPrimitive> IsBuilding = new Predicate<OsmPrimitive>() {
         @Override
-        public boolean evaluate(OsmPrimitive primitive) {
+        public boolean test(OsmPrimitive primitive) {
             return isBuilding(primitive);
         }
     };

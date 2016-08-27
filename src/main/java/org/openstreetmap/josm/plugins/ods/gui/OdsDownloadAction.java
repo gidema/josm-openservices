@@ -5,7 +5,6 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -61,7 +60,7 @@ public class OdsDownloadAction extends OdsAction {
     }
 
     private Boundary getBoundary() {
-        Boundary boundary = getPolygonBoundary();
+        boundary = getPolygonBoundary();
         boolean selectArea = (boundary == null);
         AbstractDownloadDialog dialog;
         if (selectArea) {
@@ -85,11 +84,11 @@ public class OdsDownloadAction extends OdsAction {
         return boundary;
     }
     
-    private Boundary getPolygonBoundary() {
+    private static Boundary getPolygonBoundary() {
         if (Main.map == null) {
             return null;
         }
-        Layer activeLayer = Main.map.mapView.getActiveLayer();
+        Layer activeLayer = Main.getLayerManager().getActiveLayer();
         // Make sure the active layer is an Osm datalayer
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
@@ -104,7 +103,7 @@ public class OdsDownloadAction extends OdsAction {
         // the download area
         OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
         if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-            && !BuildingEntityType.IsBuilding.evaluate(primitive)) {
+            && !BuildingEntityType.IsBuilding.test(primitive)) {
             return new Boundary((Way)primitive);
         }
         return null;
@@ -116,30 +115,29 @@ public class OdsDownloadAction extends OdsAction {
             super(tr("Downloading data"));
         }
 
+        @SuppressWarnings("synthetic-access")
         @Override
         protected void cancel() {
             downloader.cancel();
         }
 
+        @SuppressWarnings("synthetic-access")
         @Override
         protected void realRun() throws SAXException, IOException,
                 OsmTransferException {
-            try {
                 DownloadRequest request = new DownloadRequest(startDate, boundary,
                     downloadOsm, downloadOpenData);
                 downloader.run(getProgressMonitor(), request);
-            } catch (ExecutionException|InterruptedException e) {
-                throw new OsmTransferException(e);
-            }
         }
 
+        @SuppressWarnings("synthetic-access")
         @Override
         protected void finish() {
             if (downloadOpenData) {
-                Main.map.mapView.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
+                Main.getLayerManager().setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
             }
             else {
-                Main.map.mapView.setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
+                Main.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
             }
         }
     }

@@ -214,9 +214,9 @@ public class GeoUtil {
         return new LineSegment(ll1.lon(), ll2.lon(), ll1.lat(), ll2.lat());
     }
 
-    public Node toNode(Coordinate c) {
-        return new Node(toLatLon(c));
-    }
+//    public Node toNode(Coordinate c) {
+//        return new Node(toLatLon(c));
+//    }
 
 
 //    public Polygon toPolygon(Relation relation) throws InvalidPolygonException {

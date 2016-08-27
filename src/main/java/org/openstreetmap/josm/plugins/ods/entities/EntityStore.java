@@ -38,11 +38,11 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
         return boundary;
     }
 
-    public void extendBoundary(Geometry boundary) {
+    public void extendBoundary(Geometry bounds) {
         if (this.boundary == null) {
-            this.boundary = boundary;
+            this.boundary = bounds;
         } else {
-            this.boundary = this.boundary.union(boundary);
+            this.boundary = this.boundary.union(bounds);
         }
     }
 
