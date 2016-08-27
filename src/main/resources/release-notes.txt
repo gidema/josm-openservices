@@ -1,0 +1,7 @@
+Version 0.6.8
+=============
+- Updated plug-in to run with the latest Josm version (>=10786)
+- Fixed bug in handling duplicate features retrieved from WFS server
+- Read Overpass server from Josm preferences (beta)
+
+No release notes prior to Version 0.6.8 are available. 
