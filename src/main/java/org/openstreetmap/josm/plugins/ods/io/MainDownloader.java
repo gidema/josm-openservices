@@ -147,16 +147,17 @@ public abstract class MainDownloader {
             if (st.isFailed()) {
                 failureMessages.add(st.getMessage());
             }
-            if (status.isCancelled()) {
+            if (st.isCancelled()) {
                 cancelMessages.add(st.getMessage());
             }
-            if (status.isTimedOut()) {
+            if (st.isTimedOut()) {
                 timedOut = true;
             }
         }
 //                this.status.setMessage(this.status.getMessage() + "\n" + status.getMessage());
         if (!failureMessages.isEmpty()) {
             String message = String.join("\n", failureMessages);
+            this.status.setFailed(true);
             this.status.setMessage(message);
             JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
                 message));

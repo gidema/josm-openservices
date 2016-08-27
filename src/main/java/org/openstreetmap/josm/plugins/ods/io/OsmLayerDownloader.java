@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
 import org.openstreetmap.josm.Main;
@@ -70,7 +71,11 @@ public class OsmLayerDownloader implements LayerDownloader {
         default:
             return;
         }
-        osmServerReader = host.getServerReader(request);
+        try {
+            osmServerReader = host.getServerReader(request);
+        } catch (MalformedURLException e) {
+            status.setException(e);
+        }
     }
 
     @Override
