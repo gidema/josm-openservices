@@ -1,12 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmServerReader;
-import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.tools.I18n;
 
 public class PlainOsmHost implements OsmHost {
@@ -20,11 +16,6 @@ public class PlainOsmHost implements OsmHost {
         return host;
     }
     
-    @Override
-    public URL getHostUrl() throws MalformedURLException {
-        return new URL(getHostString());
-    }
-
     @Override
     public boolean supportsPolygon() {
         return false;

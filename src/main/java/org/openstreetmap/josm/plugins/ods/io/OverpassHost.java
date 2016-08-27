@@ -22,21 +22,16 @@ public class OverpassHost implements OsmHost {
     @Override
     public String getHostString() {
         String host = Main.pref.get("download.overpass.server");
-        if (host == null) {
+        if (host == null || host.isEmpty()) {
             host = "https://overpass-api.de/api";
         }
         return host;
     }
 
     @Override
-    public URL getHostUrl() throws MalformedURLException {
-        return new URL(getHostString());
-    }
-
-    @Override
-    public OsmServerReader getServerReader(DownloadRequest request) {
-        String url = getURL(OVERPASS_QUERY, request.getBoundary());
-        return new OsmServerLocationReader(url);
+    public OsmServerReader getServerReader(DownloadRequest request) throws MalformedURLException {
+        URL url = getURL(OVERPASS_QUERY, request.getBoundary());
+        return new OsmServerLocationReader(url.toString());
     }
 
     @Override
@@ -44,12 +39,13 @@ public class OverpassHost implements OsmHost {
         return true;
     }
     
-    private String getURL(String query, Boundary boundary) {
+    private URL getURL(String query, Boundary boundary) throws MalformedURLException {
         String bbox = getBoundary(boundary);
         String q = query.replaceAll("\\$bbox", bbox);
         q = q.replaceAll("\\{\\{bbox\\}\\}", bbox);
         q = q.replace(";$", "");
-        return String.format("%s/interpreter?data=%s;out meta;", getHostString(), q);
+        Main.info("Host: " + getHostString());
+        return new URL(String.format("%s/interpreter?data=%s;out meta;", getHostString(), q));
     }
 
     /**
