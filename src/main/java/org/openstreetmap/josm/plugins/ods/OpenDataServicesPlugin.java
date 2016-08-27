@@ -71,14 +71,17 @@ public class OpenDataServicesPlugin extends Plugin {
         return activeModule;
     }
     
-    public void activate(OdsModule module) throws ModuleActivationException {
+    public boolean activate(OdsModule module) {
         if (activeModule == null) {
-            module.activate();
-            menu.remove(0);
+            if (module.activate()) {
+                menu.remove(0);
 //                menu.add(new OdsDisableAction(this));
-            menu.repaint();
-            this.activeModule = module;
+                menu.repaint();
+                this.activeModule = module;
+                return true;
+            }
         }
+        return false;
     }
 
     public void deactivate(OdsModule module) {

@@ -13,8 +13,8 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
-import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -24,14 +24,13 @@ import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.GeotoolsEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
-import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.tools.I18n;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public class GtDownloader<T extends Entity> implements FeatureDownloader {
-    private final OdsDataSource dataSource;
+    private final GtDataSource dataSource;
     private final CRSUtil crsUtil;
     private DownloadRequest request;
     private DownloadResponse response;
@@ -43,7 +42,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private final GeotoolsEntityBuilder<T> entityBuilder;
     private Normalisation normalisation = Normalisation.FULL;
     
-    public GtDownloader(OdsDataSource dataSource, CRSUtil crsUtil,
+    public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
             GeotoolsEntityBuilder<T> entityBuilder, EntityStore<T> entityStore) {
         super();
         this.dataSource = dataSource;
@@ -75,6 +74,8 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     public void prepare() {
         status.clear();
         try {
+            // TODO rename dataSource.initialize() to prepare()
+            dataSource.initialize();
             GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource.getOdsFeatureSource();
             // TODO check if selected boundaries overlap with
             // featureSource boundaries;
@@ -97,7 +98,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             }
             query.setFilter(filter);
         } catch (Exception e) {
-            Main.warn(e.getMessage());
+            Main.error(e);
             status.setException(e);
         }
         return;
@@ -177,7 +178,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         entityStore.extendBoundary(request.getBoundary().getMultiPolygon());
     }
 
-    public OdsDataSource getDataSource() {
+    public GtDataSource getDataSource() {
         return dataSource;
     }
     

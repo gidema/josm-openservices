@@ -15,8 +15,6 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
-import exceptions.OdsException;
-
 public class AddressNodeMatcher implements Matcher<AddressNode> {
     private OdsModule module;
     
@@ -30,10 +28,6 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
     public AddressNodeMatcher(OdsModule module) {
         super();
         this.module = module;
-    }
-    
-    @Override
-    public void initialize() throws OdsException {
         odAddressNodeStore = module.getOpenDataLayerManager().getEntityStore(AddressNode.class);
         osmAddressNodeStore = module.getOsmLayerManager().getEntityStore(AddressNode.class);
     }

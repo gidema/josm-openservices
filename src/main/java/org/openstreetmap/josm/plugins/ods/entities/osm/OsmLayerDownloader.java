@@ -18,8 +18,6 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 
-import exceptions.OdsException;
-
 public class OsmLayerDownloader implements LayerDownloader {
     private DownloadRequest request;
     @SuppressWarnings("unused")
@@ -29,7 +27,6 @@ public class OsmLayerDownloader implements LayerDownloader {
     private OsmServerReader osmServerReader;
     private OsmLayerManager layerManager;
     private OsmEntitiesBuilder entitiesBuilder;
-    private OdsModule module;
 
     private static String overpassQuery = 
         "(node($bbox);rel(bn)->.x;way($bbox);" +
@@ -43,16 +40,10 @@ public class OsmLayerDownloader implements LayerDownloader {
     
     public OsmLayerDownloader(OdsModule module) {
         super();
-        this.module = module;
-    }
-
-    @Override
-    public void initialize() throws OdsException {
         this.layerManager = module.getOsmLayerManager();
         this.entitiesBuilder = layerManager.getEntitiesBuilder();
         
     }
-
 
     @Override
     public Status getStatus() {

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -13,13 +12,12 @@ import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
-import org.openstreetmap.josm.plugins.ods.io.Host;
 import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
 // TODO decide upon and document Class lifecycle
-public abstract class OpenDataLayerDownloader implements LayerDownloader {
+public class OpenDataLayerDownloader implements LayerDownloader {
     private static final int NTHREADS = 10;
 
     private final OdsModule module;
@@ -34,7 +32,7 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
         this.module = module;
         this.downloaders = new LinkedList<>();
     }
-
+    
     @Override
     public void setResponse(DownloadResponse response) {
         this.response = response;
@@ -51,8 +49,6 @@ public abstract class OpenDataLayerDownloader implements LayerDownloader {
             downloader.setup(request);
         }
     }
-    
-    protected abstract Collection<? extends Host> getHosts();
 
     @Override
     public Status getStatus() {

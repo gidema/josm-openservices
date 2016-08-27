@@ -3,8 +3,6 @@ package org.openstreetmap.josm.plugins.ods;
 import org.geotools.data.Query;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
-import exceptions.OdsException;
-
 /**
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
@@ -27,8 +25,7 @@ public class DefaultOdsDataSource implements OdsDataSource {
         return odsFeatureSource;
     }
     
-    @Override
-    public void initialize() throws OdsException {
+    public void initialize() throws InitializationException {
         if (!initialized) {
             odsFeatureSource.initialize();
             initialized = true;

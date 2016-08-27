@@ -3,15 +3,14 @@ package org.openstreetmap.josm.plugins.ods.gui;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.plugins.ods.ModuleActivationException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
-import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 public class OdsEnableAction extends AbstractAction {
 
@@ -28,9 +27,8 @@ public class OdsEnableAction extends AbstractAction {
     }
 
     @Override
-    public void actionPerformed(ActionEvent event) {
-        try {
-            ods.activate(module);
+    public void actionPerformed(ActionEvent e) {
+        if (ods.activate(module)) {
             Layer activeLayer = null;
             if (Main.map != null) {
                 activeLayer = Main.map.mapView.getActiveLayer();
@@ -38,19 +36,15 @@ public class OdsEnableAction extends AbstractAction {
             if (activeLayer != null) {
                 Main.map.mapView.setActiveLayer(activeLayer);
             }
-            Bounds bounds = new Bounds(
+            try {
+                Bounds bounds = new Bounds(
                     Main.pref.get("openservices.download.bounds"), ";");
                 // Zoom to the last used bounds
                 Main.map.mapView.zoomTo(bounds);
-        }
-        catch (ModuleActivationException e) {
-            if (e == ModuleActivationException.CANCELLED) {
-                return;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            Main.error(e, true);
-            String msg = I18n.tr("The module could not be activated because of the following error(s): {0}",
-                    e.getMessage());
-            JOptionPane.showMessageDialog(Main.panel, msg, "Module not available", JOptionPane.ERROR_MESSAGE);
+
         }
     }
 }
