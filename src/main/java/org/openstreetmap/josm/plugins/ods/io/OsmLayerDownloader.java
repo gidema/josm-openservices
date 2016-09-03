@@ -86,11 +86,6 @@ public class OsmLayerDownloader implements LayerDownloader {
                 MultiPolygonFilter filter = new MultiPolygonFilter(request.getBoundary().getMultiPolygon());
                 dataSet = filter.filter(dataSet);
             }
-            if (dataSet.allPrimitives().isEmpty()) {
-                status.setCancelled(true);
-                status.setMessage(I18n.tr("The selected download area contains no OSM objects"));
-                return;
-            }
         }
         catch(OsmTransferException e) {
             if (status.isCancelled()) {
