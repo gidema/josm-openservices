@@ -84,6 +84,8 @@ public class OverpassHost implements OsmHost {
         for (Coordinate coord : coords) {
             sb.append(formatCoordinate(coord.y, coord.x));
         }
+        // Remove last space to fix 
+        sb.setLength(sb.length() - 1);
         sb.append("\"");
         return sb.toString();
     }
