@@ -55,10 +55,10 @@ public abstract class AbstractLayerManager implements LayerManager {
         if (!active) {
             Layer oldLayer = null;
             if (Main.map != null) {
-                oldLayer = Main.main.getActiveLayer();
+                oldLayer = Main.getLayerManager().getActiveLayer();
             }
             osmDataLayer = createOsmDataLayer();
-            Main.main.addLayer(osmDataLayer);
+            Main.getLayerManager().addLayer(osmDataLayer);
             if (oldLayer != null) {
                 Main.getLayerManager().setActiveLayer(oldLayer);
             }
@@ -94,7 +94,7 @@ public abstract class AbstractLayerManager implements LayerManager {
         if (isActive()) {
             active = false;
             this.reset();
-            Main.main.removeLayer(this.osmDataLayer);
+            Main.getLayerManager().removeLayer(this.osmDataLayer);
         }
     }
 

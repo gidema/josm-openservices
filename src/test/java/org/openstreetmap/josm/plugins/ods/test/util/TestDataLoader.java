@@ -38,7 +38,7 @@ public class TestDataLoader {
         }
         DataSet dataSet = cache.get(url);
         if (dataSet != null) {
-            return dataSet.clone();
+            return new DataSet(dataSet);
         }
         try (InputStream stream = url.openStream()) {
             dataSet = OsmReader.parseDataSet(stream, null);

@@ -24,7 +24,7 @@ public class OdsImportAction extends OdsAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         OdsImporter importer = new OdsImporter(getModule());
-        Layer layer = Main.map.mapView.getActiveLayer();
+        Layer layer = Main.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
         // This action should only occur when the OpenData layer is active
         assert (layerManager != null && !layerManager.isOsm());

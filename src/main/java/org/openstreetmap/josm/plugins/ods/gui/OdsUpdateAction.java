@@ -26,7 +26,7 @@ public class OdsUpdateAction extends OdsAction {
         OdsImporter importer = new OdsImporter(getModule());
         OdsUpdater updater = new OdsUpdater(getModule());
 
-        Layer layer = Main.map.mapView.getActiveLayer();
+        Layer layer = Main.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
         // This action should only occur when the OpenData layer is active
         assert (layerManager != null && !layerManager.isOsm());
@@ -35,7 +35,7 @@ public class OdsUpdateAction extends OdsAction {
         importer.doImport(osmLayer.data.getAllSelected());
         updater.doUpdate(osmLayer.data.getAllSelected());
         layerManager.getOsmDataLayer().data.clearSelection();
-        Main.map.mapView.setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
+        Main.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
     }
 
     @Override

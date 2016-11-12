@@ -27,7 +27,7 @@ public class AlignBuildingsAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DataSet ds = Main.main.getCurrentDataSet();
+        DataSet ds = Main.getLayerManager().getEditDataSet();
         Collection<OsmPrimitive> primitives = ds.getAllSelected();
         OsmPrimitive building1 = null;
         OsmPrimitive building2 = null;

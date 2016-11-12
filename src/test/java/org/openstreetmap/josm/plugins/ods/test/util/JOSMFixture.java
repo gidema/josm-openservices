@@ -106,10 +106,10 @@ public class JOSMFixture {
              Main.toolbar = new ToolbarPreferences();
          }
          if (Main.main == null) {
-             new MainApplication();
+             MainApplication mainApplication = new MainApplication();
          }
          if (Main.map == null) {
-             Main.main.createMapFrame(null, null);
+//             Main.main.createMapFrame(null, null);
          }
      }
  }

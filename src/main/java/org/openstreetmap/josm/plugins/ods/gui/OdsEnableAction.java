@@ -9,8 +9,6 @@ import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
-import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 public class OdsEnableAction extends AbstractAction {
 
@@ -31,10 +29,10 @@ public class OdsEnableAction extends AbstractAction {
         if (ods.activate(module)) {
             Layer activeLayer = null;
             if (Main.map != null) {
-                activeLayer = Main.map.mapView.getActiveLayer();
+                activeLayer = Main.getLayerManager().getActiveLayer();
             }
             if (activeLayer != null) {
-                Main.map.mapView.setActiveLayer(activeLayer);
+                Main.getLayerManager().setActiveLayer(activeLayer);
             }
             try {
                 Bounds bounds = new Bounds(

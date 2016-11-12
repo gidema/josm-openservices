@@ -61,7 +61,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     public void initialize() throws Exception {
         this.osmLayerManager = createOsmLayerManager();
         this.openDataLayerManager = createOpenDataLayerManager();
-        Main.getLayerManager().addActiveLayerChangeListener(this, false);
+        Main.getLayerManager().addActiveLayerChangeListener(this);
         Main.getLayerManager().addLayerChangeListener(this);
     }
 

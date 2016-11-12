@@ -155,7 +155,7 @@ public class OpenDataServicesPlugin extends Plugin {
                 public void componentShown(ComponentEvent e) {
                     if (!Main.isDisplayingMapView())
                         return;
-                    Layer activeLayer = Main.main.getActiveLayer();
+                    Layer activeLayer = Main.getLayerManager().getActiveLayer();
                     if (activeLayer.getName().startsWith("ODS")
                             || activeLayer.getName().startsWith("OSM")) {
                         for (Layer layer : Main.getLayerManager()
