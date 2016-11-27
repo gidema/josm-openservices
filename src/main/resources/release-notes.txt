@@ -1,3 +1,10 @@
+Version 0.6.9
+=============
+- Fixed incompatibility with Josm versions >= 11223
+- Upgrade to Geotools 16.0
+- Partially fixed errors in Polygon download. The errors are fixed, but the download 
+  retrieves a rectangular area now.
+
 Version 0.6.8
 =============
 - Updated plug-in to run with the latest Josm version (>=10786)
