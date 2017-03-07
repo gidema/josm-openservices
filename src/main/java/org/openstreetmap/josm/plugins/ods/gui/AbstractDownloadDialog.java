@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -22,7 +23,6 @@ import javax.swing.KeyStroke;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.help.ContextSensitiveHelpAction;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.ImageProvider;
@@ -47,7 +47,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     protected JCheckBox cbDownloadODS;
     protected OdsModule module;
     /** the download button */
-    protected SideButton btnDownload;
+    protected JButton btnDownload;
 
     public AbstractDownloadDialog(OdsModule module, String title) {
         super(JOptionPane.getFrameForComponent(Main.panel), title, ModalityType.DOCUMENT_MODAL);
@@ -72,13 +72,13 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
         pnl.setLayout(new FlowLayout());
 
         // -- download button
-        pnl.add(btnDownload = new SideButton(new DownloadAction()));
+        pnl.add(btnDownload = new JButton(new DownloadAction()));
         InputMapUtils.enableEnter(btnDownload);
 
         // -- cancel button
-        SideButton btnCancel;
+        JButton btnCancel;
         CancelAction actCancel = new CancelAction();
-        pnl.add(btnCancel = new SideButton(actCancel));
+        pnl.add(btnCancel = new JButton(actCancel));
         InputMapUtils.enableEnter(btnCancel);
 
         // -- cancel on ESC
@@ -86,8 +86,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
         getRootPane().getActionMap().put("cancel", actCancel);
 
         // -- help button
-        SideButton btnHelp;
-        pnl.add(btnHelp = new SideButton(new ContextSensitiveHelpAction(ht("/Action/Download"))));
+        JButton btnHelp;
+        pnl.add(btnHelp = new JButton(new ContextSensitiveHelpAction(ht("/Action/Download"))));
         InputMapUtils.enableEnter(btnHelp);
 
         return pnl;
