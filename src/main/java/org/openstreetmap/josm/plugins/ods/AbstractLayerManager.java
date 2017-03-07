@@ -82,7 +82,7 @@ public abstract class AbstractLayerManager implements LayerManager {
             wayEntities.clear();
             relationEntities.clear();
             this.osmDataLayer.data.clear();
-            this.osmDataLayer.data.dataSources.clear();
+            this.osmDataLayer.data.getDataSources().clear();
             if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
                 Main.getLayerManager().addLayer(osmDataLayer);
             }
