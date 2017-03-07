@@ -81,11 +81,18 @@ public abstract class AbstractLayerManager implements LayerManager {
             nodeEntities.clear();
             wayEntities.clear();
             relationEntities.clear();
-            this.osmDataLayer.data.clear();
-            this.osmDataLayer.data.getDataSources().clear();
-            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
-                Main.getLayerManager().addLayer(osmDataLayer);
-            }
+            deActivate();
+            activate();
+//            if (Main.getLayerManager().containsLayer(osmDataLayer)) {
+//                Main.getLayerManager().removeLayer(osmDataLayer);
+//            }
+//            osmDataLayer = createOsmDataLayer();
+//            
+//           this.osmDataLayer.data.clear();
+//            this.osmDataLayer.data.getDataSources().clear();
+//            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
+//                Main.getLayerManager().addLayer(osmDataLayer);
+//            }
         }
     }
 

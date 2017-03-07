@@ -28,6 +28,6 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/usr/share/josm/josm.jar" sourcepath="/home/gertjan/projects/josm/src"/>
+	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm.jar" sourcepath="/home/gertjan/projects/josm/src"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
