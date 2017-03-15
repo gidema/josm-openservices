@@ -56,7 +56,8 @@ public class BuildingMatch extends MatchImpl<Building> {
         if (odStatus.equals(PLANNED) && osmStatus.equals(CONSTRUCTION)) {
             return MatchStatus.COMPARABLE;
         }
-        if (odStatus.equals(CONSTRUCTION) && osmStatus.equals(IN_USE)) {
+        if (odStatus.equals(CONSTRUCTION) && 
+            (osmStatus.equals(IN_USE) || osmStatus.equals(IN_USE_NOT_MEASURED))) {
             return MatchStatus.COMPARABLE;
         }
         return MatchStatus.NO_MATCH;
