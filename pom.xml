@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>opendataservices</artifactId>
-  <version>0.6.9</version>
+  <version>0.6.10</version>
   <build>
     <testSourceDirectory>src/main/test/resources</testSourceDirectory>
     <plugins>
