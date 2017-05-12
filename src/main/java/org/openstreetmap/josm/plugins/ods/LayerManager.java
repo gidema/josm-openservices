@@ -29,6 +29,8 @@ public interface LayerManager {
      */
     public boolean isOsm();
     
+    public boolean isActive();
+    
     /**
      * Remove the underlying Osm Datalayer and clear the ODS data stores
      */

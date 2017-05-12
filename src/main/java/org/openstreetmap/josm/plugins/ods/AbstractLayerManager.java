@@ -52,6 +52,7 @@ public abstract class AbstractLayerManager implements LayerManager {
         return layer;
     }
 
+    @Override
     public boolean isActive() {
         return this.active;
     }
@@ -79,6 +80,14 @@ public abstract class AbstractLayerManager implements LayerManager {
     @Override
     public void reset() {
         if (isActive()) {
+            deActivate();
+        }
+        activate();
+    }
+
+    @Override
+    public void deActivate() {
+        if (isActive()) {
             // Clear all data stores
             for (EntityStore<?> store : entityStoreMap.stores.values()) {
                 store.clear();
@@ -86,17 +95,10 @@ public abstract class AbstractLayerManager implements LayerManager {
             nodeEntities.clear();
             wayEntities.clear();
             relationEntities.clear();
-            deActivate();
-            activate();
-        }
-    }
-
-    @Override
-    public void deActivate() {
-        if (isActive()) {
             active = false;
-            this.reset();
-            Main.getLayerManager().removeLayer(this.osmDataLayer);
+            if (Main.getLayerManager().containsLayer(this.osmDataLayer)) {
+                Main.getLayerManager().removeLayer(this.osmDataLayer);
+            }
         }
     }
 

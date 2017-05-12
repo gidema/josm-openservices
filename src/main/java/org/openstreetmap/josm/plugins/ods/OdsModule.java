@@ -215,16 +215,11 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         }
         if (isActive()) {
             LayerManager layerManager = this.getLayerManager(event.getRemovedLayer());
-            if (layerManager != null) {
+            if (layerManager != null && layerManager.isActive()) {
+                layerManager.deActivate();
                 String message = tr("You removed one of the layers that belong to the {0} module." +
                         " For the stability of the {0} module, you have to reset the module.", getName());
                 JOptionPane.showMessageDialog(null, message, tr("ODS layer removed."), JOptionPane.OK_OPTION);
-//                if (result == 0) {
-//                    reset();
-//                }
-//                else {
-//                    this.deActivate();
-//                }
             }
         }
     }
