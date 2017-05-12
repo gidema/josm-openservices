@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.DataSet.UploadPolicy;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -37,13 +38,17 @@ public abstract class AbstractLayerManager implements LayerManager {
         this.entityStoreMap.put(clazz, entityStore);
     }
     
+    @Override
     public OsmDataLayer getOsmDataLayer() {
         return osmDataLayer;
     }
     
     protected OsmDataLayer createOsmDataLayer() {
-        OsmDataLayer layer = new OsmDataLayer(new DataSet(), getName(), null);
-        layer.setUploadDiscouraged(!isOsm());
+        DataSet dataSet = new DataSet();
+        OsmDataLayer layer = new OsmDataLayer(dataSet, getName(), null);
+        if (!isOsm()) {
+            dataSet.setUploadPolicy(UploadPolicy.BLOCKED);
+        }
         return layer;
     }
 
@@ -83,16 +88,6 @@ public abstract class AbstractLayerManager implements LayerManager {
             relationEntities.clear();
             deActivate();
             activate();
-//            if (Main.getLayerManager().containsLayer(osmDataLayer)) {
-//                Main.getLayerManager().removeLayer(osmDataLayer);
-//            }
-//            osmDataLayer = createOsmDataLayer();
-//            
-//           this.osmDataLayer.data.clear();
-//            this.osmDataLayer.data.getDataSources().clear();
-//            if (!Main.getLayerManager().containsLayer(osmDataLayer)) {
-//                Main.getLayerManager().addLayer(osmDataLayer);
-//            }
         }
     }
 
