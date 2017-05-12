@@ -1,3 +1,18 @@
+Version 0.6.11
+==============
+- Fixed incompatibility with Josm versions >= 12125
+- Disabled upload of Open Data Layer
+- Fixed error in resetting: Plug-in advised reset after reset.
+
+Version 0.6.10
+==============
+- Fixed incompatibility with Josm >= 11639
+- Remove all |ODS tags before upload.
+- Fixed warnings about Old style SideButtons
+- Added status in_use_not_measured
+- Warn about pending updates before resetting the module
+  
+
 Version 0.6.9
 =============
 - Fixed incompatibility with Josm versions >= 11223
