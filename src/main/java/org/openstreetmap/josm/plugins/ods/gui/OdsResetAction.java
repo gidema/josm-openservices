@@ -28,7 +28,7 @@ public class OdsResetAction extends OdsAction {
             String message = I18n.tr(
                 "There are unsaved changes on the OSM layer.\n" +
                 "Are you sure you want to reset and lose these changes?");
-            int answer = JOptionPane.showOptionDialog(Main.panel, message, title, JOptionPane.OK_CANCEL_OPTION,
+            int answer = JOptionPane.showOptionDialog(Main.main.panel, message, title, JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.WARNING_MESSAGE, null, null, JOptionPane.CANCEL_OPTION);
             reset = (answer == JOptionPane.OK_OPTION);
         }

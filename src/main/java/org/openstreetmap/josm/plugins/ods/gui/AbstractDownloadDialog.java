@@ -50,7 +50,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     protected JButton btnDownload;
 
     public AbstractDownloadDialog(OdsModule module, String title) {
-        super(JOptionPane.getFrameForComponent(Main.panel), title, ModalityType.DOCUMENT_MODAL);
+        super(JOptionPane.getFrameForComponent(Main.main.panel), title, ModalityType.DOCUMENT_MODAL);
         this.module = module;
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(buildMainPanel(), BorderLayout.CENTER);
