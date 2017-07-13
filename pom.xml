@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>opendataservices</artifactId>
-  <version>0.6.11</version>
+  <version>0.6.12</version>
   <build>
     <testSourceDirectory>src/main/test/resources</testSourceDirectory>
     <plugins>
@@ -31,12 +31,12 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-wfs</artifactId>
-      <version>16.0</version>
+      <artifactId>gt-wfs-ng</artifactId>
+      <version>17.1</version>
       <exclusions>
         <exclusion>
           <artifactId>commons-logging</artifactId>
@@ -47,12 +47,12 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-transform</artifactId>
-      <version>16.0</version>
+      <version>17.1</version>
     </dependency>
     <dependency>
       <groupId>commons-configuration</groupId>

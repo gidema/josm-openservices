@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/matching/OdsImporter.java|org/openstreetmap/josm/plugins/ods/Context.java|org/openstreetmap/josm/plugins/ods/entities/MergeTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/CreatePrimitivesTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/AlignBuildingsTask.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingSimplifier.java|org/openstreetmap/josm/plugins/ods/tasks/Task.java|org/openstreetmap/josm/plugins/ods/geotools/LimitableSimpleFeatureIterator.java|org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java|org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingPassageAction.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/entities/builtenvironment/BuildingPassageAction.java|org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

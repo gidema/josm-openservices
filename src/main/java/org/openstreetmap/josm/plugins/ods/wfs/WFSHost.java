@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.geotools.data.wfs.WFSDataStoreFactory;
-import org.geotools.data.wfs.protocol.wfs.Version;
+import org.geotools.data.wfs.impl.WFSDataAccessFactory;
+import org.geotools.data.wfs.internal.Versions;
+import org.geotools.util.Version;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
 
@@ -31,10 +33,10 @@ public class WFSHost extends GtHost {
             URL capabilitiesUrl = WFSDataStoreFactory
                     .createGetCapabilitiesRequest(hostUrl, getWFSVersion(hostUrl));
             Map<String, Object> connectionParameters = new HashMap<>();
-            connectionParameters.put(WFSDataStoreFactory.URL.key,
+            connectionParameters.put(WFSDataAccessFactory.URL.key,
                     capabilitiesUrl);
-            connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 60000);
-            connectionParameters.put(WFSDataStoreFactory.BUFFER_SIZE.key, 1000);
+            connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, 60000);
+            connectionParameters.put(WFSDataAccessFactory.BUFFER_SIZE.key, 1000);
 //            connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, false);
             return connectionParameters;
         } catch (MalformedURLException e) {
@@ -59,7 +61,7 @@ public class WFSHost extends GtHost {
         // different projections etc...
         //
         // this is a result of the udig code sprint QA run
-        final Version defaultVersion = Version.v1_0_0;
+        final Version defaultVersion = Versions.v1_0_0;
         // which version to use
         Version requestVersion = defaultVersion;
 
@@ -76,10 +78,7 @@ public class WFSHost extends GtHost {
 
             String version = params.get("VERSION");
             if (version != null) {
-                requestVersion = Version.find(version);
-                if (requestVersion == null) {
-                    requestVersion = defaultVersion;
-                }
+                requestVersion = new Version(version);
             }
         }
         return requestVersion;
