@@ -13,7 +13,7 @@ public abstract class Host {
   private String url;
   private Integer maxFeatures;
   private MetaData metaData;
-  private final List<MetaDataLoader> metaDataLoaders = new LinkedList<MetaDataLoader>();
+  private final List<MetaDataLoader> metaDataLoaders = new LinkedList<>();
   private Boolean initialized = false;
 
   public Host(String name, String url, Integer maxFeatures) {
@@ -66,6 +66,14 @@ public final String getName() {
     return metaData;
   }
   
+  public final void setInitialized(boolean initialized) {
+      this.initialized = initialized;
+  }
+  
+  public final boolean isInitialized() {
+      return initialized;
+  }
+  
   public boolean equals(Host other) {
     return other.getName().equals(name)
         && other.getType().equals(type)
@@ -75,7 +83,7 @@ public final String getName() {
   public synchronized void initialize() throws InitializationException {
     if (initialized) return;
     metaData = new MetaData();
-    List<Exception> exceptions = new LinkedList<Exception>();
+    List<Exception> exceptions = new LinkedList<>();
     for (MetaDataLoader loader : metaDataLoaders) {
       try {
         loader.populateMetaData(metaData);

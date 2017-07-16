@@ -1,38 +1,83 @@
 package org.openstreetmap.josm.plugins.ods.wfs;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.geotools.data.DataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.data.wfs.impl.WFSDataAccessFactory;
 import org.geotools.data.wfs.internal.Versions;
 import org.geotools.util.Version;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
+import org.openstreetmap.josm.tools.I18n;
 
 /**
  * Class to represent a WFS odsFeatureSource host.
+ * 
+ * TODO Remove dependency on GtHost
  * 
  * @author Gertjan Idema
  * 
  */
 public class WFSHost extends GtHost {
+    private DataStore dataStore;
+    private Set<String> featureTypes = new HashSet<>();
+
 
     public WFSHost(String name, String url, Integer maxFeatures) {
         super(name, url, maxFeatures);
     }
 
     @Override
-    public Map<?, ?> getConnectionParameters() throws InitializationException {
+    public synchronized void initialize() throws InitializationException {
+        if (isInitialized()) return;
+        super.initialize();
+        setInitialized(false);
+        
+        // TODO move next line to configuration phase
+        Map<String, Serializable> connectionParameters = getConnectionParameters();
+        try {
+            WFSDataStoreFactory factory = new WFSDataStoreFactory();
+            dataStore = factory.createDataStore(connectionParameters);
+            if (dataStore == null) {
+                throw new InitializationException(I18n.tr("Could not find an appropriate data store for these connection parameters:\n{0}",
+                        connectionParameters.toString()));
+            }
+            featureTypes = new HashSet<>(Arrays.asList(getDataStore().getTypeNames()));
+            setInitialized(true);
+        } catch (IOException e) {
+            throw new InitializationException(
+                    "Unable to connect to the datastore", e);
+        }
+    }
+    
+    @Override
+    public DataStore getDataStore() {
+        return dataStore;
+    }
+    
+    @Override
+    protected Set<String> getFeatureTypes() {
+        return featureTypes;
+    }
+
+    @Override
+    public Map<String, Serializable> getConnectionParameters() throws InitializationException {
         try {
             // TODO move to configuration phase
             // TODO add possibilities to configure parameters
             URL hostUrl = new URL(getUrl());
             URL capabilitiesUrl = WFSDataStoreFactory
                     .createGetCapabilitiesRequest(hostUrl, getWFSVersion(hostUrl));
-            Map<String, Object> connectionParameters = new HashMap<>();
+            Map<String, Serializable> connectionParameters = new HashMap<>();
             connectionParameters.put(WFSDataAccessFactory.URL.key,
                     capabilitiesUrl);
             connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, 60000);

@@ -8,6 +8,7 @@ import java.util.Collection;
 
 import javax.swing.JOptionPane;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
@@ -197,9 +198,9 @@ public class BuildingPassageAction extends JosmAction {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        if (getCurrentDataSet() == null)
+        if (getLayerManager().getEditDataSet() == null)
             return;
-        Collection<OsmPrimitive> selection = getCurrentDataSet().getSelected();
+        Collection<OsmPrimitive> selection = getLayerManager().getEditDataSet().getSelected();
         BuildingHighwayPair pair = getPair(selection);
         if (pair == null) {
             new Notification(tr("Please select exactly 1 building and 1 highway."))
@@ -230,11 +231,11 @@ public class BuildingPassageAction extends JosmAction {
 
     @Override
     protected void updateEnabledState() {
-        if (getCurrentDataSet() == null) {
+        if (getLayerManager().getEditDataSet() == null) {
             setEnabled(false);
             return;
         }
-        Collection<OsmPrimitive> selection = getCurrentDataSet().getSelected();
+        Collection<OsmPrimitive> selection = getLayerManager().getEditDataSet().getSelected();
         updateEnabledState(selection);
     }
 
