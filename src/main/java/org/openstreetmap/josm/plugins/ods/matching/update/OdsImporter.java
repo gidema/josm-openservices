@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.command.AddPrimitivesCommand;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -13,6 +14,8 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.PrimitiveData;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.io.SaveLayersDialog;
+import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
@@ -92,9 +95,18 @@ public class OdsImporter {
         Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
         removeOdsTags(importedPrimitives);
         buildImportedEntities(importedPrimitives);
-        OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
-        for (OsmPrimitive osm : importedPrimitives) {
-            neighbourFinder.findNeighbours(osm);
+        // Save the current edit layer
+        OsmDataLayer savedEditLayer =  Main.getLayerManager().getEditLayer();
+        try {
+            OsmDataLayer editLayer = module.getOsmLayerManager().getOsmDataLayer();
+            Main.getLayerManager().setActiveLayer(editLayer);
+            OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
+            for (OsmPrimitive osm : importedPrimitives) {
+                neighbourFinder.findNeighbours(osm);
+            }
+        }
+        finally {
+            Main.getLayerManager().setActiveLayer(savedEditLayer);
         }
         updateMatching();
     }

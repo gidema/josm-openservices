@@ -11,7 +11,9 @@ import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
@@ -24,6 +26,8 @@ import org.openstreetmap.josm.tools.I18n;
  */
 public abstract class MainDownloader {
     private static final int NTHREADS = 10;
+    
+    private OdsModule module;
 
     private List<LayerDownloader> enabledDownloaders;
     
@@ -37,8 +41,21 @@ public abstract class MainDownloader {
 
     protected abstract LayerDownloader getOpenDataLayerDownloader();
 
+    public MainDownloader(OdsModule module) {
+        super();
+        this.module = module;
+    }
+
+    public OdsModule getModule() {
+        return module;
+    }
+
     public void run(ProgressMonitor pm, DownloadRequest request) {
         status.clear();
+        // Switch to the Open data layer before downloading.
+        MainLayerManager layerManager = Main.getLayerManager();
+        layerManager.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
+        
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup(request);
         if (status.isCancelled()) {
