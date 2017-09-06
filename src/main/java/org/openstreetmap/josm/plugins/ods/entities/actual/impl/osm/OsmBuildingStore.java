@@ -20,7 +20,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingImpl;
 public class OsmBuildingStore extends EntityStore<Building> {
     private UniqueIndexImpl<Building> primitiveIndex = new UniqueIndexImpl<>(Building.class, "primitiveId");
     private Index<Building> idIndex = new IndexImpl<>(Building.class, "referenceId");
-    private GeoIndex<Building> geoIndexImpl = new GeoIndexImpl<Building, BuildingImpl>(BuildingImpl.class, "geometry");
+    private GeoIndex<Building> geoIndexImpl = new GeoIndexImpl<>(BuildingImpl.class, "geometry");
 
     public OsmBuildingStore() {
         super();
@@ -34,10 +34,10 @@ public class OsmBuildingStore extends EntityStore<Building> {
         return primitiveIndex;
     }
 
+    @Override
     public Index<Building> getIdIndex() {
         return idIndex;
     }
-
 
     @Override
     public GeoIndex<Building> getGeoIndex() {

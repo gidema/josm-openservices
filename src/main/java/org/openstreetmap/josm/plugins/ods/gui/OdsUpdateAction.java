@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.gui;
 
 import java.awt.event.ActionEvent;
 
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
@@ -26,7 +26,7 @@ public class OdsUpdateAction extends OdsAction {
         OdsImporter importer = new OdsImporter(getModule());
         OdsUpdater updater = new OdsUpdater(getModule());
 
-        Layer layer = Main.getLayerManager().getActiveLayer();
+        Layer layer = MainApplication.getLayerManager().getActiveLayer();
         LayerManager layerManager = getModule().getLayerManager(layer);
         // This action should only occur when the OpenData layer is active
         assert (layerManager != null && !layerManager.isOsm());
@@ -35,7 +35,7 @@ public class OdsUpdateAction extends OdsAction {
         importer.doImport(osmLayer.data.getAllSelected());
         updater.doUpdate(osmLayer.data.getAllSelected());
         layerManager.getOsmDataLayer().data.clearSelection();
-        Main.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
+        MainApplication.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
     }
 
     @Override

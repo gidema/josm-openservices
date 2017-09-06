@@ -14,7 +14,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
@@ -29,6 +28,7 @@ import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -99,7 +99,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             }
             query.setFilter(filter);
         } catch (InitializationException e) {
-            Main.error(e);
+            Logging.error(e);
             status.setException(e);
         }
         return;
@@ -162,7 +162,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
                 return;
             }
         } catch (IOException e) {
-            Main.warn(e);
+            Logging.warn(e);
             status.setException(e);
             return;
         }

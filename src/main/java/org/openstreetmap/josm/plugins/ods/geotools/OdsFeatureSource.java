@@ -25,7 +25,7 @@ import org.opengis.filter.Filter;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class OdsFeatureSource<C extends OdsFeatureCollection> implements SimpleFeatureSource {
+public class OdsFeatureSource implements SimpleFeatureSource {
     private SimpleFeatureSource wrapped;
     private long featureCountLimit = -1;
     
@@ -119,7 +119,7 @@ public class OdsFeatureSource<C extends OdsFeatureCollection> implements SimpleF
         return featureCollection;
     }
 
-    protected OdsFeatureCollection getFeatureCollection(SimpleFeatureCollection wrappedFeatureCollection) {
+    protected static OdsFeatureCollection getFeatureCollection(SimpleFeatureCollection wrappedFeatureCollection) {
         return new OdsFeatureCollection(wrappedFeatureCollection);
     }
 }

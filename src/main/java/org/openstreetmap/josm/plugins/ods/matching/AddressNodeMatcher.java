@@ -32,6 +32,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
         osmAddressNodeStore = module.getOsmLayerManager().getEntityStore(AddressNode.class);
     }
 
+    @Override
     public void run() {
         matchBuildingAddressNodes();
         matchOtherAddressNodes();
@@ -88,7 +89,7 @@ public class AddressNodeMatcher implements Matcher<AddressNode> {
         for (AddressNode addressNode : osmAddressNodeStore) {
             if (addressNode.getMatch() == null) {
                 unmatchedOsmAddressNodes.add(addressNode);
-            };
+            }
         }
         analyze();
     }

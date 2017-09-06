@@ -11,10 +11,6 @@ public class DefaultIdFactory implements IdFactory {
         this.idAttribute = idAttribute;
     }
     
-    public DefaultIdFactory(OdsDataSource dataSource) {
-        super();
-    }
-
     @Override
     public Serializable getId(SimpleFeature feature) {
         if (idAttribute == null) {

@@ -17,7 +17,9 @@ public interface AddressNode extends Entity, Address {
 
     public void setGeometry(Point point);
     
+    @Override
     public Point getGeometry();
     
+    @Override
     public EntityType<AddressNode> getEntityType();
 }

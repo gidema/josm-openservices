@@ -73,10 +73,7 @@ public class OsmAddressNodeToBuildingMatcher {
                 building.getAddressNodes().add(addressNode);
                 return;
             }
-            else {
-                // TODO report duplicateBuildings
-                int x = 0;
-            }
+            // TODO report duplicateBuildings
         }
     }
     

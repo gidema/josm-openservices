@@ -40,7 +40,7 @@ public class CrossingBuildingFixer {
         LinearRing ring2 = (LinearRing)polygon2.getExteriorRing();
         LinearRingAligner aligner = new LinearRingAligner(geoUtil, ring1, ring2, tolerance);
         aligner.run();
-        GeoUtil geoUtil = GeoUtil.getInstance();
+//        GeoUtil geoUtil = GeoUtil.getInstance();
         if (aligner.ring1Modified()) {
             building1.setGeometry(geoUtil.toPolygon(aligner.getRing1(), getInteriorRings(polygon1)));            
         }
@@ -49,6 +49,7 @@ public class CrossingBuildingFixer {
         }
     }
     
+    @SuppressWarnings("static-method")
     private LinearRing[] getInteriorRings(Polygon polygon) {
         LinearRing[] rings = new LinearRing[polygon.getNumInteriorRing()];
         for (int i=0; i< polygon.getNumInteriorRing(); i++) {

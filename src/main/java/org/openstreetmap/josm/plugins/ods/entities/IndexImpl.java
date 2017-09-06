@@ -58,6 +58,7 @@ public class IndexImpl<T extends Entity> implements Index<T>  {
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.entities.Index#get(U)
      */
+    @Override
     public List<T> getAll(Object key) {
         List<T> result = map.get(key);
         if (result == null) {
@@ -76,13 +77,11 @@ public class IndexImpl<T extends Entity> implements Index<T>  {
             if (properties.length == 1) {
                 return getters[0].invoke(entity);
             }
-            else {
-                Object[] key = new Object[properties.length];
-                for (int i=0; i<properties.length; i++) {
-                    key[i] = getters[i].invoke(entity);
-                }
-                return key;
+            Object[] key = new Object[properties.length];
+            for (int i=0; i<properties.length; i++) {
+                key[i] = getters[i].invoke(entity);
             }
+            return key;
         } catch (IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             e.printStackTrace();

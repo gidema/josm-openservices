@@ -85,7 +85,7 @@ public class DefaultGeometryMapper<T extends Entity> implements GeometryMapper<T
 
   private List<OsmPrimitive> createPrimitives(GeometryCollection gc,
     Map<String, String> tags, DataSet dataSet) {
-    List<OsmPrimitive> primitives = new ArrayList<OsmPrimitive>(gc.getNumGeometries());
+    List<OsmPrimitive> primitives = new ArrayList<>(gc.getNumGeometries());
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       primitives.add(createPrimitive(gc.getGeometryN(i), tags, dataSet));
     }

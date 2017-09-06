@@ -5,11 +5,11 @@ import static org.openstreetmap.josm.tools.I18n.tr;
 import java.net.Authenticator.RequestorType;
 import java.net.PasswordAuthentication;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.io.OsmApi;
 import org.openstreetmap.josm.io.auth.CredentialsAgent;
 import org.openstreetmap.josm.io.auth.CredentialsAgentException;
 import org.openstreetmap.josm.io.auth.CredentialsManager;
+import org.openstreetmap.josm.tools.Logging;
 
 /**
  * The user manager class can switch between plain and import user
@@ -63,8 +63,8 @@ public class UserManager {
             password = pa.getPassword();
         } catch(CredentialsAgentException e) {
             e.printStackTrace();
-            Main.warn(tr("Failed to retrieve OSM credentials from credential manager."));
-            Main.warn(tr("Current credential manager is of type ''{0}''", cm.getClass().getName()));
+            Logging.warn(tr("Failed to retrieve OSM credentials from credential manager."));
+            Logging.warn(tr("Current credential manager is of type ''{0}''", cm.getClass().getName()));
         }
     }
 
@@ -75,8 +75,8 @@ public class UserManager {
             cm.store(RequestorType.SERVER, OsmApi.getOsmApi().getHost(), pa);
         } catch (CredentialsAgentException e) {
             e.printStackTrace();
-            Main.warn(tr("Failed to save OSM credentials to credential manager."));
-            Main.warn(tr("Current credential manager is of type ''{0}''", cm.getClass().getName()));
+            Logging.warn(tr("Failed to save OSM credentials to credential manager."));
+            Logging.warn(tr("Current credential manager is of type ''{0}''", cm.getClass().getName()));
         }
     }
 }

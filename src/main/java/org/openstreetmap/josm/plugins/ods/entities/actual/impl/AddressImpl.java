@@ -79,18 +79,22 @@ public class AddressImpl implements MutableAddress {
     }
 
     
+    @Override
     public Character getHouseLetter() {
         return houseLetter;
     }
 
+    @Override
     public void setHouseLetter(Character houseLetter) {
         this.houseLetter = houseLetter;
     }
 
+    @Override
     public String getHouseNumberExtra() {
         return houseNumberExtra;
     }
 
+    @Override
     public void setHouseNumberExtra(String houseNumberExtra) {
         this.houseNumberExtra = houseNumberExtra;
     }
@@ -135,13 +139,13 @@ public class AddressImpl implements MutableAddress {
         int result = Objects.compare(getCityName(), a.getCityName(), String.CASE_INSENSITIVE_ORDER);
         if (result == 0) {
             result = Objects.compare(getPostcode(), a.getPostcode(), String.CASE_INSENSITIVE_ORDER);
-        };
+        }
         if (result == 0) {
             result = Objects.compare(getStreetName(), a.getStreetName(), String.CASE_INSENSITIVE_ORDER);
-        };
+        }
         if (result == 0) {
             result = Objects.compare(getHouseName(), a.getFullHouseNumber(), String.CASE_INSENSITIVE_ORDER);
-        };
+        }
         return result;
     }
 

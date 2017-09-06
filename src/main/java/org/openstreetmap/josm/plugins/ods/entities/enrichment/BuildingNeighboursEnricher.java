@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 
 /**
@@ -19,7 +18,7 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 public class BuildingNeighboursEnricher implements Consumer<Building> {
     private final OpenDataBuildingStore buildingStore;
     
-    public BuildingNeighboursEnricher(OpenDataBuildingStore buildingStore, GeoUtil geoUtil) {
+    public BuildingNeighboursEnricher(OpenDataBuildingStore buildingStore) {
         super();
         this.buildingStore = buildingStore;
     }

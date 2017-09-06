@@ -1,8 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
 
 /**
@@ -55,8 +55,8 @@ public class WayAligner {
         }
         it1.close(undoable);
         it2.close(undoable);
-        if (Main.map != null) {
-            Main.map.mapView.repaint();
+        if (MainApplication.getMap() != null) {
+            MainApplication.getMap().mapView.repaint();
         }
     }
 
@@ -130,15 +130,15 @@ public class WayAligner {
         }
     }
             
-    private void alignStartNodes(NodeIterator it1, NodeIterator it2) {
-        alignNodes(it1, it1.getIndex(), it2, it2.getIndex());
+    private static void alignStartNodes(NodeIterator it11, NodeIterator it21) {
+        alignNodes(it11, it11.getIndex(), it21, it21.getIndex());
     }
 
-    private void alignEndNodes(NodeIterator it1, NodeIterator it2) {
-        alignNodes(it1, it1.nextIndex(), it2, it2.nextIndex());
+    private static void alignEndNodes(NodeIterator it11, NodeIterator it21) {
+        alignNodes(it11, it11.nextIndex(), it21, it21.nextIndex());
     }
 
-    private void alignNodes(NodeIterator it1, int index1, NodeIterator it2, int index2) {
+    private static void alignNodes(NodeIterator it1, int index1, NodeIterator it2, int index2) {
         Node n1 = it1.getNode(index1);
         Node n2 = it2.getNode(index2);
         if (n1 == n2) return;

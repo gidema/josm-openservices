@@ -86,7 +86,7 @@ public class OdsFeatureCollection implements SimpleFeatureCollection {
         return features;
     }
 
-    protected OdsFeatureIterator getFeatureIterator(SimpleFeatureIterator wrappedFeatures) {
+    protected static OdsFeatureIterator getFeatureIterator(SimpleFeatureIterator wrappedFeatures) {
         return new OdsFeatureIterator(wrappedFeatures);
     }
     

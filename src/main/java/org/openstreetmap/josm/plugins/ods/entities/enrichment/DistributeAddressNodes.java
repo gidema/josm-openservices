@@ -37,7 +37,7 @@ public class DistributeAddressNodes implements Consumer<Building> {
     public void accept(Building building) {
         for (AddressNodeGroup group : buildGroups(building).values()) {
             if (group.getAddressNodes().size() > 1) {
-                distribute(group, false);
+                distribute(group);
             }
         }
     }
@@ -47,7 +47,7 @@ public class DistributeAddressNodes implements Consumer<Building> {
      * 
      * @param newEntities
      */
-    private Map<Point, AddressNodeGroup> buildGroups(Building building) {
+    private static Map<Point, AddressNodeGroup> buildGroups(Building building) {
         Map<Point, AddressNodeGroup> groups = new HashMap<>();
         Iterator<AddressNode> it = building.getAddressNodes().iterator();
         while (it.hasNext()) {
@@ -63,7 +63,7 @@ public class DistributeAddressNodes implements Consumer<Building> {
         return groups;
     }
 
-    private void distribute(AddressNodeGroup group, boolean withUndo) {
+    private void distribute(AddressNodeGroup group) {
         List<AddressNode> nodes = group.getAddressNodes();
         Collections.sort(nodes);
         if (group.getBuilding().getGeometry().isEmpty()) {

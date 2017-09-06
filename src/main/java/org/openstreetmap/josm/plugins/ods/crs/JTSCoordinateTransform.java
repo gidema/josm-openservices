@@ -202,7 +202,7 @@ public abstract class JTSCoordinateTransform {
         LinearRing shell = transform((LinearRing)polygon.getExteriorRing());
         LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
         for (int i = 0; i < holes.length; i++) {
-            holes[i] = (LinearRing) transform((LinearRing)polygon.getInteriorRingN(i));
+            holes[i] = transform((LinearRing)polygon.getInteriorRingN(i));
         }
         return targetFactory.createPolygon(shell, holes);
     }

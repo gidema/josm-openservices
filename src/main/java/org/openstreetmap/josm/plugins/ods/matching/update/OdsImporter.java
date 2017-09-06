@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.command.AddPrimitivesCommand;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
@@ -14,7 +13,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.PrimitiveData;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.gui.io.SaveLayersDialog;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.Matcher;
@@ -77,14 +76,14 @@ public class OdsImporter {
         PrimitiveDataBuilder builder = new PrimitiveDataBuilder();
         for (Entity entity : entitiesToImport) {
             OsmPrimitive primitive = entity.getPrimitive();
-            if (primitive.getType().equals(OsmPrimitiveType.RELATION)) {
-                Relation relation = (Relation) primitive;
-                for (OsmPrimitive member : relation.getMemberPrimitives()) {
-                    primitivesToImport.add(member);
-                    builder.addPrimitive(member);
-                }
-            }
             if (primitive != null) {
+              if (primitive.getType().equals(OsmPrimitiveType.RELATION)) {
+                    Relation relation = (Relation) primitive;
+                    for (OsmPrimitive member : relation.getMemberPrimitives()) {
+                        primitivesToImport.add(member);
+                        builder.addPrimitive(member);
+                    }
+                }
                 primitivesToImport.add(primitive);
                 builder.addPrimitive(primitive);
             }
@@ -96,17 +95,17 @@ public class OdsImporter {
         removeOdsTags(importedPrimitives);
         buildImportedEntities(importedPrimitives);
         // Save the current edit layer
-        OsmDataLayer savedEditLayer =  Main.getLayerManager().getEditLayer();
+        OsmDataLayer savedEditLayer =  MainApplication.getLayerManager().getEditLayer();
         try {
             OsmDataLayer editLayer = module.getOsmLayerManager().getOsmDataLayer();
-            Main.getLayerManager().setActiveLayer(editLayer);
+            MainApplication.getLayerManager().setActiveLayer(editLayer);
             OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
             for (OsmPrimitive osm : importedPrimitives) {
                 neighbourFinder.findNeighbours(osm);
             }
         }
         finally {
-            Main.getLayerManager().setActiveLayer(savedEditLayer);
+            MainApplication.getLayerManager().setActiveLayer(savedEditLayer);
         }
         updateMatching();
     }
@@ -123,7 +122,7 @@ public class OdsImporter {
      * 
      * @param osmData
      */
-    private void removeOdsTags(Collection<? extends OsmPrimitive> primitives) {
+    private static void removeOdsTags(Collection<? extends OsmPrimitive> primitives) {
         for (OsmPrimitive primitive : primitives) {
             for (String key : primitive.keySet()) {
                 if (key.startsWith(ODS.KEY.BASE)) {
@@ -148,8 +147,12 @@ public class OdsImporter {
     }
     
     private class PrimitiveDataBuilder {
-        private List<PrimitiveData> primitiveData = new LinkedList<>();
+        List<PrimitiveData> primitiveData = new LinkedList<>();
         
+        public PrimitiveDataBuilder() {
+            // TODO Auto-generated constructor stub
+        }
+
         public void addPrimitive(OsmPrimitive primitive) {
             primitiveData.add(primitive.save());
             if (primitive.getType() == OsmPrimitiveType.WAY) {

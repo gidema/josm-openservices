@@ -3,11 +3,14 @@ package org.openstreetmap.josm.plugins.ods;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.IllegalDataException;
-import org.openstreetmap.josm.io.OsmImporter;
+import org.openstreetmap.josm.tools.Logging;
+import org.openstreetmap.josm.gui.io.importexport.OsmImporter;
 
 public class PolygonLayerManager extends AbstractLayerManager {
     private OdsModule module;
@@ -40,27 +43,29 @@ public class PolygonLayerManager extends AbstractLayerManager {
 
     @Override
     protected OsmDataLayer createOsmDataLayer() {
-        OsmDataLayer osmDataLayer = null;
+        OsmDataLayer layer = null;
         String layerName = "ODS Polygons";
         File polygonFile = getPolygonFilePath();
         if (polygonFile.exists()) {
             OsmImporter importer = new OsmImporter();
-            try {
-                osmDataLayer = importer.loadLayer(
-                        new FileInputStream(polygonFile), polygonFile,
+            try (
+                InputStream is = new FileInputStream(polygonFile);
+            ) {
+                layer = importer.loadLayer(is, polygonFile,
                         layerName, NullProgressMonitor.INSTANCE).getLayer();
-                osmDataLayer.setUploadDiscouraged(true);
+                layer.setUploadDiscouraged(true);
 //                Main.main.addLayer(osmDataLayer);
                 // Main.map.mapView.zoomTo(polygonLayer.data.);
             } catch (FileNotFoundException e) {
                 // Won't happen as we checked this
                 e.printStackTrace();
             } catch (IllegalDataException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Logging.error(e);
+            } catch (IOException e1) {
+                Logging.error(e1);
             }
         }
-        return osmDataLayer;
+        return layer;
     }
 
     private File getPolygonFilePath() {

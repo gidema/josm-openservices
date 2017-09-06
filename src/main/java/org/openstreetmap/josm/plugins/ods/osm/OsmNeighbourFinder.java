@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Predicate;
 
 import org.openstreetmap.josm.data.osm.BBox;
@@ -22,7 +20,6 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityTyp
 public class OsmNeighbourFinder {
     private OdsModule module;
     private Predicate<OsmPrimitive> isBuilding = BuildingEntityType.IsBuilding;
-    private List<OsmPrimitive> neighbourBuildings = new LinkedList<>();
     private BuildingAligner buildingAligner;
     
     public OsmNeighbourFinder(OdsModule module) {
@@ -65,7 +62,7 @@ public class OsmNeighbourFinder {
         }
     }
 
-    private BBox extend(BBox bbox, Double delta) {
+    private static BBox extend(BBox bbox, Double delta) {
         return new BBox(bbox.getTopLeftLon() - delta,
             bbox.getBottomRightLat() - delta,
             bbox.getBottomRightLon() + delta,

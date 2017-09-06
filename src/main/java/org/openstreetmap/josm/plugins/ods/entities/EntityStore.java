@@ -52,6 +52,7 @@ public abstract class EntityStore<T extends Entity> implements Iterable<T> {
 
     public abstract GeoIndex<T> getGeoIndex();
 
+    @Override
     public Iterator<T> iterator() {
         return getPrimaryIndex().iterator();
     }

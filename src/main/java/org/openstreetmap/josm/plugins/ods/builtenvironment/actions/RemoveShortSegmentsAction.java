@@ -3,9 +3,9 @@ package org.openstreetmap.josm.plugins.ods.builtenvironment.actions;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
@@ -25,7 +25,7 @@ public class RemoveShortSegmentsAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        DataSet ds = Main.getLayerManager().getEditDataSet();
+        DataSet ds = MainApplication.getLayerManager().getEditDataSet();
         Collection<Way> ways = ds.getSelectedWays();
         if (ways.size() != 1) {
             new Notification(I18n.tr("Select 1 way.")).show();

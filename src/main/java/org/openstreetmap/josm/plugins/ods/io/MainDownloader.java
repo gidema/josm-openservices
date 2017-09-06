@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -53,7 +54,7 @@ public abstract class MainDownloader {
     public void run(ProgressMonitor pm, DownloadRequest request) {
         status.clear();
         // Switch to the Open data layer before downloading.
-        MainLayerManager layerManager = Main.getLayerManager();
+        MainLayerManager layerManager = MainApplication.getLayerManager();
         layerManager.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
         
         pm.indeterminateSubTask(I18n.tr("Setup"));
@@ -229,11 +230,11 @@ public abstract class MainDownloader {
         }
     }
 
-    protected void computeBboxAndCenterScale(Bounds bounds) {
+    protected static void computeBboxAndCenterScale(Bounds bounds) {
         BoundingXYVisitor v = new BoundingXYVisitor();
         if (bounds != null) {
             v.visit(bounds);
-            Main.map.mapView.zoomTo(bounds);
+            MainApplication.getMap().mapView.zoomTo(bounds);
         }
     }
 

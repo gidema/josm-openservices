@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin;
@@ -28,17 +29,17 @@ public class OdsEnableAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         if (ods.activate(module)) {
             Layer activeLayer = null;
-            if (Main.map != null) {
-                activeLayer = Main.getLayerManager().getActiveLayer();
+            if (MainApplication.getMap() != null) {
+                activeLayer = MainApplication.getLayerManager().getActiveLayer();
             }
             if (activeLayer != null) {
-                Main.getLayerManager().setActiveLayer(activeLayer);
+                MainApplication.getLayerManager().setActiveLayer(activeLayer);
             }
             try {
                 Bounds bounds = new Bounds(
                     Main.pref.get("openservices.download.bounds"), ";");
                 // Zoom to the last used bounds
-                Main.map.mapView.zoomTo(bounds);
+                MainApplication.getMap().mapView.zoomTo(bounds);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

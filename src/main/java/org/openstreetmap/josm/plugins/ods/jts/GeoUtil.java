@@ -10,7 +10,6 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.visitor.paint.relations.Multipolygon.PolyData;
-import org.openstreetmap.josm.plugins.ods.crs.InvalidMultiPolygonException;
 import org.openstreetmap.josm.plugins.ods.crs.UnclosedWayException;
 import org.openstreetmap.josm.tools.Pair;
 
@@ -70,10 +69,12 @@ public class GeoUtil {
         return toPoint(toCoordinate(latLon));    
     }
     
+    @SuppressWarnings("static-method")
     public Point toPoint(Coordinate coord) {
         return OSM_GEOMETRY_FACTORY.createPoint(coord);
     }
 
+    @SuppressWarnings("static-method")
     public LatLon toLatLon(Point point) {
         return new LatLon(point.getY(), point.getX());
     }
@@ -82,6 +83,7 @@ public class GeoUtil {
         return new LatLon(c.y, c.x);
     }
     
+    @SuppressWarnings("static-method")
     public Polygon toPolygon(Bounds bounds) {
         Coordinate[] coords = new Coordinate[5];
         coords[0] = new Coordinate(bounds.getMinLon(), bounds.getMinLat());
@@ -93,6 +95,7 @@ public class GeoUtil {
         return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
     }
 
+    @SuppressWarnings("static-method")
     public LineSegment toSegment(Pair<Node, Node> nodePair) {
         return new LineSegment(toCoordinate(nodePair.a), toCoordinate(nodePair.b));
     }
@@ -102,7 +105,7 @@ public class GeoUtil {
         LinearRing shell;
         try {
             shell = toLinearRing(way);
-        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
+        } catch (UnclosedWayException e) {
             throw new IllegalArgumentException(
                 "The way that describes this polygon is not closed");
         }
@@ -114,6 +117,7 @@ public class GeoUtil {
         return toPolygon(shell, interiorRings);
     }
     
+    @SuppressWarnings("static-method")
     public Polygon toPolygon(LinearRing shell, LinearRing[] interiorRings) {
         return OSM_GEOMETRY_FACTORY.createPolygon(shell, interiorRings);
     }
@@ -123,16 +127,18 @@ public class GeoUtil {
         return OSM_GEOMETRY_FACTORY.createMultiPolygon(new Polygon[] {polygon});
     }
 
+    @SuppressWarnings("static-method")
     public MultiPolygon toMultiPolygon(Polygon polygon)  {
         return OSM_GEOMETRY_FACTORY.createMultiPolygon(new Polygon[] {polygon});
     }
 
-    public Geometry toMultiPolygon(Relation relation) throws InvalidMultiPolygonException {
+    public Geometry toMultiPolygon(Relation relation) {
         MultiPolygonBuilder builder = new MultiPolygonBuilder(this, relation);
         builder.build();
         return builder.getGeometry();
     }
     
+    @SuppressWarnings("static-method")
     public LineString toLineString(Way way) {
         Coordinate[] coords = new Coordinate[way.getNodes().size()];
         int i=0;
@@ -142,11 +148,13 @@ public class GeoUtil {
         return OSM_GEOMETRY_FACTORY.createLineString(coords);
     }
 
+    @SuppressWarnings("static-method")
     public LineString toLineString(List<Coordinate> coords) {
         return OSM_GEOMETRY_FACTORY.createLineString(
             coords.toArray(new Coordinate[0]));
     }
 
+    @SuppressWarnings("static-method")
     public LinearRing toLinearRing(Way way) throws UnclosedWayException {
         if (!way.isClosed()) {
             throw new UnclosedWayException(way);
@@ -160,11 +168,13 @@ public class GeoUtil {
         return OSM_GEOMETRY_FACTORY.createLinearRing(coords);
     }
 
+    @SuppressWarnings("static-method")
     public LinearRing toLinearRing(List<Coordinate> coords) {
         return OSM_GEOMETRY_FACTORY.createLinearRing(
             coords.toArray(new Coordinate[0]));
     }
 
+    @SuppressWarnings("static-method")
     public Polygon createPolygon(LinearRing shell, List<LinearRing> innerRings) {
         if (innerRings == null) {
             return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
@@ -172,6 +182,7 @@ public class GeoUtil {
         return OSM_GEOMETRY_FACTORY.createPolygon(shell, innerRings.toArray(new LinearRing[0]));
     }
 
+    @SuppressWarnings("static-method")
     public MultiPolygon createMultiPolygon(Collection<Polygon> polygons) {
         return OSM_GEOMETRY_FACTORY.createMultiPolygon(polygons.toArray(new Polygon[0]));
     }
@@ -189,7 +200,8 @@ public class GeoUtil {
         return createMultiPolygon(jtsPolygons);
     }
 
-    private Polygon createPolygon(PolyData polyData) {
+    @SuppressWarnings("static-method")
+    private Polygon createPolygon(@SuppressWarnings("unused") PolyData polyData) {
 //        LinearRing shell = createLinearRing(polyData.)
         return null;
     }
@@ -201,6 +213,7 @@ public class GeoUtil {
      * @param boundary
      * @return
      */
+    @SuppressWarnings("static-method")
     public Bounds createBounds(LinearRing boundary) {
         Envelope e = boundary.getEnvelopeInternal();
         return new Bounds(e.getMinY(), e.getMinX(), e.getMaxY(), e.getMaxX());

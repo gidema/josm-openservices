@@ -44,22 +44,22 @@ public class LinearRingAligner {
         }
     }
     
-    private void fix(SegmentIterator it1, SegmentIterator it2) {
-        it1.reset(0);
-        while (it1.hasNext()) {
-            Coordinate c1 = it1.next().p0;
-            it2.reset(0);
-            while (it2.hasNext()) {
-                LineSegment ls2 = it2.next();
+    private void fix(SegmentIterator it11, SegmentIterator it21) {
+        it11.reset(0);
+        while (it11.hasNext()) {
+            Coordinate c1 = it11.next().p0;
+            it21.reset(0);
+            while (it21.hasNext()) {
+                LineSegment ls2 = it21.next();
                 if (ls2.distance(c1) < tolerance) {
                     if (ls2.p0.distance(c1) < tolerance) {
-                        it2.updateStartPoint(c1);
+                        it21.updateStartPoint(c1);
                     }
                     else if (ls2.p1.distance(c1) < tolerance) {
-                        it2.updateEndPoint(c1);
+                        it21.updateEndPoint(c1);
                     }
                     else {
-                        it2.snap(c1, tolerance);
+                        it21.snap(c1, tolerance);
                     }
                 }
             }

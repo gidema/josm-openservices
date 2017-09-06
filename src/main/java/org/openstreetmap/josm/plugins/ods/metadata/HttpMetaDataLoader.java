@@ -30,8 +30,7 @@ public class HttpMetaDataLoader implements MetaDataLoader {
   private final String url;
   private String method = "GET";
   private Map<String, String> requestData = null;
-  private final List<MetaDataAttribute> attributes = 
-    new LinkedList<MetaDataAttribute>();
+  private final List<MetaDataAttribute> attributes = new LinkedList<>();
   
   /**
    * Construct an instance from a URL

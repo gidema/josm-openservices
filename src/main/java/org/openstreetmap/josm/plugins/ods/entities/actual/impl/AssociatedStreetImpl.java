@@ -25,6 +25,7 @@ public class AssociatedStreetImpl implements AssociatedStreet {
         this.name = name;
     }
     
+    @Override
     public String getName() {
         return name;
     }

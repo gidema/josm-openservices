@@ -23,6 +23,5 @@ public abstract class OdsModulePlugin extends Plugin {
     
     public OdsModule getModule() {
         return module;
-    };
-
+    }
 }

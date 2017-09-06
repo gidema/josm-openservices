@@ -3,12 +3,12 @@ package org.openstreetmap.josm.plugins.ods.entities.builtenvironment;
 import java.awt.event.ActionEvent;
 import java.util.Collection;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.WaySegment;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
@@ -43,12 +43,12 @@ public class NearestWayAction extends OdsAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final OsmDataLayer osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
-        Collection<Way> selected = Main.getLayerManager().getEditLayer().data
+        Collection<Way> selected = MainApplication.getLayerManager().getEditLayer().data
                 .getSelectedWays();
         OsmPrimitive building = selected.iterator().next();
         Node center = new Node(building.getBBox().getCenter());
         WaySegment nearestWaySegment = nearestWaySegment(osmDataLayer.data, center);
-        Main.getLayerManager().setActiveLayer(osmDataLayer);
+        MainApplication.getLayerManager().setActiveLayer(osmDataLayer);
         if (nearestWaySegment != null) {
             osmDataLayer.data.setSelected(nearestWaySegment.way);
         }
@@ -76,6 +76,7 @@ public class NearestWayAction extends OdsAction {
         return nearestWaySegment;
     }
 
+    @SuppressWarnings("static-method")
     private boolean validWay(Way way) {
         return way.hasKey("highway") || way.hasKey("water") || way.hasKey("rail");
     }

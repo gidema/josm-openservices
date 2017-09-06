@@ -71,7 +71,7 @@ public class CRSUtilGeotools extends CRSUtil {
     }
 
 
-    private MathTransform getToOsmTransform(CoordinateReferenceSystem crs) {
+    private static MathTransform getToOsmTransform(CoordinateReferenceSystem crs) {
         MathTransform transform = toOsmTransforms.get(crs);
         if (transform == null) {
             try {
@@ -85,7 +85,7 @@ public class CRSUtilGeotools extends CRSUtil {
         return transform;
     }
 
-    private MathTransform getFromOsmTransform(CoordinateReferenceSystem crs) {
+    private static MathTransform getFromOsmTransform(CoordinateReferenceSystem crs) {
         MathTransform transform = fromOsmTransforms.get(crs);
         if (transform == null) {
             try {

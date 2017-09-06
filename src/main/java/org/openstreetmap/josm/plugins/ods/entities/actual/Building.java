@@ -10,6 +10,7 @@ import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 import com.vividsolutions.jts.geom.Geometry;
 
 public interface Building extends Entity {
+    @Override
     public Geometry getGeometry();
 
     public City getCity();
@@ -44,8 +45,10 @@ public interface Building extends Entity {
 
     public BuildingType getBuildingType();
 
+    @Override
     public BuildingMatch getMatch();
 
+    @Override
     public EntityType<Building> getEntityType();
     
     // Setters

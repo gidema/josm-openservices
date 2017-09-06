@@ -22,6 +22,7 @@ public abstract class AbstractEntity implements Entity {
     private OsmPrimitive primitive;
     private Match<? extends Entity> match;
 
+    @Override
     public void setPrimaryId(Object primaryId) {
         this.primaryId = primaryId;
     }
@@ -31,30 +32,37 @@ public abstract class AbstractEntity implements Entity {
         return primaryId;
     }
 
+    @Override
     public Object getReferenceId() {
         return referenceId;
     }
 
+    @Override
     public void setReferenceId(Object referenceId) {
         this.referenceId = referenceId;
     }
 
+    @Override
     public void setDownloadResponse(DownloadResponse response) {
         this.response = response;
     }
     
+    @Override
     public DownloadResponse getDownloadResponse() {
         return response;
     }
 
+    @Override
     public void setSourceDate(String string) {
         this.sourceDate = string;
     }
 
+    @Override
     public String getSourceDate() {
         return sourceDate;
     }
 
+    @Override
     public void setSource(String source) {
         this.source = source;
     }
@@ -64,10 +72,12 @@ public abstract class AbstractEntity implements Entity {
         return source;
     }
 
+    @Override
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
     
+    @Override
     public Geometry getGeometry() {
         return geometry;
     }
@@ -90,6 +100,7 @@ public abstract class AbstractEntity implements Entity {
         this.otherTags = otherTags;
     }
 
+    @Override
     public void setPrimitive(OsmPrimitive primitive) {
         this.primitive = primitive;
     }

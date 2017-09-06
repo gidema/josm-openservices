@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.jts;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.tools.Logging;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -30,7 +30,7 @@ public class SegmentIterator {
         this.geoUtil = geoUtil;
         this.ring = ring;
         int size = ring.getNumPoints();
-        coords = new ArrayList<Coordinate>(size + 5);
+        coords = new ArrayList<>(size + 5);
         if (CGAlgorithms.isCCW(ring.getCoordinates()) ^ ccw) {
             for (int i = size - 1; i >= 0; i--) {
                 coords.add(ring.getCoordinateN(i));
@@ -128,14 +128,15 @@ public class SegmentIterator {
         }
     }
 
-    private void updatePoint(int index, Coordinate coord) {
-        coords.set(index, coord);
-        if (index == 0) {
+    private void updatePoint(int index1, Coordinate coord) {
+        coords.set(index1, coord);
+        if (index1 == 0) {
             coords.set(coords.size() - 1, coord);
         }
         modified = true;
     }
 
+    @SuppressWarnings("static-method")
     public void remove() {
         throw new UnsupportedOperationException();
     }
@@ -194,15 +195,15 @@ public class SegmentIterator {
         try {
             return geoUtil.toLinearRing(coords);
         }
-        catch (@SuppressWarnings("unused") IllegalArgumentException e) {
-            Main.warn("Invalid ring. Not fixed.");
+        catch (IllegalArgumentException e) {
+            Logging.warn("Invalid ring. Not fixed.");
             return ring;
         }
     }
 
-    public void reset(int index) {
-        this.index = index;
-        this.startIndex = index;
+    public void reset(int index1) {
+        this.index = index1;
+        this.startIndex = index1;
         this.roundTrip = true;
         currentLs = null;
     }

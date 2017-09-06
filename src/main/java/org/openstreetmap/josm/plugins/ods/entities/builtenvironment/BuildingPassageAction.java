@@ -8,7 +8,6 @@ import java.util.Collection;
 
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.JosmAction;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Way;
@@ -212,7 +211,7 @@ public class BuildingPassageAction extends JosmAction {
         LineString highway = geoUtil.toLineString(pair.getHighway());
         try {
             building = geoUtil.toLinearRing(pair.getBuilding());
-        } catch (@SuppressWarnings("unused") UnclosedWayException e) {
+        } catch (UnclosedWayException e) {
             new Notification(tr("The building ring is not closed."))
                 .setIcon(JOptionPane.INFORMATION_MESSAGE)
                 .setDuration(Notification.TIME_SHORT).show();

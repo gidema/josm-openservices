@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openstreetmap.josm.data.osm.BBox;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
@@ -30,7 +29,7 @@ public class OsmBuildingAnalyzer {
     private final Set<OsmPrimitive> includedPrimitives = new HashSet<>();
     private final Set<Match<Building>> excludedMatches =new HashSet<>();
     private final Set<Node> reuseableNodes = new HashSet<>();
-    private final Set<Node> taggedNodes = new HashSet<>();
+//    private final Set<Node> taggedNodes = new HashSet<>();
     private final QuadBuckets<Node> reuseableNodeIndex = new QuadBuckets<>();
 
 //    private final Set<Node> connectedBuildingNodes = new HashSet<>();

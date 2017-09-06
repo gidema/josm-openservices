@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.tools.Logging;
 
 public class UniqueIndexImpl<T extends Entity> implements Index<T> {
     private Map<Object, T> map = new HashMap<>();
@@ -38,7 +38,7 @@ public class UniqueIndexImpl<T extends Entity> implements Index<T> {
         Object key = getKey(entity);
         if (key != null) {
             if (map.get(key) != null) {
-                Main.warn("Duplicate value for unique index " + key.toString() + " of " + entity.getClass().getSimpleName());
+                Logging.warn("Duplicate value for unique index " + key.toString() + " of " + entity.getClass().getSimpleName());
                 // TODO handle duplicates
             }
             else {
@@ -72,6 +72,7 @@ public class UniqueIndexImpl<T extends Entity> implements Index<T> {
         return map.get(key);
     }
     
+    @Override
     public List<T> getAll(Object key) {
         T result = map.get(key);
         if (result == null) {
@@ -94,13 +95,11 @@ public class UniqueIndexImpl<T extends Entity> implements Index<T> {
             if (properties.length == 1) {
                 return getters[0].invoke(entity);
             }
-            else {
-                Object[] key = new Object[properties.length];
-                for (int i=0; i<properties.length; i++) {
-                    key[i] = getters[i].invoke(entity);
-                }
-                return key;
+            Object[] key = new Object[properties.length];
+            for (int i=0; i<properties.length; i++) {
+                key[i] = getters[i].invoke(entity);
             }
+            return key;
         } catch (IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             e.printStackTrace();

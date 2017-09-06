@@ -20,7 +20,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingImpl;
 public class OpenDataBuildingStore extends EntityStore<Building> {
     private UniqueIndexImpl<Building> primaryIndex = new UniqueIndexImpl<>(Building.class, "primaryId");
     private IndexImpl<Building> idIndex = new IndexImpl<>(Building.class, "referenceId");
-    private GeoIndex<Building> geoIndexImpl = new GeoIndexImpl<Building, BuildingImpl>(BuildingImpl.class, "geometry");
+    private GeoIndex<Building> geoIndexImpl = new GeoIndexImpl<>(BuildingImpl.class, "geometry");
 
     public OpenDataBuildingStore() {
         super();

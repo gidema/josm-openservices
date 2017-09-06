@@ -43,6 +43,7 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
         return buildingType;
     }
 
+    @Override
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
     }

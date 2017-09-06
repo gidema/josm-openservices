@@ -143,13 +143,13 @@ public class MultiPolygonFilter {
         }
     }
 
-    private Node clone(Node node) {
+    private static Node clone(Node node) {
         Node clone = new Node(node);
         clone.setKeys(node.getKeys());
         return clone;
     }
 
-    private Way clone(Way way, DataSet newDataSet) {
+    private static Way clone(Way way, DataSet newDataSet) {
         Way clone = new Way(way);
         if (way.isIncomplete()) {
             return clone;

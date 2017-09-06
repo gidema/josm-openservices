@@ -7,7 +7,6 @@ import java.util.Map;
 import org.osgeo.proj4j.CoordinateReferenceSystem;
 import org.osgeo.proj4j.CoordinateTransform;
 import org.osgeo.proj4j.CoordinateTransformFactory;
-import org.osgeo.proj4j.Proj4jException;
 import org.osgeo.proj4j.ProjCoordinate;
 import org.osgeo.proj4j.util.CRSCache;
 

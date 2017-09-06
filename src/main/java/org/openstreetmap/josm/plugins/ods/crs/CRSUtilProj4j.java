@@ -36,6 +36,7 @@ public class CRSUtilProj4j extends CRSUtil {
     private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> toOsmTransforms = new HashMap<>();
     private static Map<CoordinateReferenceSystem, JTSCoordinateTransform> fromOsmTransforms = new HashMap<>();
 
+    @Override
     public synchronized Geometry transform(SimpleFeature feature)
             throws CRSException {
         JTSCoordinateTransform transform = getToOsmTransform(feature.getType()
@@ -47,6 +48,7 @@ public class CRSUtilProj4j extends CRSUtil {
         }
     }
 
+    @Override
     public Geometry fromOsm(Geometry geometry, CoordinateReferenceSystem crs)
             throws CRSException {
         JTSCoordinateTransform transform = getFromOsmTransform(crs);
@@ -57,6 +59,7 @@ public class CRSUtilProj4j extends CRSUtil {
         }
     }
 
+    @Override
     public Geometry toOsm(Geometry geometry, CoordinateReferenceSystem crs)
             throws CRSException {
         JTSCoordinateTransform transform = getToOsmTransform(crs);
@@ -122,6 +125,7 @@ public class CRSUtilProj4j extends CRSUtil {
      * @return
      * @throws TransformException
      */
+    @Override
     public synchronized ReferencedEnvelope createBoundingBox(CoordinateReferenceSystem crs,
             Bounds bounds) throws CRSException {
         Envelope envelope = toEnvelope(bounds);

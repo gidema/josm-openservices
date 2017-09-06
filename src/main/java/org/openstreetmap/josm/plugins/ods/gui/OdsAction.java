@@ -27,6 +27,7 @@ public abstract class OdsAction extends AbstractAction {
         return module;
     }
 
+    @SuppressWarnings("unused")
     public void activeLayerChange(Layer oldLayer, Layer newLayer) {
         // Override if the implementing action wants to know about this event.
     }

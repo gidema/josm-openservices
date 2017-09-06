@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods.io;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
@@ -13,13 +12,10 @@ import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
-import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
-import org.openstreetmap.josm.plugins.ods.io.LayerDownloader;
-import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 public class OsmLayerDownloader implements LayerDownloader {
     private DownloadRequest request;
@@ -89,7 +85,7 @@ public class OsmLayerDownloader implements LayerDownloader {
         }
         catch(OsmTransferException e) {
             if (status.isCancelled()) {
-                Main.info(I18n.tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
+                Logging.info(I18n.tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
                 return;
             }
             status.setFailed(true);

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
@@ -10,6 +9,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 import org.openstreetmap.josm.plugins.ods.entities.actual.MutableAddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Street;
 import org.openstreetmap.josm.tools.I18n;
+import org.openstreetmap.josm.tools.Logging;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -124,11 +124,12 @@ public abstract class AddressNodeImpl extends AbstractEntity implements MutableA
             return (Point) super.getGeometry();
         }
         catch (ClassCastException e) {
-            Main.warn(I18n.tr("The geometry of {0} is not a point", toString()));
+            Logging.warn(I18n.tr("The geometry of {0} is not a point", toString()));
             return super.getGeometry().getCentroid();
         }
     }
     
+    @Override
     public String toString() {
         return getAddress().toString();
     }

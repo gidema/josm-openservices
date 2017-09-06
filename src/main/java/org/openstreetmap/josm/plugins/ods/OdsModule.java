@@ -10,8 +10,8 @@ import java.util.Map;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerAddEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerChangeListener;
@@ -61,8 +61,8 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     public void initialize() throws Exception {
         this.osmLayerManager = createOsmLayerManager();
         this.openDataLayerManager = createOpenDataLayerManager();
-        Main.getLayerManager().addActiveLayerChangeListener(this);
-        Main.getLayerManager().addLayerChangeListener(this);
+        MainApplication.getLayerManager().addActiveLayerChangeListener(this);
+        MainApplication.getLayerManager().addLayerChangeListener(this);
     }
 
     protected void addEntityType(EntityType<?> entityType) {
@@ -180,7 +180,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     }
 
     void activateOsmLayer() {
-        Main.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
+        MainApplication.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
     }
 
 
@@ -188,7 +188,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     @Override
     public void activeOrEditLayerChanged(ActiveLayerChangeEvent e) {
         Layer oldLayer = e.getPreviousActiveLayer();
-        Layer newLayer = Main.getLayerManager().getActiveLayer();
+        Layer newLayer = MainApplication.getLayerManager().getActiveLayer();
         if (!isActive()) return;
         for (OdsAction action : actions) {
             action.activeLayerChange(oldLayer, newLayer);
@@ -255,7 +255,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         getOsmLayerManager().reset();
         getOpenDataLayerManager().reset();
         getMatcherManager().reset();
-        Main.map.mapView.repaint();
+        MainApplication.getMap().mapView.repaint();
     }
 
     /**

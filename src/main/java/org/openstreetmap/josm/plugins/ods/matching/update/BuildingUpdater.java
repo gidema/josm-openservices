@@ -21,6 +21,7 @@ public class BuildingUpdater implements EntityUpdater {
         this.geometryUpdater = new BuildingGeometryUpdaterNg(module);
     }
 
+    @Override
     public void update(List<Match<?>> matches) {
         List<Match<Building>> geometryUpdateNeeded = new LinkedList<>();
         for (Match<?> match : matches) {
@@ -43,7 +44,7 @@ public class BuildingUpdater implements EntityUpdater {
 //        geometryUpdater.updateGeometries(geometryUpdateNeeded);
     }
 
-    private void updateAttributes(Building odBuilding, Building osmBuilding) {
+    private static void updateAttributes(Building odBuilding, Building osmBuilding) {
         OsmPrimitive osmPrimitive = osmBuilding.getPrimitive();
         osmBuilding.setSourceDate(odBuilding.getSourceDate());
         osmPrimitive.put("source:date", odBuilding.getSourceDate());
@@ -52,7 +53,7 @@ public class BuildingUpdater implements EntityUpdater {
         osmPrimitive.setModified(true);
     }
 
-    private void updateStatus(Building odBuilding, Building osmBuilding) {
+    private static void updateStatus(Building odBuilding, Building osmBuilding) {
         OsmPrimitive odPrimitive = odBuilding.getPrimitive();
         OsmPrimitive osmPrimitive = osmBuilding.getPrimitive();
         if (osmBuilding.getStatus().equals(EntityStatus.CONSTRUCTION) &&

@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.gui;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.beans.PropertyChangeEvent;
 
@@ -32,6 +33,7 @@ public class FixedBoundsDownloadDialog extends AbstractDownloadDialog {
         super(module, tr("Download ODS with polygon"));
     }
 
+    @Override
     protected JPanel buildMainPanel() {
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
@@ -45,22 +47,23 @@ public class FixedBoundsDownloadDialog extends AbstractDownloadDialog {
                         + "Unselect to skip downloading of {0} data.</html>", moduleName));
 
         pnl.add(cbDownloadOSM,
-                GBC.std().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+                GBC.std().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
         pnl.add(cbDownloadODS,
-                GBC.eol().anchor(GBC.SOUTHWEST).insets(5, 5, 5, 5));
+                GBC.eol().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
 
 //        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
 
         if (!ExpertToggleAction.isExpert()) {
             JLabel infoLabel = new JLabel(
                     tr("Use left click&drag to select area, arrows or right mouse button to scroll map, wheel or +/- to zoom."));
-            pnl.add(infoLabel, GBC.eol().anchor(GBC.SOUTH).insets(0, 0, 0, 0));
+            pnl.add(infoLabel, GBC.eol().anchor(GridBagConstraints.SOUTH).insets(0, 0, 0, 0));
         }
         pnl.revalidate();
         pnl.repaint();
         return pnl;
     }
 
+    @Override
     protected Dimension getDimension() {
         return new Dimension(300, 200);
     }

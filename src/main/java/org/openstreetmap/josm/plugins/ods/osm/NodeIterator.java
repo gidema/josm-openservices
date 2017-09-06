@@ -14,6 +14,7 @@ import org.openstreetmap.josm.data.coor.EastNorth;
 import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 
 public class NodeIterator {
     private Way way;
@@ -260,8 +261,8 @@ public class NodeIterator {
                     cmd.executeCommand();
                 }
             }
-            if (Main.map != null) {
-                Main.map.mapView.repaint();
+            if (MainApplication.getMap() != null) {
+                MainApplication.getMap().mapView.repaint();
             }
         }
     }

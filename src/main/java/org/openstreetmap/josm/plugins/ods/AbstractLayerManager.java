@@ -3,10 +3,10 @@ package org.openstreetmap.josm.plugins.ods;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.DataSet.UploadPolicy;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
@@ -60,13 +60,13 @@ public abstract class AbstractLayerManager implements LayerManager {
     public void activate() {
         if (!active) {
             Layer oldLayer = null;
-            if (Main.map != null) {
-                oldLayer = Main.getLayerManager().getActiveLayer();
+            if (MainApplication.getMap() != null) {
+                oldLayer = MainApplication.getLayerManager().getActiveLayer();
             }
             osmDataLayer = createOsmDataLayer();
-            Main.getLayerManager().addLayer(osmDataLayer);
+            MainApplication.getLayerManager().addLayer(osmDataLayer);
             if (oldLayer != null) {
-                Main.getLayerManager().setActiveLayer(oldLayer);
+                MainApplication.getLayerManager().setActiveLayer(oldLayer);
             }
             this.active = true;
         }
@@ -96,8 +96,8 @@ public abstract class AbstractLayerManager implements LayerManager {
             wayEntities.clear();
             relationEntities.clear();
             active = false;
-            if (Main.getLayerManager().containsLayer(this.osmDataLayer)) {
-                Main.getLayerManager().removeLayer(this.osmDataLayer);
+            if (MainApplication.getLayerManager().containsLayer(this.osmDataLayer)) {
+                MainApplication.getLayerManager().removeLayer(this.osmDataLayer);
             }
         }
     }
@@ -134,7 +134,11 @@ public abstract class AbstractLayerManager implements LayerManager {
     }
     
     private class EntityStoreMap {
-        private Map<Class<?>, EntityStore<? extends Entity>> stores = new HashMap<>();
+        Map<Class<?>, EntityStore<? extends Entity>> stores = new HashMap<>();
+
+        public EntityStoreMap() {
+            // TODO Auto-generated constructor stub
+        }
 
         public <T extends Entity> void put(Class<T> clazz,
                 EntityStore<? extends T> store) {

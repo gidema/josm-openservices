@@ -25,6 +25,7 @@ public class AddressNodeMatch extends MatchImpl<AddressNode> {
         return AddressNodeEntityType.getInstance();
     }
 
+    @Override
     public Object getId() {
         return id;
     }

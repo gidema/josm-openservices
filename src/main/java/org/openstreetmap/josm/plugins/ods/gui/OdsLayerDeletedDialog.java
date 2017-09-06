@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.openstreetmap.josm.Main;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.GBC;
 
@@ -34,7 +34,7 @@ public class OdsLayerDeletedDialog extends JDialog {
     private static final long serialVersionUID = 1L;
 
     public OdsLayerDeletedDialog(OdsModule module) {
-        super(JOptionPane.getFrameForComponent(Main.main.panel), tr("ODS layer removed."),
+        super(JOptionPane.getFrameForComponent(MainApplication.getMainPanel()), tr("ODS layer removed."),
             ModalityType.DOCUMENT_MODAL);
         this.module = module;
         getContentPane().setLayout(new BorderLayout());
@@ -64,7 +64,7 @@ public class OdsLayerDeletedDialog extends JDialog {
         return pnl;
     }
 
-    protected Dimension getDimension() {
+    protected static Dimension getDimension() {
         return new Dimension(300, 200);
     }
 

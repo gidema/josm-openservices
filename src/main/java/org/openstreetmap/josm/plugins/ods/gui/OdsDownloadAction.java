@@ -6,10 +6,10 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -55,7 +55,7 @@ public class OdsDownloadAction extends OdsAction {
         startDate = LocalDateTime.now();
         if (!cancelled) {
             DownloadTask task = new DownloadTask();
-            Main.worker.submit(task);
+            MainApplication.worker.submit(task);
         }
     }
 
@@ -85,10 +85,10 @@ public class OdsDownloadAction extends OdsAction {
     }
     
     private static Boundary getPolygonBoundary() {
-        if (Main.map == null) {
+        if (MainApplication.getMap() == null) {
             return null;
         }
-        Layer activeLayer = Main.getLayerManager().getActiveLayer();
+        Layer activeLayer = MainApplication.getLayerManager().getActiveLayer();
         // Make sure the active layer is an Osm datalayer
         if (!(activeLayer instanceof OsmDataLayer)) {
             return null;
@@ -134,10 +134,10 @@ public class OdsDownloadAction extends OdsAction {
         @Override
         protected void finish() {
             if (downloadOpenData) {
-                Main.getLayerManager().setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
+                MainApplication.getLayerManager().setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
             }
             else {
-                Main.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
+                MainApplication.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
             }
         }
     }

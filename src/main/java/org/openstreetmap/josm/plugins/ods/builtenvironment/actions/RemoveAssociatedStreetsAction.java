@@ -13,6 +13,7 @@ import org.openstreetmap.josm.command.DeleteCommand;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
+import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
@@ -41,7 +42,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
             new Notification(I18n.tr("The OSM datalayer is missing")).show();
             return;
         }
-        Main.worker.execute(new Task());
+        MainApplication.worker.execute(new Task());
     }
 
     class Task extends PleaseWaitRunnable {
@@ -66,7 +67,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
                     process(relation);
                 }
             }
-            Main.map.repaint();
+            MainApplication.getMap().repaint();
         }
 
         private void process(Relation oldAssociatedStreet) {

@@ -37,13 +37,13 @@ public class SetIdFeatureEnhancer implements FeatureEnhancer {
             false, index);
     }
     
-    private Map<String, Integer> getIndex(SimpleFeatureType featureType) {
-        Map<String, Integer> index = new HashMap<String, Integer>();
+    private static Map<String, Integer> getIndex(SimpleFeatureType featureType) {
+        Map<String, Integer> indexKey = new HashMap<>();
         for (AttributeDescriptor descriptor : featureType.getAttributeDescriptors()) {
             String name = descriptor.getLocalName();
             Integer idx = featureType.indexOf(name);
-            index.put(name,  idx);
+            indexKey.put(name,  idx);
         }
-        return index;
+        return indexKey;
     }
 }

@@ -87,7 +87,7 @@ public class NodePool {
      * @param dy Half the height of the requested envelope in degrees
      * @return
      */
-    private Envelope createEnvelope(Node node, double dy) {
+    private static Envelope createEnvelope(Node node, double dy) {
         double dx = 0;
         double lon = node.getCoor().getX();
         double lat = node.getCoor().getY();
@@ -111,7 +111,7 @@ public class NodePool {
             PoolNode poolNode = it.next();
             while (poolNode.isMatched() && it.hasNext()) {
                 poolNode = it.next();
-            };
+            }
             if (poolNode != null) {
                 openDataNodeMapping.put(node, poolNode);
                 poolNode.setMatched(true);

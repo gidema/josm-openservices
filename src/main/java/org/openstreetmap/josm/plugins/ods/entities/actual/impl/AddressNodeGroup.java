@@ -10,7 +10,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class AddressNodeGroup {
     private Point geometry;
-    private List<AddressNode> addressNodes = new ArrayList<AddressNode>();
+    private List<AddressNode> addressNodes = new ArrayList<>();
     private Building building;
     
     public AddressNodeGroup(AddressNode addressNode) {

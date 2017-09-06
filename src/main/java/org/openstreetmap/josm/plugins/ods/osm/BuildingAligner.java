@@ -50,7 +50,7 @@ public class BuildingAligner {
         }
     }
     
-    private Way getOuterWay(OsmPrimitive osm) {
+    private static Way getOuterWay(OsmPrimitive osm) {
         if (osm.getType() == OsmPrimitiveType.WAY) {
             Way way = (Way)osm;
             if (way.isClosed()) return way;

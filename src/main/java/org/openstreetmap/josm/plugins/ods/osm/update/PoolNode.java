@@ -40,8 +40,8 @@ public class PoolNode {
         this.matched = matched;
     }
 
-    public double distanceTo(Node node) {
-        return this.node.getCoor().distance(node.getCoor());
+    public double distanceTo(Node node1) {
+        return this.node.getCoor().distance(node1.getCoor());
     }
     
     @Override
