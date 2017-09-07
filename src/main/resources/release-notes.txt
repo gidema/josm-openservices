@@ -1,3 +1,6 @@
+Version 0.6.13
+- Fixed incompatibilities with Josm versions >= 12712
+
 Version 0.6.12
 ==============
 - Fixed incompatibilities with Josm versions >= 12450
