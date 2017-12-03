@@ -23,7 +23,6 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
-import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
 import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
 
 /**
@@ -40,13 +39,10 @@ public class OdsImporter {
     private final ImportFilter importFilter = new DefaultImportFilter();
     // TODO Move buildingAligner out of this class in favour of a
     // Observer pattern
-    private final BuildingAligner buildingAligner;
     
     public OdsImporter(OdsModule module) {
         super();
         this.module = module;
-        this.buildingAligner=new BuildingAligner(module, 
-                module.getOsmLayerManager().getEntityStore(Building.class));
     }
 
     public void doImport(Collection<OsmPrimitive> primitives) {
@@ -88,8 +84,8 @@ public class OdsImporter {
                 builder.addPrimitive(primitive);
             }
         }
-        AddPrimitivesCommand cmd = new AddPrimitivesCommand(builder.primitiveData, null,
-            module.getOsmLayerManager().getOsmDataLayer());
+        AddPrimitivesCommand cmd = new AddPrimitivesCommand(builder.primitiveData,
+            module.getOsmLayerManager().getOsmDataLayer().data);
         cmd.executeCommand();
         Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
         removeOdsTags(importedPrimitives);

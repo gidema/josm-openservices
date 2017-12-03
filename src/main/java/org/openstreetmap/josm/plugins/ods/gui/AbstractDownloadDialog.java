@@ -99,8 +99,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
      * 
      */
     public void rememberSettings() {
-        Main.pref.put("openservices.download.osm", cbDownloadOSM.isSelected());
-        Main.pref.put("openservices.download.ods", cbDownloadODS.isSelected());
+        Main.pref.putBoolean("openservices.download.osm", cbDownloadOSM.isSelected());
+        Main.pref.putBoolean("openservices.download.ods", cbDownloadODS.isSelected());
     }
 
     public void restoreSettings() {

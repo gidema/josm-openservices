@@ -1,3 +1,8 @@
+Version 0.6.14
+==============
+- Fixed incompatibilities with Josm versions >= 13186
+- Removed some deprecated classes
+
 Version 0.6.13
 - Fixed incompatibilities with Josm versions >= 12712
 

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.DataSet.UploadPolicy;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.io.OsmReader;
 
@@ -21,12 +22,12 @@ import org.openstreetmap.josm.io.OsmReader;
 public class TestDataLoader {
     private static Map<URL, DataSet> cache = new HashMap<>();
     
-    public static DataSet loadTestData(Class<?> clazz, String name) throws IOException, IllegalDataException {
+    public static DataSet loadTestData(Class<?> clazz, String name) {
         URL url = clazz.getResource(name);
         return loadTestData(url);
     }
 
-    public static DataSet loadTestData(String path) throws IOException, IllegalDataException {
+    public static DataSet loadTestData(String path) throws IOException {
         File file = new File(path);
         URL url = file.toURI().toURL();
         return loadTestData(url);
@@ -35,6 +36,7 @@ public class TestDataLoader {
     private static DataSet loadTestData(URL url) {
         if (url == null) {
             Assert.fail("The file with test data could not be found");
+            return null;
         }
         DataSet dataSet = cache.get(url);
         if (dataSet != null) {
@@ -42,7 +44,7 @@ public class TestDataLoader {
         }
         try (InputStream stream = url.openStream()) {
             dataSet = OsmReader.parseDataSet(stream, null);
-            dataSet.setUploadDiscouraged(true);
+            dataSet.setUploadPolicy(UploadPolicy.BLOCKED);
             cache.put(url,  dataSet);
             return dataSet;
         } catch (IOException e) {

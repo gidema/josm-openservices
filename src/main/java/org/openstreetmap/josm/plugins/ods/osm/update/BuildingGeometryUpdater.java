@@ -62,7 +62,7 @@ public class BuildingGeometryUpdater {
             if (newNode == null) {
                 // TODO Try to re-use old nodes
                 newNode = new Node(odNode);
-                Command addCommand = new AddCommand(osmDataLayer, newNode);
+                Command addCommand = new AddCommand(dataSet, newNode);
                 addCommand.executeCommand();
             }
             it.set(newNode);

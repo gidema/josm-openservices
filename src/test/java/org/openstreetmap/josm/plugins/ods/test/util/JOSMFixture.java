@@ -10,7 +10,6 @@ import java.text.MessageFormat;
 import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.projection.Projections;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.preferences.ToolbarPreferences;
 import org.openstreetmap.josm.io.OsmApi;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -102,15 +101,15 @@ public class JOSMFixture {
      }
 
      if (createGui) {
-         if (Main.toolbar == null) {
-             Main.toolbar = new ToolbarPreferences();
-         }
+//         if (MainApplication.getToolbar() == null) {
+//             MainApplication.toolbar = new ToolbarPreferences();
+//         }
          if (Main.main == null) {
              MainApplication mainApplication = new MainApplication();
          }
-         if (Main.map == null) {
+//         if (MainA.map == null) {
 //             Main.main.createMapFrame(null, null);
-         }
+//         }
      }
  }
 }

@@ -16,7 +16,6 @@ docDoctypeUnclosed=1
 docDuplicateTag=1
 docInvalidChar=2
 docInvalidContent=2
-document-type//build/deploy/org/eclipse/emf/ecore/package.html=
 eclipse.preferences.version=1
 elemCoexistence=2
 elemDuplicate=2
