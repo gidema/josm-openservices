@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>opendataservices</artifactId>
-  <version>0.6.13</version>
+  <version>0.6.14</version>
   <build>
     <testSourceDirectory>src/main/test/resources</testSourceDirectory>
     <plugins>
@@ -24,19 +24,14 @@
       <version>4.10</version>
     </dependency>
     <dependency>
-      <groupId>proj4j</groupId>
-      <artifactId>proj4j</artifactId>
-      <version>2408</version>
-    </dependency>
-    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-cql</artifactId>
-      <version>17.1</version>
+      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-wfs-ng</artifactId>
-      <version>17.1</version>
+      <version>${gt.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>commons-logging</artifactId>
@@ -47,12 +42,17 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-epsg-hsql</artifactId>
-      <version>17.1</version>
+      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-transform</artifactId>
-      <version>17.1</version>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom2</artifactId>
+      <version>2.0.4</version>
     </dependency>
     <dependency>
       <groupId>commons-configuration</groupId>
@@ -69,6 +69,11 @@
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
       <version>1.7.2</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.osgeo</groupId>
+    	<artifactId>proj4j</artifactId>
+    	<version>0.1.0</version>
     </dependency>
   </dependencies>
   <repositories>
@@ -100,6 +105,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <gt.version>17.1</gt.version>
   </properties>
   <issueManagement>
     <system>Sourceforge</system>
