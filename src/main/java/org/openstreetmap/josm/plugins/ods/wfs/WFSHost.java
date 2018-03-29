@@ -14,8 +14,6 @@ import org.geotools.data.DataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.data.wfs.impl.WFSDataAccessFactory;
 import org.geotools.data.wfs.internal.Versions;
-import org.geotools.data.wfs.internal.WFSExtensions;
-import org.geotools.data.wfs.internal.WFSOperationType;
 import org.geotools.util.Version;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
@@ -33,11 +31,11 @@ public class WFSHost extends GtHost {
     private DataStore dataStore;
     private Set<String> featureTypes = new HashSet<>();
 
-    static {
+/**    static {
         // Hack to fix issues with geotools wfs-ng
         // 
         WFSExtensions.findResponseFactories(WFSOperationType.DESCRIBE_FEATURETYPE);
-    }
+    }*/
     public WFSHost(String name, String url, Integer maxFeatures) {
         super(name, url, maxFeatures);
     }
@@ -95,7 +93,8 @@ public class WFSHost extends GtHost {
         }
     }
     
-    public static Version getWFSVersion(final URL host) {
+    @SuppressWarnings("static-method")
+    private Version getWFSVersion(final URL host) {
         if (host == null) {
             throw new NullPointerException("url");
         }

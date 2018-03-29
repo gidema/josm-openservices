@@ -56,7 +56,7 @@
     <target name="init" depends="clean">
       <mkdir dir="${plugin.build.dir}"/>
       <artifact:dependencies filesetId="dependency.fileset">
-        <dependency groupId="org.geotools" artifactId="gt-wfs-ng" version="17.1"/>
+<!--        <dependency groupId="org.geotools" artifactId="gt-wfs-ng" version="17.1"/>
         <dependency groupId="org.geotools" artifactId="gt-xml" version="17.1"/>
         <dependency groupId="org.geotools" artifactId="gt-cql" version="17.1"/>
         <dependency groupId="org.geotools" artifactId="gt-main" version="17.1"/>
@@ -80,12 +80,11 @@
         <dependency groupId="org.eclipse.emf" artifactId="common" version="2.6.0"/>
         <dependency groupId="xpp3" artifactId="xpp3_min" version="1.1.4c"/>
       	<dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
-        <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
         <dependency groupId="commons-io" artifactId="commons-io" version="2.1"/>
         <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
-      	<dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>
+      	<dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>-->
+        <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
         <dependency groupId="org.osgeo" artifactId="proj4j" version="0.1.0"/>
-        <dependency groupId="org.jdom" artifactId="jdom2" version="2.0.4"/>
       </artifact:dependencies>
     </target>
 
@@ -104,7 +103,7 @@
 		</copy>
 		<unjar dest="${plugin.build.dir}">
 			<!--<fileset refid="dependency.fileset"/>-->
-			<fileset file="${org.geotools:gt-wfs-ng:jar}"/>
+<!--			<fileset file="${org.geotools:gt-wfs-ng:jar}"/>
 			<fileset file="${org.geotools:gt-xml:jar}" />
 			<fileset file="${org.geotools:gt-cql:jar}" />
 			<fileset file="${org.geotools:gt-app-schema-resolver:jar}" />
@@ -127,13 +126,13 @@
 			<fileset file="${org.eclipse.emf:common:jar}"/>		
 			<fileset file="${xpp3:xpp3_min:jar}"/>		
 			<fileset file="${commons-configuration:commons-configuration:jar}" />
-			<fileset file="${commons-lang:commons-lang:jar}" />
 			<fileset file="${commons-io:commons-io:jar}" />
 			<fileset file="${commons-logging:commons-logging:jar}" />
 			<fileset file="${commons-collections:commons-collections:jar}" />
-			<fileset file="${org.jsoup:jsoup:jar}" />
-			<fileset file="${org.osgeo:proj4j:jar}" />
+			<fileset file="${org.jsoup:jsoup:jar}" />-->
+			<fileset file="${commons-lang:commons-lang:jar}" />
 			<fileset file="${org.jdom:jdom2:jar}" />
+			<fileset file="${org.osgeo:proj4j:jar}" />
 		    <patternset>
 		        <exclude name="META-INF/ECLIPSEF.*"/>
 		    </patternset>
@@ -157,7 +156,7 @@
 				<!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
 				<attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
 				<attribute name="Plugin-Version" value="${plugin.version}" />
-				<attribute name="Plugin-Requires" value="geotools" />
+				<attribute name="Plugin-Requires" value="geotools-wfs" />
 				<attribute name="Plugin-Stage" value="40" />
 			</manifest>
 		</jar>
