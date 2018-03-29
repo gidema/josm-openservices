@@ -224,6 +224,6 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
     }
 
     private DataSet getDataSet() {
-        return layerManager.getOsmDataLayer().data;
+        return layerManager.getOsmDataLayer().getDataSet();
     }
 }

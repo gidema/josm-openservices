@@ -62,7 +62,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
                 OsmTransferException {
             OsmDataLayer dataLayer = getModule().getOsmLayerManager()
                     .getOsmDataLayer();
-            for (Relation relation : dataLayer.data.getRelations()) {
+            for (Relation relation : dataLayer.getDataSet().getRelations()) {
                 if ("associatedStreet".equals(relation.get("type"))) {
                     process(relation);
                 }

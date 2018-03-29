@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.data.osm.DataSet.UploadPolicy;
+import org.openstreetmap.josm.data.osm.UploadPolicy;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.io.OsmReader;
 

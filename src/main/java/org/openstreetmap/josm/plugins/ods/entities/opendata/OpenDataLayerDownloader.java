@@ -133,7 +133,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
         OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
-        osmDataLayer.data.addDataSource(ds);
+        osmDataLayer.getDataSet().addDataSource(ds);
     }
 
     public DownloadResponse getResponse() {

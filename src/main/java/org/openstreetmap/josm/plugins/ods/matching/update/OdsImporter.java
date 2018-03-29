@@ -85,7 +85,7 @@ public class OdsImporter {
             }
         }
         AddPrimitivesCommand cmd = new AddPrimitivesCommand(builder.primitiveData,
-            module.getOsmLayerManager().getOsmDataLayer().data);
+            module.getOsmLayerManager().getOsmDataLayer().getDataSet());
         cmd.executeCommand();
         Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
         removeOdsTags(importedPrimitives);

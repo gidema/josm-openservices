@@ -43,14 +43,14 @@ public class NearestWayAction extends OdsAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         final OsmDataLayer osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
-        Collection<Way> selected = MainApplication.getLayerManager().getEditLayer().data
+        Collection<Way> selected = MainApplication.getLayerManager().getEditLayer().getDataSet()
                 .getSelectedWays();
         OsmPrimitive building = selected.iterator().next();
         Node center = new Node(building.getBBox().getCenter());
-        WaySegment nearestWaySegment = nearestWaySegment(osmDataLayer.data, center);
+        WaySegment nearestWaySegment = nearestWaySegment(osmDataLayer.getDataSet(), center);
         MainApplication.getLayerManager().setActiveLayer(osmDataLayer);
         if (nearestWaySegment != null) {
-            osmDataLayer.data.setSelected(nearestWaySegment.way);
+            osmDataLayer.getDataSet().setSelected(nearestWaySegment.way);
         }
     }
 

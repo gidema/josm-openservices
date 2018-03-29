@@ -32,9 +32,9 @@ public class OdsUpdateAction extends OdsAction {
         assert (layerManager != null && !layerManager.isOsm());
         
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
-        importer.doImport(osmLayer.data.getAllSelected());
-        updater.doUpdate(osmLayer.data.getAllSelected());
-        layerManager.getOsmDataLayer().data.clearSelection();
+        importer.doImport(osmLayer.getDataSet().getAllSelected());
+        updater.doUpdate(osmLayer.getDataSet().getAllSelected());
+        layerManager.getOsmDataLayer().getDataSet().clearSelection();
         MainApplication.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
     }
 

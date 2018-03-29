@@ -71,7 +71,7 @@ public class BuildingGeometryUpdaterNg {
         }
         Way osmWay = (Way) osmPrimitive;
         Way odWay = (Way) odPrimitive;
-        DataSet dataSet = osmDataLayer.data;
+        DataSet dataSet = osmDataLayer.getDataSet();
         List<Node> osmNodes = osmWay.getNodes();
         List<Node> odNodes = odWay.getNodes();
         ListIterator<Node> it = odNodes.listIterator();

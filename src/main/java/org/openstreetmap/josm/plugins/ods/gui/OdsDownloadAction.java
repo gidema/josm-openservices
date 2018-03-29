@@ -95,13 +95,13 @@ public class OdsDownloadAction extends OdsAction {
         }
         // Make sure only one object was selected
         OsmDataLayer layer = (OsmDataLayer) activeLayer;
-        if (layer.data.getAllSelected().size() != 1) {
+        if (layer.getDataSet().getAllSelected().size() != 1) {
             return null;
         }
         // If the selected object is a closed way an it is not a building
         // than we can assume is was intended to be used as a polygon for
         // the download area
-        OsmPrimitive primitive = layer.data.getAllSelected().iterator().next();
+        OsmPrimitive primitive = layer.getDataSet().getAllSelected().iterator().next();
         if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
             && !BuildingEntityType.IsBuilding.test(primitive)) {
             return new Boundary((Way)primitive);

@@ -55,7 +55,7 @@ public class PolygonLayerManager extends AbstractLayerManager {
                         layerName, NullProgressMonitor.INSTANCE).getLayer();
                 layer.setUploadDiscouraged(true);
 //                Main.main.addLayer(osmDataLayer);
-                // Main.map.mapView.zoomTo(polygonLayer.data.);
+                // Main.map.mapView.zoomTo(polygonLayer.getDataSet().);
             } catch (FileNotFoundException e) {
                 // Won't happen as we checked this
                 e.printStackTrace();
