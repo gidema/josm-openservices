@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 public class OverpassHost implements OsmHost {
     private static final String OVERPASS_QUERY = 
             "(node({{bbox}});rel(bn)->.x;way({{bbox}});" +
-            "node(w)->.x;rel(bw));out meta;";
+            "node(w)->.x;rel(bw););out meta;";
 
     @Override
     public String getHostString() {
