@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -17,6 +18,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     private boolean initialized = false;
     private final GtHost host;
     private final String featureName;
+    private SimpleFeatureType featureType;
     private final String idAttribute;
     private final long maxFeatures;
     SimpleFeatureSource featureSource;
@@ -74,10 +76,19 @@ public class GtFeatureSource implements OdsFeatureSource {
 
     @Override
     public FeatureType getFeatureType() {
-        assert initialized;
-        return getFeatureSource().getSchema();
+        if (featureType == null) {
+            // Hack: first attempt to retrieve the feature type may result in an IllegalArgumentException
+            // A retry seems to resolve this.
+            try {
+                featureType = getFeatureSource().getSchema();
+            }
+            catch (IllegalArgumentException e) {
+                featureType = getFeatureSource().getSchema();      
+            }
+         }
+        return featureType;
     }
-
+    
     public long getMaxFeatureCount() {
         return maxFeatures;
     }
