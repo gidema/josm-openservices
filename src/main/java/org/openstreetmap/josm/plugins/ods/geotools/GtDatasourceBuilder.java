@@ -12,6 +12,7 @@ public class GtDatasourceBuilder {
     private List<String> properties;
     private List<String> uniqueKey;
     private List<FilterFactory> filters = new LinkedList<>();
+    private int pageSize = 0;
     
     public void setFeatureSource(GtFeatureSource featureSource) {
         this.featureSource = featureSource;
@@ -28,12 +29,16 @@ public class GtDatasourceBuilder {
         this.uniqueKey = uniqueKey;
     }
     
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+    
     public GtDataSource build() {
         Query query = createQuery();
         if (uniqueKey != null) {
             filters.add(new UniqueKeyFilterFactory(uniqueKey));
         }
-        return new GtDataSource(featureSource, query, filters);
+        return new GtDataSource(featureSource, pageSize, query, filters);
     }
     
     private Query createQuery() {

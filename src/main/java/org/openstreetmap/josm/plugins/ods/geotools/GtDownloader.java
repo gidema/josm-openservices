@@ -3,18 +3,13 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 import java.io.IOException;
 
 import org.geotools.data.Query;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.openstreetmap.josm.plugins.ods.Host;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
@@ -24,6 +19,8 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.GeotoolsEntityBuilder;
+import org.openstreetmap.josm.plugins.ods.geotools.impl.PagingFeatureReader;
+import org.openstreetmap.josm.plugins.ods.geotools.impl.SimpleFeatureReader;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Status;
@@ -81,7 +78,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         try {
             // TODO rename dataSource.initialize() to prepare()
             dataSource.initialize();
-            GtFeatureSource gtFeatureSource = (GtFeatureSource) dataSource.getOdsFeatureSource();
+            GtFeatureSource gtFeatureSource = dataSource.getOdsFeatureSource();
             // TODO check if selected boundaries overlap with
             // featureSource boundaries;
             featureSource = gtFeatureSource.getFeatureSource();
@@ -126,42 +123,28 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     
     @Override
     public void download() {
-        String key = dataSource.getOdsFeatureSource().getIdAttribute();
-        downloadedFeatures = new DefaultFeatureCollection(key);
-        FeatureVisitor consumer = new FeatureVisitor() {
-            @Override
-            public void visit(Feature feature) {
-                downloadedFeatures.add((SimpleFeature) feature);
-            }
-        };
-        consumer = dataSource.createVisitor(consumer);
-        SimpleFeatureCollection featureCollection;
+        downloadedFeatures = new DefaultFeatureCollection();
+        GtFeatureReader reader;
+        if (dataSource.getPageSize() > 0) {
+            reader = new PagingFeatureReader(dataSource, query);
+        }
+        else {
+            reader = new SimpleFeatureReader(dataSource, query);
+        }
         try {
-            featureCollection = featureSource.getFeatures(query);
-            int featureCount = 0;
-            try (
-                SimpleFeatureIterator it = featureCollection.features();
-            ) {
-                while (it.hasNext()) {
-                    SimpleFeature feature = it.next();
-                    featureCount++;
-                    FeatureUtil.normalizeFeature(feature, normalisation);
-                    consumer.visit(feature);
-                }
-            }
-             // Check if the data is complete
-            Host host = dataSource.getOdsFeatureSource().getHost();
-            Integer maxFeatures = host.getMaxFeatures();
-            if (maxFeatures != null && featureCount >= maxFeatures) {
-                String featureType = dataSource.getFeatureType();
-                status.setMessage(I18n.tr(
-                    "To many {0} objects. Please choose a smaller download area.", featureType));
-                status.setCancelled(true);
-                Thread.currentThread().interrupt();
-                downloadedFeatures.clear();
-                return;
-            }
-        } catch (IOException e) {
+            reader.read((f) -> {
+                FeatureUtil.normalizeFeature(f, normalisation);
+                downloadedFeatures.add(f);
+            }, null);
+        } catch (DataCutOffException e) {
+            String featureType = dataSource.getFeatureType();
+            status.setMessage(I18n.tr(
+                "To many {0} objects. Please choose a smaller download area.", featureType));
+            status.setCancelled(true);
+            Thread.currentThread().interrupt();
+            downloadedFeatures.clear();
+        }
+        catch (IOException e) {
             Logging.warn(e);
             status.setException(e);
             return;

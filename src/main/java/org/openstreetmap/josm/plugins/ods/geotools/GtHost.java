@@ -1,11 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
 import org.geotools.data.DataStore;
 import org.openstreetmap.josm.plugins.ods.Host;
-import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
 
 /**
@@ -22,7 +22,7 @@ public abstract class GtHost extends Host {
     }
 
     protected abstract Map<?, ?> getConnectionParameters()
-            throws InitializationException;
+            throws IOException;
 
     protected abstract Set<String> getFeatureTypes();
 
