@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
-public class DataCutOffException extends RuntimeException {
+import java.io.IOException;
+
+public class DataCutOffException extends IOException {
 
     /**
      * 

@@ -1,5 +1,7 @@
 package org.openstreetmap.josm.plugins.ods;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,16 +12,17 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
 public abstract class Host {
     private String name;
     private String type;
-    private String url;
+    private String uncheckedUrl;
+    private URL url;
     private Integer maxFeatures;
     private MetaData metaData;
     private final List<MetaDataLoader> metaDataLoaders = new LinkedList<>();
     private Boolean initialized = false;
 
-    public Host(String name, String url, Integer maxFeatures) {
+    public Host(String name, String uncheckedUrl, Integer maxFeatures) {
         super();
         this.name = name;
-        this.url = url;
+        this.uncheckedUrl = uncheckedUrl;
         this.maxFeatures = maxFeatures;
     }
 
@@ -31,13 +34,13 @@ public abstract class Host {
         this.name = name;
     }
 
-    public final String getUrl() {
+    public final URL getUrl() {
         return url;
     }
 
-    public final void setUrl(String url) {
-        this.url = url;
-    }
+//    public final void setUrl(String url) {
+//        this.url = url;
+//    }
 
     public final String getType() {
         return type;
@@ -81,8 +84,12 @@ public abstract class Host {
     }
 
     public synchronized void initialize() throws InitializationException {
-        if (initialized)
-            return;
+        if (initialized) return;
+        try {
+            this.url = new URL(uncheckedUrl);
+        } catch (MalformedURLException e) {
+            throw new InitializationException(e);
+        }
         metaData = new MetaData();
         List<Exception> exceptions = new LinkedList<>();
         for (MetaDataLoader loader : metaDataLoaders) {

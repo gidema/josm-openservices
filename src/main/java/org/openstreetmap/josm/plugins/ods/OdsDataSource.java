@@ -36,4 +36,11 @@ public interface OdsDataSource {
     public void setRequired(boolean required);
 
     public boolean isRequired();
+
+    /**
+     * Get the desired page size. 0 means no paging.
+     * 
+     * @return the page size
+     */
+    int getPageSize();
 }
