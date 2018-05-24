@@ -10,11 +10,11 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * ODS entities represent entities like buildings, address nodes,
- * or streets. They are the interface between imported features and 
+ * or streets. They are the interface between imported features and
  * Josm primitives.
  * Using these entities gives the possibility to build object relations
  * from geometric relations.
- *   
+ *
  * @author gertjan
  *
  */
@@ -35,23 +35,22 @@ public interface Entity {
     public Long getPrimitiveId();
     public Geometry getGeometry();
     public void setGeometry(Geometry geometry);
-    public EntityType<?> getEntityType();
-    
+
     public Match<? extends Entity> getMatch();
-    
+
     public <E extends Entity> void setMatch(Match<E> match);
     /**
-    * Get the OSM primitive(s) from which this entity was constructed,
-    * or that was/were constructed from this entity.
-    * In most cases the list contains 1 item.
-    *
-    */
+     * Get the OSM primitive(s) from which this entity was constructed,
+     * or that was/were constructed from this entity.
+     * In most cases the list contains 1 item.
+     *
+     */
     public OsmPrimitive getPrimitive();
-    
+
     /**
      * Get the tags that are not associated with any of the entity's properties.
      */
     public Map<String, String> getOtherTags();
-    
+
     public void setPrimitive(OsmPrimitive primitive);
 }

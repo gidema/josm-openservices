@@ -1,37 +1,39 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.CONSTRUCTION;
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.IN_USE;
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.IN_USE_NOT_MEASURED;
+import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.PLANNED;
+import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.COMPARABLE;
+import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.MATCH;
+import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.NO_MATCH;
+import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.combine;
+
 import java.util.Objects;
 
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
-
-import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.*;
-import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.*;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 
 import com.vividsolutions.jts.geom.Point;
 
 public class BuildingMatch extends MatchImpl<Building> {
     /**
      * A double value indicating the match between the areas of the 2 buildings.
-     * 
+     *
      */
     private MatchStatus areaMatch;
     private MatchStatus centroidMatch;
     private MatchStatus startDateMatch;
     private MatchStatus statusMatch;
-    
+
     public BuildingMatch(Building osmBuilding, Building openDataBuilding) {
         super(osmBuilding, openDataBuilding);
     }
-    
-    
-    @Override
-    public EntityType<Building> getEntityType() {
-        return BuildingEntityType.getInstance();
-    }
 
+    @Override
+    public Class<Building> getEntityClass() {
+        return Building.class;
+    }
 
     @Override
     public void analyze() {
@@ -40,7 +42,7 @@ public class BuildingMatch extends MatchImpl<Building> {
         startDateMatch = compareStartDates();
         statusMatch = compareStatuses();
     }
-    
+
     private MatchStatus compareStartDates() {
         if (Objects.equals(getOsmEntity().getStartDate(), getOpenDataEntity().getStartDate())) {
             return MATCH;
@@ -60,13 +62,13 @@ public class BuildingMatch extends MatchImpl<Building> {
         if (odStatus.equals(PLANNED) && osmStatus.equals(CONSTRUCTION)) {
             return COMPARABLE;
         }
-        if (odStatus.equals(CONSTRUCTION) && 
-            (osmStatus.equals(IN_USE) || osmStatus.equals(IN_USE_NOT_MEASURED))) {
+        if (odStatus.equals(CONSTRUCTION) &&
+                (osmStatus.equals(IN_USE) || osmStatus.equals(IN_USE_NOT_MEASURED))) {
             return COMPARABLE;
         }
         return NO_MATCH;
     }
-    
+
     private MatchStatus compareAreas() {
         double osmArea = getOsmEntity().getGeometry().getArea();
         double odArea = getOpenDataEntity().getGeometry().getArea();
@@ -82,7 +84,7 @@ public class BuildingMatch extends MatchImpl<Building> {
         }
         return NO_MATCH;
     }
-    
+
     private MatchStatus compareCentroids() {
         Point osmCentroid = getOsmEntity().getGeometry().getCentroid();
         Point odCentroid = getOpenDataEntity().getGeometry().getCentroid();
@@ -105,7 +107,7 @@ public class BuildingMatch extends MatchImpl<Building> {
     public MatchStatus getStatusMatch() {
         return statusMatch;
     }
-    
+
     @Override
     public MatchStatus getAttributeMatch() {
         return startDateMatch;

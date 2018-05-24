@@ -15,7 +15,7 @@ import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
+import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -24,19 +24,19 @@ import org.xml.sax.SAXException;
 
 public class OdsDownloadAction extends OdsAction {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
-    private MainDownloader downloader;
+    private final MainDownloader downloader;
     private LocalDateTime startDate;
     private boolean cancelled = false;
     private Boundary boundary;
     private boolean downloadOsm;
     private boolean downloadOpenData;
-    private SlippyMapDownloadDialog slippyDialog;
-    private FixedBoundsDownloadDialog fixedDialog;
-    
+    private final SlippyMapDownloadDialog slippyDialog;
+    private final FixedBoundsDownloadDialog fixedDialog;
+
     public OdsDownloadAction(OdsModule module) {
         super(module, "Download", ImageProvider.get("download"));
         slippyDialog = new SlippyMapDownloadDialog(module);
@@ -48,7 +48,7 @@ public class OdsDownloadAction extends OdsAction {
     public void actionPerformed(ActionEvent e) {
         run();
     }
-    
+
     public void run() {
         cancelled = false;
         boundary = getBoundary();
@@ -83,7 +83,7 @@ public class OdsDownloadAction extends OdsAction {
         }
         return boundary;
     }
-    
+
     private static Boundary getPolygonBoundary() {
         if (MainApplication.getMap() == null) {
             return null;
@@ -98,19 +98,19 @@ public class OdsDownloadAction extends OdsAction {
         if (layer.getDataSet().getAllSelected().size() != 1) {
             return null;
         }
-        // If the selected object is a closed way an it is not a building
+        // If the selected object is a closed way and it is not a building
         // than we can assume is was intended to be used as a polygon for
         // the download area
         OsmPrimitive primitive = layer.getDataSet().getAllSelected().iterator().next();
         if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-            && !BuildingEntityType.IsBuilding.test(primitive)) {
+                && !Building.IsBuilding(primitive)) {
             return new Boundary((Way)primitive);
         }
         return null;
     }
-    
+
     private class DownloadTask extends PleaseWaitRunnable {
-        
+
         public DownloadTask() {
             super(tr("Downloading data"));
         }
@@ -124,10 +124,10 @@ public class OdsDownloadAction extends OdsAction {
         @SuppressWarnings("synthetic-access")
         @Override
         protected void realRun() throws SAXException, IOException,
-                OsmTransferException {
-                DownloadRequest request = new DownloadRequest(startDate, boundary,
+        OsmTransferException {
+            DownloadRequest request = new DownloadRequest(startDate, boundary,
                     downloadOsm, downloadOpenData);
-                downloader.run(getProgressMonitor(), request);
+            downloader.run(getProgressMonitor(), request);
         }
 
         @SuppressWarnings("synthetic-access")

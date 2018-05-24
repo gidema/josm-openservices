@@ -46,7 +46,7 @@ public abstract class AbstractEntity implements Entity {
     public void setDownloadResponse(DownloadResponse response) {
         this.response = response;
     }
-    
+
     @Override
     public DownloadResponse getDownloadResponse() {
         return response;
@@ -66,7 +66,7 @@ public abstract class AbstractEntity implements Entity {
     public void setSource(String source) {
         this.source = source;
     }
-    
+
     @Override
     public String getSource() {
         return source;
@@ -76,12 +76,12 @@ public abstract class AbstractEntity implements Entity {
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
-    
+
     @Override
     public Geometry getGeometry() {
         return geometry;
     }
-    
+
     @Override
     public boolean isIncomplete() {
         return incomplete;
@@ -133,11 +133,5 @@ public abstract class AbstractEntity implements Entity {
     @Override
     public <E extends Entity> void setMatch(Match<E> match) {
         this.match = match;
-    }
-
-    @Override
-    public EntityType<?> getEntityType() {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

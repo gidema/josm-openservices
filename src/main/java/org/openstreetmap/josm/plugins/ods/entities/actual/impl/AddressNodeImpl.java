@@ -1,9 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual.impl;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.entities.actual.City;
 import org.openstreetmap.josm.plugins.ods.entities.actual.MutableAddressNode;
@@ -17,16 +15,10 @@ public abstract class AddressNodeImpl extends AbstractEntity implements MutableA
     private Address address;
     private Object buildingRef;
     private Building building;
-    
+
     public AddressNodeImpl() {
         super();
     }
-    
-    @Override
-    public EntityType<AddressNode> getEntityType() {
-        return AddressNodeEntityType.getInstance();
-    }
-
 
     @Override
     public void setAddress(Address address) {
@@ -97,7 +89,7 @@ public abstract class AddressNodeImpl extends AbstractEntity implements MutableA
     public Object getBuildingRef() {
         return buildingRef;
     }
-    
+
     @Override
     public void setBuildingRef(Object buildingRef) {
         this.buildingRef = buildingRef;
@@ -128,7 +120,7 @@ public abstract class AddressNodeImpl extends AbstractEntity implements MutableA
             return super.getGeometry().getCentroid();
         }
     }
-    
+
     @Override
     public String toString() {
         return getAddress().toString();

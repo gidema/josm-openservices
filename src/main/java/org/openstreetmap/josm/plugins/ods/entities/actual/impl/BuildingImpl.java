@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.AbstractEntity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Address;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
@@ -16,13 +15,13 @@ import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 public abstract class BuildingImpl extends AbstractEntity implements Building {
     private Address address;
-    private List<AddressNode> addressNodes = new LinkedList<>();
+    private final List<AddressNode> addressNodes = new LinkedList<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private String startDate;
-    private Set<Building> neighbours = new HashSet<>();
+    private final Set<Building> neighbours = new HashSet<>();
     private City city;
-    
-    
+
+
     @Override
     public void setStartDate(String startDate) {
         this.startDate = startDate;
@@ -30,12 +29,7 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
 
     @Override
     public String getStartDate() {
-         return startDate;
-    }
-
-    @Override
-    public EntityType<Building> getEntityType() {
-        return BuildingEntityType.getInstance();
+        return startDate;
     }
 
     @Override
@@ -56,7 +50,7 @@ public abstract class BuildingImpl extends AbstractEntity implements Building {
     public void setAddress(Address address) {
         this.address = address;
     }
-    
+
     @Override
     public Address getAddress() {
         return address;

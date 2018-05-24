@@ -11,15 +11,14 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.QuadBuckets;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.BuildingEntityType;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.osm.update.PoolNode.SpecialReferrers;
 
 /**
  * This class is part of the building update process.
  * It's concern is to analyse the buildings on the OSM layer that are about
- * to be updated with a new geometry. 
- * 
+ * to be updated with a new geometry.
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -29,12 +28,12 @@ public class OsmBuildingAnalyzer {
     private final Set<OsmPrimitive> includedPrimitives = new HashSet<>();
     private final Set<Match<Building>> excludedMatches =new HashSet<>();
     private final Set<Node> reuseableNodes = new HashSet<>();
-//    private final Set<Node> taggedNodes = new HashSet<>();
+    //    private final Set<Node> taggedNodes = new HashSet<>();
     private final QuadBuckets<Node> reuseableNodeIndex = new QuadBuckets<>();
 
-//    private final Set<Node> connectedBuildingNodes = new HashSet<>();
-//    private final Set<Node> connectedOtherNodes = new HashSet<>();
-    
+    //    private final Set<Node> connectedBuildingNodes = new HashSet<>();
+    //    private final Set<Node> connectedOtherNodes = new HashSet<>();
+
     public OsmBuildingAnalyzer(List<Match<Building>> buildingMatches) {
         super();
         this.buildingMatches = buildingMatches;
@@ -81,10 +80,10 @@ public class OsmBuildingAnalyzer {
             }
         }
     }
-    
+
     /**
      * Check if the node has special referrers.
-     * A referrers is considered to be special if it is not a building
+     * A referrer is considered to be special if it is not a building
      * that is about to be updated.
      *
      * @param node
@@ -94,7 +93,7 @@ public class OsmBuildingAnalyzer {
         boolean other = false;
         for (OsmPrimitive referrer : node.getReferrers()) {
             if (!includedPrimitives.contains(referrer)) {
-                if (BuildingEntityType.isBuilding(referrer)) {
+                if (Building.IsBuilding(referrer)) {
                     isBuilding = true;
                 }
                 else {
@@ -111,7 +110,7 @@ public class OsmBuildingAnalyzer {
         }
         return SpecialReferrers.NONE;
     }
-    
+
     public Collection<?> getExcludedMatches() {
         return excludedMatches;
     }

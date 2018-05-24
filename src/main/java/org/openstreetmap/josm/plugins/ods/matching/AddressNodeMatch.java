@@ -1,8 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import org.openstreetmap.josm.plugins.ods.entities.EntityType;
 import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeEntityType;
 
 public class AddressNodeMatch extends MatchImpl<AddressNode> {
     Object id;
@@ -21,8 +19,8 @@ public class AddressNodeMatch extends MatchImpl<AddressNode> {
     }
 
     @Override
-    public EntityType<AddressNode> getEntityType() {
-        return AddressNodeEntityType.getInstance();
+    public Class<AddressNode> getEntityClass() {
+        return AddressNode.class;
     }
 
     @Override
@@ -46,7 +44,7 @@ public class AddressNodeMatch extends MatchImpl<AddressNode> {
     @Override
     public MatchStatus getAttributeMatch() {
         return MatchStatus.combine(houseNumberMatch, fullHouseNumberMatch, postcodeMatch,
-            streetMatch, cityMatch);
+                streetMatch, cityMatch);
     }
 
     @Override
