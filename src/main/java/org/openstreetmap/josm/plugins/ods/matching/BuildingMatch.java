@@ -11,12 +11,13 @@ import static org.openstreetmap.josm.plugins.ods.matching.MatchStatus.combine;
 
 import java.util.Objects;
 
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
 import com.vividsolutions.jts.geom.Point;
 
-public class BuildingMatch extends MatchImpl<Building> {
+public class BuildingMatch extends MatchImpl<OsmBuilding, OdBuilding> {
     /**
      * A double value indicating the match between the areas of the 2 buildings.
      *
@@ -26,14 +27,16 @@ public class BuildingMatch extends MatchImpl<Building> {
     private MatchStatus startDateMatch;
     private MatchStatus statusMatch;
 
-    public BuildingMatch(Building osmBuilding, Building openDataBuilding) {
-        super(osmBuilding, openDataBuilding);
+    public BuildingMatch(OsmBuilding osmBuilding, OdBuilding odBuilding) {
+        super(osmBuilding, odBuilding);
+        osmBuilding.setMatch(this);
+        odBuilding.setMatch(this);
     }
 
-    @Override
-    public Class<Building> getEntityClass() {
-        return Building.class;
-    }
+    //    @Override
+    //    public Class<Building> getEntityClass() {
+    //        return Building.class;
+    //    }
 
     @Override
     public void analyze() {

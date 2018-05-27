@@ -5,15 +5,16 @@ import java.util.List;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.ODS;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
+import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
-public abstract class MatchImpl<E extends Entity> implements Match<E> {
+public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> implements Match<T1, T2> {
     private Object id;
-    private final List<E> osmEntities = new LinkedList<>();
-    private final List<E> openDataEntities = new LinkedList<>();
+    private final List<T1> osmEntities = new LinkedList<>();
+    private final List<T2> openDataEntities = new LinkedList<>();
 
-    public MatchImpl(E osmEntity, E openDataEntity) {
+    public MatchImpl(T1 osmEntity, T2 openDataEntity) {
         if (osmEntity != null && osmEntity.getReferenceId() != null) {
             id = osmEntity.getReferenceId();
             if (openDataEntity != null) {
@@ -30,8 +31,6 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
         }
         osmEntities.add(osmEntity);
         openDataEntities.add(openDataEntity);
-        osmEntity.setMatch(this);
-        openDataEntity.setMatch(this);
     }
 
     @Override
@@ -45,7 +44,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     }
 
     @Override
-    public E getOsmEntity() {
+    public T1 getOsmEntity() {
         if (osmEntities.size() == 0) {
             return null;
         }
@@ -53,7 +52,7 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     }
 
     @Override
-    public E getOpenDataEntity() {
+    public T2 getOpenDataEntity() {
         if (openDataEntities.size() == 0) {
             return null;
         }
@@ -61,25 +60,23 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
     }
 
     @Override
-    public List<? extends E> getOsmEntities() {
+    public List<? extends T1> getOsmEntities() {
         return osmEntities;
     }
 
     @Override
-    public List<? extends E> getOpenDataEntities() {
+    public List<? extends T2> getOpenDataEntities() {
         return openDataEntities;
     }
 
     @Override
-    public <E2 extends E>void addOsmEntity(E2 entity) {
+    public <E extends T1>void addOsmEntity(E entity) {
         osmEntities.add(entity);
-        entity.setMatch(this);
     }
 
     @Override
-    public <E2 extends E> void addOpenDataEntity(E2 entity) {
+    public <E extends T2> void addOpenDataEntity(E entity) {
         openDataEntities.add(entity);
-        entity.setMatch(this);
     }
 
     @Override
@@ -131,6 +128,6 @@ public abstract class MatchImpl<E extends Entity> implements Match<E> {
         if (!(obj instanceof Match)) {
             return false;
         }
-        return (id.equals(((Match<?>)obj).getId()));
+        return (id.equals(((Match<?, ?>)obj).getId()));
     }
 }

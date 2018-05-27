@@ -38,7 +38,7 @@ public class BuildingPassageAction extends JosmAction {
      */
     public BuildingPassageAction() {
         super(
-                tr("Building passage"),
+                tr("OdBuilding passage"),
                 null,
                 tr("Create a tunnel=building_building passage for a highway crossing a building."),
                 null, true);

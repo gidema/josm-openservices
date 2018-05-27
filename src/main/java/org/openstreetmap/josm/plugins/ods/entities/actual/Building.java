@@ -1,10 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual;
 
-import java.util.List;
 import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
@@ -23,24 +23,24 @@ public interface Building extends Entity {
     @Override
     public Geometry getGeometry();
 
-    public City getCity();
+    //    public OsmCity getCity();
 
     /**
      * Return the address information associated with this building.
      *
      * @return null if no address is associated with the building
      */
-    public Address getAddress();
+    //    public Address getAddress();
 
-    /**
-     * Return the address nodes associated with this building.
-     *
-     * @return empty collection if no address nodes are associated with this
-     *         building.
-     */
-    public List<AddressNode> getAddressNodes();
+    //    /**
+    //     * Return the address nodes associated with this building.
+    //     *
+    //     * @return empty collection if no address nodes are associated with this
+    //     *         building.
+    //     */
+    //    public List<AddressNode> getAddressNodes();
 
-    public Set<Building> getNeighbours();
+    public Set<? extends Building> getNeighbours();
 
     /**
      * Check is the full area of this building has been loaded. This is true if
@@ -54,6 +54,8 @@ public interface Building extends Entity {
     public String getStartDate();
 
     public BuildingType getBuildingType();
+
+    public void setMatch(BuildingMatch match);
 
     @Override
     public BuildingMatch getMatch();

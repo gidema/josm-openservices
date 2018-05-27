@@ -36,9 +36,10 @@ public interface Entity {
     public Geometry getGeometry();
     public void setGeometry(Geometry geometry);
 
-    public Match<? extends Entity> getMatch();
+    public Match<? extends OsmEntity, ? extends OdEntity> getMatch();
 
-    public <E extends Entity> void setMatch(Match<E> match);
+    //    public <E1 extends OsmEntity, E2 extends OdEntity> void setMatch(Match<E1, E2> match);
+
     /**
      * Get the OSM primitive(s) from which this entity was constructed,
      * or that was/were constructed from this entity.

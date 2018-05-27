@@ -1,15 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.AddressNodeGroup;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.AddressNodeGroup;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -21,12 +24,13 @@ import com.vividsolutions.jts.geom.Point;
  * they are no longer overlapping. The MatchAddressToBuildingTask must run
  * before this class, so when can distribute over the line pointing to the
  * center of the building.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
- * 
+ *
  */
-public class DistributeAddressNodes implements Consumer<Building> {
-    private GeoUtil geoUtil;
+public class DistributeAddressNodes implements Consumer<OdBuilding> {
+    private final GeoUtil geoUtil;
+    private final AddressNodeComparator comparator = new AddressNodeComparator();
 
     public DistributeAddressNodes(GeoUtil geoUtil) {
         super();
@@ -34,7 +38,7 @@ public class DistributeAddressNodes implements Consumer<Building> {
     }
 
     @Override
-    public void accept(Building building) {
+    public void accept(OdBuilding building) {
         for (AddressNodeGroup group : buildGroups(building).values()) {
             if (group.getAddressNodes().size() > 1) {
                 distribute(group);
@@ -44,14 +48,14 @@ public class DistributeAddressNodes implements Consumer<Building> {
 
     /**
      * Analyze all new address nodes and group them by Geometry (Point)
-     * 
+     *
      * @param newEntities
      */
-    private static Map<Point, AddressNodeGroup> buildGroups(Building building) {
+    private static Map<Point, AddressNodeGroup> buildGroups(OdBuilding building) {
         Map<Point, AddressNodeGroup> groups = new HashMap<>();
-        Iterator<AddressNode> it = building.getAddressNodes().iterator();
+        Iterator<OdAddressNode> it = building.getAddressNodes().iterator();
         while (it.hasNext()) {
-            AddressNode addressNode = it.next();
+            OdAddressNode addressNode = it.next();
             AddressNodeGroup group = groups.get(addressNode.getGeometry());
             if (group == null) {
                 group = new AddressNodeGroup(addressNode);
@@ -64,8 +68,8 @@ public class DistributeAddressNodes implements Consumer<Building> {
     }
 
     private void distribute(AddressNodeGroup group) {
-        List<AddressNode> nodes = group.getAddressNodes();
-        Collections.sort(nodes);
+        List<OdAddressNode> nodes = group.getAddressNodes();
+        Collections.sort(nodes, comparator);
         if (group.getBuilding().getGeometry().isEmpty()) {
             // Happens rarely,
             // for now return to prevent null pointer Exception
@@ -79,11 +83,39 @@ public class DistributeAddressNodes implements Consumer<Building> {
         double dy = Math.sin(angle) * 2e-7;
         double x = group.getGeometry().getX();
         double y = group.getGeometry().getY();
-        for (AddressNode node : nodes) {
+        for (OdAddressNode node : nodes) {
             Point point = geoUtil.toPoint(new Coordinate(x, y));
             node.setGeometry(point);
             x = x + dx;
             y = y + dy;
+        }
+    }
+
+    private class AddressNodeComparator implements Comparator<OdAddressNode> {
+        public AddressNodeComparator() {
+            // TODO Auto-generated constructor stub
+        }
+
+        @Override
+        public int compare(OdAddressNode an1, OdAddressNode an2) {
+            if (an1 == null || an2 == null) {
+                return 0;
+            }
+            return compare(an1.getAddress(), an2.getAddress());
+        }
+
+        public int compare(OdAddress a1, OdAddress a2) {
+            int result = Objects.compare(a2.getCityName(), a1.getCityName(), String.CASE_INSENSITIVE_ORDER);
+            if (result == 0) {
+                result = Objects.compare(a2.getPostcode(), a1.getPostcode(), String.CASE_INSENSITIVE_ORDER);
+            }
+            if (result == 0) {
+                result = Objects.compare(a2.getStreetName(), a1.getStreetName(), String.CASE_INSENSITIVE_ORDER);
+            }
+            if (result == 0) {
+                result = Objects.compare(a2.getFullHouseNumber(), a1.getFullHouseNumber(), String.CASE_INSENSITIVE_ORDER);
+            }
+            return result;
         }
     }
 }

@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities.actual;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.Address;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 
 import com.vividsolutions.jts.geom.Point;

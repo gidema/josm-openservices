@@ -7,33 +7,34 @@ import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 
 /**
  * This class is part of the building update process.
  * It's concern is to analyse the buildings on the OSM layer that are about
- * to be updated with a new geometry. 
- * 
+ * to be updated with a new geometry.
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class OdBuildingAnalyzer {
-    private final Set<Match<Building>> buildingMatches;
+    private final Set<Match<OsmBuilding, OdBuilding>> buildingMatches;
     private final Set<OsmPrimitive> includedPrimitives = new HashSet<>();
     private final Set<Node> nodes = new HashSet<>();
 
-//    private final Set<Node> connectedBuildingNodes = new HashSet<>();
-//    private final Set<Node> connectedOtherNodes = new HashSet<>();
-    
-    public OdBuildingAnalyzer(Set<Match<Building>> updateableMatches) {
+    //    private final Set<Node> connectedBuildingNodes = new HashSet<>();
+    //    private final Set<Node> connectedOtherNodes = new HashSet<>();
+
+    public OdBuildingAnalyzer(Set<Match<OsmBuilding, OdBuilding>> updateableMatches) {
         super();
         this.buildingMatches = updateableMatches;
     }
 
     public void analyze() {
         // Collect the building primitives in a set, so we can look them up
-        for (Match<Building> match : buildingMatches) {
+        for (Match<OsmBuilding, OdBuilding> match : buildingMatches) {
             assert match.isSimple();
             includedPrimitives.add(match.getOsmEntity().getPrimitive());
         }
@@ -44,7 +45,7 @@ public class OdBuildingAnalyzer {
             }
         }
     }
-    
+
     public Set<Node> getNodes() {
         return nodes;
     }

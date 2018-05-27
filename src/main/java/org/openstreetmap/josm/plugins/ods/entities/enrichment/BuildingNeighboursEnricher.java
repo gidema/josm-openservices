@@ -2,31 +2,31 @@ package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.entities.actual.impl.opendata.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildingStore;
 
 
 /**
  * This tasks verifies if there are adjacent buildings in
  * the down loaded data.
- * 
+ *
  * TODO consider running over all buildings, not just the new ones.
- * 
+ *
  * @author gertjan
  *
  */
-public class BuildingNeighboursEnricher implements Consumer<Building> {
+public class BuildingNeighboursEnricher implements Consumer<OdBuilding> {
     private final OpenDataBuildingStore buildingStore;
-    
+
     public BuildingNeighboursEnricher(OpenDataBuildingStore buildingStore) {
         super();
         this.buildingStore = buildingStore;
     }
 
     @Override
-    public void accept(Building building) {
+    public void accept(OdBuilding building) {
         // TODO consider using a buffer around the building
-        for (Building candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
+        for (OdBuilding candidate : buildingStore.getGeoIndex().intersection(building.getGeometry())) {
             if (candidate == building) continue;
             if (building.getNeighbours().contains(candidate)) continue;
             building.getNeighbours().add(candidate);

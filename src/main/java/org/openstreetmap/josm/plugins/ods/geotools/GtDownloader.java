@@ -14,11 +14,11 @@ import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.GeotoolsEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.PagingFeatureReader;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.SimpleFeatureReader;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
@@ -29,7 +29,7 @@ import org.openstreetmap.josm.tools.Logging;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GtDownloader<T extends Entity> implements FeatureDownloader {
+public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     private final GtDataSource dataSource;
     private final CRSUtil crsUtil;
     private DownloadRequest request;
@@ -37,20 +37,20 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     private SimpleFeatureSource featureSource;
     private Query query;
     DefaultFeatureCollection downloadedFeatures;
-    private EntityStore<T> entityStore;
+    private final EntityStore<T> entityStore;
     private final Status status = new Status();
-    private final GeotoolsEntityBuilder<T> entityBuilder;
+    private final OdEntityBuilder<T> entityBuilder;
     private Normalisation normalisation = Normalisation.FULL;
-    
+
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            GeotoolsEntityBuilder<T> entityBuilder, EntityStore<T> entityStore) {
+            OdEntityBuilder<T> entityBuilder, EntityStore<T> entityStore) {
         super();
         this.dataSource = dataSource;
         this.crsUtil = crsUtil;
         this.entityBuilder = entityBuilder;
         this.entityStore = entityStore;
     }
-    
+
     @Override
     public void setNormalisation(Normalisation normalisation) {
         this.normalisation = normalisation;
@@ -87,12 +87,12 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             query = new Query(query);
             FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
             String geometryProperty = gtFeatureSource.getFeatureType()
-                .getGeometryDescriptor().getLocalName();
+                    .getGeometryDescriptor().getLocalName();
             Filter filter = query.getFilter();
             filter = ff.intersects(ff.property(geometryProperty), ff.literal(getArea()));
             Filter dataFilter = dataSource.getQuery().getFilter();
             if (dataFilter != null) {
-                 filter = ff.and(filter, dataFilter);
+                filter = ff.and(filter, dataFilter);
             }
             query.setFilter(filter);
         } catch (InitializationException e) {
@@ -101,11 +101,11 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         }
         return;
     }
-    
+
     /**
      * Get the download area and transform to the desired
      * CoordinateReferenceSystem
-     * 
+     *
      * @return The transformed geometry
      */
     private Geometry getArea() {
@@ -117,10 +117,10 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             } catch (CRSException e) {
                 throw new RuntimeException(e);
             }
-        } 
+        }
         return area;
     }
-    
+
     @Override
     public void download() {
         downloadedFeatures = new DefaultFeatureCollection();
@@ -139,7 +139,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
         } catch (DataCutOffException e) {
             String featureType = dataSource.getFeatureType();
             status.setMessage(I18n.tr(
-                "To many {0} objects. Please choose a smaller download area.", featureType));
+                    "To many {0} objects. Please choose a smaller download area.", featureType));
             status.setCancelled(true);
             Thread.currentThread().interrupt();
             downloadedFeatures.clear();
@@ -153,15 +153,15 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
             if (dataSource.isRequired()) {
                 String featureType = dataSource.getFeatureType();
                 status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
-                            featureType));
+                        featureType));
             }
         }
         if (!status.isSucces()) {
-             Thread.currentThread().interrupt();
-             return;
+            Thread.currentThread().interrupt();
+            return;
         }
     }
-    
+
     @Override
     public void process() {
         for (SimpleFeature feature : downloadedFeatures) {
@@ -176,7 +176,7 @@ public class GtDownloader<T extends Entity> implements FeatureDownloader {
     public GtDataSource getDataSource() {
         return dataSource;
     }
-    
+
 
     @Override
     public void cancel() {

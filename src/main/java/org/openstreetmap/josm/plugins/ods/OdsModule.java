@@ -20,7 +20,7 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerManager;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
@@ -43,7 +43,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
 
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    private OpenDataLayerManager openDataLayerManager;
+    private OdLayerManager odLayerManager;
     private PolygonLayerManager polygonDataLayer;
     private OsmLayerManager osmLayerManager;
     private MatcherManager matcherManager;
@@ -57,7 +57,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
 
     public void initialize() throws Exception {
         this.osmLayerManager = createOsmLayerManager();
-        this.openDataLayerManager = createOpenDataLayerManager();
+        this.odLayerManager = createOpenDataLayerManager();
         MainApplication.getLayerManager().addActiveLayerChangeListener(this);
         MainApplication.getLayerManager().addLayerChangeListener(this);
     }
@@ -99,13 +99,13 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         return osmQuery;
     }
 
-    protected abstract OpenDataLayerManager createOpenDataLayerManager();
+    protected abstract OdLayerManager createOpenDataLayerManager();
 
     protected abstract OsmLayerManager createOsmLayerManager();
 
 
-    public OpenDataLayerManager getOpenDataLayerManager() {
-        return openDataLayerManager;
+    public OdLayerManager getOpenDataLayerManager() {
+        return odLayerManager;
     }
 
     public OsmLayerManager getOsmLayerManager() {
@@ -118,8 +118,8 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
 
     public LayerManager getLayerManager(Layer activeLayer) {
         if (!isActive()) return null;
-        if (openDataLayerManager.getOsmDataLayer() == activeLayer) {
-            return openDataLayerManager;
+        if (odLayerManager.getOsmDataLayer() == activeLayer) {
+            return odLayerManager;
         }
         if (osmLayerManager.getOsmDataLayer() == activeLayer) {
             return osmLayerManager;

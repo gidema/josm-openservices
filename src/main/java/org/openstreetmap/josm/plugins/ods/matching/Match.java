@@ -3,9 +3,10 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
+import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
-public interface Match<E extends Entity> {
+public interface Match<T1 extends OsmEntity, T2 extends OdEntity> {
     final static AtomicLong idCounter = new AtomicLong(0);
 
     public Object getId();
@@ -19,19 +20,19 @@ public interface Match<E extends Entity> {
 
     boolean isSingleSided();
 
-    public Class<E> getEntityClass();
+    //    public Class<E> getEntityClass();
 
-    public E getOsmEntity();
+    public T1 getOsmEntity();
 
-    public E getOpenDataEntity();
+    public T2 getOpenDataEntity();
 
-    public List<? extends E> getOsmEntities();
+    public List<? extends T1> getOsmEntities();
 
-    public List<? extends E> getOpenDataEntities();
+    public List<? extends T2> getOpenDataEntities();
 
-    public <E2 extends E> void addOsmEntity(E2 entity);
+    public <E extends T1> void addOsmEntity(E entity);
 
-    public <E2 extends E> void addOpenDataEntity(E2 entity);
+    public <E extends T2> void addOpenDataEntity(E entity);
 
     public MatchStatus getGeometryMatch();
 

@@ -19,24 +19,25 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
-import org.openstreetmap.josm.plugins.ods.osm.BuildingAligner;
+import org.openstreetmap.josm.plugins.ods.osm.OsmBuildingAligner;
 
 public class BuildingGeometryUpdaterNg {
-    private final BuildingAligner buildingAligner;
+    private final OsmBuildingAligner osmBuildingAligner;
     private final OsmDataLayer osmDataLayer;
-    private Map<Node, PoolNode> nodeMapping = new HashMap<>();
-    
+    private final Map<Node, PoolNode> nodeMapping = new HashMap<>();
+
     public BuildingGeometryUpdaterNg(OdsModule module) {
         super();
         this.osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
-        this.buildingAligner = new BuildingAligner(module, 
-            module.getOsmLayerManager().getEntityStore(Building.class));
+        this.osmBuildingAligner = new OsmBuildingAligner(module,
+                module.getOsmLayerManager().getEntityStore(OsmBuilding.class));
     }
 
-    public void updateGeometries(List<Match<Building>> matches) {
-        Set<Match<Building>> updateableMatches = new HashSet<>();
+    public void updateGeometries(List<Match<OsmBuilding, OdBuilding>> matches) {
+        Set<Match<OsmBuilding, OdBuilding>> updateableMatches = new HashSet<>();
         updateableMatches.addAll(matches);
         OsmBuildingAnalyzer osmAnalyzer = new OsmBuildingAnalyzer(matches);
         osmAnalyzer.analyze();
@@ -52,16 +53,16 @@ public class BuildingGeometryUpdaterNg {
             }
         }
         // Update the geometries for the selected buildings
-        for (Match<Building> match : matches) {
+        for (Match<OsmBuilding, OdBuilding> match : matches) {
             updateGeometry(match.getOsmEntity(), match.getOpenDataEntity());
         }
         // Realign the updated buildings to the neighbour buildings
-        for (Match<Building> match : matches) {
-            buildingAligner.align(match.getOsmEntity());
+        for (Match<OsmBuilding, OdBuilding> match : matches) {
+            osmBuildingAligner.align(match.getOsmEntity());
         }
     }
-    
-    private void updateGeometry(Building osmBuilding, Building odBuilding) {
+
+    private void updateGeometry(OsmBuilding osmBuilding, OdBuilding odBuilding) {
         OsmPrimitive osmPrimitive = osmBuilding.getPrimitive();
         OsmPrimitive odPrimitive = odBuilding.getPrimitive();
         // Only update osm ways to start with
