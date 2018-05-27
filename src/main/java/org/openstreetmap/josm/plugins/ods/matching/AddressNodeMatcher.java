@@ -17,6 +17,15 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.Address;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 
+/**
+ * Matcher that tries to find matches between Open Data (OD) entities and entities that
+ * are present on the OSM layer.
+ * TODO This implementation is directed to address nodes in the Netherlands (BAG addresses) and
+ * should therefore be moved to the ods-bag plug-in.
+ *
+ * @author Gertjan Idema
+ *
+ */
 public class AddressNodeMatcher implements Matcher {
     private final OdsModule module;
 

@@ -23,11 +23,6 @@ public class AddressNodeMatch extends MatchImpl<OsmAddressNode, OdAddressNode> {
         an2.setMatch(this);
     }
 
-    //    @Override
-    //    public Class<AddressNode> getEntityClass() {
-    //        return AddressNode.class;
-    //    }
-
     @Override
     public Object getId() {
         return id;

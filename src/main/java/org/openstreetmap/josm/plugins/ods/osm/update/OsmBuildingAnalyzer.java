@@ -12,7 +12,6 @@ import org.openstreetmap.josm.data.osm.QuadBuckets;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 import org.openstreetmap.josm.plugins.ods.osm.update.PoolNode.SpecialReferrers;
 
@@ -92,7 +91,7 @@ public class OsmBuildingAnalyzer {
         boolean other = false;
         for (OsmPrimitive referrer : node.getReferrers()) {
             if (!includedPrimitives.contains(referrer)) {
-                if (Building.IsBuilding(referrer)) {
+                if (OsmBuilding.IsBuilding(referrer)) {
                     isBuilding = true;
                 }
                 else {

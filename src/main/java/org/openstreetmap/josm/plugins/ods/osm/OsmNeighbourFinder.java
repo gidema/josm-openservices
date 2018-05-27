@@ -9,7 +9,6 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
 /**
  * Find neighbours for a OdBuilding using the Osm primitive.
@@ -19,7 +18,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
  */
 public class OsmNeighbourFinder {
     private final OdsModule module;
-    private final Predicate<OsmPrimitive> isBuilding = Building::IsBuilding;
+    private final Predicate<OsmPrimitive> isBuilding = OsmBuilding::IsBuilding;
     private final OsmBuildingAligner osmBuildingAligner;
 
     public OsmNeighbourFinder(OdsModule module) {

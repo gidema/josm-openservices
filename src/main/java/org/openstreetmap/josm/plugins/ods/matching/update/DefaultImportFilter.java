@@ -1,9 +1,9 @@
 package org.openstreetmap.josm.plugins.ods.matching.update;
 
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
-import org.openstreetmap.josm.plugins.ods.entities.actual.AddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
 /**
  * Default import filter implementation
@@ -18,25 +18,28 @@ public class DefaultImportFilter implements ImportFilter {
 
     @Override
     public boolean test(OdEntity entity) {
+        boolean doImport = false;
         switch (entity.getStatus()) {
-        case NOT_REALIZED:
-        case REMOVED:
-        case UNKNOWN:
-        case PLANNED:
-            return false;
+        case IN_USE:
+        case IN_USE_NOT_MEASURED:
+        case REMOVAL_DUE:
         case CONSTRUCTION:
-            if (entity instanceof AddressNode) {
-                AddressNode addressNode = (AddressNode) entity;
-                Building building = addressNode.getBuilding();
-                if (building != null && building.getStatus().equals(EntityStatus.PLANNED)) {
-                    return false;
+            doImport = true;
+            break;
+        case PLANNED:
+            // Import planned addresses if the building is under construction
+            if (entity instanceof OdAddressNode) {
+                OdAddressNode addressNode = (OdAddressNode) entity;
+                OdBuilding building = addressNode.getBuilding();
+                if (building != null && building.getStatus().equals(EntityStatus.CONSTRUCTION)) {
+                    doImport = true;
                 }
             }
-            return true;
+            break;
         default:
-            return true;
-
+            doImport = false;
         }
+        return doImport;
     }
 
 }

@@ -69,7 +69,7 @@ public class DistributeAddressNodes implements Consumer<OdBuilding> {
 
     private void distribute(AddressNodeGroup group) {
         List<OdAddressNode> nodes = group.getAddressNodes();
-        Collections.sort(nodes, comparator);
+        Collections.sort(nodes, comparator.reversed());
         if (group.getBuilding().getGeometry().isEmpty()) {
             // Happens rarely,
             // for now return to prevent null pointer Exception

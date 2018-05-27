@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
@@ -23,8 +24,8 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     private BuildingMatch match;
 
     @Override
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
+    public void setStartYear(Integer year) {
+        this.startDate = Objects.toString(year);
     }
 
     @Override

@@ -43,11 +43,6 @@ public class BaseOsmCity extends AbstractOsmEntity implements OsmCity {
     }
 
     @Override
-    public boolean isIncomplete() {
-        return false;
-    }
-
-    @Override
     public Match<OsmCity, OdCity> getMatch() {
         return null;
     }

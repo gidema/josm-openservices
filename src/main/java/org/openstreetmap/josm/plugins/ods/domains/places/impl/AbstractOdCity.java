@@ -44,11 +44,6 @@ public class AbstractOdCity extends AbstractOdEntity implements OdCity {
     }
 
     @Override
-    public boolean isIncomplete() {
-        return false;
-    }
-
-    @Override
     public Match<? extends OsmEntity, ? extends OdEntity> getMatch() {
         // TODO Auto-generated method stub
         return null;

@@ -11,7 +11,6 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 import org.openstreetmap.josm.plugins.ods.osm.NodeDWithin;
 import org.openstreetmap.josm.plugins.ods.osm.NodeDWithinLatLon;
 import org.openstreetmap.josm.plugins.ods.osm.WayAligner;
@@ -40,7 +39,7 @@ public class OdBuildingAligner {
         }
     }
 
-    public void align(Building b1, Building b2) {
+    public void align(OdBuilding b1, OdBuilding b2) {
         align(b1.getPrimitive(), b2.getPrimitive());
     }
 

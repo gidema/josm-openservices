@@ -8,7 +8,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.domains.places.OsmCity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -42,7 +41,6 @@ public interface OsmBuilding extends OsmEntity, Building {
      */
     public List<OsmAddressNode> getAddressNodes();
 
-    @Override
     public Set<OsmBuilding> getNeighbours();
 
     /**
@@ -52,22 +50,5 @@ public interface OsmBuilding extends OsmEntity, Building {
      * @return
      */
 
-    @Override
     public void setStartDate(String string);
-
-    @Override
-    public String getStartDate();
-
-    @Override
-    public BuildingType getBuildingType();
-
-    @Override
-    public BuildingMatch getMatch();
-
-    // Setters
-    @Override
-    public void setBuildingType(BuildingType buildingType);
-
-    @Override
-    public void setIncomplete(boolean incomplete);
 }

@@ -32,21 +32,15 @@ public interface OdBuilding extends OdEntity, Building {
      */
     public List<OdAddressNode> getAddressNodes();
 
-    @Override
     public Set<OdBuilding> getNeighbours();
 
-    /**
-     * Check is the full area of this building has been loaded. This is true if
-     * the building is completely covered by the downloaded area.
-     *
-     * @return
-     */
+    public void setStartYear(Integer year);
 
-    //    public void setStartDate(String string);
+    @Override
+    public String getStartDate();
 
-    //    public String getStartDate();
-
-    //    public BuildingType getBuildingType();
+    @Override
+    public BuildingType getBuildingType();
 
     @Override
     public BuildingMatch getMatch();

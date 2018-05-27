@@ -1,9 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.entities.impl;
 
+import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
@@ -18,7 +21,7 @@ public abstract class AbstractOdEntity implements OdEntity {
     private String source;
     private Geometry geometry;
     private EntityStatus status = EntityStatus.UNKNOWN;
-    private boolean incomplete = true;
+    private Entity.Completeness completeness = Unknown;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
     //    private Match<?, ?> match;
@@ -84,12 +87,13 @@ public abstract class AbstractOdEntity implements OdEntity {
     }
 
     @Override
-    public boolean isIncomplete() {
-        return incomplete;
+    public Completeness getCompleteness() {
+        return completeness;
     }
 
-    public void setIncomplete(boolean incomplete) {
-        this.incomplete = incomplete;
+    @Override
+    public void setCompleteness(Completeness completeness) {
+        this.completeness = completeness;
     }
 
     @Override

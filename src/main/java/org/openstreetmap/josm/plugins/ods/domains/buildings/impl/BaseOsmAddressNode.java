@@ -80,11 +80,6 @@ public class BaseOsmAddressNode extends AbstractOsmEntity implements OsmAddressN
     }
 
     @Override
-    public boolean isIncomplete() {
-        return building != null && building.isIncomplete();
-    }
-
-    @Override
     public void setBuilding(OsmBuilding building) {
         this.building = building;
     }

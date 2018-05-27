@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods.entities;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -19,13 +18,12 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public interface Entity {
-    public void setDownloadResponse(DownloadResponse response);
-    public DownloadResponse getDownloadResponse();
     public void setSource(String source);
     public String getSource();
     public void setSourceDate(String sourceDate);
     public String getSourceDate();
-    boolean isIncomplete();
+    public void setCompleteness(Completeness completeness);
+    public Completeness getCompleteness();
     public void setStatus(EntityStatus status);
     public EntityStatus getStatus();
     public void setPrimaryId(Object id);
@@ -54,4 +52,17 @@ public interface Entity {
     public Map<String, String> getOtherTags();
 
     public void setPrimitive(OsmPrimitive primitive);
+
+    /**
+     * Enum to define the completeness of an entity.
+     * An entity is complete if the full bounding box of the entity has been down-loaded.
+     *
+     * @author Gertjan Idema
+     *
+     */
+    public enum Completeness {
+        Unknown,
+        Complete,
+        Incomplete
+    }
 }
