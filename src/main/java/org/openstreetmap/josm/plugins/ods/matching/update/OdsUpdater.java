@@ -1,14 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.matching.update;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.openstreetmap.josm.command.Command;
+import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
-import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.plugins.ods.entities.Deviation;
+import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.tools.I18n;
 
 /**
  * The updater updates objects in the Osm layer with new data from the OpenData layer.
@@ -17,32 +21,33 @@ import org.openstreetmap.josm.plugins.ods.matching.Match;
  *
  */
 public class OdsUpdater {
-    private final OdsModule module;
-    private final List<EntityUpdater> entityUpdaters = new LinkedList<>();
+    private final OsmLayerManager layerManager;
 
-    public OdsUpdater(OdsModule module) {
+    public OdsUpdater(OsmLayerManager layerManager) {
         super();
-        this.module = module;
-        // TODO improve configuration and generics for the entity updaters
-        this.entityUpdaters.add(new BuildingUpdater(module));
+        this.layerManager = layerManager;
     }
 
     public void doUpdate(Collection<OsmPrimitive> primitives) {
-        OdLayerManager layerManager = module.getOpenDataLayerManager();
-        List<Match<?, ?>> updateableMatches = new LinkedList<>();
+        List<OsmEntity> updateableEntities = new LinkedList<>();
         for (OsmPrimitive primitive : primitives) {
-            OdEntity entity = layerManager.getEntity(primitive);
-            if (entity != null && entity.getMatch() != null
-                    && entity.getMatch().isSimple()) {
-                updateableMatches.add(entity.getMatch());
+            OsmEntity entity = layerManager.getEntity(primitive);
+            if (entity != null && entity.getDeviations() != null) {
+                updateableEntities.add(entity);
             }
         }
-        for (EntityUpdater updater : entityUpdaters) {
-            updater.update(updateableMatches);
+        List<Command> commands = new LinkedList<>();
+        for (OsmEntity entity : updateableEntities) {
+            Iterator<Deviation> it = entity.getDeviations().iterator();
+            while (it.hasNext()) {
+                Deviation deviation = it.next();
+                if (deviation.isFixable()) {
+                    commands.add(deviation.getFix());
+                    deviation.clearOdsTags();
+                    it.remove();
+                }
+            }
         }
-        for (Match<?, ?> match : updateableMatches) {
-            match.analyze();
-            match.updateMatchTags();
-        }
+        MainApplication.undoRedo.add(new SequenceCommand(I18n.tr("Update properties"), commands));
     }
 }

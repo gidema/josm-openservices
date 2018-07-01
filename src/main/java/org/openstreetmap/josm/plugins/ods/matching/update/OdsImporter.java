@@ -15,14 +15,11 @@ import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
-import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatcher;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatcher;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
 
 /**
@@ -34,27 +31,34 @@ import org.openstreetmap.josm.plugins.ods.osm.OsmNeighbourFinder;
  *
  */
 public class OdsImporter {
-    private final OdsModule module;
+    private final OsmNeighbourFinder osmNeighbourFinder;
+    private final OdLayerManager odLayerManager;
+    private final OsmLayerManager osmLayerManager;
+    private final OsmEntitiesBuilder entitiesBuilder;
     // TODO Make the importfilter(s) configurable
     private final ImportFilter importFilter = new DefaultImportFilter();
 
-    public OdsImporter(OdsModule module) {
+    public OdsImporter(OsmNeighbourFinder osmNeighbourFinder, OdLayerManager odLayerManager,
+            OsmLayerManager osmLayerManager, OsmEntitiesBuilder entitiesBuilder) {
         super();
-        this.module = module;
+        this.osmNeighbourFinder = osmNeighbourFinder;
+        this.odLayerManager = odLayerManager;
+        this.osmLayerManager = osmLayerManager;
+        this.entitiesBuilder = entitiesBuilder;
     }
 
     public void doImport(Collection<OsmPrimitive> primitives) {
-        OdLayerManager layerManager = module.getOpenDataLayerManager();
         Set<OdEntity> entitiesToImport = new HashSet<>();
         for (OsmPrimitive primitive : primitives) {
-            OdEntity entity = layerManager.getEntity(primitive);
+            // TODO retrieve entities from data stores
+            OdEntity entity = odLayerManager.getEntity(primitive);
             if (entity != null && entity.getMatch() == null
                     && importFilter.test(entity)) {
                 entitiesToImport.add(entity);
             }
             for (OsmPrimitive referrer : primitive.getReferrers()) {
                 if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
-                    OdEntity referrerEntity = layerManager.getEntity(referrer);
+                    OdEntity referrerEntity = odLayerManager.getEntity(referrer);
                     if (referrerEntity != null && referrerEntity.getMatch() == null
                             && importFilter.test(referrerEntity)) {
                         entitiesToImport.add(referrerEntity);
@@ -83,7 +87,7 @@ public class OdsImporter {
             }
         }
         AddPrimitivesCommand cmd = new AddPrimitivesCommand(builder.primitiveData,
-                module.getOsmLayerManager().getOsmDataLayer().getDataSet());
+                osmLayerManager.getOsmDataLayer().getDataSet());
         cmd.executeCommand();
         Collection<? extends OsmPrimitive> importedPrimitives = cmd.getParticipatingPrimitives();
         removeOdsTags(importedPrimitives);
@@ -91,11 +95,10 @@ public class OdsImporter {
         // Save the current edit layer
         OsmDataLayer savedEditLayer =  MainApplication.getLayerManager().getEditLayer();
         try {
-            OsmDataLayer editLayer = module.getOsmLayerManager().getOsmDataLayer();
+            OsmDataLayer editLayer = osmLayerManager.getOsmDataLayer();
             MainApplication.getLayerManager().setActiveLayer(editLayer);
-            OsmNeighbourFinder neighbourFinder = new OsmNeighbourFinder(module);
             for (OsmPrimitive osm : importedPrimitives) {
-                neighbourFinder.findNeighbours(osm);
+                osmNeighbourFinder.findNeighbours(osm);
             }
         }
         finally {
@@ -105,10 +108,10 @@ public class OdsImporter {
     }
 
     private void updateMatching() {
-        Matcher matcher = module.getMatcherManager().getMatcher(BuildingMatcher.class);
-        matcher.run();
-        matcher = module.getMatcherManager().getMatcher(AddressNodeMatcher.class);
-        matcher.run();
+        //        Matcher matcher = module.getMatcherManager().getMatcher(BuildingMatcher.class);
+        //        matcher.run();
+        //        matcher = module.getMatcherManager().getMatcher(AddressNodeMatcher.class);
+        //        matcher.run();
     }
 
     /**
@@ -136,7 +139,6 @@ public class OdsImporter {
      */
     private void buildImportedEntities(
             Collection<? extends OsmPrimitive> importedPrimitives) {
-        OsmEntitiesBuilder entitiesBuilder = module.getOsmLayerManager().getEntitiesBuilder();
         entitiesBuilder.build(importedPrimitives);
     }
 

@@ -3,7 +3,6 @@ package org.openstreetmap.josm.plugins.ods.matching;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OsmAddressNodeStore;
@@ -21,12 +20,12 @@ import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
  *
  */
 public class OsmBuildingToAddressNodesMatcher {
-    private final OdsModule module;
     private Consumer<OsmAddressNode> unmatchedAddressNodeHandler;
+    private final OsmAddressNodeStore addressNodeStore;
 
-    public OsmBuildingToAddressNodesMatcher(OdsModule module) {
+    public OsmBuildingToAddressNodesMatcher(OsmAddressNodeStore addressNodeStore) {
         super();
-        this.module = module;
+        this.addressNodeStore = addressNodeStore;
     }
 
     public void setUnmatchedAddressNodeHandler(
@@ -40,8 +39,6 @@ public class OsmBuildingToAddressNodesMatcher {
      * @param building
      */
     public void match(OsmBuilding building) {
-        OsmAddressNodeStore addressNodeStore = (OsmAddressNodeStore)module
-                .getOsmLayerManager().getEntityStore(OsmAddressNode.class);
         GeoIndex<OsmAddressNode> geoIndex = addressNodeStore.getGeoIndex();
         if (building.getAddressNodes().size() == 0) {
             List<OsmAddressNode> addressNodes = geoIndex.intersection(building.getGeometry());

@@ -28,5 +28,8 @@ public interface OsmAddressNode extends OsmEntity, Address {
     @Override
     public Point getGeometry();
 
+    @Override
+    public AddressNodeMatch getMatch();
+
     public void setMatch(AddressNodeMatch match);
 }

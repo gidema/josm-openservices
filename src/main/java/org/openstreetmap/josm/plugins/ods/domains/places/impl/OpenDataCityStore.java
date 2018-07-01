@@ -1,34 +1,20 @@
 package org.openstreetmap.josm.plugins.ods.domains.places.impl;
 
 import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
-import org.openstreetmap.josm.plugins.ods.entities.GeoIndexImpl;
-import org.openstreetmap.josm.plugins.ods.entities.IndexImpl;
-import org.openstreetmap.josm.plugins.ods.entities.UniqueIndexImpl;
+import org.openstreetmap.josm.plugins.ods.entities.impl.GeoIndexImpl;
+import org.openstreetmap.josm.plugins.ods.entities.impl.OneOrManyIndex;
+import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractOdEntityStore;
 
-public class OpenDataCityStore extends EntityStore<OdCity> {
-    private final UniqueIndexImpl<OdCity> primaryIndex = new UniqueIndexImpl<>(OdCity.class, "referenceId");
-    private final IndexImpl<OdCity> idIndex = new IndexImpl<>(OdCity.class, "referenceId");
-    private final GeoIndex<OdCity> geoIndex = new GeoIndexImpl<>(OdCity.class, "geometry");
+public class OpenDataCityStore extends AbstractOdEntityStore<OdCity> {
+    private final OneOrManyIndex<OdCity, Long> idIndex = new OneOrManyIndex<>(OdCity::getCityId);
+    private final GeoIndex<OdCity> geoIndex = new GeoIndexImpl<>(OdCity.class, OdCity::getGeometry);
 
     public OpenDataCityStore() {
         super();
-        addIndex(primaryIndex);
         addIndex(idIndex);
         addIndex(geoIndex);
     }
-
-    @Override
-    public IndexImpl<OdCity> getIdIndex() {
-        return idIndex;
-    }
-
-    @Override
-    public UniqueIndexImpl<OdCity> getPrimaryIndex() {
-        return primaryIndex;
-    }
-
 
     @Override
     public GeoIndex<OdCity> getGeoIndex() {

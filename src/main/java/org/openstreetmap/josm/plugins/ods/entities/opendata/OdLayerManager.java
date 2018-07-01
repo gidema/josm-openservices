@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.AbstractLayerManager;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 
 /**
@@ -21,7 +20,7 @@ public class OdLayerManager extends AbstractLayerManager {
     private final Map<Long, OdEntity> nodeEntities = new HashMap<>();
     private final Map<Long, OdEntity> wayEntities = new HashMap<>();
     private final Map<Long, OdEntity> relationEntities = new HashMap<>();
-    private final EntityStoreMap entityStoreMap = new EntityStoreMap();
+    //    private final EntityStoreMap entityStoreMap = new EntityStoreMap();
 
     public OdLayerManager(String name) {
         super(name);
@@ -49,9 +48,9 @@ public class OdLayerManager extends AbstractLayerManager {
         }
     }
 
-    public <T extends OdEntity> void addEntityStore(Class<T> clazz, EntityStore<T> entityStore) {
-        this.entityStoreMap.put(clazz, entityStore);
-    }
+    //    public <T extends OdEntity> void addEntityStore(Class<T> clazz, AbstractEntityStore<T,?> entityStore) {
+    //        this.entityStoreMap.put(clazz, entityStore);
+    //    }
 
     /**
      * Get the Entity related to the given OsmPrimitive
@@ -78,17 +77,17 @@ public class OdLayerManager extends AbstractLayerManager {
      * @param clazz The clazz of the Entity type
      * @return The store for this Entity type
      */
-    public <E extends OdEntity> EntityStore<E> getEntityStore(Class<E> clazz) {
-        return entityStoreMap.get(clazz);
-    }
+    //    public <E extends OdEntity> OdEntityStore<E, ?> getEntityStore(Class<E> clazz) {
+    //        return entityStoreMap.get(clazz);
+    //    }
 
     @Override
     public void deActivate() {
         if (isActive()) {
             // Clear all data stores
-            for (EntityStore<?> store : entityStoreMap.stores.values()) {
-                store.clear();
-            }
+            //            for (OdEntityStore<?, ?> store : entityStoreMap.stores.values()) {
+            //                store.clear();
+            //            }
             nodeEntities.clear();
             wayEntities.clear();
             relationEntities.clear();
@@ -96,21 +95,21 @@ public class OdLayerManager extends AbstractLayerManager {
         super.deActivate();
     }
 
-    private class EntityStoreMap {
-        Map<Class<?>, EntityStore<? extends OdEntity>> stores = new HashMap<>();
-
-        public EntityStoreMap() {
-            // TODO Auto-generated constructor stub
-        }
-
-        public <T extends OdEntity> void put(Class<T> clazz,
-                EntityStore<? extends T> store) {
-            stores.put(clazz, store);
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T extends OdEntity> EntityStore<T> get(Class<T> clazz) {
-            return (EntityStore<T>) stores.get(clazz);
-        }
-    }
+    //    private class EntityStoreMap {
+    //        Map<Class<?>, AbstractEntityStore<? extends OdEntity, ?>> stores = new HashMap<>();
+    //
+    //        public EntityStoreMap() {
+    //            // TODO Auto-generated constructor stub
+    //        }
+    //
+    //        public <T extends OdEntity> void put(Class<T> clazz,
+    //                AbstractEntityStore<? extends T, ?> store) {
+    //            stores.put(clazz, store);
+    //        }
+    //
+    //        @SuppressWarnings("unchecked")
+    //        public <T extends OdEntity> OdEntityStore<T, ?> get(Class<T> clazz) {
+    //            return (OdEntityStore<T, ?>) stores.get(clazz);
+    //        }
+    //    }
 }

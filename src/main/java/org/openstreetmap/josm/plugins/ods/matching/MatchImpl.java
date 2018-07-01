@@ -1,71 +1,52 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.ODS;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
+import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 
 public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> implements Match<T1, T2> {
     private Object id;
-    private final List<T1> osmEntities = new LinkedList<>();
-    private final List<T2> openDataEntities = new LinkedList<>();
+    private final ZeroOneMany<T1> osmEntities;
+    private final ZeroOneMany<T2> openDataEntities;
+
+    public MatchImpl(ZeroOneMany<T1> osmEntities, T2 openDataEntity) {
+        this(osmEntities, new ZeroOneMany<>(openDataEntity));
+    }
+
+    public MatchImpl(T1 osmEntity, ZeroOneMany<T2> odEntities) {
+        this(new ZeroOneMany<>(osmEntity), odEntities);
+    }
 
     public MatchImpl(T1 osmEntity, T2 openDataEntity) {
-        if (osmEntity != null && osmEntity.getReferenceId() != null) {
-            id = osmEntity.getReferenceId();
-            if (openDataEntity != null) {
-                assert openDataEntity.getReferenceId().equals(id);
-            }
-        }
-        else {
-            if (openDataEntity.getReferenceId() != null) {
-                id = openDataEntity.getReferenceId();
-            }
-        }
-        if (id == null) {
-            id = Match.generateUniqueId();
-        }
-        osmEntities.add(osmEntity);
-        openDataEntities.add(openDataEntity);
+        this(new ZeroOneMany<>(osmEntity), new ZeroOneMany<>(openDataEntity));
     }
+
+    public MatchImpl(ZeroOneMany<T1> osmEntities,
+            ZeroOneMany<T2> openDataEntities) {
+        super();
+        this.osmEntities = osmEntities;
+        this.openDataEntities = openDataEntities;
+    }
+
 
     @Override
     public boolean isSimple() {
-        return osmEntities.size() == 1 && openDataEntities.size() == 1;
+        return osmEntities.isOne() && openDataEntities.isOne();
     }
 
+    // TODO Deprecate
     @Override
     public boolean isSingleSided() {
-        return osmEntities.size() == 0 || openDataEntities.size() == 0;
+        return osmEntities.isEmpty() || openDataEntities.isEmpty();
     }
 
     @Override
-    public T1 getOsmEntity() {
-        if (osmEntities.size() == 0) {
-            return null;
-        }
-        return osmEntities.get(0);
-    }
-
-    @Override
-    public T2 getOpenDataEntity() {
-        if (openDataEntities.size() == 0) {
-            return null;
-        }
-        return openDataEntities.get(0);
-    }
-
-    @Override
-    public List<? extends T1> getOsmEntities() {
+    public ZeroOneMany<T1> getOsmEntities() {
         return osmEntities;
     }
 
     @Override
-    public List<? extends T2> getOpenDataEntities() {
+    public ZeroOneMany<T2> getOpenDataEntities() {
         return openDataEntities;
     }
 
@@ -79,44 +60,26 @@ public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> imple
         openDataEntities.add(entity);
     }
 
-    @Override
-    public void updateMatchTags() {
-        OsmPrimitive osm = getOpenDataEntity().getPrimitive();
-        if (osm != null) {
-            osm.put(ODS.KEY.BASE, "true");
-            osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
-            osm.put(ODS.KEY.STATUS, getOpenDataEntity().getStatus().toString());
-            osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
-            osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
-            if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
-                osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
-            }
-        }
-    }
-
+    //    @Override
+    //    public void updateMatchTags() {
+    //        //        OsmPrimitive osm = getOpenDataEntity().getPrimitive();
+    //        //        if (osm != null) {
+    //        //            osm.put(ODS.KEY.BASE, "true");
+    //        //            osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
+    //        //            osm.put(ODS.KEY.STATUS, getOpenDataEntity().getStatus().toString());
+    //        //            osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
+    //        //            osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
+    //        //            if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
+    //        //                osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
+    //        //            }
+    //        //        }
+    //    }
+    //
     @Override
     public Object getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return id;
     }
 
-    @Override
-    public MatchStatus getGeometryMatch() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MatchStatus getAttributeMatch() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MatchStatus getStatusMatch() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public int hashCode() {

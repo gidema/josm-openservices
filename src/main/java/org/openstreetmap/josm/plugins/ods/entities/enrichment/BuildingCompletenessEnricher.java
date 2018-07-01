@@ -1,16 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Complete;
-import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Incomplete;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygonal;
 import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 
@@ -20,28 +14,26 @@ import com.vividsolutions.jts.geom.prep.PreparedPolygon;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class BuildingCompletenessEnricher implements Consumer<OdBuilding> {
-    List<PreparedPolygon> boundaries = new LinkedList<>();
+public class BuildingCompletenessEnricher {
+    private final OdBuildingStore odBuildingStore;
 
-    public BuildingCompletenessEnricher(OpenDataBuildingStore buildingStore) {
+    public BuildingCompletenessEnricher(OdBuildingStore odBuildingStore) {
         super();
-        Geometry boundary = buildingStore.getBoundary();
-        for (int i=0; i<boundary.getNumGeometries(); i++) {
-            Polygonal polygonal = (Polygonal)boundary.getGeometryN(i);
-            boundaries.add(new PreparedPolygon(polygonal));
-        }
+        this.odBuildingStore = odBuildingStore;
     }
 
-    @Override
-    public void accept(OdBuilding building) {
+    public void run() {
+        PreparedPolygon preparedPolygon = new PreparedPolygon((Polygonal) odBuildingStore.getBoundary());
+        odBuildingStore.forEach(building -> update(preparedPolygon, building));
+
+    }
+
+    private static void update(PreparedPolygon preparedPolygon,OdBuilding building) {
         if (building.getCompleteness() != Complete) {
-            for (PreparedPolygon prep : boundaries) {
-                if (prep.covers(building.getGeometry())) {
-                    building.setCompleteness(Complete);
-                    return;
-                }
+            if (preparedPolygon.covers(building.getGeometry())) {
+                building.setCompleteness(Complete);
+                return;
             }
-            building.setCompleteness(Incomplete);
         }
     }
 }

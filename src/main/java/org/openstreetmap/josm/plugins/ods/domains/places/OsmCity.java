@@ -15,8 +15,6 @@ public interface OsmCity extends OsmEntity {
         return validTagging && validGeometry;
     }
 
-    String TYPE = "ods:city";
-
     public String getName();
 
     @Override

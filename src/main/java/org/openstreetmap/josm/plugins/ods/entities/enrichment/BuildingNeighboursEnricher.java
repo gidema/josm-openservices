@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
 
 
 /**
@@ -16,9 +16,9 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildin
  *
  */
 public class BuildingNeighboursEnricher implements Consumer<OdBuilding> {
-    private final OpenDataBuildingStore buildingStore;
+    private final OdBuildingStore buildingStore;
 
-    public BuildingNeighboursEnricher(OpenDataBuildingStore buildingStore) {
+    public BuildingNeighboursEnricher(OdBuildingStore buildingStore) {
         super();
         this.buildingStore = buildingStore;
     }

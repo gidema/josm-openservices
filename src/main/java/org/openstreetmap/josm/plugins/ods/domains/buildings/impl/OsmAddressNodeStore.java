@@ -1,12 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
-import org.openstreetmap.josm.plugins.ods.entities.GeoIndexImpl;
-import org.openstreetmap.josm.plugins.ods.entities.Index;
-import org.openstreetmap.josm.plugins.ods.entities.IndexImpl;
-import org.openstreetmap.josm.plugins.ods.entities.UniqueIndexImpl;
+import org.openstreetmap.josm.plugins.ods.entities.impl.GeoIndexImpl;
+import org.openstreetmap.josm.plugins.ods.entities.impl.OneOrManyIndex;
+import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
+import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractOsmEntityStore;
+import org.openstreetmap.josm.plugins.ods.matching.PcHousenumberAddressKey;
 
 /**
  * Store address nodes created from osm primitives.
@@ -18,25 +18,15 @@ import org.openstreetmap.josm.plugins.ods.entities.UniqueIndexImpl;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class OsmAddressNodeStore extends EntityStore<OsmAddressNode> {
-    private final UniqueIndexImpl<OsmAddressNode> primitiveIndex = new UniqueIndexImpl<>(OsmAddressNode.class, "primaryId");
-    private final GeoIndex<OsmAddressNode> geoIndex = new GeoIndexImpl<>(OsmAddressNode.class, "geometry");
-    private final Index<OsmAddressNode> zipHousnrIndex = new IndexImpl<>(OsmAddressNode.class, "postcode", "houseNumber");
+public class OsmAddressNodeStore extends AbstractOsmEntityStore<OsmAddressNode> {
+    private final GeoIndex<OsmAddressNode> geoIndex = new GeoIndexImpl<>(OsmAddressNode.class, OsmAddressNode::getGeometry);
+    private final OneOrManyIndex<OsmAddressNode, PcHousenumberAddressKey> pcHousenrIndex =
+            new OneOrManyIndex<>(PcHousenumberAddressKey::new);
 
     public OsmAddressNodeStore() {
-        addIndex(primitiveIndex);
-        addIndex(zipHousnrIndex);
+        super();
+        addIndex(pcHousenrIndex);
         addIndex(geoIndex);
-    }
-
-    @Override
-    public UniqueIndexImpl<OsmAddressNode> getPrimaryIndex() {
-        return primitiveIndex;
-    }
-
-    @Override
-    public IndexImpl<OsmAddressNode> getIdIndex() {
-        return null;
     }
 
     @Override
@@ -44,4 +34,7 @@ public class OsmAddressNodeStore extends EntityStore<OsmAddressNode> {
         return geoIndex;
     }
 
+    public ZeroOneMany<OsmAddressNode> lookup(PcHousenumberAddressKey key) {
+        return pcHousenrIndex.get(key);
+    }
 }

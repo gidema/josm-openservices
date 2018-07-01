@@ -14,11 +14,11 @@ import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
+import org.openstreetmap.josm.plugins.ods.entities.storage.OdEntityStore;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.PagingFeatureReader;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.SimpleFeatureReader;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
@@ -37,18 +37,18 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     private SimpleFeatureSource featureSource;
     private Query query;
     DefaultFeatureCollection downloadedFeatures;
-    private final EntityStore<T> entityStore;
+    private final OdEntityStore<T> odEntityStore;
     private final Status status = new Status();
     private final OdEntityBuilder<T> entityBuilder;
     private Normalisation normalisation = Normalisation.FULL;
 
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            OdEntityBuilder<T> entityBuilder, EntityStore<T> entityStore) {
+            OdEntityBuilder<T> entityBuilder, OdEntityStore<T> odEntityStore) {
         super();
         this.dataSource = dataSource;
         this.crsUtil = crsUtil;
         this.entityBuilder = entityBuilder;
-        this.entityStore = entityStore;
+        this.odEntityStore = odEntityStore;
     }
 
     @Override
@@ -166,11 +166,9 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     public void process() {
         for (SimpleFeature feature : downloadedFeatures) {
             T entity = entityBuilder.build(feature, response);
-            if (!entityStore.contains(entity.getPrimaryId())) {
-                entityStore.add(entity);
-            }
+            odEntityStore.add(entity);
         }
-        entityStore.extendBoundary(request.getBoundary().getMultiPolygon());
+        odEntityStore.extendBoundary(request.getBoundary().getMultiPolygon());
     }
 
     public GtDataSource getDataSource() {

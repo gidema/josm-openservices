@@ -9,7 +9,7 @@ import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.OsmApiException;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -21,11 +21,11 @@ public class OsmLayerDownloader implements LayerDownloader {
     private DownloadRequest request;
     @SuppressWarnings("unused")
     private DownloadResponse response;
-    private Status status = new Status();
-    private DownloadSource downloadSource =  DownloadSource.OVERPASS;
+    private final Status status = new Status();
+    private final DownloadSource downloadSource =  DownloadSource.OVERPASS;
     private OsmServerReader osmServerReader;
-    private OsmLayerManager layerManager;
-    private OsmEntitiesBuilder entitiesBuilder;
+    private final OsmLayerManager layerManager;
+    private final OsmEntitiesBuilder entitiesBuilder;
 
     private OsmHost host;
     private DataSet dataSet;
@@ -34,12 +34,11 @@ public class OsmLayerDownloader implements LayerDownloader {
         OSM,
         OVERPASS;
     }
-    
-    public OsmLayerDownloader(OdsModule module) {
+
+    public OsmLayerDownloader(Context context) {
         super();
-        this.layerManager = module.getOsmLayerManager();
-        this.entitiesBuilder = layerManager.getEntitiesBuilder();
-        
+        this.layerManager = context.get(OsmLayerManager.class);
+        this.entitiesBuilder = context.get(OsmEntitiesBuilder.class);
     }
 
     @Override
@@ -95,8 +94,8 @@ public class OsmLayerDownloader implements LayerDownloader {
                     status.setMessage(I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."));
                     return;
                 case 404:
-                    status.setMessage(I18n.tr("No OSM server could be found at this location: {0}", 
-                        host.getHostString().toString()));
+                    status.setMessage(I18n.tr("No OSM server could be found at this location: {0}",
+                            host.getHostString().toString()));
                     return;
                 default:
                     status.setMessage(I18n.tr(e.getMessage()));

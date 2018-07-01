@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.AddressNodeGroup;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -28,17 +28,22 @@ import com.vividsolutions.jts.geom.Point;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class DistributeAddressNodes implements Consumer<OdBuilding> {
+public class OdAddressNodesDistributer {
     private final GeoUtil geoUtil;
     private final AddressNodeComparator comparator = new AddressNodeComparator();
+    private final OdBuildingStore odBuildingStore;
 
-    public DistributeAddressNodes(GeoUtil geoUtil) {
+    public OdAddressNodesDistributer(OdBuildingStore odBuildingStore, GeoUtil geoUtil) {
         super();
+        this.odBuildingStore = odBuildingStore;
         this.geoUtil = geoUtil;
     }
 
-    @Override
-    public void accept(OdBuilding building) {
+    public void run() {
+        odBuildingStore.forEach(this::processBuilding);
+    }
+
+    public void processBuilding(OdBuilding building) {
         for (AddressNodeGroup group : buildGroups(building).values()) {
             if (group.getAddressNodes().size() > 1) {
                 distribute(group);
@@ -105,6 +110,7 @@ public class DistributeAddressNodes implements Consumer<OdBuilding> {
         }
 
         public int compare(OdAddress a1, OdAddress a2) {
+            assert a1 != null && a2 != null;
             int result = Objects.compare(a2.getCityName(), a1.getCityName(), String.CASE_INSENSITIVE_ORDER);
             if (result == 0) {
                 result = Objects.compare(a2.getPostcode(), a1.getPostcode(), String.CASE_INSENSITIVE_ORDER);

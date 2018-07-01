@@ -8,16 +8,15 @@ import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.storage.OsmEntityStore;
 
 public class OsmBuildingAligner {
     private final NodeDWithin dWithin;
     private boolean undoable;
-    private final EntityStore<? extends OsmBuilding> buildingStore;
+    private final OsmEntityStore<? extends OsmBuilding> buildingStore;
 
-    public OsmBuildingAligner(OdsModule module, EntityStore<? extends OsmBuilding> buildingStore) {
+    public OsmBuildingAligner(OsmEntityStore<? extends OsmBuilding> buildingStore) {
         this.buildingStore = buildingStore;
         //        this.tolerance = module.getTolerance();
         //        this.tolerance = 0.1; // Tolerance in meters

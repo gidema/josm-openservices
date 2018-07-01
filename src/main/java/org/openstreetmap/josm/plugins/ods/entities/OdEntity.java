@@ -28,4 +28,11 @@ public interface OdEntity extends Entity {
      * @param response
      */
     public void setDownloadResponse(DownloadResponse response);
+
+    /**
+     * Set the primary id for this object.
+     *
+     * @param primaryId
+     */
+    public void setPrimaryId(Object primaryId);
 }

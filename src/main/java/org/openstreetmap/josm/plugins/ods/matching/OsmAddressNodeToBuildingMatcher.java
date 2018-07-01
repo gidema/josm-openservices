@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OsmBuildingStore;
@@ -22,12 +21,12 @@ import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
  *
  */
 public class OsmAddressNodeToBuildingMatcher {
-    private final OdsModule module;
+    private final OsmBuildingStore osmBuildingStore;
     private Consumer<OsmAddressNode> unmatchedAddressNodeHandler;
 
-    public OsmAddressNodeToBuildingMatcher(OdsModule module) {
+    public OsmAddressNodeToBuildingMatcher(OsmBuildingStore osmBuildingStore) {
         super();
-        this.module = module;
+        this.osmBuildingStore = osmBuildingStore;
     }
 
     public void setUnmatchedAddressNodeHandler(
@@ -42,9 +41,7 @@ public class OsmAddressNodeToBuildingMatcher {
      * @param addressNode
      */
     public void match(OsmAddressNode addressNode) {
-        OsmBuildingStore buildingStore = (OsmBuildingStore)module
-                .getOsmLayerManager().getEntityStore(OsmBuilding.class);
-        GeoIndex<OsmBuilding> geoIndex = buildingStore.getGeoIndex();
+        GeoIndex<OsmBuilding> geoIndex = osmBuildingStore.getGeoIndex();
         if (addressNode.getBuilding() == null) {
             List<OsmBuilding> buildings = geoIndex.intersection(addressNode.getGeometry());
             if (buildings.size() == 0) {
@@ -60,7 +57,7 @@ public class OsmAddressNodeToBuildingMatcher {
             List<OsmBuilding> bagBuildings = new LinkedList<>();
             List<OsmBuilding> otherBuildings = new LinkedList<>();
             for (OsmBuilding building : buildings) {
-                if (building.getReferenceId() != null) {
+                if (building.getBuildingId() != null) {
                     bagBuildings.add(building);
                 }
                 else {

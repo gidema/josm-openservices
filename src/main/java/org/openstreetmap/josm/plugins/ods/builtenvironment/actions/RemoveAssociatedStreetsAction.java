@@ -14,11 +14,9 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.tools.I18n;
 import org.xml.sax.SAXException;
@@ -26,29 +24,30 @@ import org.xml.sax.SAXException;
 public class RemoveAssociatedStreetsAction extends OdsAction {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
-    
-    public RemoveAssociatedStreetsAction(OdsModule module) {
-        super(module, I18n.tr("Remove associated streets"), I18n
+
+    public RemoveAssociatedStreetsAction() {
+        super(I18n.tr("Remove associated streets"), I18n
                 .tr("Remove associated street relations."));
-        
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (getModule().getOsmLayerManager() == null) {
-            new Notification(I18n.tr("The OSM datalayer is missing")).show();
-            return;
+        OsmDataLayer osmDatalayer = MainApplication.getLayerManager().getActiveDataLayer();
+        if (osmDatalayer != null) {
+            MainApplication.worker.execute(new Task(osmDatalayer));
         }
-        MainApplication.worker.execute(new Task());
     }
 
     class Task extends PleaseWaitRunnable {
+        private final OsmDataLayer osmDatalayer;
 
-        public Task() {
+        public Task(OsmDataLayer osmDatalayer) {
             super(I18n.tr("Please wait"));
+            this.osmDatalayer = osmDatalayer;
         }
 
         @Override
@@ -59,10 +58,8 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
 
         @Override
         protected void realRun() throws SAXException, IOException,
-                OsmTransferException {
-            OsmDataLayer dataLayer = getModule().getOsmLayerManager()
-                    .getOsmDataLayer();
-            for (Relation relation : dataLayer.getDataSet().getRelations()) {
+        OsmTransferException {
+            for (Relation relation : osmDatalayer.getDataSet().getRelations()) {
                 if ("associatedStreet".equals(relation.get("type"))) {
                     process(relation);
                 }

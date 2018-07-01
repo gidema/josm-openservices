@@ -3,14 +3,17 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings;
 import java.util.List;
 import java.util.Set;
 
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatch;
 import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public interface OdBuilding extends OdEntity, Building {
+    public Long getBuildingId();
+
+    public void setBuildingId(Long id);
 
     @Override
     public Geometry getGeometry();

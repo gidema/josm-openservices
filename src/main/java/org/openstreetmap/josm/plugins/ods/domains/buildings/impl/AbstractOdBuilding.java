@@ -10,11 +10,12 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatch;
 import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOdEntity;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdBuilding {
+    private Long buildingId;
     private OdAddress address;
     private final List<OdAddressNode> addressNodes = new LinkedList<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
@@ -22,6 +23,17 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     private final Set<OdBuilding> neighbours = new HashSet<>();
     private OdCity city;
     private BuildingMatch match;
+
+    @Override
+    public Long getBuildingId() {
+        return buildingId;
+    }
+
+    @Override
+    public void setBuildingId(Long id) {
+        this.buildingId = id;
+    }
+
 
     @Override
     public void setStartYear(Integer year) {
@@ -87,7 +99,7 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("OdBuilding ").append(getReferenceId());
+        sb.append("OdBuilding ").append(getBuildingId());
         for (OdAddressNode a :addressNodes) {
             sb.append("\n").append(a.toString());
         }

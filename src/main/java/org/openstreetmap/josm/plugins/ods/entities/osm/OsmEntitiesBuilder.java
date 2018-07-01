@@ -5,20 +5,22 @@ import java.util.List;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OsmAddressNodeStore;
 import org.openstreetmap.josm.plugins.ods.matching.OsmAddressNodeToBuildingMatcher;
 
 public class OsmEntitiesBuilder {
-    private final OdsModule module;
+    private final OsmAddressNodeStore addressNodeStore;
     private final OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher;
+    private final OsmLayerManager osmLayerManager;
+    private final List<OsmEntityBuilder<?>> entityBuilders;
 
-    public OsmEntitiesBuilder(OdsModule module) {
+    public OsmEntitiesBuilder(OsmAddressNodeStore addressNodeStore, OsmAddressNodeToBuildingMatcher nodeToBuildingMatcher,
+            List<OsmEntityBuilder<?>> entityBuilders, OsmLayerManager osmLayerManager) {
         super();
-        this.module = module;
-        this.nodeToBuildingMatcher = new OsmAddressNodeToBuildingMatcher(module);
+        this.addressNodeStore = addressNodeStore;
+        this.nodeToBuildingMatcher = nodeToBuildingMatcher;
+        this.entityBuilders = entityBuilders;
+        this.osmLayerManager = osmLayerManager;
     }
 
     /**
@@ -27,8 +29,7 @@ public class OsmEntitiesBuilder {
      *
      */
     public void build() {
-        LayerManager layerManager = module.getOsmLayerManager();
-        OsmDataLayer dataLayer = layerManager.getOsmDataLayer();
+        OsmDataLayer dataLayer = osmLayerManager.getOsmDataLayer();
         if (dataLayer == null) return;
         build(dataLayer.getDataSet().allPrimitives());
     }
@@ -39,14 +40,11 @@ public class OsmEntitiesBuilder {
      * @param osmPrimitives
      */
     public void build(Collection<? extends OsmPrimitive> osmPrimitives) {
-        List<OsmEntityBuilder<?>> entityBuilders = module.getEntityBuilders();
         for (OsmPrimitive primitive : osmPrimitives) {
             for (OsmEntityBuilder<?> builder : entityBuilders) {
                 builder.buildOsmEntity(primitive);
             }
         }
-        OsmLayerManager layerManager = module.getOsmLayerManager();
-        EntityStore<OsmAddressNode> addressNodeStore = layerManager.getEntityStore(OsmAddressNode.class);
         if (addressNodeStore != null) {
             addressNodeStore.forEach(nodeToBuildingMatcher::match);
         }

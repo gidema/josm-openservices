@@ -1,12 +1,10 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
-import org.openstreetmap.josm.plugins.ods.entities.GeoIndexImpl;
-import org.openstreetmap.josm.plugins.ods.entities.Index;
-import org.openstreetmap.josm.plugins.ods.entities.IndexImpl;
-import org.openstreetmap.josm.plugins.ods.entities.UniqueIndexImpl;
+import org.openstreetmap.josm.plugins.ods.entities.impl.GeoIndexImpl;
+import org.openstreetmap.josm.plugins.ods.entities.impl.OneOrManyIndex;
+import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractOsmEntityStore;
 
 /**
  * Store building entities created from osm primitives.
@@ -16,25 +14,17 @@ import org.openstreetmap.josm.plugins.ods.entities.UniqueIndexImpl;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class OsmBuildingStore extends EntityStore<OsmBuilding> {
-    private final UniqueIndexImpl<OsmBuilding> primitiveIndex = new UniqueIndexImpl<>(OsmBuilding.class, "primitiveId");
-    private final Index<OsmBuilding> idIndex = new IndexImpl<>(OsmBuilding.class, "referenceId");
-    private final GeoIndex<OsmBuilding> geoIndexImpl = new GeoIndexImpl<>(OsmBuilding.class, "geometry");
+public class OsmBuildingStore extends AbstractOsmEntityStore<OsmBuilding> {
+    private final OneOrManyIndex<OsmBuilding, Long> idIndex = new OneOrManyIndex<>(OsmBuilding::getBuildingId);
+    private final GeoIndex<OsmBuilding> geoIndexImpl = new GeoIndexImpl<>(OsmBuilding.class, OsmBuilding::getGeometry);
 
     public OsmBuildingStore() {
         super();
-        addIndex(primitiveIndex);
         addIndex(idIndex);
         addIndex(geoIndexImpl);
     }
 
-    @Override
-    public UniqueIndexImpl<OsmBuilding> getPrimaryIndex() {
-        return primitiveIndex;
-    }
-
-    @Override
-    public Index<OsmBuilding> getIdIndex() {
+    public OneOrManyIndex<OsmBuilding, Long> getIdIndex() {
         return idIndex;
     }
 

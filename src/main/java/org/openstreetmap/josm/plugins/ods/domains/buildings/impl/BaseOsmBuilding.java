@@ -9,11 +9,12 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatch;
 import org.openstreetmap.josm.plugins.ods.domains.places.OsmCity;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOsmEntity;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 public class BaseOsmBuilding extends AbstractOsmEntity implements OsmBuilding {
+    private Long buildingId;
     private OsmAddress address;
     private final List<OsmAddressNode> addressNodes = new LinkedList<>();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
@@ -22,6 +23,14 @@ public class BaseOsmBuilding extends AbstractOsmEntity implements OsmBuilding {
     private OsmCity city;
     private BuildingMatch buildingMatch;
 
+    public void setBuildingId(Long buildingId) {
+        this.buildingId = buildingId;
+    }
+
+    @Override
+    public Long getBuildingId() {
+        return buildingId;
+    }
 
     @Override
     public void setStartDate(String startDate) {
@@ -80,7 +89,7 @@ public class BaseOsmBuilding extends AbstractOsmEntity implements OsmBuilding {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("OdBuilding ").append(getReferenceId());
+        sb.append("OdBuilding ").append(getBuildingId());
         for (OsmAddressNode a :addressNodes) {
             sb.append("\n").append(a.toString());
         }

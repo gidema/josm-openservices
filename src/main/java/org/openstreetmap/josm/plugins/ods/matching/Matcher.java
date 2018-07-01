@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods;
+package org.openstreetmap.josm.plugins.ods.matching;
 
 /**
  * Find a relation between down-loaded Open Data (OD) entities and OSM entities.

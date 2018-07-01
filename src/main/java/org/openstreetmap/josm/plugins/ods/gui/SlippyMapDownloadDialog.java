@@ -20,25 +20,24 @@ import org.openstreetmap.josm.data.projection.Projection;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.bbox.BBoxChooser;
 import org.openstreetmap.josm.gui.bbox.SlippyMapBBoxChooser;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.GBC;
 
 /**
  * Dialog box to download a polygon area.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
     protected Bounds currentBounds = null;
-    
-    public SlippyMapDownloadDialog(OdsModule module) {
-        super(module, tr("Download ODS"));
+
+    public SlippyMapDownloadDialog(String moduleName) {
+        super(moduleName, tr("Download ODS"));
     }
 
 
@@ -49,13 +48,12 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
 
-        String moduleName = module.getName();
         cbDownloadOSM = new JCheckBox(tr("Download OSM data"));
         cbDownloadOSM.setToolTipText(tr("<html>Select to download OSM data.<br>"
-                        + "Unselect to skip downloading of OSM data.</html>"));
+                + "Unselect to skip downloading of OSM data.</html>"));
         cbDownloadODS = new JCheckBox(tr("Download {0} data", moduleName));
         cbDownloadODS.setToolTipText(tr("<html>Select to download {0}.<br>"
-                        + "Unselect to skip downloading of {0} data.</html>", moduleName));
+                + "Unselect to skip downloading of {0} data.</html>", moduleName));
 
         slippyMap = new SlippyMapBBoxChooser();
         slippyMap.addPropertyChangeListener(this);
@@ -65,7 +63,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         pnl.add(cbDownloadODS,
                 GBC.eol().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
 
-//        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
+        //        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
 
         if (!ExpertToggleAction.isExpert()) {
             JLabel infoLabel = new JLabel(
@@ -77,8 +75,8 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         return pnl;
     }
 
-    
-    
+
+
     @Override
     public void rememberSettings() {
         super.rememberSettings();
@@ -88,7 +86,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         }
     }
 
-    
+
     @Override
     public void restoreSettings() {
         super.restoreSettings();
@@ -105,7 +103,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
             slippyMap.repaint();
         }
     }
-        
+
     @Override
     public Bounds getSelectedDownloadArea() {
         return currentBounds;
@@ -120,7 +118,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         super.paint(g);
     }
 
-    
+
     /**
      * Create a default bounding box for the download. If a mapView
      * is showing, create the bounding box from the visible area.
@@ -139,7 +137,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
             // read the bounding box from the preferences
             try {
                 return new Bounds(
-                    Main.pref.get("openservices.download.bounds"), ";");
+                        Main.pref.get("openservices.download.bounds"), ";");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -149,14 +147,14 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
 
     private static Bounds eastNorthToLatLon(ProjectionBounds bounds, Projection proj) {
         return new Bounds(proj.eastNorth2latlon(bounds.getMin()),
-            proj.eastNorth2latlon(bounds.getMax()));
+                proj.eastNorth2latlon(bounds.getMax()));
     }
-    
+
     @Override
     protected Dimension getDimension() {
         return new Dimension(1000, 600);
     }
-    
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(BBoxChooser.BBOX_PROP)) {

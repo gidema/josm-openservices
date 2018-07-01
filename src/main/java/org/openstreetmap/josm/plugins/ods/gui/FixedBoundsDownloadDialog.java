@@ -13,24 +13,23 @@ import javax.swing.JPanel;
 
 import org.openstreetmap.josm.actions.ExpertToggleAction;
 import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.GBC;
 
 /**
  * Dialog box to download a polygon area.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class FixedBoundsDownloadDialog extends AbstractDownloadDialog {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
-    public FixedBoundsDownloadDialog(OdsModule module) {
-        super(module, tr("Download ODS with polygon"));
+    public FixedBoundsDownloadDialog(String moduleName) {
+        super(moduleName, tr("Download ODS with polygon"));
     }
 
     @Override
@@ -38,20 +37,19 @@ public class FixedBoundsDownloadDialog extends AbstractDownloadDialog {
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
 
-        String moduleName = module.getName();
         cbDownloadOSM = new JCheckBox(tr("Download OSM data"));
         cbDownloadOSM.setToolTipText(tr("<html>Select to download OSM data.<br>"
-                        + "Unselect to skip downloading of OSM data.</html>"));
+                + "Unselect to skip downloading of OSM data.</html>"));
         cbDownloadODS = new JCheckBox(tr("Download {0} data", moduleName));
         cbDownloadODS.setToolTipText(tr("<html>Select to download {0}.<br>"
-                        + "Unselect to skip downloading of {0} data.</html>", moduleName));
+                + "Unselect to skip downloading of {0} data.</html>", moduleName));
 
         pnl.add(cbDownloadOSM,
                 GBC.std().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
         pnl.add(cbDownloadODS,
                 GBC.eol().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
 
-//        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
+        //        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
 
         if (!ExpertToggleAction.isExpert()) {
             JLabel infoLabel = new JLabel(

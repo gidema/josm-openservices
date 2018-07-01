@@ -28,10 +28,4 @@ public interface OsmEntityBuilder<T extends Entity> {
      * @param primitive
      */
     public void buildOsmEntity(OsmPrimitive primitive);
-
-    /**
-     * Get the Entity class that this builder produces.
-     * @return The class of T
-     */
-    public Class<T> getEntityClass();
 }

@@ -14,8 +14,8 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -37,11 +37,14 @@ public class OdsDownloadAction extends OdsAction {
     private final SlippyMapDownloadDialog slippyDialog;
     private final FixedBoundsDownloadDialog fixedDialog;
 
-    public OdsDownloadAction(OdsModule module) {
-        super(module, "Download", ImageProvider.get("download"));
-        slippyDialog = new SlippyMapDownloadDialog(module);
-        fixedDialog = new FixedBoundsDownloadDialog(module);
-        this.downloader = module.getDownloader();
+    public final OdLayerManager odLayerManager;
+
+    public OdsDownloadAction(OdLayerManager odLayerManager, MainDownloader downloader, String moduleName) {
+        super("Download", ImageProvider.get("download"));
+        this.odLayerManager = odLayerManager;
+        slippyDialog = new SlippyMapDownloadDialog(moduleName);
+        fixedDialog = new FixedBoundsDownloadDialog(moduleName);
+        this.downloader = downloader;
     }
 
     @Override
@@ -130,15 +133,9 @@ public class OdsDownloadAction extends OdsAction {
             downloader.run(getProgressMonitor(), request);
         }
 
-        @SuppressWarnings("synthetic-access")
         @Override
         protected void finish() {
-            if (downloadOpenData) {
-                MainApplication.getLayerManager().setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
-            }
-            else {
-                MainApplication.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
-            }
+            MainApplication.getLayerManager().setActiveLayer(odLayerManager.getOsmDataLayer());
         }
     }
 }

@@ -1,12 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.matching;
 
-import java.util.List;
 import java.util.function.Consumer;
 
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildingStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdAddressNodeStore;
+import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 
 
 /**
@@ -21,18 +21,28 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildin
  * @author gertjan
  *
  */
-public class OpenDataAddressNodeToBuildingMatcher {
-    private final OdsModule module;
+public class OdAddressNodeToBuildingMatcher {
+    private final OdBuildingStore buildingStore;
+    private final OdAddressNodeStore addressNodeStore;
+    //    private final OdLayerManager odLayerManager;
     private Consumer<OdAddressNode> unmatchedAddressNodeHandler;
 
-    public OpenDataAddressNodeToBuildingMatcher(OdsModule module) {
+    public OdAddressNodeToBuildingMatcher(OdBuildingStore buildingStore,
+            OdAddressNodeStore addressNodeStore) {
         super();
-        this.module = module;
+        this.buildingStore = buildingStore;
+        this.addressNodeStore = addressNodeStore;
     }
 
     public void setUnmatchedAddressNodeHandler(
             Consumer<OdAddressNode> unmatchedAddressNodeHandler) {
         this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
+    }
+
+    public void run() {
+        for(OdAddressNode addressNode : addressNodeStore) {
+            matchAddressToBuilding(addressNode);
+        }
     }
 
     /**
@@ -41,14 +51,12 @@ public class OpenDataAddressNodeToBuildingMatcher {
      * @param addressNode
      */
     public void matchAddressToBuilding(OdAddressNode addressNode) {
-        OpenDataBuildingStore buildings = (OpenDataBuildingStore) module
-                .getOpenDataLayerManager().getEntityStore(OdBuilding.class);
         if (addressNode.getBuilding() == null) {
-            Object buildingRef = addressNode.getBuildingRef();
+            Long buildingRef = (Long) addressNode.getBuildingRef();
             if (buildingRef != null) {
-                List<OdBuilding> matchedbuildings = buildings.getById(buildingRef);
-                if (matchedbuildings.size() == 1) {
-                    OdBuilding building = matchedbuildings.get(0);
+                ZeroOneMany<OdBuilding> matchedbuildings = buildingStore.getByBuildingId(buildingRef);
+                if (matchedbuildings.isOne()) {
+                    OdBuilding building = matchedbuildings.getOne();
                     addressNode.setBuilding(building);
                     building.getAddressNodes().add(addressNode);
                 }

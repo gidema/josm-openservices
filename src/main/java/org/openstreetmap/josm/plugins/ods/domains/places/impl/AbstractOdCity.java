@@ -11,8 +11,18 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class AbstractOdCity extends AbstractOdEntity implements OdCity {
+    private Long cityId;
     private String name;
     private MultiPolygon multiPolygon;
+
+    @Override
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
 
     public void setName(String name) {
         this.name = name;

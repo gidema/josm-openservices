@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods;
 
 public class ODS {
-    
+
     public static class KEY {
         public static String BASE = "|ODS";
         public static String IDMATCH = BASE + ":idMatch";
@@ -9,10 +9,11 @@ public class ODS {
         public static String STATUS_MATCH = BASE + ":statusMatch";
         public static String GEOMETRY_MATCH = BASE + ":geometryMatch";
         public static String TAG_MATCH = BASE + ":tagMatch";
-        
+        public static String DIFF_KEY = BASE + ":diff:";
+
     }
-    
-//    public static String[] KEYS = {KEY.BASE, KEY.IDMATCH, KEY.STATUS, KEY.STATUS_MATCH, 
-//            KEY.GEOMETRY_MATCH, KEY.TAG_MATCH};
+
+    //    public static String[] KEYS = {KEY.BASE, KEY.IDMATCH, KEY.STATUS, KEY.STATUS_MATCH,
+    //            KEY.GEOMETRY_MATCH, KEY.TAG_MATCH};
 
 }

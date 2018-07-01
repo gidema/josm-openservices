@@ -1,13 +1,13 @@
 package org.openstreetmap.josm.plugins.ods.matching.update;
 
-import java.util.List;
+import java.util.Collection;
 
-import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
 /**
  *
  * @author Gertjan Idema
  */
-public interface EntityUpdater {
-    void update(List<Match<?, ?>> matches);
+public interface EntityUpdater<T extends OsmEntity> {
+    public void update(Collection<T> entities);
 }

@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import java.util.Map;
-
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 
@@ -18,6 +16,14 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public interface Entity {
+    /**
+     * The primary id is an unique id determined by the data source.
+     * It is unique per dataSource, but not necessarily unique by entity type if
+     * the same entity type can be retrieved from more than 1 dataSource.
+     * The primary id is used to prevent duplicate objects.
+     */
+    public Object getPrimaryId();
+
     public void setSource(String source);
     public String getSource();
     public void setSourceDate(String sourceDate);
@@ -26,10 +32,8 @@ public interface Entity {
     public Completeness getCompleteness();
     public void setStatus(EntityStatus status);
     public EntityStatus getStatus();
-    public void setPrimaryId(Object id);
-    public Object getPrimaryId();
-    public void setReferenceId(Object id);
-    public Object getReferenceId();
+    //    public void setReferenceId(Object id);
+    //    public Object getReferenceId();
     public Long getPrimitiveId();
     public Geometry getGeometry();
     public void setGeometry(Geometry geometry);
@@ -39,17 +43,11 @@ public interface Entity {
     //    public <E1 extends OsmEntity, E2 extends OdEntity> void setMatch(Match<E1, E2> match);
 
     /**
-     * Get the OSM primitive(s) from which this entity was constructed,
-     * or that was/were constructed from this entity.
-     * In most cases the list contains 1 item.
+     * Get the OSM primitive from which this entity was constructed,
+     * or that was constructed from this entity.
      *
      */
     public OsmPrimitive getPrimitive();
-
-    /**
-     * Get the tags that are not associated with any of the entity's properties.
-     */
-    public Map<String, String> getOtherTags();
 
     public void setPrimitive(OsmPrimitive primitive);
 

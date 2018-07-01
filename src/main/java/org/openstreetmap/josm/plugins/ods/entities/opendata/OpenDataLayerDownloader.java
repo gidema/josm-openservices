@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.Context;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
@@ -20,19 +21,20 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 public class OpenDataLayerDownloader implements LayerDownloader {
     private static final int NTHREADS = 10;
 
-    private final OdsModule module;
     private final List<FeatureDownloader> downloaders;
     private Status status = new Status();
     private DownloadRequest request;
     private DownloadResponse response;
 
+    private final OsmLayerManager osmLayerManager;
+
     private ExecutorService executor;
 
-    public OpenDataLayerDownloader(OdsModule module) {
-        this.module = module;
+    public OpenDataLayerDownloader(Context context) {
+        this.osmLayerManager = context.get(OsmLayerManager.class);
         this.downloaders = new LinkedList<>();
     }
-    
+
     @Override
     public void setResponse(DownloadResponse response) {
         this.response = response;
@@ -79,7 +81,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
             return;
         }
     }
-    
+
     @Override
     public void download() {
         executor = Executors.newFixedThreadPool(NTHREADS);
@@ -109,7 +111,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         }
         this.response = new DownloadResponse(request);
     }
-    
+
     @Override
     public void process() {
         executor = Executors.newFixedThreadPool(NTHREADS);
@@ -132,7 +134,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         }
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
-        OsmDataLayer osmDataLayer = module.getOpenDataLayerManager().getOsmDataLayer();
+        OsmDataLayer osmDataLayer = osmLayerManager.getOsmDataLayer();
         osmDataLayer.getDataSet().addDataSource(ds);
     }
 

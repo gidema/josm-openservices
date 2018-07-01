@@ -10,7 +10,6 @@ import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.data.osm.WaySegment;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.tools.I18n;
@@ -21,28 +20,26 @@ import com.vividsolutions.jts.geom.LineSegment;
 
 /**
  * Given a building, find the nearest way
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public class NearestWayAction extends OdsAction {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
-    private OdsModule module;
-    
-    public NearestWayAction(OdsModule module) {
-        super(module, I18n.tr("Nearest way"), I18n.tr("Nearest way"));
-        this.module = module;
+    public NearestWayAction() {
+        super(I18n.tr("Nearest way"), I18n.tr("Nearest way"));
     }
 
 
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        final OsmDataLayer osmDataLayer = module.getOsmLayerManager().getOsmDataLayer();
+
+        final OsmDataLayer osmDataLayer = MainApplication.getLayerManager().getActiveDataLayer();
         Collection<Way> selected = MainApplication.getLayerManager().getEditLayer().getDataSet()
                 .getSelectedWays();
         OsmPrimitive building = selected.iterator().next();

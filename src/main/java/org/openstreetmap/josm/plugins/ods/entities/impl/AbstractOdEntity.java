@@ -2,9 +2,6 @@ package org.openstreetmap.josm.plugins.ods.entities.impl;
 
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
@@ -15,16 +12,13 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class AbstractOdEntity implements OdEntity {
     private Object primaryId;
-    private Object referenceId;
     private DownloadResponse response;
     private String sourceDate;
     private String source;
     private Geometry geometry;
     private EntityStatus status = EntityStatus.UNKNOWN;
     private Entity.Completeness completeness = Unknown;
-    private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
-    //    private Match<?, ?> match;
 
     @Override
     public void setPrimaryId(Object primaryId) {
@@ -34,16 +28,6 @@ public abstract class AbstractOdEntity implements OdEntity {
     @Override
     public Object getPrimaryId() {
         return primaryId;
-    }
-
-    @Override
-    public Object getReferenceId() {
-        return referenceId;
-    }
-
-    @Override
-    public void setReferenceId(Object referenceId) {
-        this.referenceId = referenceId;
     }
 
     @Override
@@ -97,15 +81,6 @@ public abstract class AbstractOdEntity implements OdEntity {
     }
 
     @Override
-    public Map<String, String> getOtherTags() {
-        return otherTags;
-    }
-
-    public void setOtherTags(Map<String, String> otherTags) {
-        this.otherTags = otherTags;
-    }
-
-    @Override
     public void setPrimitive(OsmPrimitive primitive) {
         this.primitive = primitive;
     }
@@ -129,15 +104,4 @@ public abstract class AbstractOdEntity implements OdEntity {
     public OsmPrimitive getPrimitive() {
         return primitive;
     }
-
-    //    @Override
-    //    public Match<?, ?> getMatch() {
-    //        return match;
-    //    }
-    //
-    //    @Override
-    //    public <E1 extends OsmEntity, E2 extends OdEntity> void setMatch(
-    //            Match<E1, E2> match) {
-    //        this.match = match;
-    //    }
 }

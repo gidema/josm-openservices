@@ -2,18 +2,18 @@ package org.openstreetmap.josm.plugins.ods.entities.impl;
 
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.Deviation;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class AbstractOsmEntity implements OsmEntity {
-    private Object primaryId;
-    private Object referenceId;
     private String sourceDate;
     private String source;
     private Geometry geometry;
@@ -21,27 +21,7 @@ public abstract class AbstractOsmEntity implements OsmEntity {
     private Completeness completeness = Unknown;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
-    //    private Match<? extends OsmEntity, ? extends OdEntity> match;
-
-    @Override
-    public void setPrimaryId(Object primaryId) {
-        this.primaryId = primaryId;
-    }
-
-    @Override
-    public Object getPrimaryId() {
-        return primaryId;
-    }
-
-    @Override
-    public Object getReferenceId() {
-        return referenceId;
-    }
-
-    @Override
-    public void setReferenceId(Object referenceId) {
-        this.referenceId = referenceId;
-    }
+    private final Map<Class<? extends Deviation>, Deviation> deviations = new HashMap<>();
 
     @Override
     public void setSourceDate(String string) {
@@ -109,12 +89,39 @@ public abstract class AbstractOsmEntity implements OsmEntity {
 
     @Override
     public Long getPrimitiveId() {
-        return (primitive == null ? null : primitive.getUniqueId());
+        return primitive.getUniqueId();
     }
 
     @Override
     public OsmPrimitive getPrimitive() {
         return primitive;
+    }
+
+    @Override
+    public Object getPrimaryId() {
+        return getPrimitiveId();
+    }
+
+    @Override
+    public Collection<Deviation> getDeviations() {
+        return deviations.values();
+    }
+
+    @Override
+    public void addDeviation(Deviation deviation) {
+        this.deviations.put(deviation.getClass(), deviation);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Deviation> T getDeviation(Class<T> type) {
+        return (T) deviations.get(type);
+    }
+
+    @Override
+    public void removeDeviation(Class<?> type) {
+        deviations.remove(type);
+
     }
 
     //    @Override

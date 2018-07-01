@@ -1,8 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.entities.actual;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatch;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.matching.BuildingMatch;
 
 public interface Building extends Entity {
     /**

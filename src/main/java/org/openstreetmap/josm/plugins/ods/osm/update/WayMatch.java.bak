@@ -1,10 +1,9 @@
-package org.openstreetmap.josm.plugins.ods.matching;
+package org.openstreetmap.josm.plugins.ods.osm.update;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.osm.update.NodeMatch;
 
 public class WayMatch {
     public final Way osmWay;

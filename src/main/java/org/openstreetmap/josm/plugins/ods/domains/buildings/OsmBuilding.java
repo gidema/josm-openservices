@@ -9,8 +9,6 @@ import org.openstreetmap.josm.plugins.ods.domains.places.OsmCity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 public interface OsmBuilding extends OsmEntity, Building {
     public static boolean IsBuilding(OsmPrimitive primitive) {
         boolean taggedAsBuilding = primitive.hasKey("building") || primitive.hasKey("building:part")
@@ -21,8 +19,7 @@ public interface OsmBuilding extends OsmEntity, Building {
         return taggedAsBuilding && validGeometry;
     }
 
-    @Override
-    public Geometry getGeometry();
+    public Long getBuildingId();
 
     public OsmCity getCity();
 
