@@ -28,27 +28,27 @@
 **
 -->
 <project name="opendataservices" default="dist" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-	<artifact:pom id="mypom" file="pom.xml" />
+  <artifact:pom id="mypom" file="pom.xml" />
 
-	<!-- enter the SVN commit message -->
-	<property name="commit.message" value="Commit message" />
-	<!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-	<property name="plugin.main.version" value="13265" />
-	<property name="plugin.class" value="org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin" />
-	<property name="plugin.version" value="${mypom.version}" />
-	<property name="plugin.build.dir" value="build/deploy" />
-	<property name="maven.target.dir" value="${mypom.build.directory}" />
-	<property name="plugin.src.dir" value="src/main/java" />
-	<!-- this is the directory where the plugin jar is copied to -->
-	<property name="plugin.dist.dir" value="dist/deploy" />
-	<property name="ant.build.javac.target" value="1.8" />
-	<property name="ant.build.javac.source" value="1.8" />
-	<property name="plugin.jar" value="${plugin.dist.dir}/${ant.project.name}.jar" />
-	<!-- Debugging -->
-	<property name="plugin.debug.build.dir" value="build/debug" />
-	<property name="plugin.debug.dist.dir" value="dist/debug" />
-	<property name="plugin.debug.jar" value="${plugin.debug.dist.dir}/${ant.project.name}.jar" />
-	<!--
+  <!-- enter the SVN commit message -->
+  <property name="commit.message" value="Commit message" />
+  <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
+  <property name="plugin.main.version" value="13996" />
+  <property name="plugin.class" value="org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin" />
+  <property name="plugin.version" value="${mypom.version}" />
+  <property name="plugin.build.dir" value="build/deploy" />
+  <property name="maven.target.dir" value="${mypom.build.directory}" />
+  <property name="plugin.src.dir" value="src/main/java" />
+  <!-- this is the directory where the plugin jar is copied to -->
+  <property name="plugin.dist.dir" value="dist/deploy" />
+  <property name="ant.build.javac.target" value="1.8" />
+  <property name="ant.build.javac.source" value="1.8" />
+  <property name="plugin.jar" value="${plugin.dist.dir}/${ant.project.name}.jar" />
+  <!-- Debugging -->
+  <property name="plugin.debug.build.dir" value="build/debug" />
+  <property name="plugin.debug.dist.dir" value="dist/debug" />
+  <property name="plugin.debug.jar" value="${plugin.debug.dist.dir}/${ant.project.name}.jar" />
+  <!--
     **********************************************************
     ** init - initializes the build
     **********************************************************
@@ -56,90 +56,35 @@
     <target name="init" depends="clean">
       <mkdir dir="${plugin.build.dir}"/>
       <artifact:dependencies filesetId="dependency.fileset">
-<!--        <dependency groupId="org.geotools" artifactId="gt-wfs-ng" version="17.1"/>
-        <dependency groupId="org.geotools" artifactId="gt-xml" version="17.1"/>
-        <dependency groupId="org.geotools" artifactId="gt-cql" version="17.1"/>
-        <dependency groupId="org.geotools" artifactId="gt-main" version="17.1"/>
-        <dependency groupId="org.geotools" artifactId="gt-app-schema-resolver" version="17.1"/>
-        <dependency groupId="org.geotools" artifactId="gt-complex" version="17.1"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-core" version="17.1"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-wfs" version="17.1"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-filter" version="17.1"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-fes" version="17.1"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-gml2" version="17.1"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-gml3" version="17.1"/>
-        <dependency groupId="org.geotools.xsd" artifactId="gt-xsd-ows" version="17.1"/>
-      	<dependency groupId="org.geotools.ogc" artifactId="net.opengis.ows" version="17.1"/>
-        <dependency groupId="org.geotools.ogc" artifactId="net.opengis.wfs" version="17.1"/>
-        <dependency groupId="org.geotools.ogc" artifactId="net.opengis.fes" version="17.1"/>
-        <dependency groupId="org.geotools.ogc" artifactId="org.w3.xlink" version="17.1"/>
-        <dependency groupId="org.apache.xml" artifactId="xml-commons-resolver" version="1.2"/>
-      	<dependency groupId="picocontainer" artifactId="picocontainer" version="1.2"/>
-        <dependency groupId="org.eclipse.emf" artifactId="ecore" version="2.6.1"/>
-        <dependency groupId="org.eclipse.xsd" artifactId="xsd" version="2.6.0"/>
-        <dependency groupId="org.eclipse.emf" artifactId="common" version="2.6.0"/>
-        <dependency groupId="xpp3" artifactId="xpp3_min" version="1.1.4c"/>
-      	<dependency groupId="commons-configuration" artifactId="commons-configuration" version="1.9"/>
-        <dependency groupId="commons-io" artifactId="commons-io" version="2.1"/>
-        <dependency groupId="commons-logging" artifactId="commons-logging" version="1.1.1"/>
-      	<dependency groupId="org.jsoup" artifactId="jsoup" version="1.7.2"/>-->
         <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
         <dependency groupId="org.osgeo" artifactId="proj4j" version="0.1.0"/>
       </artifact:dependencies>
     </target>
 
-	<!--
+  <!--
     **********************************************************
     ** dist - creates the plugin jar
     **********************************************************
     -->
-	<target name="dist" depends="init">
-		<tstamp>
-			<format property="time" pattern="yyyy-MM-dd'T'hh:mm:ss'Z'" />
-		</tstamp>
-		<echo message="creating ${ant.project.name}.jar ... " />
-		<copy todir="${plugin.build.dir}">
-			<fileset dir="${maven.target.dir}/classes" />
-		</copy>
-		<unjar dest="${plugin.build.dir}">
-			<!--<fileset refid="dependency.fileset"/>-->
-<!--			<fileset file="${org.geotools:gt-wfs-ng:jar}"/>
-			<fileset file="${org.geotools:gt-xml:jar}" />
-			<fileset file="${org.geotools:gt-cql:jar}" />
-			<fileset file="${org.geotools:gt-app-schema-resolver:jar}" />
-			<fileset file="${org.geotools:gt-complex:jar}" />
-			<fileset file="${org.geotools.xsd:gt-xsd-core:jar}" />
-			<fileset file="${org.geotools.xsd:gt-xsd-wfs:jar}" />
-			<fileset file="${org.geotools.xsd:gt-xsd-filter:jar}" />
-			<fileset file="${org.geotools.xsd:gt-xsd-fes:jar}" />
-			<fileset file="${org.geotools.xsd:gt-xsd-gml2:jar}" />
-			<fileset file="${org.geotools.xsd:gt-xsd-gml3:jar}" />
-			<fileset file="${org.geotools.xsd:gt-xsd-ows:jar}" />
-			<fileset file="${org.geotools.ogc:net.opengis.ows:jar}" />
-			<fileset file="${org.geotools.ogc:net.opengis.wfs:jar}" />
-			<fileset file="${org.geotools.ogc:net.opengis.fes:jar}" />
-			<fileset file="${org.geotools.ogc:org.w3.xlink:jar}" />
-			<fileset file="${picocontainer:picocontainer:jar}" />
-	        <fileset file="${org.apache.xml:xml-commons-resolver:jar}" />
-			<fileset file="${org.eclipse.emf:ecore:jar}"/>
-			<fileset file="${org.eclipse.xsd:xsd:jar}"/>
-			<fileset file="${org.eclipse.emf:common:jar}"/>		
-			<fileset file="${xpp3:xpp3_min:jar}"/>		
-			<fileset file="${commons-configuration:commons-configuration:jar}" />
-			<fileset file="${commons-io:commons-io:jar}" />
-			<fileset file="${commons-logging:commons-logging:jar}" />
-			<fileset file="${commons-collections:commons-collections:jar}" />
-			<fileset file="${org.jsoup:jsoup:jar}" />-->
-			<fileset file="${commons-lang:commons-lang:jar}" />
-			<fileset file="${org.jdom:jdom2:jar}" />
-			<fileset file="${org.osgeo:proj4j:jar}" />
-		    <patternset>
-		        <exclude name="META-INF/ECLIPSEF.*"/>
-		    </patternset>
+  <target name="dist" depends="init">
+    <tstamp>
+      <format property="time" pattern="yyyy-MM-dd'T'hh:mm:ss'Z'" />
+    </tstamp>
+    <echo message="creating ${ant.project.name}.jar ... " />
+    <copy todir="${plugin.build.dir}">
+      <fileset dir="${maven.target.dir}/classes" />
+    </copy>
+    <unjar dest="${plugin.build.dir}">
+      <fileset file="${commons-lang:commons-lang:jar}" />
+      <fileset file="${org.jdom:jdom2:jar}" />
+      <fileset file="${org.osgeo:proj4j:jar}" />
+        <patternset>
+            <exclude name="META-INF/ECLIPSEF.*"/>
+        </patternset>
 
-		</unjar>
-		<jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
-			<!--
+    </unjar>
+    <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
+      <!--
         ************************************************
         ** configure these properties. Most of them will be copied to the plugins
         ** manifest file. Property values will also show up in the list available
@@ -147,33 +92,33 @@
         **
         ************************************************
         -->
-			<manifest>
-				<attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
-				<attribute name="Plugin-Class" value="${plugin.class}" />
-				<attribute name="Plugin-Date" value="${time}" />
-				<attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
-				<attribute name="Plugin-Icon" value="images/wfs.png" />
-				<!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
-				<attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
-				<attribute name="Plugin-Version" value="${plugin.version}" />
-				<attribute name="Plugin-Requires" value="geotools-wfs" />
-				<attribute name="Plugin-Stage" value="40" />
-			</manifest>
-		</jar>
-	</target>
+      <manifest>
+        <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
+        <attribute name="Plugin-Class" value="${plugin.class}" />
+        <attribute name="Plugin-Date" value="${time}" />
+        <attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
+        <attribute name="Plugin-Icon" value="images/wfs.png" />
+        <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
+        <attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
+        <attribute name="Plugin-Version" value="${plugin.version}" />
+        <attribute name="Plugin-Requires" value="geotools-wfs" />
+        <attribute name="Plugin-Stage" value="40" />
+      </manifest>
+    </jar>
+  </target>
 
-	<!--
+  <!--
    **********************************************************
    ** dist4debug - creates the debug plugin jar
    **********************************************************
    -->
-	<target name="dist4debug" depends="init">
-		<echo message="creating ${ant.project.name}.jar ... " />
-		<copy todir="${plugin.debug.build.dir}">
-			<fileset dir="${maven.target.dir}/classes" />
-		</copy>
-		<jar destfile="${plugin.debug.jar}" basedir="${plugin.debug.build.dir}">
-			<!--
+  <target name="dist4debug" depends="init">
+    <echo message="creating ${ant.project.name}.jar ... " />
+    <copy todir="${plugin.debug.build.dir}">
+      <fileset dir="${maven.target.dir}/classes" />
+    </copy>
+    <jar destfile="${plugin.debug.jar}" basedir="${plugin.debug.build.dir}">
+      <!--
        ************************************************
        ** configure these properties. Most of them will be copied to the plugins
        ** manifest file. Property values will also show up in the list available
@@ -181,59 +126,59 @@
        **
        ************************************************
        -->
-			<manifest>
-				<attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
-				<attribute name="Plugin-Class" value="${plugin.class}" />
-				<attribute name="Plugin-Date" value="${time}" />
-				<attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
-				<attribute name="Plugin-Icon" value="images/wfs.png" />
-				<!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
-				<attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
-				<attribute name="Plugin-Version" value="${plugin.version}" />
-				<attribute name="Plugin-Stage" value="40" />
-				<!--<attribute name="Plugin-Requires" value="geotools"/>-->
-			</manifest>
-		</jar>
-	</target>
+      <manifest>
+        <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
+        <attribute name="Plugin-Class" value="${plugin.class}" />
+        <attribute name="Plugin-Date" value="${time}" />
+        <attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
+        <attribute name="Plugin-Icon" value="images/wfs.png" />
+        <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
+        <attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
+        <attribute name="Plugin-Version" value="${plugin.version}" />
+        <attribute name="Plugin-Stage" value="40" />
+        <!--<attribute name="Plugin-Requires" value="geotools"/>-->
+      </manifest>
+    </jar>
+  </target>
 
-	<!--
+  <!--
     **********************************************************
     ** clean - clean up the build environment
     **********************************************************
     -->
-	<target name="clean">
-		<delete dir="${plugin.build.dir}" />
-		<delete file="${plugin.jar}" />
-		<delete file="${plugin.debug.jar}" />
-	</target>
-	
-	<!--
+  <target name="clean">
+    <delete dir="${plugin.build.dir}" />
+    <delete file="${plugin.jar}" />
+    <delete file="${plugin.debug.jar}" />
+  </target>
+  
+  <!--
     **********************************************************
     ** install - install the plugin in your local JOSM installation
     **********************************************************
     -->
-	<target name="install" depends="dist">
-		<property environment="env" />
-		<condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.josm/plugins">
-			<and>
-				<os family="windows" />
-			</and>
-		</condition>
-		<copy file="${plugin.jar}" todir="${josm.plugins.dir}" />
-	</target>
+  <target name="install" depends="dist">
+    <property environment="env" />
+    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.josm/plugins">
+      <and>
+        <os family="windows" />
+      </and>
+    </condition>
+    <copy file="${plugin.jar}" todir="${josm.plugins.dir}" />
+  </target>
 
-	<!--
-	  **********************************************************
-	  ** install4debug - install the debug plugin in the JOSM debug environment
-	  **********************************************************
-	  -->
-	<target name="install4debug" depends="dist4debug">
-		<property environment="env" />
-		<condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM_ECLIPSE_ODS6/plugins" else="${user.home}/.josm_eclipse_ods6/plugins">
-			<and>
-				<os family="windows" />
-			</and>
-		</condition>
-		<copy file="${plugin.debug.jar}" todir="${josm.plugins.dir}" />
-	</target>
+  <!--
+    **********************************************************
+    ** install4debug - install the debug plugin in the JOSM debug environment
+    **********************************************************
+    -->
+  <target name="install4debug" depends="dist4debug">
+    <property environment="env" />
+    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM_ECLIPSE_ODS6/plugins" else="${user.home}/.josm_eclipse_ods6/plugins">
+      <and>
+        <os family="windows" />
+      </and>
+    </condition>
+    <copy file="${plugin.debug.jar}" todir="${josm.plugins.dir}" />
+  </target>
 </project>

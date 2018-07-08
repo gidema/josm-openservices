@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.data.wfs.WFSServiceInfo;
@@ -35,17 +34,19 @@ import net.opengis.ows11.ValueType;
 
 /**
  * Class to represent a WFS odsFeatureSource host.
- * 
+ *
  * TODO Remove dependency on GtHost
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public class WFSHost extends GtHost {
+    private static WFSDataStoreFactory wfsDataStoreFactory = new WFSDataStoreFactory();
+
     private DataStore dataStore;
     private final int initTimeout;
     private final int dataTimeout;
-    private Set<String> featureTypes = new HashSet<>();
+    private final Set<String> featureTypes = new HashSet<>();
     private boolean pagingSupported = false;
     private int defaultPageSize = 0;
 
@@ -87,12 +88,12 @@ public class WFSHost extends GtHost {
         }
         return;
     }
-    
+
     @Override
     public DataStore getDataStore() {
         return dataStore;
     }
-    
+
     @Override
     protected Set<String> getFeatureTypes() {
         return featureTypes;
@@ -103,15 +104,15 @@ public class WFSHost extends GtHost {
         // TODO move to configuration phase
         // TODO add possibilities to configure parameters
         URL capabilitiesUrl = WFSDataStoreFactory
-           .createGetCapabilitiesRequest(getUrl(), getWFSVersion(getUrl()));
+                .createGetCapabilitiesRequest(getUrl(), getWFSVersion(getUrl()));
         Map<String, Serializable> connectionParameters = new HashMap<>();
         connectionParameters.put(WFSDataAccessFactory.URL.key, capabilitiesUrl);
         connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, 60000);
         connectionParameters.put(WFSDataAccessFactory.BUFFER_SIZE.key, 1000);
-//            connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, false);
+        //            connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, false);
         return connectionParameters;
     }
-    
+
     @SuppressWarnings("static-method")
     private Version getWFSVersion(final URL host) {
         if (host == null) {
@@ -123,7 +124,7 @@ public class WFSHost extends GtHost {
                 .toUpperCase();
 
         // final Version defaultVersion = Version.highest();
-        
+
         // We cannot use the highest vesion as the default yet
         // since v1_1_0 does not implement a read/write datastore
         // and is still having trouble with requests from
@@ -152,7 +153,7 @@ public class WFSHost extends GtHost {
         }
         return requestVersion;
     }
-    
+
     /**
      * Create a new DataStore for this host with the given timeout
      *
@@ -164,7 +165,7 @@ public class WFSHost extends GtHost {
         Map<String, Serializable> connectionParameters = getConnectionParameters();
         WFSDataStore ds;
         try {
-            ds = (WFSDataStore) DataStoreFinder.getDataStore(connectionParameters);
+            ds = wfsDataStoreFactory.createDataStore(connectionParameters);
             if (ds == null) {
                 throw new IOException("No data store could be found");
             }

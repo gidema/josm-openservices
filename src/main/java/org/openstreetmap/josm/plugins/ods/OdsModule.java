@@ -30,21 +30,21 @@ import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 /**
- * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers 
+ * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers
  * which are a normal OSM layer and a ODS layer containing data retrieved from an external open data source.
  * A third layer containing polygons to manage download areas is optional.
- * 
+ *
  * The data in the ODS layer may be retrieved from multiple dataSources.
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public abstract class OdsModule implements ActiveLayerChangeListener, LayerChangeListener {
     private OdsModulePlugin plugin;
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<EntityType<?>> entityTypes = new LinkedList<>();
     private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
-    
+
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
     private OpenDataLayerManager openDataLayerManager;
     private PolygonLayerManager polygonDataLayer;
@@ -68,7 +68,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     protected void addEntityType(EntityType<?> entityType) {
         entityTypes.add(entityType);
     }
-    
+
     public List<EntityType<?>> getEntityTypes() {
         return entityTypes;
     }
@@ -76,15 +76,15 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     protected void addOsmEntityBuilder(OsmEntityBuilder<?> entityBuilder) {
         this.entityBuilders.add(entityBuilder);
     }
-    
+
     public List<OsmEntityBuilder<?>> getEntityBuilders() {
         return entityBuilders;
     }
 
     public abstract GeoUtil getGeoUtil();
-    
+
     public abstract CRSUtil getCrsUtil();
-    
+
     public abstract String getName();
 
     public abstract String getDescription();
@@ -118,7 +118,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     public OpenDataLayerManager getOpenDataLayerManager() {
         return openDataLayerManager;
     }
-    
+
     public OsmLayerManager getOsmLayerManager() {
         return osmLayerManager;
     }
@@ -137,7 +137,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         }
         return null;
     }
-    
+
     public void addDataSource(OdsDataSource dataSource) {
         dataSources.put(dataSource.getFeatureType(), dataSource);
     }
@@ -145,7 +145,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     public boolean isActive() {
         return active;
     }
-    
+
     public boolean activate() {
         JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
         for (OdsAction action : getActions()) {
@@ -174,7 +174,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     public List<OdsAction> getActions() {
         return actions;
     }
-    
+
     public void addAction(OdsAction action) {
         actions.add(action);
     }
@@ -198,13 +198,13 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     @Override
     public void layerAdded(LayerAddEvent e) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void layerOrderChanged(LayerOrderChangeEvent e) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -226,7 +226,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
 
     /**
      * Check if the Josm application is exiting.
-     * 
+     *
      * @return if Josm is exiting
      */
     private static boolean isExiting() {
@@ -246,7 +246,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     public boolean usePolygonFile() {
         return false;
     }
-    
+
     public String getPluginDir() {
         return plugin.getPluginDir();
     }
@@ -261,7 +261,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     /**
      * Get the tolerance (in degrees) used to match nearby nodes and lines.
      * TODO provide more versatile configuration option
-     * 
+     *
      * @return
      */
     public abstract Double getTolerance();
