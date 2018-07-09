@@ -6,12 +6,9 @@ import java.io.Serializable;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.geotools.data.DataStore;
@@ -43,10 +40,8 @@ import net.opengis.ows11.ValueType;
 public class WFSHost extends GtHost {
     private static WFSDataStoreFactory wfsDataStoreFactory = new WFSDataStoreFactory();
 
-    private DataStore dataStore;
     private final int initTimeout;
     private final int dataTimeout;
-    private final Set<String> featureTypes = new HashSet<>();
     private boolean pagingSupported = false;
     private int defaultPageSize = 0;
 
@@ -70,44 +65,42 @@ public class WFSHost extends GtHost {
 
     @Override
     public synchronized void initialize() throws InitializationException {
-        if (!isInitialized()) {
-            super.initialize();
-            setInitialized(false);
-            try {
-                dataStore = createDataStore(initTimeout);
-            } catch (IOException e) {
-                throw new InitializationException(e);
+        try {
+            if (!isInitialized()) {
+                super.initialize();
+                setInitialized(false);
+
+                WFSDataStore dataStore = createDataStore(initTimeout);
+                WFSServiceInfo serviceInfo = dataStore.getInfo();
+                switch (serviceInfo.getVersion()) {
+                case "1.0.0":
+                case "1.1.0":
+                    break;
+                case "2.0.0":
+                    WFSGetCapabilities wfsCapabilities = dataStore.getWfsClient().getCapabilities();
+                    processWFSCapabilities(wfsCapabilities);
+                }
+                setInitialized(true);
             }
-            try {
-                dataStore = createDataStore(dataTimeout);
-                featureTypes.addAll(Arrays.asList(dataStore.getTypeNames()));
-            } catch (IOException e) {
-                throw new InitializationException(e);
-            }
-            setInitialized(true);
+        } catch (IOException e) {
+            throw new InitializationException(e);
         }
         return;
     }
 
     @Override
-    public DataStore getDataStore() {
-        return dataStore;
+    public DataStore createDataStore() throws IOException {
+        return createDataStore(dataTimeout);
     }
 
-    @Override
-    protected Set<String> getFeatureTypes() {
-        return featureTypes;
-    }
-
-    @Override
-    public Map<String, Serializable> getConnectionParameters() throws IOException {
+    public Map<String, Serializable> getConnectionParameters(int timeOut) {
         // TODO move to configuration phase
         // TODO add possibilities to configure parameters
         URL capabilitiesUrl = WFSDataStoreFactory
                 .createGetCapabilitiesRequest(getUrl(), getWFSVersion(getUrl()));
         Map<String, Serializable> connectionParameters = new HashMap<>();
         connectionParameters.put(WFSDataAccessFactory.URL.key, capabilitiesUrl);
-        connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, 60000);
+        connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, timeOut);
         connectionParameters.put(WFSDataAccessFactory.BUFFER_SIZE.key, 1000);
         //            connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, false);
         return connectionParameters;
@@ -162,32 +155,23 @@ public class WFSHost extends GtHost {
      * @throws OdsException
      */
     private WFSDataStore createDataStore(Integer timeout) throws IOException {
-        Map<String, Serializable> connectionParameters = getConnectionParameters();
-        WFSDataStore ds;
+        Map<String, Serializable> connectionParameters = getConnectionParameters(timeout);
+        WFSDataStore dataStore;
         try {
-            ds = wfsDataStoreFactory.createDataStore(connectionParameters);
-            if (ds == null) {
+            dataStore = wfsDataStoreFactory.createDataStore(connectionParameters);
+            if (dataStore == null) {
                 throw new IOException("No data store could be found");
             }
-            WFSServiceInfo serviceInfo = ds.getInfo();
-            switch (serviceInfo.getVersion()) {
-            case "1.0.0":
-            case "1.1.0":
-                break;
-            case "2.0.0":
-                WFSGetCapabilities wfsCapabilities = ds.getWfsClient().getCapabilities();
-                processWFSCapabilities(wfsCapabilities);
-            }
+            return dataStore;
         } catch (SocketException|SocketTimeoutException e) {
             String msg = I18n.tr("Host {0} ({1}) timed out when trying to open the datastore",
                     getName(), getUrl().toString());
             throw new IOException(msg);
         } catch (FileNotFoundException e) {
-            String msg = I18n.tr("No dataStorowe for Host {0} could be found at this url: {1}",
+            String msg = I18n.tr("No dataStore for Host {0} could be found at this url: {1}",
                     getName(), getUrl().toString());
             throw new IOException(msg);
         }
-        return ds;
     }
 
     private void processWFSCapabilities(WFSGetCapabilities wfsCapabilities) {
