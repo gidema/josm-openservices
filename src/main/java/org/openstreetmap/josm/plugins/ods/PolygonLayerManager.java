@@ -6,14 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.openstreetmap.josm.gui.io.importexport.OsmImporter;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.tools.Logging;
-import org.openstreetmap.josm.gui.io.importexport.OsmImporter;
 
 public class PolygonLayerManager extends AbstractLayerManager {
-    private OdsModule module;
+    private final OdsModule module;
     private OsmDataLayer osmDataLayer;
 
     public PolygonLayerManager(OdsModule module) {
@@ -49,12 +49,12 @@ public class PolygonLayerManager extends AbstractLayerManager {
         if (polygonFile.exists()) {
             OsmImporter importer = new OsmImporter();
             try (
-                InputStream is = new FileInputStream(polygonFile);
-            ) {
+                    InputStream is = new FileInputStream(polygonFile);
+                    ) {
                 layer = importer.loadLayer(is, polygonFile,
                         layerName, NullProgressMonitor.INSTANCE).getLayer();
                 layer.setUploadDiscouraged(true);
-//                Main.main.addLayer(osmDataLayer);
+                //                Main.main.addLayer(osmDataLayer);
                 // Main.map.mapView.zoomTo(polygonLayer.getDataSet().);
             } catch (FileNotFoundException e) {
                 // Won't happen as we checked this
@@ -69,7 +69,6 @@ public class PolygonLayerManager extends AbstractLayerManager {
     }
 
     private File getPolygonFilePath() {
-        File pluginDir = new File(module.getPluginDir());
-        return new File(pluginDir, "polygons.osm");
-    } 
+        return new File(module.getPluginDir(), "polygons.osm");
+    }
 }

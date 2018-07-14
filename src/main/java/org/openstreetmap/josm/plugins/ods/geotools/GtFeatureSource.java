@@ -3,6 +3,7 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 import java.io.IOException;
 import java.time.LocalDate;
 
+import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -21,6 +22,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     private SimpleFeatureType featureType;
     private final String idAttribute;
     private final long maxFeatures;
+    private DataStore dataStore;
     SimpleFeatureSource featureSource;
     CoordinateReferenceSystem crs;
     MetaData metaData;
@@ -49,15 +51,18 @@ public class GtFeatureSource implements OdsFeatureSource {
             return;
         host.initialize();
         metaData = new MetaData(host.getMetaData());
-        if (!host.hasFeatureType(featureName)) {
-            throw new InitializationException(String.format(
-                    "Unknown featureName type: '%s'", featureName));
+        try {
+            dataStore = host.createDataStore();
+        }
+        catch (IOException e) {
+            throw new InitializationException(e.getMessage(), e);
         }
         try {
-            featureSource = host.getDataStore().getFeatureSource(featureName);
+            featureSource = dataStore.getFeatureSource(featureName);
             crs = featureSource.getInfo().getCRS();
         } catch (IOException e) {
-            throw new InitializationException(e);
+            throw new InitializationException(String.format(
+                    "Unknown featureName type: '%s'", featureName));
         }
         if (!metaData.containsKey("source.date")) {
             metaData.put("source.date", LocalDate.now());
@@ -83,21 +88,16 @@ public class GtFeatureSource implements OdsFeatureSource {
                 featureType = getFeatureSource().getSchema();
             }
             catch (IllegalArgumentException e) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e1) {
-                   return null;
-                }
-                featureType = getFeatureSource().getSchema();      
+                featureType = getFeatureSource().getSchema();
             }
-         }
+        }
         return featureType;
     }
-    
+
     public long getMaxFeatureCount() {
         return maxFeatures;
     }
-    
+
     @Override
     public String getIdAttribute() {
         return idAttribute;

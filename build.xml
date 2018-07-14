@@ -28,30 +28,30 @@
 **
 -->
 <project name="opendataservices" default="dist" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-	<artifact:pom id="mypom" file="pom.xml" />
+  <artifact:pom id="mypom" file="pom.xml" />
     <tstamp>
       <format property="plugin.date" pattern="yyyy-MM-dd'T'HH:mm:ss'Z'" />
     </tstamp>
 
-	<!-- enter the SVN commit message -->
-	<property name="commit.message" value="Commit message" />
-	<!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-	<property name="plugin.main.version" value="13710" />
-	<property name="plugin.class" value="org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin" />
-	<property name="plugin.version" value="${mypom.version}" />
-	<property name="plugin.build.dir" value="build/deploy" />
-	<property name="maven.target.dir" value="${mypom.build.directory}" />
-	<property name="plugin.src.dir" value="src/main/java" />
-	<!-- this is the directory where the plugin jar is copied to -->
-	<property name="plugin.dist.dir" value="dist/deploy" />
-	<property name="ant.build.javac.target" value="1.8" />
-	<property name="ant.build.javac.source" value="1.8" />
-	<property name="plugin.jar" value="${plugin.dist.dir}/${ant.project.name}.jar" />
-	<!-- Debugging -->
-	<property name="plugin.debug.build.dir" value="build/debug" />
-	<property name="plugin.debug.dist.dir" value="dist/debug" />
-	<property name="plugin.debug.jar" value="${plugin.debug.dist.dir}/${ant.project.name}.jar" />
-	<!--
+  <!-- enter the SVN commit message -->
+  <property name="commit.message" value="Commit message" />
+  <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
+  <property name="plugin.main.version" value="14026" />
+  <property name="plugin.class" value="org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin" />
+  <property name="plugin.version" value="${mypom.version}" />
+  <property name="plugin.build.dir" value="build/deploy" />
+  <property name="maven.target.dir" value="${mypom.build.directory}" />
+  <property name="plugin.src.dir" value="src/main/java" />
+  <!-- this is the directory where the plugin jar is copied to -->
+  <property name="plugin.dist.dir" value="dist/deploy" />
+  <property name="ant.build.javac.target" value="1.8" />
+  <property name="ant.build.javac.source" value="1.8" />
+  <property name="plugin.jar" value="${plugin.dist.dir}/${ant.project.name}.jar" />
+  <!-- Debugging -->
+  <property name="plugin.debug.build.dir" value="build/debug" />
+  <property name="plugin.debug.dist.dir" value="dist/debug" />
+  <property name="plugin.debug.jar" value="${plugin.debug.dist.dir}/${ant.project.name}.jar" />
+  <!--
     **********************************************************
     ** init - initializes the build
     **********************************************************
@@ -64,26 +64,25 @@
       </artifact:dependencies>
     </target>
 
-	<!--
+  <!--
     **********************************************************
     ** dist - creates the plugin jar
     **********************************************************
     -->
-	<target name="dist" depends="init">
-		<echo message="creating ${ant.project.name}.jar ... " />
-		<copy todir="${plugin.build.dir}">
-			<fileset dir="${maven.target.dir}/classes" />
-		</copy>
-		<unjar dest="${plugin.build.dir}">
-			<fileset file="${commons-lang:commons-lang:jar}" />
-			<fileset file="${org.osgeo:proj4j:jar}" />
-		    <patternset>
-		        <exclude name="META-INF/ECLIPSEF.*"/>
-		    </patternset>
-
-		</unjar>
-		<jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
-			<!--
+  <target name="dist" depends="init">
+    <echo message="creating ${ant.project.name}.jar ... " />
+    <copy todir="${plugin.build.dir}">
+      <fileset dir="${maven.target.dir}/classes" />
+    </copy>
+    <unjar dest="${plugin.build.dir}">
+      <fileset file="${commons-lang:commons-lang:jar}" />
+      <fileset file="${org.osgeo:proj4j:jar}" />
+        <patternset>
+            <exclude name="META-INF/ECLIPSEF.*"/>
+        </patternset>
+    </unjar>
+    <jar destfile="${plugin.jar}" basedir="${plugin.build.dir}">
+      <!--
         ************************************************
         ** configure these properties. Most of them will be copied to the plugins
         ** manifest file. Property values will also show up in the list available
@@ -91,36 +90,36 @@
         **
         ************************************************
         -->
-			<manifest>
-				<attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
-				<attribute name="Plugin-Class" value="${plugin.class}" />
-				<attribute name="Plugin-Date" value="${plugin.date}" />
-				<attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
-				<attribute name="Plugin-Icon" value="images/wfs.png" />
-				<!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
-				<attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
-				<attribute name="Plugin-Version" value="${plugin.version}" />
-				<attribute name="Plugin-Requires" value="geotools-wfs" />
-				<attribute name="Plugin-Stage" value="40" />
-			</manifest>
-		</jar>
-	</target>
+      <manifest>
+        <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
+        <attribute name="Plugin-Class" value="${plugin.class}" />
+        <attribute name="Plugin-Date" value="${plugin.date}" />
+        <attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
+        <attribute name="Plugin-Icon" value="images/wfs.png" />
+        <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
+        <attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
+        <attribute name="Plugin-Version" value="${plugin.version}" />
+        <attribute name="Plugin-Requires" value="geotools-wfs" />
+        <attribute name="Plugin-Stage" value="40" />
+      </manifest>
+    </jar>
+  </target>
 
-	<!--
+  <!--
    **********************************************************
    ** dist4debug - creates the debug plugin jar
    **********************************************************
    -->
-	<target name="dist4debug" depends="init">
-		<tstamp>
-			<format property="time" pattern="yyyy-MM-dd'T'hh:mm:ss'Z'" />
-		</tstamp>
-		<echo message="creating ${ant.project.name}.jar ... " />
-		<copy todir="${plugin.debug.build.dir}">
-			<fileset dir="${maven.target.dir}/classes" />
-		</copy>
-		<jar destfile="${plugin.debug.jar}" basedir="${plugin.debug.build.dir}">
-			<!--
+  <target name="dist4debug" depends="init">
+    <tstamp>
+      <format property="time" pattern="yyyy-MM-dd'T'hh:mm:ss'Z'" />
+    </tstamp>
+    <echo message="creating ${ant.project.name}.jar ... " />
+    <copy todir="${plugin.debug.build.dir}">
+      <fileset dir="${maven.target.dir}/classes" />
+    </copy>
+    <jar destfile="${plugin.debug.jar}" basedir="${plugin.debug.build.dir}">
+      <!--
        ************************************************
        ** configure these properties. Most of them will be copied to the plugins
        ** manifest file. Property values will also show up in the list available
@@ -128,59 +127,59 @@
        **
        ************************************************
        -->
-			<manifest>
-				<attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
-				<attribute name="Plugin-Class" value="${plugin.class}" />
-				<attribute name="Plugin-Date" value="${plugin.date}" />
-				<attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
-				<attribute name="Plugin-Icon" value="images/wfs.png" />
-				<!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
-				<attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
-				<attribute name="Plugin-Version" value="${plugin.version}" />
-				<attribute name="Plugin-Stage" value="40" />
-				<!--<attribute name="Plugin-Requires" value="geotools"/>-->
-			</manifest>
-		</jar>
-	</target>
+      <manifest>
+        <attribute name="Author" value="Gertjan Idema &lt;mail@gertjanidema.nl&gt;" />
+        <attribute name="Plugin-Class" value="${plugin.class}" />
+        <attribute name="Plugin-Date" value="${plugin.date}" />
+        <attribute name="Plugin-Description" value="The OpenServices plugin provides a framework for downloading geo data from webservices like WFS" />
+        <attribute name="Plugin-Icon" value="images/wfs.png" />
+        <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
+        <attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
+        <attribute name="Plugin-Version" value="${plugin.version}" />
+        <attribute name="Plugin-Stage" value="40" />
+        <!--<attribute name="Plugin-Requires" value="geotools"/>-->
+      </manifest>
+    </jar>
+  </target>
 
-	<!--
+  <!--
     **********************************************************
     ** clean - clean up the build environment
     **********************************************************
     -->
-	<target name="clean">
-		<delete dir="${plugin.build.dir}" />
-		<delete file="${plugin.jar}" />
-		<delete file="${plugin.debug.jar}" />
-	</target>
-	
-	<!--
+  <target name="clean">
+    <delete dir="${plugin.build.dir}" />
+    <delete file="${plugin.jar}" />
+    <delete file="${plugin.debug.jar}" />
+  </target>
+  
+  <!--
     **********************************************************
     ** install - install the plugin in your local JOSM installation
     **********************************************************
     -->
-	<target name="install" depends="dist">
-		<property environment="env" />
-		<condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.josm/plugins">
-			<and>
-				<os family="windows" />
-			</and>
-		</condition>
-		<copy file="${plugin.jar}" todir="${josm.plugins.dir}" />
-	</target>
+  <target name="install" depends="dist">
+    <property environment="env" />
+    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.josm/plugins">
+      <and>
+        <os family="windows" />
+      </and>
+    </condition>
+    <copy file="${plugin.jar}" todir="${josm.plugins.dir}" />
+  </target>
 
-	<!--
-	  **********************************************************
-	  ** install4debug - install the debug plugin in the JOSM debug environment
-	  **********************************************************
-	  -->
-	<target name="install4debug" depends="dist4debug">
-		<property environment="env" />
-		<condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM_ECLIPSE_ODS6/plugins" else="${user.home}/.josm_eclipse_ods6/plugins">
-			<and>
-				<os family="windows" />
-			</and>
-		</condition>
-		<copy file="${plugin.debug.jar}" todir="${josm.plugins.dir}" />
-	</target>
+  <!--
+    **********************************************************
+    ** install4debug - install the debug plugin in the JOSM debug environment
+    **********************************************************
+    -->
+  <target name="install4debug" depends="dist4debug">
+    <property environment="env" />
+    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM_ECLIPSE_ODS6/plugins" else="${user.home}/.josm_eclipse_ods6/plugins">
+      <and>
+        <os family="windows" />
+      </and>
+    </condition>
+    <copy file="${plugin.debug.jar}" todir="${josm.plugins.dir}" />
+  </target>
 </project>

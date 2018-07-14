@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods;
 
 import static org.openstreetmap.josm.tools.I18n.tr;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -236,8 +237,8 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         return false;
     }
 
-    public String getPluginDir() {
-        return plugin.getPluginDir();
+    public File getPluginDir() {
+        return plugin.getPluginDirs().getUserDataDirectory(true);
     }
 
     public void reset() {

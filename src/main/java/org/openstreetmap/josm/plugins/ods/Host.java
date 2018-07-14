@@ -12,7 +12,7 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
 public abstract class Host {
     private String name;
     private String type;
-    private String uncheckedUrl;
+    private final String uncheckedUrl;
     private URL url;
     private Integer maxFeatures;
     private MetaData metaData;
@@ -38,9 +38,9 @@ public abstract class Host {
         return url;
     }
 
-//    public final void setUrl(String url) {
-//        this.url = url;
-//    }
+    //    public final void setUrl(String url) {
+    //        this.url = url;
+    //    }
 
     public final String getType() {
         return type;
@@ -78,9 +78,9 @@ public abstract class Host {
     }
 
     public boolean equals(Host other) {
-        return other.getName().equals(name) 
-            && other.getType().equals(type)
-            && other.getUrl().equals(url);
+        return other.getName().equals(name)
+                && other.getType().equals(type)
+                && other.getUrl().equals(url);
     }
 
     public synchronized void initialize() throws InitializationException {
@@ -111,8 +111,8 @@ public abstract class Host {
         initialized = true;
     }
 
-    public abstract boolean hasFeatureType(String feature)
-            throws ServiceException;
+    //    public abstract boolean hasFeatureType(String feature)
+    //            throws ServiceException;
 
     public abstract OdsFeatureSource getOdsFeatureSource(String feature)
             throws ServiceException;
