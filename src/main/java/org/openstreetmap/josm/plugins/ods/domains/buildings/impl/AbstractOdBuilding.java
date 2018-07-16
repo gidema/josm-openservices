@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatch;
 import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOdEntity;
@@ -18,6 +20,7 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     private Long buildingId;
     private OdAddress address;
     private final List<OdAddressNode> addressNodes = new LinkedList<>();
+    private Set<OdBuildingUnit> buildingUnits;
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private String startDate;
     private final Set<OdBuilding> neighbours = new HashSet<>();
@@ -72,6 +75,22 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     @Override
     public List<OdAddressNode> getAddressNodes() {
         return addressNodes;
+    }
+
+    @Override
+    public Set<OdBuildingUnit> getBuildingUnits() {
+        return buildingUnits;
+    }
+
+    @Override
+    public void addBuildingUnit(OdBuildingUnit buildingUnit) {
+        if (buildingUnits == null) {
+            buildingUnits = Collections.singleton(buildingUnit);
+            return;
+        }
+        if (buildingUnits.contains(buildingUnit)) return;
+        buildingUnits = new HashSet<>(buildingUnits);
+        buildingUnits.add(buildingUnit);
     }
 
     @Override

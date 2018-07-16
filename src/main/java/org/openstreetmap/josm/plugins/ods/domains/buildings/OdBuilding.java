@@ -35,6 +35,16 @@ public interface OdBuilding extends OdEntity, Building {
      */
     public List<OdAddressNode> getAddressNodes();
 
+    /**
+     * Return the building units associated with this building.
+     *
+     * @return empty collection if no building units are associated with this
+     *         building.
+     */
+    public Set<OdBuildingUnit> getBuildingUnits();
+
+    public void addBuildingUnit(OdBuildingUnit buildingUnit);
+
     public Set<OdBuilding> getNeighbours();
 
     public void setStartYear(Integer year);

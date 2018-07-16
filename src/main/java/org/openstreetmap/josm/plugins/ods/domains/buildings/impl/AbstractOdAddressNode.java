@@ -5,6 +5,7 @@ import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Un
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
 import org.openstreetmap.josm.plugins.ods.domains.streets.OdStreet;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOdEntity;
@@ -18,6 +19,7 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     private OdAddress address;
     private Object buildingRef;
     private OdBuilding building;
+    private OdBuildingUnit buildingUnit;
     private AddressNodeMatch match;
 
     public AbstractOdAddressNode() {
@@ -104,6 +106,16 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     @Override
     public OdBuilding getBuilding() {
         return building;
+    }
+
+    @Override
+    public OdBuildingUnit getBuildingUnit() {
+        return this.buildingUnit;
+    }
+
+    @Override
+    public void setBuildinUnit(OdBuildingUnit buildingUnit) {
+        this.buildingUnit = buildingUnit;
     }
 
     @Override

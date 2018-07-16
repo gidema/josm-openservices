@@ -21,9 +21,14 @@ public interface OdAddressNode extends OdEntity, Address {
 
     public void setBuilding(OdBuilding building);
 
+    public OdBuildingUnit getBuildingUnit();
+
+    public void setBuildinUnit(OdBuildingUnit buildingUnit);
+
     public void setGeometry(Point point);
 
     public void setAddress(OdAddress address);
 
     public void setMatch(AddressNodeMatch match);
+
 }
