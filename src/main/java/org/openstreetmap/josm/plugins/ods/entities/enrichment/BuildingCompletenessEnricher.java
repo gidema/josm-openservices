@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.entities.enrichment;
 
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Complete;
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Incomplete;
-import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,7 @@ public class BuildingCompletenessEnricher implements Consumer<OdBuilding> {
 
     @Override
     public void accept(OdBuilding building) {
-        if (building.getCompleteness() == Unknown) {
+        if (building.getCompleteness() != Complete) {
             for (PreparedPolygon prep : boundaries) {
                 if (prep.covers(building.getGeometry())) {
                     building.setCompleteness(Complete);
