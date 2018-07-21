@@ -8,13 +8,13 @@ import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractOdEntityStore;
 import org.openstreetmap.josm.plugins.ods.matching.PcHousenumberAddressKey;
 
-public class OdAddressNodeStore extends AbstractOdEntityStore<OdAddressNode> {
+public class OdAddressNodeStore extends AbstractOdEntityStore<OdAddressNode, Long> {
     private final GeoIndex<OdAddressNode> geoIndex = new GeoIndexImpl<>(OdAddressNode.class, OdAddressNode::getGeometry);
     private final OneOrManyIndex<OdAddressNode, PcHousenumberAddressKey> postcodeNumberIndex =
             new OneOrManyIndex<>(PcHousenumberAddressKey::new);
 
     public OdAddressNodeStore() {
-        super();
+        super(OdAddressNode::getPrimaryId);
         addIndex(geoIndex);
         addIndex(postcodeNumberIndex);
     }

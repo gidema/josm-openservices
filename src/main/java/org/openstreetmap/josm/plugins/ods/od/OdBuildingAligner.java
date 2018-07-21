@@ -18,7 +18,7 @@ import org.openstreetmap.josm.plugins.ods.osm.WayAligner;
 public class OdBuildingAligner {
     private final NodeDWithin dWithin;
     private boolean undoable;
-    private final OdEntityStore<? extends OdBuilding> buildingStore;
+    private final OdEntityStore<? extends OdBuilding, ?> buildingStore;
 
     public OdBuildingAligner(OdBuildingStore buildingStore) {
         this.buildingStore = buildingStore;

@@ -13,13 +13,13 @@ import org.openstreetmap.josm.plugins.ods.OdsDataSource;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 public class GtDataSource implements OdsDataSource {
-    private GtFeatureSource gtFeatureSource;
-    private Query query;
+    private final GtFeatureSource gtFeatureSource;
+    private final Query query;
     private IdFactory idFactory;
     private boolean initialized;
     private boolean required;
     private final int pageSize;
-    private List<FilterFactory> filters;
+    private final List<FilterFactory> filters;
 
     public GtDataSource(GtFeatureSource gtFeatureSource, int pageSize, Query query) {
         this(gtFeatureSource, pageSize, query, new ArrayList<>());
@@ -32,12 +32,12 @@ public class GtDataSource implements OdsDataSource {
         this.pageSize = pageSize;
         this.filters = filters;
     }
-    
+
     @Override
     public final GtFeatureSource getOdsFeatureSource() {
         return gtFeatureSource;
     }
-    
+
     public void initialize() throws InitializationException {
         if (!initialized) {
             gtFeatureSource.initialize();
@@ -73,7 +73,7 @@ public class GtDataSource implements OdsDataSource {
     /**
      * @see org.openstreetmap.josm.plugins.ods.OdsDataSource#getIdFactory()
      */
-    @Override
+    @Deprecated @Override
     public IdFactory getIdFactory() {
         if (idFactory == null) {
             idFactory = new DefaultIdFactory(
@@ -94,7 +94,7 @@ public class GtDataSource implements OdsDataSource {
 
     /**
      * Build a FeatureVisitor that chains any filters in the right order.
-     * 
+     *
      * @param consumer
      * @return
      */

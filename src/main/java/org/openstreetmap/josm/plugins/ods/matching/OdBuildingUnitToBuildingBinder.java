@@ -6,7 +6,6 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingUnitStore;
-import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.tools.Pair;
 
 
@@ -45,11 +44,9 @@ public class OdBuildingUnitToBuildingBinder {
      * @param buildingUnit
      */
     public void bindBuildingUnitToBuilding(Long buildingUnitId, Long buildingId) {
-        ZeroOneMany<OdBuildingUnit> units = buildingUnitStore.getByBuildingUnitId(buildingUnitId);
-        ZeroOneMany<OdBuilding> buildings = buildingStore.getByBuildingId(buildingId);
-        if (units.isOne() && buildings.isOne()) {
-            OdBuilding building = buildings.getOne();
-            OdBuildingUnit unit = units.getOne();
+        OdBuildingUnit unit = buildingUnitStore.get(buildingUnitId);
+        OdBuilding building = buildingStore.get(buildingId);
+        if (unit != null && building != null) {
             unit.addBuilding(building);
             building.addBuildingUnit(unit);
         }

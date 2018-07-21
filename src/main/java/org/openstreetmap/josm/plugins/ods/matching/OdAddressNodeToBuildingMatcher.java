@@ -4,9 +4,8 @@ import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdAddressNodeStore;
-import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
 
 
 /**
@@ -54,9 +53,8 @@ public class OdAddressNodeToBuildingMatcher {
         if (addressNode.getBuilding() == null) {
             Long buildingRef = (Long) addressNode.getBuildingRef();
             if (buildingRef != null) {
-                ZeroOneMany<OdBuilding> matchedbuildings = buildingStore.getByBuildingId(buildingRef);
-                if (matchedbuildings.isOne()) {
-                    OdBuilding building = matchedbuildings.getOne();
+                OdBuilding building = buildingStore.get(buildingRef);
+                if (building != null) {
                     addressNode.setBuilding(building);
                     building.getAddressNodes().add(addressNode);
                 }

@@ -37,13 +37,13 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     private SimpleFeatureSource featureSource;
     private Query query;
     DefaultFeatureCollection downloadedFeatures;
-    private final OdEntityStore<T> odEntityStore;
+    private final OdEntityStore<T, ?> odEntityStore;
     private final Status status = new Status();
     private final OdEntityBuilder<T> entityBuilder;
     private Normalisation normalisation = Normalisation.FULL;
 
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            OdEntityBuilder<T> entityBuilder, OdEntityStore<T> odEntityStore) {
+            OdEntityBuilder<T> entityBuilder, OdEntityStore<T, ?> odEntityStore) {
         super();
         this.dataSource = dataSource;
         this.crsUtil = crsUtil;

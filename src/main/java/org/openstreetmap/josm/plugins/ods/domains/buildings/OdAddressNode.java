@@ -15,6 +15,9 @@ public interface OdAddressNode extends OdEntity, Address {
 
     public OdAddress getAddress();
 
+    @Override
+    public Long getPrimaryId();
+
     public Object getBuildingRef();
 
     public OdBuilding getBuilding();

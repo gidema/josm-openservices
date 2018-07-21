@@ -17,6 +17,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddressNode {
     private OdAddress address;
+    private Long addressNodeId;
     private Object buildingRef;
     private OdBuilding building;
     private OdBuildingUnit buildingUnit;
@@ -34,6 +35,11 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     @Override
     public OdAddress getAddress() {
         return address;
+    }
+
+    @Override
+    public Long getPrimaryId() {
+        return addressNodeId != null ? addressNodeId : - buildingUnit.getBuildingUnitId();
     }
 
     @Override

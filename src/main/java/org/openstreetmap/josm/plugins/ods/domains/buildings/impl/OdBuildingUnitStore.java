@@ -15,12 +15,12 @@ import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractOdEntityStore
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class OdBuildingUnitStore extends AbstractOdEntityStore<OdBuildingUnit> {
+public class OdBuildingUnitStore extends AbstractOdEntityStore<OdBuildingUnit, Long> {
     private final OneOrManyIndex<OdBuildingUnit, Long> idIndex = new OneOrManyIndex<>(OdBuildingUnit::getBuildingUnitId);
     private final GeoIndex<OdBuildingUnit> geoIndexImpl = new GeoIndexImpl<>(OdBuildingUnit.class, OdBuildingUnit::getGeometry);
 
     public OdBuildingUnitStore() {
-        super();
+        super(OdBuildingUnit::getBuildingUnitId);
         addIndex(idIndex);
         addIndex(geoIndexImpl);
     }

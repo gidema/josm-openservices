@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
@@ -20,13 +21,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * @author gertjan
  *
  */
-public abstract class AbstractOdEntityStore<T extends OdEntity> implements OdEntityStore<T> {
-    private final UniqueIndexImpl<T, ?> primaryIndex = new UniqueIndexImpl<>(OdEntity::getPrimaryId);
+public abstract class AbstractOdEntityStore<T extends OdEntity, K> implements OdEntityStore<T, K> {
+    private final UniqueIndexImpl<T, K> primaryIndex;
     private final List<Index<T>> otherIndexes = new LinkedList<>();
     private Geometry boundary;
 
-    public AbstractOdEntityStore() {
+    public AbstractOdEntityStore(Function<T, K> pkFunction) {
         super();
+        this.primaryIndex = new UniqueIndexImpl<>(pkFunction);
     }
 
     protected void addIndex(Index<T> index) {
@@ -34,8 +36,18 @@ public abstract class AbstractOdEntityStore<T extends OdEntity> implements OdEnt
     }
 
     @Override
+    public T get(K primaryKey) {
+        return primaryIndex.get(primaryKey);
+    }
+
+    @Override
+    public boolean contains(K primaryKey) {
+        return primaryIndex.get(primaryKey) != null;
+    }
+
+    @Override
     public Iterator<T> iterator() {
-        return primaryIndex.iterator();
+        return getPrimaryIndex().iterator();
     }
 
     @Override
@@ -45,11 +57,11 @@ public abstract class AbstractOdEntityStore<T extends OdEntity> implements OdEnt
 
     @Override
     public Stream<T> stream() {
-        return primaryIndex.stream();
+        return getPrimaryIndex().stream();
     }
 
     @Override
-    public UniqueIndexImpl<T, ?> getPrimaryIndex() {
+    public UniqueIndexImpl<T, K> getPrimaryIndex() {
         return primaryIndex;
     }
 
@@ -58,7 +70,7 @@ public abstract class AbstractOdEntityStore<T extends OdEntity> implements OdEnt
      */
     @Override
     public boolean add(T entity) {
-        boolean added = primaryIndex.insert(entity);
+        boolean added = getPrimaryIndex().insert(entity);
         if (added) {
             for (Index<T> index : otherIndexes) {
                 index.insert(entity);
@@ -96,7 +108,7 @@ public abstract class AbstractOdEntityStore<T extends OdEntity> implements OdEnt
      */
     @Override
     public void remove(T entity) {
-        primaryIndex.remove(entity);
+        getPrimaryIndex().remove(entity);
         for (Index<T> index : otherIndexes) {
             index.remove(entity);
         }
@@ -107,7 +119,7 @@ public abstract class AbstractOdEntityStore<T extends OdEntity> implements OdEnt
      */
     @Override
     public void clear() {
-        primaryIndex.clear();
+        getPrimaryIndex().clear();
         for (Index<T> index : otherIndexes) {
             index.clear();
         }
