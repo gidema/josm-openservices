@@ -43,7 +43,7 @@ public class BaseOsmCity extends AbstractOsmEntity implements OsmCity {
     }
 
     @Override
-    public Match<OsmCity, OdCity> getMatch() {
+    public Match<OdCity, OsmCity> getMatch() {
         return null;
     }
 }

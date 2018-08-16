@@ -8,11 +8,12 @@ package org.openstreetmap.josm.plugins.ods.matching;
  * @author Gertjan Idema
  *
  */
-public interface Matcher {
+public interface Matcher extends Runnable {
 
     /**
      * Run this matcher
      */
+    @Override
     void run();
 
     /**

@@ -34,8 +34,8 @@ public class PagingFeatureReader implements GtFeatureReader {
         int index = 0;
         boolean ready = false;
         GtPageReader pageReader = new DefaultGtPageReader(dataSource.getOdsFeatureSource().getFeatureSource());
+        Query query = new Query(baseQuery);
         while (!ready && !Thread.currentThread().isInterrupted()) {
-            Query query = new Query(baseQuery);
             query.setStartIndex(index);
             query.setMaxFeatures(pageSize);
             // TODO move to dataSource

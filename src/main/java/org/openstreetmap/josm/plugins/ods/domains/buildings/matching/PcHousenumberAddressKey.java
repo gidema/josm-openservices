@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.matching;
+package org.openstreetmap.josm.plugins.ods.domains.buildings.matching;
 
 import java.util.Objects;
 

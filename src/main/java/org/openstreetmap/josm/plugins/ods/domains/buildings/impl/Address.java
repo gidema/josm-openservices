@@ -9,8 +9,6 @@ public interface Address {
 
     public String getFullHouseNumber();
 
-    public String getHouseName();
-
     public String getStreetName();
 
     public String getPostcode();

@@ -12,7 +12,7 @@ import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 public interface OsmBuilding extends OsmEntity, Building {
     public static boolean IsBuilding(OsmPrimitive primitive) {
         boolean taggedAsBuilding = primitive.hasKey("building") || primitive.hasKey("building:part")
-                || primitive.hasKey("no:building");
+                || primitive.hasKey("not:building") || primitive.hasKey("no:building");
         boolean validGeometry = (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
                 || primitive.getDisplayType() == OsmPrimitiveType.MULTIPOLYGON
                 || primitive.getDisplayType() == OsmPrimitiveType.RELATION);

@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities.opendata;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -8,8 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.Context;
-import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
+import org.openstreetmap.josm.plugins.ods.io.DownloadObserver;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Downloader;
@@ -21,18 +19,25 @@ import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 public class OpenDataLayerDownloader implements LayerDownloader {
     private static final int NTHREADS = 10;
 
+    private final OdLayerManager odLayerManager;
     private final List<FeatureDownloader> downloaders;
+    private final List<Runnable> odProcessors;
+    private final OdBoundaryManager boundaryManager;
     private Status status = new Status();
     private DownloadRequest request;
     private DownloadResponse response;
 
-    private final OsmLayerManager osmLayerManager;
 
     private ExecutorService executor;
 
-    public OpenDataLayerDownloader(Context context) {
-        this.osmLayerManager = context.get(OsmLayerManager.class);
-        this.downloaders = new LinkedList<>();
+    public OpenDataLayerDownloader(OdLayerManager odLayerManager,
+            List<FeatureDownloader> downloaders,
+            List<Runnable> odProcessors,
+            OdBoundaryManager boundaryManager) {
+        this.odLayerManager = odLayerManager;
+        this.downloaders = downloaders;
+        this.odProcessors = odProcessors;
+        this.boundaryManager = boundaryManager;
     }
 
     @Override
@@ -91,7 +96,13 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         }
         executor.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
+            if (!executor.awaitTermination(1, TimeUnit.MINUTES)) {
+                for (Downloader downloader : downloaders) {
+                    downloader.cancel();
+                }
+                status.setTimedOut(true);
+                return;
+            }
         }
         catch (InterruptedException e) {
             executor.shutdownNow();
@@ -114,28 +125,42 @@ public class OpenDataLayerDownloader implements LayerDownloader {
 
     @Override
     public void process() {
-        executor = Executors.newFixedThreadPool(NTHREADS);
+        parseFeatures();
+        boundaryManager.update(getResponse().getRequest().getBoundary().getMultiPolygon());
+        //        executor = Executors.newFixedThreadPool(NTHREADS);
         status.clear();
-        for (final FeatureDownloader downloader : downloaders) {
-            downloader.setResponse(response);
-            executor.execute(downloader::process);
-        }
-        executor.shutdown();
-        try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
-        }
-        catch (Exception e) {
-            executor.shutdownNow();
-            for (FeatureDownloader downloader : downloaders) {
-                downloader.cancel();
+
+        for (final Runnable odProcessor : odProcessors) {
+            if (odProcessor instanceof DownloadObserver) {
+                ((DownloadObserver)odProcessor).downloadFinished(response);
+                //                executor.execute(odProcessor);
             }
-            status.setException(e);
-            return;
+            odProcessor.run();
         }
+
+        //        executor.shutdown();
+        //        try {
+        //            executor.awaitTermination(1, TimeUnit.MINUTES);
+        //        }
+        //        catch (Exception e) {
+        //            executor.shutdownNow();
+        //            for (FeatureDownloader downloader : downloaders) {
+        //                downloader.cancel();
+        //            }
+        //            status.setException(e);
+        //            return;
+        //        }
         Boundary boundary = request.getBoundary();
         DataSource ds = new DataSource(boundary.getBounds(), "Import");
-        OsmDataLayer osmDataLayer = osmLayerManager.getOsmDataLayer();
+        OsmDataLayer osmDataLayer = odLayerManager.getOsmDataLayer();
         osmDataLayer.getDataSet().addDataSource(ds);
+    }
+
+    private void parseFeatures() {
+        // Consider parallelization
+        for (FeatureDownloader downloader : downloaders) {
+            downloader.process();
+        }
     }
 
     public DownloadResponse getResponse() {

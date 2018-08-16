@@ -28,7 +28,7 @@ import com.vividsolutions.jts.geom.Point;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class OdAddressNodesDistributer {
+public class OdAddressNodesDistributer implements Runnable {
     private final GeoUtil geoUtil;
     private final AddressNodeComparator comparator = new AddressNodeComparator();
     private final OdBuildingStore odBuildingStore;
@@ -39,6 +39,7 @@ public class OdAddressNodesDistributer {
         this.geoUtil = geoUtil;
     }
 
+    @Override
     public void run() {
         odBuildingStore.forEach(this::processBuilding);
     }

@@ -4,6 +4,8 @@ import static org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany.Cardi
 import static org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany.Cardinality.One;
 import static org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany.Cardinality.Zero;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -11,8 +13,15 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class ZeroOneMany<T> {
+    public static <T> ZeroOneMany<T> forCollection(Collection<T> collection) {
+        if (collection == null || collection.isEmpty())
+            return new ZeroOneMany<>();
+        return new ZeroOneMany<>(collection);
+    }
+
     /**
-     * If non-null, the single value; if null, indicates o or many values are present
+     * If non-null, the single value; if null, indicates o or many values are
+     * present
      */
     private T one;
     private Set<T> many;
@@ -36,6 +45,18 @@ public class ZeroOneMany<T> {
         }
     }
 
+    public ZeroOneMany(Collection<T> many) {
+        if (many == null || many.size() == 0) {
+            throw new UnsupportedOperationException();
+        }
+        if (many.size() == 1) {
+            this.one = many.iterator().next();
+        }
+        else {
+            this.many = new HashSet<>(many);
+        }
+    }
+
     /**
      * Constructs an instance from a (possibly null) value.
      *
@@ -49,75 +70,83 @@ public class ZeroOneMany<T> {
     }
 
     /**
-     * If a single value is present in this {@code ZeroOneMany}, returns the value,
-     * otherwise throws {@code NoSuchElementException}.
+     * If a single value is present in this {@code ZeroOneMany}, returns the
+     * value, otherwise throws {@code NoSuchElementException}.
      *
      * @return the non-null value held by this {@code ZeroOneMany}
-     * @throws NoSuchElementException if there is no value present
+     * @throws NoSuchElementException
+     *             if there is no value present
      */
     public T getOne() {
         if (one == null) {
-            throw new NoSuchElementException( many != null ?
-                    "More than one value present" : "No value present");
+            throw new NoSuchElementException(many != null
+                    ? "More than one value present" : "No value present");
         }
         return one;
     }
 
     /**
-     * If multiple values are present in this {@code ZeroOneMany}, returns the values,
-     * otherwise throws {@code NoSuchElementException}.
+     * If multiple values are present in this {@code ZeroOneMany}, returns the
+     * values, otherwise throws {@code NoSuchElementException}.
      *
      * @return the values held by this {@code ZeroOneMany}
-     * @throws NoSuchElementException if there are 0 or 1 values
+     * @throws NoSuchElementException
+     *             if there are 0 or 1 values
      */
     public Set<T> getMany() {
         if (many == null) {
-            throw new NoSuchElementException( many != null ?
-                    "More than one value present" : "No value present");
+            throw new NoSuchElementException(many != null
+                    ? "More than one value present" : "No value present");
         }
         return many;
     }
 
     /**
-     * Return {@code true} if there are no values present, otherwise {@code false}.
+     * Return {@code true} if there are no values present, otherwise
+     * {@code false}.
      *
-     * @return {@code true} if there are no values present, otherwise {@code false}
+     * @return {@code true} if there are no values present, otherwise
+     *         {@code false}
      */
     public boolean isEmpty() {
         return one == null && many == null;
     }
 
     /**
-     * Return {@code true} if there is exactly one value present, otherwise {@code false}.
+     * Return {@code true} if there is exactly one value present, otherwise
+     * {@code false}.
      *
-     * @return {@code true} if there is exactly one value present, otherwise {@code false}
+     * @return {@code true} if there is exactly one value present, otherwise
+     *         {@code false}
      */
     public boolean isOne() {
         return one != null;
     }
 
     /**
-     * Return {@code true} if there are more than one values present, otherwise {@code false}.
+     * Return {@code true} if there are more than one values present, otherwise
+     * {@code false}.
      *
-     * @return {@code true} if there are more than one values value present, otherwise {@code false}
+     * @return {@code true} if there are more than one values value present,
+     *         otherwise {@code false}
      */
     public boolean isMany() {
         return many != null;
     }
 
     /**
-     * If exactly 1 value is present, invoke the specified consumer with the value,
-     * otherwise do nothing.
+     * If exactly 1 value is present, invoke the specified consumer with the
+     * value, otherwise do nothing.
      *
-     * @param consumer block to be executed if a single value is present
-     * @throws NullPointerException if value is present and {@code consumer} is
-     * null
+     * @param consumer
+     *            block to be executed if a single value is present
+     * @throws NullPointerException
+     *             if value is present and {@code consumer} is null
      */
     public void ifOne(Consumer<? super T> consumer) {
         if (one != null)
             consumer.accept(one);
     }
-
 
     /**
      * Execute the consumer for each element
@@ -161,8 +190,7 @@ public class ZeroOneMany<T> {
     public void remove(T element) {
         if (one.equals(element)) {
             one = null;
-        }
-        else if (many.remove(element)) {
+        } else if (many.remove(element)) {
             if (many.size() == 1) {
                 one = many.iterator().next();
                 many = null;
@@ -178,9 +206,10 @@ public class ZeroOneMany<T> {
      * <li>both instances have equal values present
      * </ul>
      *
-     * @param obj an object to be tested for equality
+     * @param obj
+     *            an object to be tested for equality
      * @return {code true} if the other object is "equal to" this object
-     * otherwise {@code false}
+     *         otherwise {@code false}
      */
     @Override
     public boolean equals(Object obj) {
@@ -193,7 +222,8 @@ public class ZeroOneMany<T> {
         }
 
         ZeroOneMany<?> other = (ZeroOneMany<?>) obj;
-        return Objects.equals(one, other.one) && Objects.equals(many, other.many);
+        return Objects.equals(one, other.one)
+                && Objects.equals(many, other.many);
     }
 
     /**
@@ -208,13 +238,13 @@ public class ZeroOneMany<T> {
     }
 
     /**
-     * Returns a non-empty string representation of this ZeroOneMany suitable for
-     * debugging. The exact presentation format is unspecified and may vary
+     * Returns a non-empty string representation of this ZeroOneMany suitable
+     * for debugging. The exact presentation format is unspecified and may vary
      * between implementations and versions.
      *
      * @implSpec If a value is present the result must include its string
-     * representation in the result. Empty and other ZeroOneManys must be
-     * unambiguously differentiable.
+     *           representation in the result. Empty and other ZeroOneManys must
+     *           be unambiguously differentiable.
      *
      * @return the string representation of this instance
      */

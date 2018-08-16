@@ -1,12 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.PcHousenumberAddressKey;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.impl.GeoIndexImpl;
 import org.openstreetmap.josm.plugins.ods.entities.impl.OneOrManyIndex;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractOsmEntityStore;
-import org.openstreetmap.josm.plugins.ods.matching.PcHousenumberAddressKey;
 
 /**
  * Store address nodes created from osm primitives.

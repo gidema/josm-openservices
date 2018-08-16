@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings;
 
 import java.util.List;
-import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
@@ -10,9 +9,6 @@ public interface OdBuildingUnit extends OdEntity {
     public Long getBuildingUnitId();
 
     public void setBuildingUnitId(Long id);
-
-    public Set<Long> getBuildingIds();
-
 
     public void addBuilding(OdBuilding building);
 
@@ -27,7 +23,9 @@ public interface OdBuildingUnit extends OdEntity {
      */
     public List<OdAddressNode> getAddressNodes();
 
-    public double getArea();
+    public void setArea(Double area);
+
+    public Double getArea();
 
     public BuildingType getBuildingType();
 }

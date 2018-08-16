@@ -20,7 +20,7 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     private Long buildingId;
     private OdAddress address;
     private final List<OdAddressNode> addressNodes = new LinkedList<>();
-    private Set<OdBuildingUnit> buildingUnits;
+    private Set<OdBuildingUnit> buildingUnits = Collections.emptySet();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private String startDate;
     private final Set<OdBuilding> neighbours = new HashSet<>();

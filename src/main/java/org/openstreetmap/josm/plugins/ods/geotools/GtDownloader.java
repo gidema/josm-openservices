@@ -6,7 +6,6 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
-import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -14,22 +13,19 @@ import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
-import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
-import org.openstreetmap.josm.plugins.ods.entities.OdEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
-import org.openstreetmap.josm.plugins.ods.entities.storage.OdEntityStore;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.PagingFeatureReader;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.SimpleFeatureReader;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Status;
+import org.openstreetmap.josm.plugins.ods.parsing.FeatureParser;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
+public class GtDownloader implements FeatureDownloader {
     private final GtDataSource dataSource;
     private final CRSUtil crsUtil;
     private DownloadRequest request;
@@ -37,18 +33,19 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     private SimpleFeatureSource featureSource;
     private Query query;
     DefaultFeatureCollection downloadedFeatures;
-    private final OdEntityStore<T, ?> odEntityStore;
+    //    private final OdEntityStore<T, ?> odEntityStore;
     private final Status status = new Status();
-    private final OdEntityBuilder<T> entityBuilder;
+    //    private final OdEntityBuilder<T> entityBuilder;
+    private final FeatureParser parser;
     private Normalisation normalisation = Normalisation.FULL;
 
-    public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            OdEntityBuilder<T> entityBuilder, OdEntityStore<T, ?> odEntityStore) {
+    public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil, FeatureParser parser) {
         super();
         this.dataSource = dataSource;
         this.crsUtil = crsUtil;
-        this.entityBuilder = entityBuilder;
-        this.odEntityStore = odEntityStore;
+        this.parser = parser;
+        //        this.entityBuilder = entityBuilder;
+        //        this.odEntityStore = odEntityStore;
     }
 
     @Override
@@ -133,7 +130,7 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
         }
         try {
             reader.read((f) -> {
-                FeatureUtil.normalizeFeature(f, normalisation);
+                //                FeatureUtil.normalizeFeature(f, normalisation);
                 downloadedFeatures.add(f);
             }, null);
         } catch (DataCutOffException e) {
@@ -156,19 +153,17 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
                         featureType));
             }
         }
-        if (!status.isSucces()) {
-            Thread.currentThread().interrupt();
-            return;
-        }
+        this.response = new DownloadResponse(request);
+        this.response.setStatus(status);
+        //        if (!status.isSucces()) {
+        //            Thread.currentThread().interrupt();
+        //            return;
+        //        }
     }
 
     @Override
     public void process() {
-        for (SimpleFeature feature : downloadedFeatures) {
-            T entity = entityBuilder.build(feature, response);
-            odEntityStore.add(entity);
-        }
-        odEntityStore.extendBoundary(request.getBoundary().getMultiPolygon());
+        parser.parse(downloadedFeatures, response);
     }
 
     public GtDataSource getDataSource() {

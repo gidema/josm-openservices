@@ -1,12 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.PcHousenumberAddressKey;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 import org.openstreetmap.josm.plugins.ods.entities.impl.GeoIndexImpl;
 import org.openstreetmap.josm.plugins.ods.entities.impl.OneOrManyIndex;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractOdEntityStore;
-import org.openstreetmap.josm.plugins.ods.matching.PcHousenumberAddressKey;
 
 public class OdAddressNodeStore extends AbstractOdEntityStore<OdAddressNode, Long> {
     private final GeoIndex<OdAddressNode> geoIndex = new GeoIndexImpl<>(OdAddressNode.class, OdAddressNode::getGeometry);

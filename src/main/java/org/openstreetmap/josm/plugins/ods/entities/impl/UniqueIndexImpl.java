@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.Index;
-import org.openstreetmap.josm.tools.Logging;
 
 public class UniqueIndexImpl<T extends Entity, K> implements Index<T> {
     private final Map<K, T> entityMap = new HashMap<>();
@@ -29,18 +28,14 @@ public class UniqueIndexImpl<T extends Entity, K> implements Index<T> {
     }
 
     /* (non-Javadoc)
-     * @see org.openstreetmap.josm.plugins.ods.entities.Index#add(T)
+     * @see org.openstreetmap.josm.plugins.ods.entities.Index#insert(java.lang.Object)
      */
     @Override
     public boolean insert(T entity) {
         K key = keyFactory.apply(entity);
         if (key != null) {
             T previous = entityMap.putIfAbsent(key, entity);
-            if (previous != null && !previous.equals(entity)) {
-                Logging.warn("Duplicate value for unique index " + key.toString() + " of " + entity.getClass().getSimpleName());
-                return false;
-            }
-            return true;
+            if (previous == null) return true;
         }
         return false;
     }

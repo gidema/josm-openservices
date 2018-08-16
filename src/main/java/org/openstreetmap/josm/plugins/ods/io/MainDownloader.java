@@ -14,8 +14,8 @@ import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.Context;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
+import org.openstreetmap.josm.plugins.ods.setup.ModuleSetup;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
@@ -29,7 +29,8 @@ import org.openstreetmap.josm.tools.I18n;
 public abstract class MainDownloader {
     private static final int NTHREADS = 10;
 
-    private final Context context;
+    private final ModuleSetup moduleSetup;
+    private final List<Runnable> processors;
 
     private List<LayerDownloader> enabledDownloaders;
 
@@ -43,9 +44,10 @@ public abstract class MainDownloader {
 
     protected abstract LayerDownloader getOpenDataLayerDownloader();
 
-    public MainDownloader(Context context) {
+    public MainDownloader(ModuleSetup moduleSetup, List<Runnable> processors) {
         super();
-        this.context = new Context(context);
+        this.moduleSetup = moduleSetup;
+        this.processors = processors;
     }
     //
     //    public OdsModule getModule() {
@@ -56,7 +58,7 @@ public abstract class MainDownloader {
         status.clear();
         // Switch to the Open data layer before downloading.
         MainLayerManager layerManager = MainApplication.getLayerManager();
-        OdLayerManager odLayerManager = context.get(OdLayerManager.class);
+        OdLayerManager odLayerManager = moduleSetup.getOdLayerManager();
         layerManager.setActiveLayer(odLayerManager.getOsmDataLayer());
 
         pm.indeterminateSubTask(I18n.tr("Setup"));
@@ -214,6 +216,23 @@ public abstract class MainDownloader {
         for (final LayerDownloader downloader : enabledDownloaders) {
             downloader.setResponse(response);
             executorService.execute(downloader::process);
+        }
+
+        executorService.shutdown();
+        try {
+            executorService.awaitTermination(5, TimeUnit.MINUTES);
+        }
+        catch (InterruptedException e) {
+            executorService.shutdownNow();
+            //            for (LayerDownloader downloader : enabledDownloaders) {
+            //                downloader.cancel();
+            //            }
+            status.setException(e);
+            status.setFailed(true);
+        }
+        executorService = Executors.newFixedThreadPool(NTHREADS);
+        for (final Runnable processor : processors) {
+            executorService.execute(processor);
         }
 
         executorService.shutdown();

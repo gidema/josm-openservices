@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
-public class OsmAnalyzer {
+public class OsmAnalyzer implements Runnable {
     private final Map<Class<? extends OsmEntity>, OsmEntityAnalyzer<?>> analyzers = new HashMap<>();
 
     public OsmAnalyzer(Collection<OsmEntityAnalyzer<?>> analyzers) {
@@ -15,6 +15,7 @@ public class OsmAnalyzer {
         });
     }
 
+    @Override
     public void run() {
         analyzers.values().forEach(a -> a.run());
     }

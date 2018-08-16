@@ -3,10 +3,10 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.AddressNodeMatch;
 import org.openstreetmap.josm.plugins.ods.domains.places.OsmCity;
 import org.openstreetmap.josm.plugins.ods.domains.streets.OsmStreet;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOsmEntity;
-import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 

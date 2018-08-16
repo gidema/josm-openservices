@@ -10,15 +10,10 @@ public class AbstractOdAddress implements OdAddress {
     private String houseNumberExtra;
     private String fullHouseNumber;
     private String postcode;
-    private String houseName;
     private String streetName;
     private OdStreet street;
     private String cityName;
     private OdCity city;
-
-    public void setHouseName(String houseName) {
-        this.houseName = houseName;
-    }
 
     @Override
     public void setCityName(String cityName) {
@@ -93,11 +88,6 @@ public class AbstractOdAddress implements OdAddress {
     @Override
     public void setHouseNumberExtra(String houseNumberExtra) {
         this.houseNumberExtra = houseNumberExtra;
-    }
-
-    @Override
-    public String getHouseName() {
-        return houseName;
     }
 
     @Override

@@ -18,9 +18,6 @@ public interface OdAddress extends Address {
     public String getFullHouseNumber();
 
     @Override
-    public String getHouseName();
-
-    @Override
     public String getStreetName();
 
     public OdStreet getStreet();

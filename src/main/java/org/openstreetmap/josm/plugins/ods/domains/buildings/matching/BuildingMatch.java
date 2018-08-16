@@ -5,24 +5,20 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.plugins.ods.matching.MatchImpl;
 
-public class BuildingMatch extends MatchImpl<OsmBuilding, OdBuilding> {
-    /**
-     * A double value indicating the match between the areas of the 2 buildings.
-     *
-     */
-    //    private MatchStatus areaMatch;
-    //    private MatchStatus centroidMatch;
-    //    private MatchStatus startDateMatch;
-    //    private MatchStatus statusMatch;
+public class BuildingMatch extends MatchImpl<OdBuilding, OsmBuilding> {
+    private BuildingMatch(OdBuilding odBuilding, OsmBuilding osmBuilding) {
+        super(odBuilding, osmBuilding);
+    }
 
-    public BuildingMatch(OsmBuilding osmBuilding, OdBuilding odBuilding) {
-        super(osmBuilding, odBuilding);
-        osmBuilding.setMatch(this);
-        odBuilding.setMatch(this);
+    public static BuildingMatch create(OdBuilding odBuilding, OsmBuilding osmBuilding) {
+        BuildingMatch match = new BuildingMatch(odBuilding, osmBuilding);
+        osmBuilding.setMatch(match);
+        odBuilding.setMatch(match);
+        return match;
     }
 
     public BuildingMatch(ZeroOneMany<OsmBuilding> osmBuildings, OdBuilding odBuilding) {
-        super(osmBuildings, odBuilding);
+        super(odBuilding, osmBuildings);
         osmBuildings.forEach(b -> b.setMatch(this));
         odBuilding.setMatch(this);
     }

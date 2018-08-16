@@ -29,10 +29,10 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Gertjan Idema
  * 
  */
-public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
+public class DefaultPrimitiveFactory implements OsmPrimitiveFactory {
     private final LayerManager layerManager;
 
-    public DefaultPrimitiveBuilder(LayerManager layerManager) {
+    public DefaultPrimitiveFactory(LayerManager layerManager) {
         this.layerManager = layerManager;
     }
 

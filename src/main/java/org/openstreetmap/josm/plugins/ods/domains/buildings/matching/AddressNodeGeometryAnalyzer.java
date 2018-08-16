@@ -8,7 +8,6 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.entities.Deviation;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
-import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 
 public class AddressNodeGeometryAnalyzer {
     final static String DIFF_KEY = ODS.KEY.DIFF_KEY + "geometry";

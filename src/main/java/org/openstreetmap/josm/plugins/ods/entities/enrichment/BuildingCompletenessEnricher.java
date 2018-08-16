@@ -14,7 +14,7 @@ import com.vividsolutions.jts.geom.prep.PreparedPolygon;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class BuildingCompletenessEnricher {
+public class BuildingCompletenessEnricher implements Runnable {
     private final OdBuildingStore odBuildingStore;
 
     public BuildingCompletenessEnricher(OdBuildingStore odBuildingStore) {
@@ -22,10 +22,10 @@ public class BuildingCompletenessEnricher {
         this.odBuildingStore = odBuildingStore;
     }
 
+    @Override
     public void run() {
         PreparedPolygon preparedPolygon = new PreparedPolygon((Polygonal) odBuildingStore.getBoundary());
         odBuildingStore.forEach(building -> update(preparedPolygon, building));
-
     }
 
     private static void update(PreparedPolygon preparedPolygon,OdBuilding building) {

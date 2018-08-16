@@ -6,10 +6,10 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingUnit;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.AddressNodeMatch;
 import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
 import org.openstreetmap.josm.plugins.ods.domains.streets.OdStreet;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOdEntity;
-import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
@@ -18,7 +18,6 @@ import com.vividsolutions.jts.geom.Point;
 public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddressNode {
     private OdAddress address;
     private Long addressNodeId;
-    private Object buildingRef;
     private OdBuilding building;
     private OdBuildingUnit buildingUnit;
     private AddressNodeMatch match;
@@ -63,11 +62,6 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     }
 
     @Override
-    public String getHouseName() {
-        return address.getHouseName();
-    }
-
-    @Override
     public String getStreetName() {
         return address.getStreetName();
     }
@@ -93,15 +87,6 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     @Override
     public Completeness getCompleteness() {
         return building == null ? Unknown : building.getCompleteness();
-    }
-
-    @Override
-    public Object getBuildingRef() {
-        return buildingRef;
-    }
-
-    public void setBuildingRef(Object buildingRef) {
-        this.buildingRef = buildingRef;
     }
 
     @Override

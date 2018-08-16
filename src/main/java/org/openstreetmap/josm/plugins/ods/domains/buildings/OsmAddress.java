@@ -25,4 +25,6 @@ public interface OsmAddress extends Address {
     void setHouseNumberExtra(String houseNumberExtra);
 
     void setStreet(OsmStreet street);
+
+    String getHouseName();
 }

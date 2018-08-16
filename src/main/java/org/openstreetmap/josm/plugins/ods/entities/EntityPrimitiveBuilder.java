@@ -8,7 +8,7 @@ package org.openstreetmap.josm.plugins.ods.entities;
  *
  * @param <T>
  */
-public interface EntityPrimitiveBuilder<T extends OdEntity> {
+public interface EntityPrimitiveBuilder<T extends OdEntity> extends Runnable {
 
     void createPrimitive(T entity);
 }

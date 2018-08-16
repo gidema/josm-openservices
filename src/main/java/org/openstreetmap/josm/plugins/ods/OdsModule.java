@@ -25,6 +25,7 @@ import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
+import org.openstreetmap.josm.plugins.ods.setup.ModuleSetup;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers
@@ -38,28 +39,32 @@ import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
  */
 public abstract class OdsModule implements ActiveLayerChangeListener, LayerChangeListener {
     private OdsModulePlugin plugin;
+    private final ModuleSetup setup;
+    private final OsmLayerManager osmLayerManager;
+    private final OdLayerManager odLayerManager;
     private final List<OdsAction> actions = new LinkedList<>();
     private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
 
     private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    protected final OsmLayerManager osmLayerManager = createOsmLayerManager();
-    protected final OdLayerManager odLayerManager = createOdLayerManager();
     private PolygonLayerManager polygonDataLayer;
     //    private MatcherManager matcherManager;
 
 
     String osmQuery;
 
-    public OdsModule() {
+    public OdsModule(ModuleSetup setup) {
         super();
+        this.setup = setup;
+        this.osmLayerManager = setup.getOsmLayerManager();
+        this.odLayerManager = setup.getOdLayerManager();
     }
 
-    protected abstract OdLayerManager createOdLayerManager();
-
-    protected abstract OsmLayerManager createOsmLayerManager();
+    public ModuleSetup getSetup() {
+        return setup;
+    }
 
     public OsmLayerManager getOsmLayerManager() {
-        return osmLayerManager;
+        return setup.getOsmLayerManager();
     }
 
     private boolean active = false;
@@ -124,11 +129,11 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
 
     public LayerManager getLayerManager(Layer activeLayer) {
         if (!isActive()) return null;
-        if (odLayerManager.getOsmDataLayer() == activeLayer) {
-            return odLayerManager;
+        if (setup.getOsmLayerManager().getOsmDataLayer() == activeLayer) {
+            return setup.getOsmLayerManager();
         }
-        if (osmLayerManager.getOsmDataLayer() == activeLayer) {
-            return osmLayerManager;
+        if (setup.getOdLayerManager().getOsmDataLayer() == activeLayer) {
+            return setup.getOdLayerManager();
         }
         return null;
     }

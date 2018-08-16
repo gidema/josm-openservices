@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.matching;
+package org.openstreetmap.josm.plugins.ods.binding;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,12 +6,13 @@ import java.util.function.Consumer;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OsmAddressNodeStore;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OsmBuildingStore;
 import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
 
 /**
- * <p>Try to find a matching building for every OdAddressNode passed to the OdAddressNode
- * consumer. The geometry of the OdAddressNode will be used to do the matching</p>
+ * <p>Try to find a related building for every OsmAddressNode in the store.
+ * The geometries of the address node and the buildings will be used to do the matching</p>
  * <p>If a match is found, the building parameter of the addressNode will be set to the related address
  * and the addressNode will be added to the related addresses list of the building.</p>
  * <p>If no matching building was found, The unmatched addressNode will
@@ -20,18 +21,25 @@ import org.openstreetmap.josm.plugins.ods.entities.GeoIndex;
  * @author gertjan
  *
  */
-public class OsmAddressNodeToBuildingMatcher {
+public class OsmAddressNodeToBuildingBinder implements Runnable {
     private final OsmBuildingStore osmBuildingStore;
+    private final OsmAddressNodeStore osmAddressNodeStore;
     private Consumer<OsmAddressNode> unmatchedAddressNodeHandler;
 
-    public OsmAddressNodeToBuildingMatcher(OsmBuildingStore osmBuildingStore) {
+    public OsmAddressNodeToBuildingBinder(OsmBuildingStore osmBuildingStore, OsmAddressNodeStore osmAddressNodeStore) {
         super();
         this.osmBuildingStore = osmBuildingStore;
+        this.osmAddressNodeStore = osmAddressNodeStore;
     }
 
     public void setUnmatchedAddressNodeHandler(
             Consumer<OsmAddressNode> unmatchedAddressNodeHandler) {
         this.unmatchedAddressNodeHandler = unmatchedAddressNodeHandler;
+    }
+
+    @Override
+    public void run() {
+        osmAddressNodeStore.forEach(this::bind);
     }
 
     /**
@@ -40,7 +48,7 @@ public class OsmAddressNodeToBuildingMatcher {
      *
      * @param addressNode
      */
-    public void match(OsmAddressNode addressNode) {
+    public void bind(OsmAddressNode addressNode) {
         GeoIndex<OsmBuilding> geoIndex = osmBuildingStore.getGeoIndex();
         if (addressNode.getBuilding() == null) {
             List<OsmBuilding> buildings = geoIndex.intersection(addressNode.getGeometry());

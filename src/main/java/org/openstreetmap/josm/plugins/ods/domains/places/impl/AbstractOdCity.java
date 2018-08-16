@@ -54,7 +54,7 @@ public class AbstractOdCity extends AbstractOdEntity implements OdCity {
     }
 
     @Override
-    public Match<? extends OsmEntity, ? extends OdEntity> getMatch() {
+    public Match<? extends OdEntity, ? extends OsmEntity> getMatch() {
         // TODO Auto-generated method stub
         return null;
     }
