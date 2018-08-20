@@ -1,17 +1,16 @@
 package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
-import org.geotools.data.Query;
 import org.opengis.filter.Filter;
+import org.openstreetmap.josm.plugins.ods.geotools.impl.SimpleQuery;
 
 public class GtDatasourceBuilder {
     private GtFeatureSource featureSource;
     private List<String> properties;
-    private List<String> uniqueKey;
-    private final List<FilterFactory> filters = new LinkedList<>();
+    //    private final List<FilterFactory> filters = new LinkedList<>();
+    private Filter filter;
     private int pageSize = 0;
 
     public void setFeatureSource(GtFeatureSource featureSource) {
@@ -26,31 +25,16 @@ public class GtDatasourceBuilder {
         this.properties = properties;
     }
 
-    public void setUniqueKey(String property) {
-        setUniqueKey(Arrays.asList(property));
-    }
-
-    public void setUniqueKey(String ... keysProperties) {
-        this.uniqueKey = Arrays.asList(keysProperties);
-    }
-
-    public void setUniqueKey(List<String> uniqueKey) {
-        this.uniqueKey = uniqueKey;
-    }
-
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
 
-    public GtDataSource build() {
-        Query query = createQuery();
-        if (uniqueKey != null) {
-            filters.add(new UniqueKeyFilterFactory(uniqueKey));
-        }
-        return new GtDataSource(featureSource, pageSize, query, filters);
+    public void setFilter(Filter filter) {
+        this.filter = filter;
     }
 
-    private Query createQuery() {
-        return new Query(featureSource.getFeatureName(), Filter.INCLUDE, properties.toArray(new String[0]));
+    public GtDataSource build() {
+        SimpleQuery query = new SimpleQuery(filter, properties, pageSize);
+        return new GtDataSource(featureSource, query);
     }
 }

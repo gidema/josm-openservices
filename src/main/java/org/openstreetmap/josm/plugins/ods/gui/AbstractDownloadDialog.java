@@ -21,11 +21,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.help.ContextSensitiveHelpAction;
 import org.openstreetmap.josm.gui.util.WindowGeometry;
+import org.openstreetmap.josm.spi.preferences.Config;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.InputMapUtils;
 
@@ -98,14 +98,14 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
      *
      */
     public void rememberSettings() {
-        Main.pref.putBoolean("openservices.download.osm", cbDownloadOSM.isSelected());
-        Main.pref.putBoolean("openservices.download.ods", cbDownloadODS.isSelected());
+        Config.getPref().putBoolean("openservices.download.osm", cbDownloadOSM.isSelected());
+        Config.getPref().putBoolean("openservices.download.ods", cbDownloadODS.isSelected());
     }
 
     public void restoreSettings() {
-        cbDownloadOSM.setSelected(Main.pref.getBoolean(
+        cbDownloadOSM.setSelected(Config.getPref().getBoolean(
                 "openservices.download.osm", true));
-        cbDownloadODS.setSelected(Main.pref.getBoolean(
+        cbDownloadODS.setSelected(Config.getPref().getBoolean(
                 "openservices.download.ods", true));
     }
 

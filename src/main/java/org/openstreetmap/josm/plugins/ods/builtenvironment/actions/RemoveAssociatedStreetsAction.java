@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.command.ChangeCommand;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.DeleteCommand;
+import org.openstreetmap.josm.data.UndoRedoHandler;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
@@ -111,7 +111,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
                     cmd = new ChangeCommand(oldAssociatedStreet,
                             newAssociatedStreet);
                 }
-                Main.main.undoRedo.add(cmd);
+                UndoRedoHandler.getInstance().add(cmd);
             }
         }
 

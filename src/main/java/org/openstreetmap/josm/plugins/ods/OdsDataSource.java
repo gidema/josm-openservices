@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import org.geotools.data.Query;
+import org.openstreetmap.josm.plugins.ods.geotools.GtQuery;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
@@ -19,29 +19,11 @@ public interface OdsDataSource {
 
     public OdsFeatureSource getOdsFeatureSource();
 
-    public Query getQuery();
-
-    public void setIdFactory(DefaultIdFactory idFactory);
-
-    /**
-     * Get an IdFactory that can extract a unique Id for the features
-     * Retrieved from this dataSource.<br>
-     *
-     * @return The IdFactory
-     */
-    @Deprecated
-    public IdFactory getIdFactory();
+    public GtQuery getQuery();
 
     public MetaData getMetaData();
 
     public void setRequired(boolean required);
 
     public boolean isRequired();
-
-    /**
-     * Get the desired page size. 0 means no paging.
-     *
-     * @return the page size
-     */
-    int getPageSize();
 }

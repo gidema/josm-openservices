@@ -1,7 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
@@ -17,7 +18,8 @@ public class DefaultOdBuildingUnit extends AbstractOdEntity implements OdBuildin
     private Long buildingUnitId;
     private Double area;
     private BuildingType buildingType;
-    private final List<OdAddressNode> addressNodes = Collections.emptyList();
+    private OdAddressNode mainAddressNode;
+    private Set<OdAddressNode> secondaryAddressNodes = Collections.emptySet();
     private final ZeroOneMany<OdBuilding> buildings = new ZeroOneMany<>();
 
     @Override
@@ -29,6 +31,29 @@ public class DefaultOdBuildingUnit extends AbstractOdEntity implements OdBuildin
     @Override
     public Long getBuildingUnitId() {
         return buildingUnitId;
+    }
+
+    @Override
+    public void setMainAddressNode(OdAddressNode addressNode) {
+        this.mainAddressNode = addressNode;
+    }
+
+    @Override
+    public void addSecondaryAddressNode(OdAddressNode addressNode) {
+        if (this.secondaryAddressNodes.isEmpty()) {
+            this.secondaryAddressNodes = new HashSet<>();
+        }
+        this.secondaryAddressNodes.add(addressNode);
+    }
+
+    @Override
+    public OdAddressNode getMainAddressNode() {
+        return mainAddressNode;
+    }
+
+    @Override
+    public Set<OdAddressNode> getSecondaryAddressNodes() {
+        return secondaryAddressNodes;
     }
 
     @Override
@@ -44,11 +69,6 @@ public class DefaultOdBuildingUnit extends AbstractOdEntity implements OdBuildin
     @Override
     public ZeroOneMany<OdBuilding> getBuildings() {
         return buildings;
-    }
-
-    @Override
-    public List<OdAddressNode> getAddressNodes() {
-        return addressNodes;
     }
 
     @Override

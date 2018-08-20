@@ -33,26 +33,22 @@ public class GtDownloader implements FeatureDownloader {
     private SimpleFeatureSource featureSource;
     private Query query;
     DefaultFeatureCollection downloadedFeatures;
-    //    private final OdEntityStore<T, ?> odEntityStore;
     private final Status status = new Status();
-    //    private final OdEntityBuilder<T> entityBuilder;
     private final FeatureParser parser;
     private Normalisation normalisation = Normalisation.FULL;
 
-    public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil, FeatureParser parser) {
+    public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
+            FeatureParser parser) {
         super();
         this.dataSource = dataSource;
         this.crsUtil = crsUtil;
         this.parser = parser;
-        //        this.entityBuilder = entityBuilder;
-        //        this.odEntityStore = odEntityStore;
     }
 
     @Override
     public void setNormalisation(Normalisation normalisation) {
         this.normalisation = normalisation;
     }
-
 
     @Override
     public void setup(DownloadRequest request) {
@@ -78,20 +74,19 @@ public class GtDownloader implements FeatureDownloader {
             GtFeatureSource gtFeatureSource = dataSource.getOdsFeatureSource();
             // TODO check if selected boundaries overlap with
             // featureSource boundaries;
+            GtQuery gtQuery = dataSource.getQuery();
             featureSource = gtFeatureSource.getFeatureSource();
-            query = dataSource.getQuery();
-            // Clone the query, so we can moderate the filter by setting the download area.
-            query = new Query(query);
             FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
             String geometryProperty = gtFeatureSource.getFeatureType()
                     .getGeometryDescriptor().getLocalName();
-            Filter filter = query.getFilter();
-            filter = ff.intersects(ff.property(geometryProperty), ff.literal(getArea()));
-            Filter dataFilter = dataSource.getQuery().getFilter();
+            Filter filter = ff.intersects(ff.property(geometryProperty),
+                    ff.literal(getArea()));
+            Filter dataFilter = gtQuery.getFilter();
             if (dataFilter != null) {
                 filter = ff.and(filter, dataFilter);
             }
-            query.setFilter(filter);
+            this.query = new Query(featureSource.getSchema().getTypeName(),
+                    filter, gtQuery.getProperties());
         } catch (InitializationException e) {
             Logging.error(e);
             status.setException(e);
@@ -122,26 +117,25 @@ public class GtDownloader implements FeatureDownloader {
     public void download() {
         downloadedFeatures = new DefaultFeatureCollection();
         GtFeatureReader reader;
-        if (dataSource.getPageSize() > 0) {
+        if (dataSource.getQuery().getPageSize() > 0) {
             reader = new PagingFeatureReader(dataSource, query);
-        }
-        else {
+        } else {
             reader = new SimpleFeatureReader(dataSource, query);
         }
         try {
             reader.read((f) -> {
-                //                FeatureUtil.normalizeFeature(f, normalisation);
+                // FeatureUtil.normalizeFeature(f, normalisation);
                 downloadedFeatures.add(f);
             }, null);
         } catch (DataCutOffException e) {
             String featureType = dataSource.getFeatureType();
-            status.setMessage(I18n.tr(
-                    "To many {0} objects. Please choose a smaller download area.", featureType));
+            status.setMessage(
+                    I18n.tr("To many {0} objects. Please choose a smaller download area.",
+                            featureType));
             status.setCancelled(true);
             Thread.currentThread().interrupt();
             downloadedFeatures.clear();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Logging.warn(e);
             status.setException(e);
             return;
@@ -149,16 +143,17 @@ public class GtDownloader implements FeatureDownloader {
         if (downloadedFeatures.isEmpty()) {
             if (dataSource.isRequired()) {
                 String featureType = dataSource.getFeatureType();
-                status.setMessage(I18n.tr("The selected download area contains no {0} objects.",
-                        featureType));
+                status.setMessage(
+                        I18n.tr("The selected download area contains no {0} objects.",
+                                featureType));
             }
         }
         this.response = new DownloadResponse(request);
         this.response.setStatus(status);
-        //        if (!status.isSucces()) {
-        //            Thread.currentThread().interrupt();
-        //            return;
-        //        }
+        // if (!status.isSucces()) {
+        // Thread.currentThread().interrupt();
+        // return;
+        // }
     }
 
     @Override
@@ -169,7 +164,6 @@ public class GtDownloader implements FeatureDownloader {
     public GtDataSource getDataSource() {
         return dataSource;
     }
-
 
     @Override
     public void cancel() {

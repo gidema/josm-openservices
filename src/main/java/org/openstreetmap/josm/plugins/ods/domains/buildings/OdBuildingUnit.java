@@ -1,6 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings;
 
-import java.util.List;
+import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
@@ -10,18 +10,23 @@ public interface OdBuildingUnit extends OdEntity {
 
     public void setBuildingUnitId(Long id);
 
+    public void setMainAddressNode(OdAddressNode addressNode);
+
+    public void addSecondaryAddressNode(OdAddressNode addressNode);
+
     public void addBuilding(OdBuilding building);
 
     public ZeroOneMany<OdBuilding> getBuildings();
 
+    public OdAddressNode getMainAddressNode();
+
     /**
-     * Return the address nodes associated with this building unit.
-     * The first item in the list is the main address.
+     * Return the secondary address nodes associated with this building unit.
      *
-     * @return empty collection if no address nodes are associated with this
+     * @return empty set if no address nodes are associated with this
      *         building.
      */
-    public List<OdAddressNode> getAddressNodes();
+    public Set<OdAddressNode> getSecondaryAddressNodes();
 
     public void setArea(Double area);
 
