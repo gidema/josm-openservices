@@ -6,10 +6,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.command.ChangeCommand;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.DeleteCommand;
+import org.openstreetmap.josm.data.UndoRedoHandler;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.Relation;
 import org.openstreetmap.josm.data.osm.RelationMember;
@@ -26,14 +26,14 @@ import org.xml.sax.SAXException;
 public class RemoveAssociatedStreetsAction extends OdsAction {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
-    
+
     public RemoveAssociatedStreetsAction(OdsModule module) {
         super(module, I18n.tr("Remove associated streets"), I18n
                 .tr("Remove associated street relations."));
-        
+
     }
 
     @Override
@@ -59,7 +59,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
 
         @Override
         protected void realRun() throws SAXException, IOException,
-                OsmTransferException {
+        OsmTransferException {
             OsmDataLayer dataLayer = getModule().getOsmLayerManager()
                     .getOsmDataLayer();
             for (Relation relation : dataLayer.getDataSet().getRelations()) {
@@ -114,7 +114,7 @@ public class RemoveAssociatedStreetsAction extends OdsAction {
                     cmd = new ChangeCommand(oldAssociatedStreet,
                             newAssociatedStreet);
                 }
-                Main.main.undoRedo.add(cmd);
+                UndoRedoHandler.getInstance().add(cmd);
             }
         }
 

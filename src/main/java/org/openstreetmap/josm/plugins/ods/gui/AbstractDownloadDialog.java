@@ -21,24 +21,24 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.help.ContextSensitiveHelpAction;
+import org.openstreetmap.josm.gui.util.WindowGeometry;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.InputMapUtils;
-import org.openstreetmap.josm.gui.util.WindowGeometry;
 
 /**
  * Dialog box to download a polygon area.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public abstract class AbstractDownloadDialog extends JDialog implements PropertyChangeListener {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -66,8 +66,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
         return cbDownloadODS.isSelected();
     }
 
-    abstract protected JPanel buildMainPanel(); 
-    
+    abstract protected JPanel buildMainPanel();
+
     protected JPanel buildButtonPanel() {
         JPanel pnl = new JPanel();
         pnl.setLayout(new FlowLayout());
@@ -96,20 +96,20 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     /**
      * Remembers the current settings in the download dialog
-     * 
+     *
      */
     public void rememberSettings() {
-        Main.pref.putBoolean("openservices.download.osm", cbDownloadOSM.isSelected());
-        Main.pref.putBoolean("openservices.download.ods", cbDownloadODS.isSelected());
+        Preferences.main().putBoolean("openservices.download.osm", cbDownloadOSM.isSelected());
+        Preferences.main().putBoolean("openservices.download.ods", cbDownloadODS.isSelected());
     }
 
     public void restoreSettings() {
-        cbDownloadOSM.setSelected(Main.pref.getBoolean(
+        cbDownloadOSM.setSelected(Preferences.main().getBoolean(
                 "openservices.download.osm", true));
-        cbDownloadODS.setSelected(Main.pref.getBoolean(
+        cbDownloadODS.setSelected(Preferences.main().getBoolean(
                 "openservices.download.ods", true));
     }
-    
+
     @Override
     public void setVisible(boolean visible) {
         if (visible) {
@@ -118,8 +118,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
                     WindowGeometry.centerInWindow(
                             getParent(),
                             getDimension()
-                    )
-            ).applySafe(this);
+                            )
+                    ).applySafe(this);
         } else if (isShowing()) { // Avoid IllegalComponentStateException like in #8775
             new WindowGeometry(this).remember(getClass().getName() + ".geometry");
         }
@@ -127,7 +127,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     }
 
     abstract Dimension getDimension();
-    
+
     /**
      * Replies true if the dialog was canceled
      *
@@ -142,7 +142,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
     }
 
     class CancelAction extends AbstractAction {
-        
+
         private static final long serialVersionUID = 1L;
 
         public CancelAction() {
@@ -164,7 +164,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     class DownloadAction extends AbstractAction {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -183,10 +183,10 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
                                 cbDownloadOSM.getText(),
                                 cbDownloadODS.getText(),
                                 module.getName()
-                        ),
+                                ),
                         tr("Error"),
                         JOptionPane.ERROR_MESSAGE
-                );
+                        );
                 return;
             }
             setCanceled(false);

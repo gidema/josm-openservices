@@ -19,7 +19,6 @@ import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
 import org.geotools.data.DataStoreFinder;
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.UploadAction;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -116,7 +115,7 @@ public class OpenDataServicesPlugin extends Plugin {
         if (metaInfo == null) return;
         String latestVersion = metaInfo.getJsonObject("version").getString("latest");
         if (!info.version.equals(latestVersion)) {
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("Your ODS version ({0}) is out of date.\n" +
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("Your ODS version ({0}) is out of date.\n" +
                     "Please upgrade to the latest version: {1}", info.version, latestVersion), "Plug-in out of date", JOptionPane.WARNING_MESSAGE);
 
         }
@@ -136,11 +135,11 @@ public class OpenDataServicesPlugin extends Plugin {
                 )  {
             metaInfo = reader.readObject().getJsonObject("ods");
             if (metaInfo == null) {
-                JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
+                JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("No version information is available at the moment.\n" +
                         "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("No version information is available at the moment.\n" +
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("No version information is available at the moment.\n" +
                     "Your ODS version may be out of date"), "No version info", JOptionPane.WARNING_MESSAGE);
 
         }
