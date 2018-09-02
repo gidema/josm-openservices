@@ -40,6 +40,12 @@ public class DefaultGtPageReader implements GtPageReader {
                 features.add(it.next());
             }
         }
+        catch (IllegalStateException e) {
+            // Ignore the 'No features were retrieved message´
+            if (!e.getMessage().startsWith("No features were retrieved")) {
+                throw e;
+            }
+        }
         return features;
     }
 }
