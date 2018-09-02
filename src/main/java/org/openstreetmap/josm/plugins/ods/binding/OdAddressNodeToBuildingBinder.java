@@ -43,9 +43,15 @@ public class OdAddressNodeToBuildingBinder implements Runnable {
     private void bindUsingRelation() {
         addressNodetoBuildingRelation.forEach(tuple -> {
             OdAddressNode addressNode = addressNodeStore.get(tuple.getAddressNodeId());
-            assert addressNode != null;
+            if (addressNode == null) {
+                Logging.warn("Reference to unknown address node with id {0, number, 0000000000000000} found. The address node will be ignored", tuple.getAddressNodeId());
+                return;
+            }
             OdBuilding building = buildingStore.get(tuple.getBuildingId());
-            assert building != null;
+            if (building == null) {
+                Logging.warn("Reference to unknown building with id {0, number, 0000000000000000} found. The address node will be ignored", tuple.getBuildingId());
+                return;
+            }
             bindAddressNodeToBuilding(addressNode, building);
         });
     }
