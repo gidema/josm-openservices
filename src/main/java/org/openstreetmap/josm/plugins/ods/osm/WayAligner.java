@@ -12,18 +12,18 @@ import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
  * A lineSegment from either of the rings, that is within 'tolerance'
  * distance from a point on the other ring, will be split by adding that
  * point in between the start and end point of that segment.
- * 
+ *
  * @author gertjan
  *
  */
 public class WayAligner {
-    private Way way1;
-    private Way way2;
-    private NodeDWithin dWithin;
-    private boolean undoable;
+    private final Way way1;
+    private final Way way2;
+    private final NodeDWithin dWithin;
+    private final boolean undoable;
     private NodeIterator it1;
     private NodeIterator it2;
-    private SegmentMatcher matcher;
+    private final SegmentMatcher matcher;
 
     public WayAligner(Way way1, Way way2,
             NodeDWithin dWithin, boolean undoable) {
@@ -33,7 +33,7 @@ public class WayAligner {
         this.undoable = undoable;
         this.matcher = new SegmentMatcher(dWithin);
     }
-    
+
     public void run() {
         it1 = new NodeIterator(way1, 0, false);
         it2 = new NodeIterator(way2, 0, false);
@@ -62,25 +62,26 @@ public class WayAligner {
 
     private void alignEdge(MatchType matchStart, MatchType matchEnd) {
         alignSegmentStart(matchStart);
-        while(matchEnd != MatchType.NoMatch) {
+        MatchType end = matchEnd;
+        while(end != MatchType.NoMatch) {
             alignSegmentEnd(matchEnd);
             if (it1.hasNextNodes(2) && it2.hasNextNodes(2)) {
                 it1.next();
                 it2.next();
-                matchEnd = matchEnd();
+                end = matchEnd();
             }
             else {
-                matchEnd = MatchType.NoMatch;
+                end = MatchType.NoMatch;
             }
         }
     }
-    
+
     /**
      * For the first pair of matching segments, we will have to align the starting point.
      * There are 3 possible cases:
      * 1. the starting point of the segments are within tolerance distance of each other
      * 2. the starting point of the first segment is within tolerance distance of the second segment
-     * 3. the starting point of the second segment is within tolerance distance of the first segment 
+     * 3. the starting point of the second segment is within tolerance distance of the first segment
      */
     private void alignSegmentStart(MatchType matchType) {
         Node node;
@@ -107,7 +108,7 @@ public class WayAligner {
      * There are 3 possible cases:
      * 1. the end points of the segments are within tolerance distance of each other
      * 2. the end points of the first segment is within tolerance distance of the second segment
-     * 3. the end points of the second segment is within tolerance distance of the first segment 
+     * 3. the end points of the second segment is within tolerance distance of the first segment
      */
     private void alignSegmentEnd(MatchType matchType) {
         Node node;
@@ -129,7 +130,7 @@ public class WayAligner {
             break;
         }
     }
-            
+
     private static void alignStartNodes(NodeIterator it11, NodeIterator it21) {
         alignNodes(it11, it11.getIndex(), it21, it21.getIndex());
     }
@@ -166,44 +167,44 @@ public class WayAligner {
         throw new UnsupportedOperationException("Don't know how to merge 2 nodes that both have tags");
     }
 
-//    private void _alignSegments(NodeIterator it1, NodeIterator it2) {
-//    	Integer index1 = it1.nextIndex();
-//    	Integer index2 = it2.nextIndex();
-//        Node n1 = it1.peekNext();
-//        Node n2 = it2.peekNext();
-//        if (n1 == n2) return;
-//        // Check for coordinate equality
-//        // Determine geometry source
-//        // Determine preferred node
-//        if (n1.getUniqueId() < 0) {
-//            if (!n1.getCoor().equals(n2.getCoor())) {
-//                it2.moveNode(index2, n1.getCoor());
-//            }
-//            it1.updateNode(index1, n2);
-//            return;
-//        }
-//        if (n2.getUniqueId() < 0) {
-//            if (!n1.getCoor().equals(n2.getCoor())) {
-//                it1.moveNode(index1, n2.getCoor());
-//            }
-//            it2.updateNode(index2, n1);
-//            return;
-//        }
-//        if (!n1.hasKeys()) {
-//            it2.updateNode(index2, n1);
-//            nodesToDelete.add(n1);
-//            return;
-//        }
-//        if (!n2.hasKeys()) {
-//            it1.updateNode(index1, n2);
-//            nodesToDelete.add(n2);
-//            return;
-//        }
-//        throw new UnsupportedOperationException("Don't know how to merge 2 nodes that both have tags");
-//    }
+    //    private void _alignSegments(NodeIterator it1, NodeIterator it2) {
+    //    	Integer index1 = it1.nextIndex();
+    //    	Integer index2 = it2.nextIndex();
+    //        Node n1 = it1.peekNext();
+    //        Node n2 = it2.peekNext();
+    //        if (n1 == n2) return;
+    //        // Check for coordinate equality
+    //        // Determine geometry source
+    //        // Determine preferred node
+    //        if (n1.getUniqueId() < 0) {
+    //            if (!n1.getCoor().equals(n2.getCoor())) {
+    //                it2.moveNode(index2, n1.getCoor());
+    //            }
+    //            it1.updateNode(index1, n2);
+    //            return;
+    //        }
+    //        if (n2.getUniqueId() < 0) {
+    //            if (!n1.getCoor().equals(n2.getCoor())) {
+    //                it1.moveNode(index1, n2.getCoor());
+    //            }
+    //            it2.updateNode(index2, n1);
+    //            return;
+    //        }
+    //        if (!n1.hasKeys()) {
+    //            it2.updateNode(index2, n1);
+    //            nodesToDelete.add(n1);
+    //            return;
+    //        }
+    //        if (!n2.hasKeys()) {
+    //            it1.updateNode(index1, n2);
+    //            nodesToDelete.add(n2);
+    //            return;
+    //        }
+    //        throw new UnsupportedOperationException("Don't know how to merge 2 nodes that both have tags");
+    //    }
 
     /**
-     * Once we found a matching start point, let's check if we can find a matching end point as well. 
+     * Once we found a matching start point, let's check if we can find a matching end point as well.
      *
      * @return
      */
@@ -221,16 +222,16 @@ public class WayAligner {
         }
         return MatchType.NoMatch;
     }
-    
+
     private boolean match(Node n1, Node n2) {
         return n1.equals(n2) || dWithin.check(n1, n2);
     }
 
     private boolean matchToSegment(NodeIterator it, Node n) {
         return (it.dSegmentWithin(dWithin, n)) && !match(it.peek(), n) &&
-             !match(it.peekNext(), n); 
+                !match(it.peekNext(), n);
     }
-    
+
     enum MatchTypeV2 {
         NoMatch,
         NodeToNode,

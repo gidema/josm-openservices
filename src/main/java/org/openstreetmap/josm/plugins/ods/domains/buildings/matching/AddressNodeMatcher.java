@@ -118,9 +118,6 @@ public class AddressNodeMatcher implements Matcher {
                 break;
             }
         }
-        else {
-            int i=0;
-        }
     }
 
     private static void matchWithoutPostcode(OdAddressNode odAddressNode, OsmBuilding osmBuilding) {
@@ -131,7 +128,6 @@ public class AddressNodeMatcher implements Matcher {
                     handleMatch(odAddressNode, osmAddressNode);
                     break;
                 }
-                int i = 0;
             }
         }
     }
@@ -162,5 +158,6 @@ public class AddressNodeMatcher implements Matcher {
 
     @Override
     public void reset() {
+        // No action required
     }
 }

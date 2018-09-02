@@ -249,6 +249,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
 
     public abstract MainDownloader getDownloader();
 
+    @SuppressWarnings("static-method")
     public boolean usePolygonFile() {
         return false;
     }

@@ -38,10 +38,7 @@ public class BuildingMatcher implements Matcher {
         Long id = odBuilding.getBuildingId();
         ZeroOneMany<OsmBuilding> osmBuildings = osmBuildingStore.getIdIndex().get(id);
         if (!osmBuildings.isEmpty()) {
-            new BuildingMatch(osmBuildings, odBuilding);
-            //            buildingMatches.put(id, match);
-        } else {
-            //            unmatchedOpenDataBuildings.add(odBuilding);
+            BuildingMatch.create(odBuilding, osmBuildings);
         }
     }
 

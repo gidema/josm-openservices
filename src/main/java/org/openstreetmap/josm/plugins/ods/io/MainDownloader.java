@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -78,7 +77,7 @@ public abstract class MainDownloader {
         }
         if (!status.isSucces()) {
             pm.finishTask();
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr(
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr(
                     "An error occurred: " + status.getMessage()));
             return;
         }
@@ -87,7 +86,7 @@ public abstract class MainDownloader {
         process(response);
         if (!status.isSucces()) {
             pm.finishTask();
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr(
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr(
                     "An error occurred: " + status.getMessage()));
             return;
         }
@@ -184,21 +183,21 @@ public abstract class MainDownloader {
             this.status.setFailed(true);
             this.status.setMessage(message);
             // TODO This code should be in the DownloadAction class
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download failed because of the following reason(s):\n" +
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("The download failed because of the following reason(s):\n" +
                     message));
             cancel();
         }
         else if (timedOut) {
             status.setTimedOut(true);
             // TODO This code should be in the DownloadAction class
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download timed out"));
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("The download timed out"));
         }
         else if (!cancelMessages.isEmpty()) {
             String message = String.join("\n", cancelMessages);
             this.status.setCancelled(true);
             this.status.setMessage(message);
             // TODO This code should be in the DownloadAction class
-            JOptionPane.showMessageDialog(Main.parent, I18n.tr("The download was cancelled because of the following reason(s):\n" +
+            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("The download was cancelled because of the following reason(s):\n" +
                     message));
         }
     }

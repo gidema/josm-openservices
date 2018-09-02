@@ -10,6 +10,10 @@ public class BuildingMatch extends MatchImpl<OdBuilding, OsmBuilding> {
         super(odBuilding, osmBuilding);
     }
 
+    private BuildingMatch(OdBuilding odBuilding, ZeroOneMany<OsmBuilding> osmBuildings) {
+        super(odBuilding, osmBuildings);
+    }
+
     public static BuildingMatch create(OdBuilding odBuilding, OsmBuilding osmBuilding) {
         BuildingMatch match = new BuildingMatch(odBuilding, osmBuilding);
         osmBuilding.setMatch(match);
@@ -17,11 +21,13 @@ public class BuildingMatch extends MatchImpl<OdBuilding, OsmBuilding> {
         return match;
     }
 
-    public BuildingMatch(ZeroOneMany<OsmBuilding> osmBuildings, OdBuilding odBuilding) {
-        super(odBuilding, osmBuildings);
-        osmBuildings.forEach(b -> b.setMatch(this));
-        odBuilding.setMatch(this);
+    public static BuildingMatch create(OdBuilding odBuilding, ZeroOneMany<OsmBuilding> osmBuildings) {
+        BuildingMatch match = new BuildingMatch(odBuilding, osmBuildings);
+        osmBuildings.forEach(b -> b.setMatch(match));
+        odBuilding.setMatch(match);
+        return match;
     }
+
 
     //    @Override
     //    public Class<Building> getEntityClass() {

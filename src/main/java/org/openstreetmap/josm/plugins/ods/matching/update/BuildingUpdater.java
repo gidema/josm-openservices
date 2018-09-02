@@ -44,7 +44,7 @@ public class BuildingUpdater implements EntityUpdater<OsmBuilding> {
         });
     }
 
-    public void update(OsmBuilding osmBuilding) {
+    public static void update(OsmBuilding osmBuilding) {
         Iterator<Deviation> it = osmBuilding.getDeviations().iterator();
         boolean updated = false;
         while (it.hasNext()) {

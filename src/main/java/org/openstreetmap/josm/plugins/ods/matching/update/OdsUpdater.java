@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
+import org.openstreetmap.josm.data.UndoRedoHandler;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.plugins.ods.entities.Deviation;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
@@ -48,6 +48,6 @@ public class OdsUpdater {
                 }
             }
         }
-        MainApplication.undoRedo.add(new SequenceCommand(I18n.tr("Update properties"), commands));
+        UndoRedoHandler.getInstance().add(new SequenceCommand(I18n.tr("Update properties"), commands));
     }
 }

@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
@@ -37,7 +37,7 @@ public class OdsEnableAction extends AbstractAction {
             }
             try {
                 Bounds bounds = new Bounds(
-                    Main.pref.get("openservices.download.bounds"), ";");
+                        Preferences.main().get("openservices.download.bounds"), ";");
                 // Zoom to the last used bounds
                 MainApplication.getMap().mapView.zoomTo(bounds);
             } catch (Exception ex) {

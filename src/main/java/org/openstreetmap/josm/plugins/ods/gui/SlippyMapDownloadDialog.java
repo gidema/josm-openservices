@@ -12,9 +12,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.openstreetmap.josm.Main;
 import org.openstreetmap.josm.actions.ExpertToggleAction;
 import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.ProjectionBounds;
 import org.openstreetmap.josm.data.projection.Projection;
 import org.openstreetmap.josm.gui.MainApplication;
@@ -81,7 +81,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
     public void rememberSettings() {
         super.rememberSettings();
         if (currentBounds != null) {
-            Main.pref.put("openservices.download.bounds",
+            Preferences.main().put("openservices.download.bounds",
                     currentBounds.encodeAsString(";"));
         }
     }
@@ -133,11 +133,11 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
                 return bounds;
             }
         }
-        if (!Main.pref.get("openservices.download.bounds").isEmpty()) {
+        if (!Preferences.main().get("openservices.download.bounds").isEmpty()) {
             // read the bounding box from the preferences
             try {
                 return new Bounds(
-                        Main.pref.get("openservices.download.bounds"), ";");
+                        Preferences.main().get("openservices.download.bounds"), ";");
             } catch (Exception e) {
                 e.printStackTrace();
             }
