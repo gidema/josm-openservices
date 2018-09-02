@@ -112,17 +112,34 @@ public class OdAddressNodesDistributer implements Runnable {
 
         public int compare(OdAddress a1, OdAddress a2) {
             assert a1 != null && a2 != null;
-            int result = Objects.compare(a2.getCityName(), a1.getCityName(), String.CASE_INSENSITIVE_ORDER);
+            int result = nullSafeCaseInsentitiveCompare(a2.getCityName(), a1.getCityName());
             if (result == 0) {
-                result = Objects.compare(a2.getPostcode(), a1.getPostcode(), String.CASE_INSENSITIVE_ORDER);
+                result = nullSafeCaseInsentitiveCompare(a2.getPostcode(), a1.getPostcode());
             }
             if (result == 0) {
-                result = Objects.compare(a2.getStreetName(), a1.getStreetName(), String.CASE_INSENSITIVE_ORDER);
+                result = nullSafeCaseInsentitiveCompare(a2.getStreetName(), a1.getStreetName());
             }
             if (result == 0) {
-                result = Objects.compare(a2.getFullHouseNumber(), a1.getFullHouseNumber(), String.CASE_INSENSITIVE_ORDER);
+                result = nullSafeCompare(a2.getHouseNumber(), a1.getHouseNumber());
+            }
+            if (result == 0) {
+                result = nullSafeCaseInsentitiveCompare(a2.getFullHouseNumber(), a1.getFullHouseNumber());
             }
             return result;
+        }
+
+        private int nullSafeCaseInsentitiveCompare(String a, String b) {
+            if (a == null || b == null) {
+                return a == b ? 0 : (a == null ? -1 : 1);
+            }
+            return Objects.compare(a, b,  String.CASE_INSENSITIVE_ORDER);
+        }
+
+        private int nullSafeCompare(Integer a, Integer b) {
+            if (a == null || b == null) {
+                return a == b ? 0 : (a == null ? -1 : 1);
+            }
+            return a.compareTo(b);
         }
     }
 }

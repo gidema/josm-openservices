@@ -31,6 +31,10 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
         this.address = address;
     }
 
+    public void setAddressNodeId(Long addressNodeId) {
+        this.addressNodeId = addressNodeId;
+    }
+
     @Override
     public OdAddress getAddress() {
         return address;

@@ -29,7 +29,7 @@ public class SimpleFeatureReader implements GtFeatureReader {
         GtPageReader pageReader = new DefaultGtPageReader(dataSource.getOdsFeatureSource().getFeatureSource());
         // TODO run this in a separate thread
         Collection<SimpleFeature> features = pageReader.read(baseQuery, progressListener);
-        if (features.size() < maxFeatures) {
+        if (features.size() < maxFeatures || maxFeatures == 0) {
             features.forEach(consumer);
         }
         else {

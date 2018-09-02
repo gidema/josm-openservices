@@ -33,6 +33,11 @@
     	<artifactId>commons-lang</artifactId>
     	<version>2.6</version>
     </dependency>
+    <dependency>
+      <groupId>josm-geotools-wfs</groupId>
+      <artifactId>josm-geotools-wfs</artifactId>
+      <version>1.0</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>

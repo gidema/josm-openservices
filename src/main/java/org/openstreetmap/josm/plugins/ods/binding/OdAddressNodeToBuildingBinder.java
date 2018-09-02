@@ -4,6 +4,8 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingUnit;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdAddressNodeStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.relations.AddressNodeToBuildingRelation;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.tools.Logging;
@@ -20,14 +22,36 @@ import org.openstreetmap.josm.tools.Logging;
  */
 public class OdAddressNodeToBuildingBinder implements Runnable {
     private final OdAddressNodeStore addressNodeStore;
+    private final OdBuildingStore buildingStore;
+    private final AddressNodeToBuildingRelation addressNodetoBuildingRelation;
 
-    public OdAddressNodeToBuildingBinder(OdAddressNodeStore addressNodeStore) {
+    public OdAddressNodeToBuildingBinder(OdAddressNodeStore addressNodeStore,
+            OdBuildingStore buildingStore,
+            AddressNodeToBuildingRelation addressNodetoBuildingRelation) {
         super();
         this.addressNodeStore = addressNodeStore;
+        this.buildingStore = buildingStore;
+        this.addressNodetoBuildingRelation = addressNodetoBuildingRelation;
     }
 
     @Override
     public void run() {
+        bindUsingRelation();
+        bindUsingBuildingUnits();
+    }
+
+    private void bindUsingRelation() {
+        addressNodetoBuildingRelation.forEach(tuple -> {
+            OdAddressNode addressNode = addressNodeStore.get(tuple.getAddressNodeId());
+            assert addressNode != null;
+            OdBuilding building = buildingStore.get(tuple.getBuildingId());
+            assert building != null;
+            bindAddressNodeToBuilding(addressNode, building);
+        });
+    }
+
+    private void bindUsingBuildingUnits() {
+        // Now try to bind Address nodes to buildings using the building unit
         for(OdAddressNode addressNode : addressNodeStore) {
             bindAddressToBuilding(addressNode);
         }

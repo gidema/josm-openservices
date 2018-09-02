@@ -88,7 +88,12 @@ public class GtFeatureSource implements OdsFeatureSource {
                 featureType = getFeatureSource().getSchema();
             }
             catch (IllegalArgumentException e) {
-                featureType = getFeatureSource().getSchema();
+                try {
+                    Thread.sleep(100);
+                    featureType = getFeatureSource().getSchema();
+                } catch (InterruptedException e1) {
+                    //
+                }
             }
         }
         return featureType;
