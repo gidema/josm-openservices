@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
 public enum EntityStatus {
-    UNKNOWN, PLANNED, CONSTRUCTION, IN_USE, IN_USE_NOT_MEASURED, NOT_REALIZED, REMOVAL_DUE, REMOVED;
+    UNKNOWN, PROJECTED, UNDER_CONSTRUCTION, FUNCTIONAL, IN_USE_NOT_MEASURED, NOT_REALIZED, REMOVAL_DUE, DEMOLISHED, DECLINED;
 
     @Override
     public String toString() {

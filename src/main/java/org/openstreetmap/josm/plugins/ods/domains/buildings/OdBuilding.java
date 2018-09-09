@@ -6,7 +6,6 @@ import java.util.Set;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.matching.BuildingMatch;
 import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
 import com.vividsolutions.jts.geom.Geometry;
 

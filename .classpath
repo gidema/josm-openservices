@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib-josm/geotools.jar" sourcepath="/home/gertjan/.m2/repository/org/geotools/gt-data/19.0/gt-data-19.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib-josm/geotools.jar" sourcepath="/home/gertjan/.m2/repository/org/geotools/gt-api/17.1/gt-api-17.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib-josm/ejml.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib-josm/jts.jar"/>
 	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java" kind="src" output="target/classes" path="src/main/java">

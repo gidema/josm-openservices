@@ -7,7 +7,6 @@ import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 
 public abstract class MatchImpl<T1 extends OdEntity, T2 extends OsmEntity> implements Match<T1, T2> {
-    private Object id;
     private final ZeroOneMany<T1> openDataEntities;
     private final ZeroOneMany<T2> osmEntities;
 
@@ -62,6 +61,11 @@ public abstract class MatchImpl<T1 extends OdEntity, T2 extends OsmEntity> imple
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 }

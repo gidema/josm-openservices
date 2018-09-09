@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
@@ -22,6 +23,7 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     private final List<OdAddressNode> addressNodes = new LinkedList<>();
     private Set<OdBuildingUnit> buildingUnits = Collections.emptySet();
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
+    private BuildingStatus buildingStatus = BuildingStatus.UNKNOWN;
     private String startDate;
     private final Set<OdBuilding> neighbours = new HashSet<>();
     private OdCity city;
@@ -59,11 +61,20 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
     }
 
     @Override
+    public BuildingStatus getStatus() {
+        return buildingStatus;
+    }
+
+    public void setStatus(BuildingStatus buildingStatus) {
+        this.buildingStatus = buildingStatus;
+    }
+
+    @Override
     public OdCity getCity() {
         return city;
     }
 
-    public void setAddress(OdAddress address) {
+    public <A extends OdAddress> void setAddress(A address) {
         this.address = address;
     }
 

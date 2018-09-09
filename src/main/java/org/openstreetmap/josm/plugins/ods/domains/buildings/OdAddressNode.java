@@ -32,4 +32,7 @@ public interface OdAddressNode extends OdEntity, Address {
 
     public void setMatch(AddressNodeMatch match);
 
+    public void setStatus(AddressNodeStatus status);
+
+    public AddressNodeStatus getStatus();
 }

@@ -30,8 +30,6 @@ public interface Entity {
     public String getSourceDate();
     public void setCompleteness(Completeness completeness);
     public Completeness getCompleteness();
-    public void setStatus(EntityStatus status);
-    public EntityStatus getStatus();
     //    public void setReferenceId(Object id);
     //    public Object getReferenceId();
     public Long getPrimitiveId();

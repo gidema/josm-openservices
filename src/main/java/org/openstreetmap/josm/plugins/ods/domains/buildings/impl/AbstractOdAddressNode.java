@@ -2,6 +2,7 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
 
+import org.openstreetmap.josm.plugins.ods.domains.buildings.AddressNodeStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
@@ -21,6 +22,7 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     private OdBuilding building;
     private OdBuildingUnit buildingUnit;
     private AddressNodeMatch match;
+    private AddressNodeStatus status = AddressNodeStatus.ESTABLISHED;
 
     public AbstractOdAddressNode() {
         super();
@@ -144,9 +146,14 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
         return getAddress().toString();
     }
 
-    //    @Override
-    //    public int compareTo(OdAddress o) {
-    //        // TODO Auto-generated method stub
-    //        return 0;
-    //    }
+    @Override
+    public void setStatus(AddressNodeStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public AddressNodeStatus getStatus() {
+        return this.status;
+    }
+
 }

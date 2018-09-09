@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingUnitStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuildingUnit;
@@ -21,6 +22,7 @@ public class DefaultOdBuildingUnit extends AbstractOdEntity implements OdBuildin
     private OdAddressNode mainAddressNode;
     private Set<OdAddressNode> secondaryAddressNodes = Collections.emptySet();
     private final ZeroOneMany<OdBuilding> buildings = new ZeroOneMany<>();
+    private BuildingUnitStatus status;
 
     @Override
     public Match<? extends OdEntity, ? extends OsmEntity> getMatch() {
@@ -90,4 +92,13 @@ public class DefaultOdBuildingUnit extends AbstractOdEntity implements OdBuildin
         return buildingType;
     }
 
+    @Override
+    public void setStatus(BuildingUnitStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public BuildingUnitStatus getStatus() {
+        return this.status;
+    }
 }

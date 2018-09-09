@@ -4,7 +4,6 @@ import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Un
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 
@@ -16,7 +15,6 @@ public abstract class AbstractOdEntity implements OdEntity {
     private String sourceDate;
     private String source;
     private Geometry geometry;
-    private EntityStatus status = EntityStatus.UNKNOWN;
     private Entity.Completeness completeness = Unknown;
     private OsmPrimitive primitive;
 
@@ -83,16 +81,6 @@ public abstract class AbstractOdEntity implements OdEntity {
     @Override
     public void setPrimitive(OsmPrimitive primitive) {
         this.primitive = primitive;
-    }
-
-    @Override
-    public void setStatus(EntityStatus status) {
-        this.status = status;
-    }
-
-    @Override
-    public EntityStatus getStatus() {
-        return status;
     }
 
     @Override

@@ -16,6 +16,8 @@ public interface OdBuildingUnit extends OdEntity {
 
     public void addBuilding(OdBuilding building);
 
+    public void setStatus(BuildingUnitStatus status);
+
     public ZeroOneMany<OdBuilding> getBuildings();
 
     public OdAddressNode getMainAddressNode();
@@ -33,4 +35,6 @@ public interface OdBuildingUnit extends OdEntity {
     public Double getArea();
 
     public BuildingType getBuildingType();
+
+    public BuildingUnitStatus getStatus();
 }

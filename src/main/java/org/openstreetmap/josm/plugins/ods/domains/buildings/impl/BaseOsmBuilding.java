@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingType;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
@@ -17,6 +18,7 @@ public class BaseOsmBuilding extends AbstractOsmEntity implements OsmBuilding {
     private Long buildingId;
     private OsmAddress address;
     private final List<OsmAddressNode> addressNodes = new LinkedList<>();
+    private BuildingStatus buildingStatus;
     private BuildingType buildingType = BuildingType.UNCLASSIFIED;
     private String startDate;
     private final Set<OsmBuilding> neighbours = new HashSet<>();
@@ -50,6 +52,15 @@ public class BaseOsmBuilding extends AbstractOsmEntity implements OsmBuilding {
     @Override
     public void setBuildingType(BuildingType buildingType) {
         this.buildingType = buildingType;
+    }
+
+    @Override
+    public BuildingStatus getStatus() {
+        return buildingStatus;
+    }
+
+    public void setStatus(BuildingStatus buildingStatus) {
+        this.buildingStatus = buildingStatus;
     }
 
     @Override

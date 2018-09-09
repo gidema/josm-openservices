@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Deviation;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -17,7 +16,6 @@ public abstract class AbstractOsmEntity implements OsmEntity {
     private String sourceDate;
     private String source;
     private Geometry geometry;
-    private EntityStatus status = EntityStatus.UNKNOWN;
     private Completeness completeness = Unknown;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
@@ -75,16 +73,6 @@ public abstract class AbstractOsmEntity implements OsmEntity {
     @Override
     public void setPrimitive(OsmPrimitive primitive) {
         this.primitive = primitive;
-    }
-
-    @Override
-    public void setStatus(EntityStatus status) {
-        this.status = status;
-    }
-
-    @Override
-    public EntityStatus getStatus() {
-        return status;
     }
 
     @Override

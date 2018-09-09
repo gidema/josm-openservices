@@ -50,19 +50,19 @@ public class BuildingMatch extends MatchImpl<OdBuilding, OsmBuilding> {
     //    //    }
     //
     //    private MatchStatus compareStatuses() {
-    //        //        EntityStatus osmStatus = getOsmEntity().getStatus();
-    //        //        EntityStatus odStatus = getOpenDataEntity().getStatus();
+    //        //        BuildingStatus osmStatus = getOsmEntity().getStatus();
+    //        //        BuildingStatus odStatus = getOpenDataEntity().getStatus();
     //        //        if (osmStatus.equals(odStatus)) {
     //        //            return MATCH;
     //        //        }
-    //        //        if (osmStatus.equals(IN_USE) && odStatus.equals(IN_USE_NOT_MEASURED)) {
+    //        //        if (osmStatus.equals(FUNCTIONAL) && odStatus.equals(IN_USE_NOT_MEASURED)) {
     //        //            return MATCH;
     //        //        }
-    //        //        if (odStatus.equals(PLANNED) && osmStatus.equals(CONSTRUCTION)) {
+    //        //        if (odStatus.equals(PROJECTED) && osmStatus.equals(UNDER_CONSTRUCTION)) {
     //        //            return COMPARABLE;
     //        //        }
-    //        //        if (odStatus.equals(CONSTRUCTION) &&
-    //        //                (osmStatus.equals(IN_USE) || osmStatus.equals(IN_USE_NOT_MEASURED))) {
+    //        //        if (odStatus.equals(UNDER_CONSTRUCTION) &&
+    //        //                (osmStatus.equals(FUNCTIONAL) || osmStatus.equals(IN_USE_NOT_MEASURED))) {
     //        //            return COMPARABLE;
     //        //        }
     //        return NO_MATCH;

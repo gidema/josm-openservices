@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -16,7 +15,7 @@ import org.opengis.util.ProgressListener;
 public class OdsFeatureCollection implements SimpleFeatureCollection {
     private final SimpleFeatureCollection wrapped;
     private long featureCountLimit = -1;
-    
+
     public OdsFeatureCollection(SimpleFeatureCollection wrapped) {
         super();
         this.wrapped = wrapped;
@@ -80,16 +79,15 @@ public class OdsFeatureCollection implements SimpleFeatureCollection {
 
     @Override
     public OdsFeatureIterator features() {
-        SimpleFeatureIterator wrappedFeatures = wrapped.features();
-        OdsFeatureIterator features = getFeatureIterator(wrappedFeatures);
+        OdsFeatureIterator features = getFeatureIterator(wrapped);
         features.setLimit(featureCountLimit);
         return features;
     }
 
-    protected static OdsFeatureIterator getFeatureIterator(SimpleFeatureIterator wrappedFeatures) {
-        return new OdsFeatureIterator(wrappedFeatures);
+    protected static OdsFeatureIterator getFeatureIterator(SimpleFeatureCollection wrappedFeatureCollection) {
+        return new OdsFeatureIterator(wrappedFeatureCollection);
     }
-    
+
     @Override
     public SimpleFeatureCollection subCollection(Filter filter) {
         return wrapped.subCollection(filter);

@@ -33,5 +33,5 @@ public interface OsmAddressNode extends OsmEntity, Address {
 
     public void setMatch(AddressNodeMatch match);
 
-    String getHouseName();
+    public String getHouseName();
 }

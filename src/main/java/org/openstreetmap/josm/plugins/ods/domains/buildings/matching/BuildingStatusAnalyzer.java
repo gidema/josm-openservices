@@ -1,7 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.matching;
 
-import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.CONSTRUCTION;
-import static org.openstreetmap.josm.plugins.ods.entities.EntityStatus.IN_USE;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingStatus.FUNCTIONAL;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingStatus.IN_USE_NOT_MEASURED;
+import static org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingStatus.UNDER_CONSTRUCTION;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,10 +13,10 @@ import org.openstreetmap.josm.command.ChangePropertyCommand;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.ODS;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.Deviation;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.plugins.ods.matching.AspectAnalyzer;
 
@@ -32,11 +33,11 @@ public class BuildingStatusAnalyzer implements AspectAnalyzer<OsmBuilding> {
         ZeroOneMany<OdBuilding> odBuildings = match.getOpenDataEntities();
         if (odBuildings.isOne()) {
             OdBuilding odBuilding = odBuildings.getOne();
-            EntityStatus osmStatus = osmBuilding.getStatus();
-            EntityStatus odStatus = odBuilding.getStatus();
-            if ((odStatus == IN_USE || odStatus == EntityStatus.IN_USE_NOT_MEASURED) &&
-                    osmStatus == CONSTRUCTION) {
-                osmBuilding.addDeviation(new BuildingStatusDeviation(osmBuilding, IN_USE, odBuilding.getSourceDate()));
+            BuildingStatus osmStatus = osmBuilding.getStatus();
+            BuildingStatus odStatus = odBuilding.getStatus();
+            if ((odStatus == FUNCTIONAL || odStatus == IN_USE_NOT_MEASURED) &&
+                    osmStatus == UNDER_CONSTRUCTION) {
+                osmBuilding.addDeviation(new BuildingStatusDeviation(osmBuilding, FUNCTIONAL, odBuilding.getSourceDate()));
                 osmBuilding.getPrimitive().put(DIFF_KEY, "yes");
                 return;
             }
@@ -47,10 +48,10 @@ public class BuildingStatusAnalyzer implements AspectAnalyzer<OsmBuilding> {
         private final OsmBuilding building;
         private final String sourceDate;
 
-        public BuildingStatusDeviation(OsmBuilding building, EntityStatus newStatus, String sourceDate) {
+        public BuildingStatusDeviation(OsmBuilding building, BuildingStatus newStatus, String sourceDate) {
             super();
             this.building = building;
-            assert newStatus == IN_USE;
+            assert newStatus == FUNCTIONAL;
             this.sourceDate = sourceDate;
         }
 

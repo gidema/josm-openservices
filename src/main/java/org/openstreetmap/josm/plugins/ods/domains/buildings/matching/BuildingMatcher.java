@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.ODS;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.BuildingStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdBuildingStore;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OsmBuildingStore;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.plugins.ods.matching.Matcher;
 
@@ -54,12 +54,12 @@ public class BuildingMatcher implements Matcher {
             return;
         }
         BuildingMatch match = building.getMatch();
-        if (match == null && building.getStatus() != EntityStatus.REMOVED) {
+        if (match == null && building.getStatus() != BuildingStatus.DEMOLISHED) {
             osm.put(ODS.KEY.IDMATCH, "false");
             osm.put(ODS.KEY.STATUS, building.getStatus().toString());
         }
         else {
-            if (building.getStatus() != EntityStatus.REMOVED) {
+            if (building.getStatus() != BuildingStatus.DEMOLISHED) {
                 osm.put(ODS.KEY.IDMATCH, "true");
                 osm.put(ODS.KEY.STATUS, building.getStatus().toString());
             }

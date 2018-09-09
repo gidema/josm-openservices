@@ -2,15 +2,16 @@ package org.openstreetmap.josm.plugins.ods.geotools;
 
 import java.util.NoSuchElementException;
 
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
 
 /**
  * Basic wrapper around a SimpleFeatureIterator.
- * 
+ *
  * Add the ability to detect is if the data source has limited the number
  * of retrieved feature to a certain number;
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
@@ -19,10 +20,10 @@ public class OdsFeatureIterator implements SimpleFeatureIterator {
     private long limit = -1;
     private long featureCount;
     private boolean limited = false;
-    
-    public OdsFeatureIterator(SimpleFeatureIterator wrapped) {
+
+    public OdsFeatureIterator(SimpleFeatureCollection wrappedCollection) {
         super();
-        this.wrapped = wrapped;
+        this.wrapped = wrappedCollection.features();
         featureCount = 0;
     }
 

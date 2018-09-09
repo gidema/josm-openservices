@@ -35,8 +35,6 @@ public class OdsImporter {
     private final OdLayerManager odLayerManager;
     private final OsmLayerManager osmLayerManager;
     private final OsmEntitiesBuilder entitiesBuilder;
-    // TODO Make the importfilter(s) configurable
-    private final ImportFilter importFilter = new DefaultImportFilter();
 
     public OdsImporter(OsmNeighbourFinder osmNeighbourFinder, OdLayerManager odLayerManager,
             OsmLayerManager osmLayerManager, OsmEntitiesBuilder entitiesBuilder) {
@@ -52,15 +50,13 @@ public class OdsImporter {
         for (OsmPrimitive primitive : primitives) {
             // TODO retrieve entities from data stores
             OdEntity entity = odLayerManager.getEntity(primitive);
-            if (entity != null && entity.getMatch() == null
-                    && importFilter.test(entity)) {
+            if (entity != null && entity.getMatch() == null) {
                 entitiesToImport.add(entity);
             }
             for (OsmPrimitive referrer : primitive.getReferrers()) {
                 if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
                     OdEntity referrerEntity = odLayerManager.getEntity(referrer);
-                    if (referrerEntity != null && referrerEntity.getMatch() == null
-                            && importFilter.test(referrerEntity)) {
+                    if (referrerEntity != null && referrerEntity.getMatch() == null) {
                         entitiesToImport.add(referrerEntity);
                     }
                 }

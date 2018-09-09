@@ -5,13 +5,13 @@ import java.util.Set;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.ODS;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.AddressNodeStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OdAddressNodeStore;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OsmAddressNodeStore;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.impl.ZeroOneMany;
 import org.openstreetmap.josm.plugins.ods.matching.Matcher;
 
@@ -100,10 +100,16 @@ public class AddressNodeMatcher implements Matcher {
         if (matches.size() == 0) {
             AddressNodeMatch.create(odAddressNode, many);
         }
+        else {
+            assert matches.size() == 1;
+            AddressNodeMatch match = matches.iterator().next();
+            match.addOdEntity(odAddressNode);
+        }
     }
 
     private static void matchWithoutPostcode(OdAddressNode odAddressNode) {
         OdBuilding odBuilding = odAddressNode.getBuilding();
+        if (odBuilding == null) return;
         BuildingMatch match = odBuilding.getMatch();
         if (match != null) {
             ZeroOneMany<OsmBuilding> osmBuildings = match.getOsmEntities();
@@ -144,12 +150,11 @@ public class AddressNodeMatcher implements Matcher {
             return;
         }
         AddressNodeMatch match = odAddressNode.getMatch();
-        if (match == null
-                && odAddressNode.getStatus() != EntityStatus.REMOVED) {
+        if (match == null && odAddressNode.getStatus() != AddressNodeStatus.WITHDRAWN) {
             osm.put(ODS.KEY.IDMATCH, "false");
             osm.put(ODS.KEY.STATUS, odAddressNode.getStatus().toString());
         } else {
-            if (odAddressNode.getStatus() != EntityStatus.REMOVED) {
+            if (odAddressNode.getStatus() != AddressNodeStatus.WITHDRAWN) {
                 osm.put(ODS.KEY.IDMATCH, "true");
                 osm.put(ODS.KEY.STATUS, odAddressNode.getStatus().toString());
             }

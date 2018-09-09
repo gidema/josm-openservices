@@ -7,7 +7,6 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.domains.places.OsmCity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
-import org.openstreetmap.josm.plugins.ods.entities.actual.Building;
 
 public interface OsmBuilding extends OsmEntity, Building {
     public static boolean IsBuilding(OsmPrimitive primitive) {
