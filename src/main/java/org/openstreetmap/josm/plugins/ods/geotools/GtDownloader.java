@@ -27,7 +27,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class GtDownloader implements FeatureDownloader {
     private final GtDataSource dataSource;
-    private final CRSUtil crsUtil;
     private DownloadRequest request;
     private DownloadResponse response;
     private SimpleFeatureSource featureSource;
@@ -37,11 +36,9 @@ public class GtDownloader implements FeatureDownloader {
     private final FeatureParser parser;
     private Normalisation normalisation = Normalisation.FULL;
 
-    public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            FeatureParser parser) {
+    public GtDownloader(GtDataSource dataSource,  FeatureParser parser) {
         super();
         this.dataSource = dataSource;
-        this.crsUtil = crsUtil;
         this.parser = parser;
     }
 
@@ -105,6 +102,7 @@ public class GtDownloader implements FeatureDownloader {
         Geometry area = request.getBoundary().getMultiPolygon();
         if (!targetCRS.equals(CRSUtil.OSM_CRS)) {
             try {
+                CRSUtil crsUtil = CRSUtil.getInstance();
                 area = crsUtil.fromOsm(area, targetCRS);
             } catch (CRSException e) {
                 throw new RuntimeException(e);
