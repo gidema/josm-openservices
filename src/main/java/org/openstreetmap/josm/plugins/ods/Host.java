@@ -8,6 +8,7 @@ import java.util.List;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataException;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataLoader;
+import org.openstreetmap.josm.tools.Logging;
 
 public abstract class Host {
     private String name;
@@ -35,7 +36,15 @@ public abstract class Host {
     }
 
     public final URL getUrl() {
-        return url;
+        if (this.url == null) {
+            try {
+                this.url = new URL(uncheckedUrl);
+            } catch (MalformedURLException e) {
+                Logging.error("Invalid url: {0}.", uncheckedUrl);
+                throw new RuntimeException("Invalid url'");
+            }
+        }
+        return this.url;
     }
 
     //    public final void setUrl(String url) {

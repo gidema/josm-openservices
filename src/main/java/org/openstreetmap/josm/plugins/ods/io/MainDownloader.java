@@ -14,6 +14,7 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OpenDataLayerDownloader;
 import org.openstreetmap.josm.plugins.ods.setup.ModuleSetup;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -25,11 +26,13 @@ import org.openstreetmap.josm.tools.I18n;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public abstract class MainDownloader {
+public class MainDownloader {
     private static final int NTHREADS = 10;
 
     private final ModuleSetup moduleSetup;
     private final List<Runnable> processors;
+    private LayerDownloader osmLayerDownloader;
+    private LayerDownloader odLayerDownloader;
 
     private List<LayerDownloader> enabledDownloaders;
 
@@ -37,11 +40,26 @@ public abstract class MainDownloader {
 
     private Status status = new Status();
 
-    public abstract void initialize() throws Exception;
+    @SuppressWarnings("static-method")
+    public void initialize() throws Exception {
+        return;
+    }
 
-    protected abstract LayerDownloader getOsmLayerDownloader();
+    protected LayerDownloader getOsmLayerDownloader() {
+        return osmLayerDownloader;
+    }
 
-    protected abstract LayerDownloader getOpenDataLayerDownloader();
+    protected LayerDownloader getOpenDataLayerDownloader() {
+        return odLayerDownloader;
+    }
+
+    public MainDownloader(ModuleSetup moduleSetup, OsmLayerDownloader osmLayerDownloader, OpenDataLayerDownloader odLayerDownloader, List<Runnable> processors) {
+        super();
+        this.moduleSetup = moduleSetup;
+        this.odLayerDownloader = odLayerDownloader;
+        this.osmLayerDownloader = osmLayerDownloader;
+        this.processors = processors;
+    }
 
     public MainDownloader(ModuleSetup moduleSetup, List<Runnable> processors) {
         super();

@@ -9,7 +9,6 @@ import org.openstreetmap.josm.plugins.ods.geotools.impl.SimpleQuery;
 public class GtDatasourceBuilder {
     private GtFeatureSource featureSource;
     private List<String> properties;
-    //    private final List<FilterFactory> filters = new LinkedList<>();
     private Filter filter;
     private int pageSize = 0;
 

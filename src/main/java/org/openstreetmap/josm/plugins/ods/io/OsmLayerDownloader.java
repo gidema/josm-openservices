@@ -124,8 +124,10 @@ public class OsmLayerDownloader implements LayerDownloader {
     @Override
     public void process() {
         merge();
-        entitiesBuilder.run();
-        processors.forEach(Runnable::run);
+        if (entitiesBuilder != null) {
+            entitiesBuilder.run();
+            processors.forEach(Runnable::run);
+        }
     }
 
     private void merge() {

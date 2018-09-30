@@ -17,7 +17,7 @@ public class GtDataSource implements OdsDataSource {
     }
 
     @Override
-    public final GtFeatureSource getOdsFeatureSource() {
+    public final GtFeatureSource getFeatureSource() {
         return gtFeatureSource;
     }
 
@@ -38,7 +38,6 @@ public class GtDataSource implements OdsDataSource {
         return required;
     }
 
-    @Override
     public GtQuery getQuery() {
         return query;
     }
@@ -50,6 +49,6 @@ public class GtDataSource implements OdsDataSource {
 
     @Override
     public MetaData getMetaData() {
-        return getOdsFeatureSource().getMetaData();
+        return getFeatureSource().getMetaData();
     }
 }

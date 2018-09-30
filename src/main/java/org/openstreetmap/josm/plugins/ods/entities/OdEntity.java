@@ -35,4 +35,14 @@ public interface OdEntity extends Entity {
      * @param primaryId
      */
     public void setPrimaryId(Object primaryId);
+
+    /**
+     * Should this entity be hidden from the ods layer?
+     * This may be the case for incomplete entities.
+     *
+     * return true if this entity should be hidden
+     */
+    public default boolean hide() {
+        return false;
+    }
 }

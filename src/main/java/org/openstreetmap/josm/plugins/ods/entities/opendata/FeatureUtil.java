@@ -31,7 +31,7 @@ public class FeatureUtil {
         if (property == null) return null;
         return (String) property.getValue();
     }
-    
+
     public static Integer getInteger(SimpleFeature feature, String name ) {
         Property property = feature.getProperty(name);
         if (property == null) return null;
@@ -39,7 +39,7 @@ public class FeatureUtil {
         if (number == null) return null;
         return number.intValue();
     }
-    
+
     public static Long getLong(SimpleFeature feature, String name ) {
         Property property = feature.getProperty(name);
         if (property == null) return null;
@@ -47,7 +47,7 @@ public class FeatureUtil {
         if (number == null) return null;
         return number.longValue();
     }
-    
+
     public static void normalizeFeature(SimpleFeature feature, Normalisation normalisation) {
         if (feature.getDefaultGeometry() == null) {
             return;
@@ -86,7 +86,7 @@ public class FeatureUtil {
      * and the inner rings are counter-clockwise.
      * The Polygon is modified internally. If this is not desired,
      * make sure to clone the polygon beforehand.
-     * 
+     *
      * @param geometry
      */
     private static void makeClockwise(Polygon polygon) {
@@ -98,7 +98,7 @@ public class FeatureUtil {
     }
 
     /**
-     * Order the ring's point clockwise if 'clockwise' is true. 
+     * Order the ring's point clockwise if 'clockwise' is true.
      * counter clockwise otherwise;
      * @param ring
      * @param clockwise
@@ -106,10 +106,14 @@ public class FeatureUtil {
     private static void makeClockwise(LinearRing ring, boolean clockwise) {
         if (ring.isEmpty()) {
             return;
-          }
+        }
         if (CGAlgorithms.isCCW(ring.getCoordinates()) == clockwise) {
             CoordinateArrays.reverse(ring.getCoordinates());
-          }
+        }
 
+    }
+
+    public static Geometry getGeometry(SimpleFeature feature) {
+        return (Geometry) feature.getDefaultGeometry();
     }
 }

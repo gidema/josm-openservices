@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import org.openstreetmap.josm.plugins.ods.geotools.GtQuery;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
@@ -17,9 +16,7 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 public interface OdsDataSource {
     public String getFeatureType();
 
-    public OdsFeatureSource getOdsFeatureSource();
-
-    public GtQuery getQuery();
+    public OdsFeatureSource getFeatureSource();
 
     public MetaData getMetaData();
 

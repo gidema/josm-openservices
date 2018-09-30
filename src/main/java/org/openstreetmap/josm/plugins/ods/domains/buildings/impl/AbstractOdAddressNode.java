@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
-import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
-
 import org.openstreetmap.josm.plugins.ods.domains.buildings.AddressNodeStatus;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
@@ -91,8 +89,13 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     }
 
     @Override
-    public Completeness getCompleteness() {
-        return building == null ? Unknown : building.getCompleteness();
+    public boolean hide() {
+        return false;
+//        if (getStatus() == AddressNodeStatus.WITHDRAWN) return false;
+//        if (building == null) {
+//            Logging.debug("Address node without building: {0}", this);
+//        }
+//        return (building == null) ? true : building.hide();
     }
 
     @Override

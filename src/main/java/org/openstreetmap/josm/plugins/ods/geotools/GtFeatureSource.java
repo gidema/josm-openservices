@@ -40,7 +40,6 @@ public class GtFeatureSource implements OdsFeatureSource {
         return featureName;
     }
 
-    @Override
     public Host getHost() {
         return host;
     }

@@ -71,7 +71,7 @@ public class GtDownloader implements FeatureDownloader {
         try {
             // TODO rename dataSource.initialize() to prepare()
             dataSource.initialize();
-            GtFeatureSource gtFeatureSource = dataSource.getOdsFeatureSource();
+            GtFeatureSource gtFeatureSource = dataSource.getFeatureSource();
             // TODO check if selected boundaries overlap with
             // featureSource boundaries;
             GtQuery gtQuery = dataSource.getQuery();

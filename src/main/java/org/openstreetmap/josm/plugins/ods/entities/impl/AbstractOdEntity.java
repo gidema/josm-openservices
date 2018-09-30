@@ -5,7 +5,9 @@ import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Un
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
+import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
+import org.openstreetmap.josm.plugins.ods.matching.Match;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -91,5 +93,10 @@ public abstract class AbstractOdEntity implements OdEntity {
     @Override
     public OsmPrimitive getPrimitive() {
         return primitive;
+    }
+
+    @Override
+    public Match<? extends OdEntity, ? extends OsmEntity> getMatch() {
+        return null;
     }
 }

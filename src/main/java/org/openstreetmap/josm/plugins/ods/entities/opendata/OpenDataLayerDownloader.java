@@ -20,7 +20,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
     private static final int NTHREADS = 10;
 
     private final OdLayerManager odLayerManager;
-    private final List<FeatureDownloader> downloaders;
+    private final List<? extends FeatureDownloader> downloaders;
     private final List<Runnable> odProcessors;
     private final OdBoundaryManager boundaryManager;
     private Status status = new Status();
@@ -31,7 +31,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
     private ExecutorService executor;
 
     public OpenDataLayerDownloader(OdLayerManager odLayerManager,
-            List<FeatureDownloader> downloaders,
+            List<? extends FeatureDownloader> downloaders,
             List<Runnable> odProcessors,
             OdBoundaryManager boundaryManager) {
         this.odLayerManager = odLayerManager;
@@ -43,10 +43,6 @@ public class OpenDataLayerDownloader implements LayerDownloader {
     @Override
     public void setResponse(DownloadResponse response) {
         this.response = response;
-    }
-
-    protected void addFeatureDownloader(FeatureDownloader featureDownloader) {
-        this.downloaders.add(featureDownloader);
     }
 
     @Override

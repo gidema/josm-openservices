@@ -101,4 +101,9 @@ public class DefaultOdBuildingUnit extends AbstractOdEntity implements OdBuildin
     public BuildingUnitStatus getStatus() {
         return this.status;
     }
+
+    @Override
+    public boolean hide() {
+        return true;
+    }
 }

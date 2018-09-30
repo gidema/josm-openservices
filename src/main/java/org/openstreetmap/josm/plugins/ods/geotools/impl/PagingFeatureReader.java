@@ -27,7 +27,7 @@ public class PagingFeatureReader implements GtFeatureReader {
     public void read(Consumer<SimpleFeature> consumer, ProgressListener progressListener) throws IOException {
         int index = 0;
         boolean ready = false;
-        GtPageReader pageReader = new DefaultGtPageReader(dataSource.getOdsFeatureSource().getFeatureSource());
+        GtPageReader pageReader = new DefaultGtPageReader(dataSource.getFeatureSource().getFeatureSource());
         Query query = new Query(baseQuery);
         while (!ready && !Thread.currentThread().isInterrupted()) {
             query.setStartIndex(index);

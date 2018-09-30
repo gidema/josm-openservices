@@ -5,17 +5,17 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public interface OdsFeatureSource {
     public String getFeatureName();
 
     public void initialize() throws InitializationException;
 
-    public Host getHost();
-    
+    //    public Host getHost();
+
     public CoordinateReferenceSystem getCrs();
 
     public String getSRS();
@@ -23,7 +23,7 @@ public interface OdsFeatureSource {
     public Long getSRID();
 
     public FeatureType getFeatureType();
-    
+
     /**
      * @return The name of the attribute that contains a unique Id
      *   for this feature type.

@@ -150,14 +150,17 @@ public class AddressNodeMatcher implements Matcher {
             return;
         }
         AddressNodeMatch match = odAddressNode.getMatch();
-        if (match == null && odAddressNode.getStatus() != AddressNodeStatus.WITHDRAWN) {
-            osm.put(ODS.KEY.IDMATCH, "false");
-            osm.put(ODS.KEY.STATUS, odAddressNode.getStatus().toString());
-        } else {
-            if (odAddressNode.getStatus() != AddressNodeStatus.WITHDRAWN) {
+        AddressNodeStatus status = odAddressNode.getStatus();
+        osm.put(ODS.KEY.STATUS, status.toString());
+        if (match == null) {
+            if (status == AddressNodeStatus.WITHDRAWN) {
                 osm.put(ODS.KEY.IDMATCH, "true");
-                osm.put(ODS.KEY.STATUS, odAddressNode.getStatus().toString());
             }
+            else {
+                osm.put(ODS.KEY.IDMATCH, "false");
+            }
+        } else {
+            osm.put(ODS.KEY.IDMATCH, "true");
         }
     }
 

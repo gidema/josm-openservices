@@ -21,12 +21,12 @@ public class SimpleFeatureReader implements GtFeatureReader {
         super();
         this.dataSource = dataSource;
         this.baseQuery = query;
-        this.maxFeatures = dataSource.getOdsFeatureSource().getMaxFeatureCount();
+        this.maxFeatures = dataSource.getFeatureSource().getMaxFeatureCount();
     }
 
     @Override
     public void read(Consumer<SimpleFeature> consumer, ProgressListener progressListener) throws IOException {
-        GtPageReader pageReader = new DefaultGtPageReader(dataSource.getOdsFeatureSource().getFeatureSource());
+        GtPageReader pageReader = new DefaultGtPageReader(dataSource.getFeatureSource().getFeatureSource());
         // TODO run this in a separate thread
         Collection<SimpleFeature> features = pageReader.read(baseQuery, progressListener);
         if (features.size() < maxFeatures || maxFeatures == 0) {
