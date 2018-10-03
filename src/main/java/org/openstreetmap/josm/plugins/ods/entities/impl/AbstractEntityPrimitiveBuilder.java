@@ -11,6 +11,8 @@ import org.openstreetmap.josm.plugins.ods.entities.storage.OdEntityStore;
 import org.openstreetmap.josm.plugins.ods.osm.DefaultPrimitiveFactory;
 import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 public abstract class AbstractEntityPrimitiveBuilder<T extends OdEntity>
 implements EntityPrimitiveBuilder<T> {
     private final OdLayerManager layerManager;
@@ -33,14 +35,17 @@ implements EntityPrimitiveBuilder<T> {
     @Override
     public void createPrimitive(T entity) {
         if (entity.getPrimitive() == null && entity.getGeometry() != null) {
-            // TODO replace Map with something that handles null value neatly
+            // TODO replace Map with TagMap
             Map<String, String> tags = new HashMap<>();
             buildTags(entity, tags);
-            OsmPrimitive primitive = primitiveFactory
-                    .create(entity.getGeometry(), tags);
+            OsmPrimitive primitive = createPrimitive(entity.getGeometry(), tags);
             entity.setPrimitive(primitive);
             layerManager.register(primitive, entity);
         }
+    }
+
+    protected final OsmPrimitive createPrimitive(Geometry geometry, Map<String, String> tags) {
+        return primitiveFactory.create(geometry, tags);
     }
 
     protected abstract void buildTags(T entity, Map<String, String> tags);

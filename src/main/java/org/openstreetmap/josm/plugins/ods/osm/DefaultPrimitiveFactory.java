@@ -25,9 +25,9 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * The default implementation of PrimitiveBuilder.
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public class DefaultPrimitiveFactory implements OsmPrimitiveFactory {
     private final LayerManager layerManager;
@@ -91,15 +91,15 @@ public class DefaultPrimitiveFactory implements OsmPrimitiveFactory {
         OsmPrimitive way = buildWay(ls, tags);
         return way;
     }
-    
+
     @Override
     public OsmPrimitive build(MultiLineString mls, Map<String, String> tags) {
         // TODO implement this by creating an OdsPrimitiveGroup relation
         //        OsmPrimitive primitive = build((LineString)mls.getGeometryN(i), tags));
         return build((LineString)mls.getGeometryN(0), tags);
     }
-    
-    
+
+
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildArea(com.vividsolutions.jts.geom.MultiPolygon)
      */
