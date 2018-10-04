@@ -21,7 +21,7 @@ public class OverpassHost implements OsmHost {
     public String getHostString() {
         String host = Preferences.main().get("download.overpass.server");
         if (host == null || host.isEmpty()) {
-            host = "https://overpass-api.de/api";
+            host = "https://overpass-api.de/api/";
         }
         // Make sure the host string ends with a forward slash.
         if (!host.endsWith("/")) {
