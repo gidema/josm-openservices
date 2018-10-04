@@ -220,15 +220,9 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
      * @return if Josm is exiting
      */
     private static boolean isExiting() {
-        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-            if ("org.openstreetmap.josm.Main".equals(element.getClassName()) &&
-                    "exitJosm".equals(element.getMethodName())) {
-                return true;
-            }
-        }
-        return false;
-
+        return MainApplication.worker.isShutdown();
     }
+
     public abstract Bounds getBounds();
 
     public abstract MainDownloader getDownloader();
