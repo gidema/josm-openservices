@@ -106,7 +106,7 @@ public class DistributeAddressNodes implements Consumer<OdBuilding> {
 
         public int compare(OdAddress a1, OdAddress a2) {
             int result = Objects.compare(a2.getCityName(), a1.getCityName(), String.CASE_INSENSITIVE_ORDER);
-            if (result == 0) {
+            if (result == 0 && a2.getPostcode() != null && a1.getPostcode() != null) {
                 result = Objects.compare(a2.getPostcode(), a1.getPostcode(), String.CASE_INSENSITIVE_ORDER);
             }
             if (result == 0) {
