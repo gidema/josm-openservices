@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry exported="true" kind="lib" path="lib-josm/geotools.jar" sourcepath="/home/gertjan/.m2/repository/org/geotools/gt-main/19.0/gt-main-19.0-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib-josm/geotools-wfs.jar" sourcepath="/home/gertjan/.m2/repository/org/geotools/gt-wfs-ng/19.0/gt-wfs-ng-19.0-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/usr/share/josm/josm.jar" sourcepath="/home/gertjan/projects/josm/src"/>
 	<classpathentry exported="true" kind="lib" path="lib-josm/ejml.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib-josm/jts.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
@@ -10,7 +9,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="org/openstreetmap/josm/plugins/ods/osm/WayAligner_Old.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
@@ -24,14 +23,22 @@
 	</classpathentry>
 	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
 		<attributes>
+			<attribute name="test" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/main/test/resources">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/opt/josm/josm-tested.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
