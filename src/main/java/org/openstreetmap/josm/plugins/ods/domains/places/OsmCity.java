@@ -4,7 +4,7 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.MultiPolygon;
 
 public interface OsmCity extends OsmEntity {
     public static boolean isCity(OsmPrimitive primitive) {

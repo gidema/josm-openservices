@@ -10,9 +10,9 @@ import java.util.function.Consumer;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.OpenDataBuildingStore;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygonal;
-import com.vividsolutions.jts.geom.prep.PreparedPolygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.prep.PreparedPolygon;
 
 /**
  * Enricher to update the completeness parameter for an open data building;

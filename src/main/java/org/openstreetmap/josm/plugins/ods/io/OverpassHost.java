@@ -9,8 +9,8 @@ import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OverpassDownloadReader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LinearRing;
 
 public class OverpassHost implements OsmHost {
     private static final String OVERPASS_QUERY =

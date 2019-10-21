@@ -4,7 +4,7 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.Address;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 public interface OdAddressNode extends OdEntity, Address {
     @Override

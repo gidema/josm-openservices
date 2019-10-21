@@ -27,7 +27,7 @@ import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     private final GtDataSource dataSource;

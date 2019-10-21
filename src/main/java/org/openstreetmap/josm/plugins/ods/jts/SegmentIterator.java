@@ -5,10 +5,10 @@ import java.util.Collections;
 
 import org.openstreetmap.josm.tools.Logging;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LinearRing;
 
 public class SegmentIterator {
     private GeoUtil geoUtil;
@@ -31,7 +31,7 @@ public class SegmentIterator {
         this.ring = ring;
         int size = ring.getNumPoints();
         coords = new ArrayList<>(size + 5);
-        if (CGAlgorithms.isCCW(ring.getCoordinates()) ^ ccw) {
+        if (Orientation.isCCW(ring.getCoordinates()) ^ ccw) {
             for (int i = size - 1; i >= 0; i--) {
                 coords.add(ring.getCoordinateN(i));
             }

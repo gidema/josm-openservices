@@ -16,8 +16,8 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Pair;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
 
 /**
  * Given a building, find the nearest way

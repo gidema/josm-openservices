@@ -5,7 +5,7 @@ import java.util.Map;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * ODS entities represent entities like buildings, address nodes,

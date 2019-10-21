@@ -12,7 +12,7 @@ import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddressNode {
     private OdAddress address;

@@ -15,9 +15,9 @@ import org.openstreetmap.josm.gui.Notification;
 import org.openstreetmap.josm.plugins.ods.crs.UnclosedWayException;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Creates a building passage for a highway crossing a building

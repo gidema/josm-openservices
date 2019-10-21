@@ -8,8 +8,8 @@ import java.util.Map;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.plugins.ods.osm.update.PoolNode.SpecialReferrers;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.index.quadtree.Quadtree;
 
 public class NodePool {
     private static double DEG2RAD = Math.PI * 2 / 360; // Degrees to radians

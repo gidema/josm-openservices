@@ -6,9 +6,9 @@ import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOdEntity;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 
 public class AbstractOdCity extends AbstractOdEntity implements OdCity {
     private String name;

@@ -6,12 +6,12 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.openstreetmap.josm.plugins.ods.Normalisation;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.CoordinateArrays;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 
 public class FeatureUtil {
     public static Double getDouble(SimpleFeature feature, String name ) {
@@ -107,7 +107,7 @@ public class FeatureUtil {
         if (ring.isEmpty()) {
             return;
           }
-        if (CGAlgorithms.isCCW(ring.getCoordinates()) == clockwise) {
+        if (Orientation.isCCW(ring.getCoordinates()) == clockwise) {
             CoordinateArrays.reverse(ring.getCoordinates());
           }
 

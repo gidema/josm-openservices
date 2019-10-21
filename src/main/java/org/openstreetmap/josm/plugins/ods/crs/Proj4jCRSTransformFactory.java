@@ -10,8 +10,8 @@ import org.osgeo.proj4j.CoordinateTransformFactory;
 import org.osgeo.proj4j.ProjCoordinate;
 import org.osgeo.proj4j.util.CRSCache;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.PrecisionModel;
 
 /**
  * Proj4j based implementation of JTSCoordinateTransformFactory Caches created

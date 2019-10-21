@@ -11,7 +11,7 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 public abstract class AbstractOdEntity implements OdEntity {
     private Object primaryId;

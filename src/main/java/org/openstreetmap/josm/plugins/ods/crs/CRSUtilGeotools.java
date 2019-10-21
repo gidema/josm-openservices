@@ -15,8 +15,8 @@ import org.opengis.referencing.operation.TransformException;
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.tools.I18n;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 public class CRSUtilGeotools extends CRSUtil {
     private static Map<CoordinateReferenceSystem, MathTransform> toOsmTransforms = new HashMap<>();

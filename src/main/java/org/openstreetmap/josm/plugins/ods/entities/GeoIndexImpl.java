@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.index.quadtree.Quadtree;
 
 public class GeoIndexImpl<T extends Entity, V extends T> implements GeoIndex<T>  {
     private Quadtree quadTree = new Quadtree();

@@ -2,7 +2,7 @@ package org.openstreetmap.josm.plugins.ods.entities;
 
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 public interface GeoIndex<T extends Entity> extends Index<T> {
 

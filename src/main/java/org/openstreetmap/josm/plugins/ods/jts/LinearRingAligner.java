@@ -1,8 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.jts;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * The WayAligner aligns two linearRings according to a given tolerance.

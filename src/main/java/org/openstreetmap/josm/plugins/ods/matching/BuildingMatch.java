@@ -15,7 +15,7 @@ import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 public class BuildingMatch extends MatchImpl<OsmBuilding, OdBuilding> {
     /**
