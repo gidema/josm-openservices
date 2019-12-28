@@ -1,3 +1,9 @@
+Version 0.6.18
+- Fixed incompatibilities with Josm versions >= 15390
+- Fixed crash on addresses without postcode
+- Started to distinguish git tag names from branch names
+  Branch name: 0.6.18-dev tag name 0.6.18
+
 Version 0.6.17
 ==============
 - Fixed incompatibilities with Josm versions >= 14178
