@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
+import org.openstreetmap.josm.plugins.ods.domains.buildings.HouseNumber;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
@@ -32,28 +33,8 @@ public class BaseOsmAddressNode extends AbstractOsmEntity implements OsmAddressN
     }
 
     @Override
-    public Integer getHouseNumber() {
+    public HouseNumber getHouseNumber() {
         return address.getHouseNumber();
-    }
-
-    @Override
-    public String getFullHouseNumber() {
-        return address.getFullHouseNumber();
-    }
-
-    @Override
-    public Character getHouseLetter() {
-        return address.getHouseLetter();
-    }
-
-    @Override
-    public String getHouseNumberExtra() {
-        return address.getHouseNumberExtra();
-    }
-
-    @Override
-    public String getHouseName() {
-        return address.getHouseName();
     }
 
     @Override

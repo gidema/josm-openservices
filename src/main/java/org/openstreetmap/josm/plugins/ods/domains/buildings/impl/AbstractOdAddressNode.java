@@ -2,17 +2,15 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings.impl;
 
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
 
+import org.locationtech.jts.geom.Point;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.HouseNumber;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddress;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
-import org.openstreetmap.josm.plugins.ods.domains.places.OdCity;
-import org.openstreetmap.josm.plugins.ods.domains.streets.OdStreet;
 import org.openstreetmap.josm.plugins.ods.entities.impl.AbstractOdEntity;
 import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
-
-import org.locationtech.jts.geom.Point;
 
 public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddressNode {
     private OdAddress address;
@@ -35,37 +33,13 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     }
 
     @Override
-    public Integer getHouseNumber() {
+    public HouseNumber getHouseNumber() {
         return address.getHouseNumber();
-    }
-
-    @Override
-    public String getFullHouseNumber() {
-        return address.getFullHouseNumber();
-    }
-
-    @Override
-    public Character getHouseLetter() {
-        return address.getHouseLetter();
-    }
-
-    @Override
-    public String getHouseNumberExtra() {
-        return address.getHouseNumberExtra();
-    }
-
-    @Override
-    public String getHouseName() {
-        return address.getHouseName();
     }
 
     @Override
     public String getStreetName() {
         return address.getStreetName();
-    }
-
-    public OdStreet getStreet() {
-        return address.getStreet();
     }
 
     @Override
@@ -76,10 +50,6 @@ public class AbstractOdAddressNode extends AbstractOdEntity implements OdAddress
     @Override
     public String getCityName() {
         return address.getCityName();
-    }
-
-    public OdCity getCity() {
-        return address.getCity();
     }
 
     @Override

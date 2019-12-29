@@ -51,10 +51,10 @@ public class AddressNodeMatch extends MatchImpl<OsmAddressNode, OdAddressNode> {
     public void analyze() {
         OsmAddress ad1 = getOsmEntity().getAddress();
         OdAddress ad2 = getOpenDataEntity().getAddress();
-        houseNumberMatch = MatchStatus.match(ad1.getHouseNumber(), ad2.getHouseNumber());
-        fullHouseNumberMatch = MatchStatus.match(ad1.getFullHouseNumber(), ad2.getFullHouseNumber());
+        houseNumberMatch = MatchStatus.match(ad1.getHouseNumber().getMainHouseNumber(), ad2.getHouseNumber().getMainHouseNumber());
+        fullHouseNumberMatch = MatchStatus.match(ad1.getHouseNumber().getFullHouseNumber(), ad2.getHouseNumber().getFullHouseNumber());
         postcodeMatch = MatchStatus.match(ad1.getPostcode(), ad2.getPostcode());
-        streetMatch = MatchStatus.match(ad1.getStreet(), ad2.getStreet());
+        streetMatch = MatchStatus.match(ad1.getStreetName(), ad2.getStreetName());
         cityMatch = MatchStatus.match(ad1.getCityName(), ad2.getCityName());
     }
 }

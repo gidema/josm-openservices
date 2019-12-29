@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings;
 
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.Address;
 import org.openstreetmap.josm.plugins.ods.domains.places.OsmCity;
 import org.openstreetmap.josm.plugins.ods.domains.streets.OsmStreet;
 
@@ -16,13 +15,5 @@ public interface OsmAddress extends Address {
 
     void setPostcode(String postcode);
 
-    void setHouseNumber(Integer houseNumber);
-
-    void setFullHouseNumber(String fullHouseNumber);
-
-    void setHouseLetter(Character houseLetter);
-
-    void setHouseNumberExtra(String houseNumberExtra);
-
-    void setStreet(OsmStreet street);
+    void setHouseNumber(HouseNumber houseNumber);
 }

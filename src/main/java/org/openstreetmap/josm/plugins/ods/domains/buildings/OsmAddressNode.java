@@ -2,7 +2,6 @@ package org.openstreetmap.josm.plugins.ods.domains.buildings;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.data.osm.OsmPrimitiveType;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.Address;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 

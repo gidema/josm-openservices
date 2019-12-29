@@ -1,6 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.domains.buildings;
 
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.Address;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.matching.AddressNodeMatch;
 

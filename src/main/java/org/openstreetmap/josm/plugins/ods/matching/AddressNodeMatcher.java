@@ -10,11 +10,12 @@ import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.Address;
+import org.openstreetmap.josm.plugins.ods.domains.buildings.HouseNumber;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OdBuilding;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmAddressNode;
 import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.impl.Address;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 
 /**
@@ -131,10 +132,8 @@ public class AddressNodeMatcher implements Matcher {
     }
 
     private static class AddressKey {
-        private final Integer houseNumber;
+        private final HouseNumber houseNumber;
         private final String postcode;
-        private final Character houseLetter;
-        private final String houseNumberExtra;
 
         public AddressKey(OsmAddressNode an) {
             this(an.getAddress());
@@ -147,13 +146,11 @@ public class AddressNodeMatcher implements Matcher {
         public AddressKey(Address address) {
             this.postcode = address.getPostcode();
             this.houseNumber = address.getHouseNumber();
-            this.houseLetter = address.getHouseLetter();
-            this.houseNumberExtra = address.getHouseNumberExtra();
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(postcode, houseNumber, houseLetter, houseNumberExtra);
+            return Objects.hash(postcode, houseNumber);
         }
 
         @Override
@@ -162,8 +159,7 @@ public class AddressNodeMatcher implements Matcher {
             if (!(obj instanceof AddressKey)) return false;
             AddressKey key = (AddressKey) obj;
             return Objects.equals(houseNumber, key.houseNumber)
-                    && Objects.equals(postcode, key.postcode)
-                    && Objects.equals(houseNumberExtra, key.houseNumberExtra);
+                    && Objects.equals(postcode, key.postcode);
         }
     }
 }
