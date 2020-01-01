@@ -32,6 +32,11 @@ public class FeatureUtil {
         return (String) property.getValue();
     }
     
+    public static Character getCharacter(SimpleFeature feature, String name) {
+        String s = getString(feature, name);
+        return (s == null || s.isEmpty()) ? null : s.charAt(0);
+    }
+    
     public static Integer getInteger(SimpleFeature feature, String name ) {
         Property property = feature.getProperty(name);
         if (property == null) return null;
