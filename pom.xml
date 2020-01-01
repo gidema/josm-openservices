@@ -5,7 +5,6 @@
   <artifactId>opendataservices</artifactId>
   <version>0.6.19</version>
   <build>
-    <testSourceDirectory>src/main/test/resources</testSourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
