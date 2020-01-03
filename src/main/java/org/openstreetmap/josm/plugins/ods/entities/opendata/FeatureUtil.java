@@ -36,8 +36,9 @@ public class FeatureUtil {
 
     public static String getString(SimpleFeature feature, String name ) {
         Property property = feature.getProperty(name);
-        if (property == null || property.getValue() == null) return null;
-        return (String) property.getValue();
+        if (property == null) return null;
+        String s = (String) property.getValue();
+        return (s == null || s.isEmpty()) ? null : s;
     }
     
     public static Character getCharacter(SimpleFeature feature, String name) {

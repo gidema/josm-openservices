@@ -7,27 +7,23 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.EList;
 import org.geotools.data.DataStore;
 import org.geotools.data.wfs.WFSDataStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
-import org.geotools.data.wfs.WFSServiceInfo;
 import org.geotools.data.wfs.impl.WFSDataAccessFactory;
 import org.geotools.data.wfs.internal.Versions;
-import org.geotools.data.wfs.internal.WFSGetCapabilities;
 import org.geotools.util.Version;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
 import org.openstreetmap.josm.tools.I18n;
 
-import net.opengis.ows11.CapabilitiesBaseType;
-import net.opengis.ows11.DomainType;
-import net.opengis.ows11.OperationType;
-import net.opengis.ows11.OperationsMetadataType;
-import net.opengis.ows11.ValueType;
+//import net.opengis.ows11.CapabilitiesBaseType;
+//import net.opengis.ows11.DomainType;
+//import net.opengis.ows11.OperationType;
+//import net.opengis.ows11.OperationsMetadataType;
+//import net.opengis.ows11.ValueType;
 
 /**
  * Class to represent a WFS odsFeatureSource host.
@@ -42,8 +38,8 @@ public class WFSHost extends GtHost {
 
     private final int initTimeout;
     private final int dataTimeout;
-    private boolean pagingSupported = false;
-    private int defaultPageSize = 0;
+//    private boolean pagingSupported = false;
+//    private int defaultPageSize = 0;
 
     public WFSHost(String name, String url, Integer maxFeatures, int initTimeout, int dataTimeout) {
         super(name, url, maxFeatures);
@@ -51,17 +47,18 @@ public class WFSHost extends GtHost {
         this.dataTimeout = dataTimeout;
     }
 
-    public boolean isPagingSupported() {
-        return pagingSupported;
-    }
-
-    public int getDefaultPageSize() {
-        return defaultPageSize;
-    }
-
-    public void setDefaultPageSize(int defaultPageSize) {
-        this.defaultPageSize = defaultPageSize;
-    }
+//    public boolean isPagingSupported() {
+//        return pagingSupported;
+//    }
+//
+//    public int getDefaultPageSize() {
+//        return defaultPageSize;
+//    }
+//
+//    // TODO: Deprecate. Do this in a factory class
+//    public void setDefaultPageSize(int defaultPageSize) {
+////        this.pagingCapabilities.setDefaultPageSize(defaultPageSize);
+//    }
 
     @Override
     public synchronized void initialize() throws InitializationException {
@@ -71,15 +68,12 @@ public class WFSHost extends GtHost {
                 setInitialized(false);
 
                 WFSDataStore dataStore = createDataStore(initTimeout);
-                WFSServiceInfo serviceInfo = dataStore.getInfo();
-                switch (serviceInfo.getVersion()) {
-                case "1.0.0":
-                case "1.1.0":
-                    break;
-                case "2.0.0":
-                    WFSGetCapabilities wfsCapabilities = dataStore.getWfsClient().getCapabilities();
-                    processWFSCapabilities(wfsCapabilities);
-                }
+//                switch (serviceInfo.getVersion()) {
+//                case "1.0.0":
+//                case "1.1.0":
+//                    break;
+//                case "2.0.0":
+//                }
                 setInitialized(true);
             }
         } catch (IOException e) {
@@ -102,7 +96,7 @@ public class WFSHost extends GtHost {
         connectionParameters.put(WFSDataAccessFactory.URL.key, capabilitiesUrl);
         connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, timeOut);
         connectionParameters.put(WFSDataAccessFactory.BUFFER_SIZE.key, 1000);
-        //            connectionParameters.put(WFSDataStoreFactory.PROTOCOL.key, false);
+//        connectionParameters.put(WFSDataAccessFactory.WFS_STRATEGY.key, "mapserver");
         return connectionParameters;
     }
 
@@ -171,54 +165,6 @@ public class WFSHost extends GtHost {
             String msg = I18n.tr("No dataStore for Host {0} could be found at this url: {1}",
                     getName(), getUrl().toString());
             throw new IOException(msg);
-        }
-    }
-
-    private void processWFSCapabilities(WFSGetCapabilities wfsCapabilities) {
-        CapabilitiesBaseType capabilitiesType = (CapabilitiesBaseType) wfsCapabilities.getParsedCapabilities();
-        OperationsMetadataType metaData = capabilitiesType.getOperationsMetadata();
-        processConstraints(metaData.getConstraint());
-        processOperations(metaData.getOperation());
-    }
-
-    private void processConstraints(EList<?> constraints) {
-        @SuppressWarnings("unchecked")
-        Iterator<DomainType> it = (Iterator<DomainType>) constraints.iterator();
-        while (it.hasNext()) {
-            DomainType domainType = it.next();
-            ValueType valueType = domainType.getDefaultValue();
-            String sDefault = (valueType == null ? null :valueType.getValue());
-            switch (domainType.getName()) {
-            case "ImplementsResultPaging":
-                pagingSupported = Boolean.parseBoolean(sDefault);
-                break;
-            }
-        }
-    }
-
-    private void processOperations(EList<?> operations) {
-        @SuppressWarnings("unchecked")
-        Iterator<OperationType> it = (Iterator<OperationType>) operations.iterator();
-        while (it.hasNext()) {
-            OperationType operation = it.next();
-            switch (operation.getName()) {
-            case "GetFeature":
-                processGetFeatureConstraints(operation.getConstraint());
-                break;
-            }
-        }
-    }
-
-    private void processGetFeatureConstraints(EList<?> constraints) {
-        @SuppressWarnings("unchecked")
-        Iterator<DomainType> it = (Iterator<DomainType>) constraints.iterator();
-        while (it.hasNext()) {
-            DomainType constraint = it.next();
-            switch (constraint.getName()) {
-            case "CountDefault":
-                String sValue = constraint.getDefaultValue().getValue();
-                this.setDefaultPageSize(Integer.parseInt(sValue));
-            }
         }
     }
 }
