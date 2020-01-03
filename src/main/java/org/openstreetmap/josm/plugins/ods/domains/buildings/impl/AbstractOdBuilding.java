@@ -25,7 +25,7 @@ public abstract class AbstractOdBuilding extends AbstractOdEntity implements OdB
 
     @Override
     public void setStartYear(Integer year) {
-        this.startDate = Objects.toString(year);
+        this.startDate = year == null ? null : Objects.toString(year);
     }
 
     @Override
