@@ -6,6 +6,7 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -16,7 +17,6 @@ import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
-import org.openstreetmap.josm.plugins.ods.entities.OdEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.PagingFeatureReader;
@@ -26,8 +26,6 @@ import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.Status;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
-
-import org.locationtech.jts.geom.Geometry;
 
 public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     private final GtDataSource dataSource;
@@ -39,15 +37,15 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     DefaultFeatureCollection downloadedFeatures;
     private final EntityStore<T> entityStore;
     private final Status status = new Status();
-    private final OdEntityBuilder<T> entityBuilder;
+    private final GtEntityFactory<T> entityFactory;
     private Normalisation normalisation = Normalisation.FULL;
 
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
-            OdEntityBuilder<T> entityBuilder, EntityStore<T> entityStore) {
+            GtEntityFactory<T> entityFactory, EntityStore<T> entityStore) {
         super();
         this.dataSource = dataSource;
         this.crsUtil = crsUtil;
-        this.entityBuilder = entityBuilder;
+        this.entityFactory = entityFactory;
         this.entityStore = entityStore;
     }
 
@@ -165,7 +163,7 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     @Override
     public void process() {
         for (SimpleFeature feature : downloadedFeatures) {
-            T entity = entityBuilder.build(feature, response);
+            T entity = entityFactory.create(feature, response);
             if (!entityStore.contains(entity.getPrimaryId())) {
                 entityStore.add(entity);
             }
