@@ -12,13 +12,11 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
-import org.openstreetmap.josm.plugins.ods.Normalisation;
 import org.openstreetmap.josm.plugins.ods.crs.CRSException;
 import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStore;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureDownloader;
-import org.openstreetmap.josm.plugins.ods.entities.opendata.FeatureUtil;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.PagingFeatureReader;
 import org.openstreetmap.josm.plugins.ods.geotools.impl.SimpleFeatureReader;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
@@ -38,7 +36,6 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
     private final EntityStore<T> entityStore;
     private final Status status = new Status();
     private final GtEntityFactory<T> entityFactory;
-    private Normalisation normalisation = Normalisation.FULL;
 
     public GtDownloader(GtDataSource dataSource, CRSUtil crsUtil,
             GtEntityFactory<T> entityFactory, EntityStore<T> entityStore) {
@@ -48,12 +45,6 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
         this.entityFactory = entityFactory;
         this.entityStore = entityStore;
     }
-
-    @Override
-    public void setNormalisation(Normalisation normalisation) {
-        this.normalisation = normalisation;
-    }
-
 
     @Override
     public void setup(DownloadRequest request) {
@@ -130,10 +121,7 @@ public class GtDownloader<T extends OdEntity> implements FeatureDownloader {
             reader = new SimpleFeatureReader(dataSource, query);
         }
         try {
-            reader.read((f) -> {
-                FeatureUtil.normalizeFeature(f, normalisation);
-                downloadedFeatures.add(f);
-            }, null);
+            reader.read(downloadedFeatures::add, null);
         } catch (DataCutOffException e) {
             String featureType = dataSource.getFeatureType();
             status.setMessage(I18n.tr(
