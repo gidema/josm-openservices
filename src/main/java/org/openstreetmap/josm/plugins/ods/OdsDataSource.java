@@ -10,11 +10,16 @@ import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
  * <li>Maintain a filter used when downloading features</li>
  * <li>Create a unique id for each downloaded feature</li>
  * <li>Maintain a list of downloaded feature to prevent duplicates</li>
- * 
+ *
  * @author Gertjan Idema
- * 
+ *
  */
 public interface OdsDataSource {
+    // Time-out used when initializing a dataSource
+    public static ParameterType<Integer> INIT_TIMEOUT = new ParameterType<>(Integer.class);
+    // Time-out used when retrieving data from a dataSource
+    public static ParameterType<Integer> DATA_TIMEOUT = new ParameterType<>(Integer.class);
+
     public String getFeatureType();
 
     public OdsFeatureSource getOdsFeatureSource();
@@ -26,7 +31,7 @@ public interface OdsDataSource {
     /**
      * Get an IdFactory that can extract a unique Id for the features
      * Retrieved from this dataSource.<br>
-     * 
+     *
      * @return The IdFactory
      */
     public IdFactory getIdFactory();
@@ -39,7 +44,7 @@ public interface OdsDataSource {
 
     /**
      * Get the desired page size. 0 means no paging.
-     * 
+     *
      * @return the page size
      */
     int getPageSize();

@@ -1,46 +1,36 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.plugins.ods.test.util.JOSMFixture;
 import org.openstreetmap.josm.plugins.ods.test.util.TestData;
 
 public class NodeIteratorTest {
     private TestData testData;
     private Way building1;
-    
-    @BeforeClass
+
+    @BeforeAll
     public static void setUpBeforeClass() {
         JOSMFixture.createUnitTestFixture().init();
     }
 
-    @Before
-    public void init() throws IOException, IllegalDataException {
-        try {
-            testData = new TestData(this);
-            building1 = testData.getWay("building1");
-        }
-        catch (FileNotFoundException e) {
-            Assert.fail(e.getMessage());
-        }
+    @BeforeEach
+    public void init() {
+        testData = new TestData(this);
+        building1 = testData.getWay("building1");
     }
-    
+
     @Test
     public void constructForwardIterator() {
         NodeIterator it = new NodeIterator(building1, 0, false);
         assertEquals(building1.getNode(0), it.peek());
         assertEquals(building1.getNode(1), it.peekNext());
     }
-    
+
     @Test
     public void constructReverseIterator() {
         NodeIterator it = new NodeIterator(building1, 2, true);

@@ -1,42 +1,36 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
 import org.openstreetmap.josm.plugins.ods.test.util.JOSMFixture;
 import org.openstreetmap.josm.plugins.ods.test.util.TestData;
 
 public class SegmentMatcherTest {
     private TestData testData;
-    private SegmentMatcher matcher = new SegmentMatcher(new NodeDWithinLatLon(0.05));
+    private final SegmentMatcher matcher = new SegmentMatcher(new NodeDWithinLatLon(0.05));
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() {
         JOSMFixture.createUnitTestFixture().init();
     }
 
-    @Before
-    public void init() throws IOException, IllegalDataException {
-        try {
-            testData = new TestData(this, "segmentMatcher.osm");
-        } catch (FileNotFoundException e) {
-            Assert.fail(e.getMessage());
-        }
+    @BeforeEach
+    public void init() {
+        testData = new TestData(this, "segmentMatcher.osm");
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void testPairA() {
         assertTrue(match("wayA1", "wayA2"));
         assertFalse(matcher.isreversed());
@@ -44,7 +38,7 @@ public class SegmentMatcherTest {
         assertEquals(MatchType.SegmentToNode, matcher.getEndMatch());
     }
 
-    @Test
+    @org.junit.jupiter.api.Test
     public void testPairB() {
         assertTrue(match("wayB1", "wayB2"));
         assertFalse(matcher.isreversed());

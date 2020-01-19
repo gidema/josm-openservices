@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.UploadPolicy;
 import org.openstreetmap.josm.io.IllegalDataException;
@@ -15,13 +15,13 @@ import org.openstreetmap.josm.io.OsmReader;
 
 /**
  * This class provides utility methods to load a DataSet with test data.
- * 
+ *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class TestDataLoader {
     private static Map<URL, DataSet> cache = new HashMap<>();
-    
+
     public static DataSet loadTestData(Class<?> clazz, String name) {
         URL url = clazz.getResource(name);
         return loadTestData(url);
@@ -32,10 +32,10 @@ public class TestDataLoader {
         URL url = file.toURI().toURL();
         return loadTestData(url);
     }
-    
+
     private static DataSet loadTestData(URL url) {
         if (url == null) {
-            Assert.fail("The file with test data could not be found");
+            Assertions.fail("The file with test data could not be found");
             return null;
         }
         DataSet dataSet = cache.get(url);
@@ -48,10 +48,10 @@ public class TestDataLoader {
             cache.put(url,  dataSet);
             return dataSet;
         } catch (IOException e) {
-            Assert.fail("The file with test data could not be read.");
+            Assertions.fail("The file with test data could not be read.");
             return null;
         } catch (IllegalDataException e) {
-            Assert.fail("The file with test data is not a valid OSM file.");
+            Assertions.fail("The file with test data is not a valid OSM file.");
             return null;
         }
     }

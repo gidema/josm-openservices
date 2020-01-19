@@ -16,7 +16,11 @@ import org.geotools.data.wfs.impl.WFSDataAccessFactory;
 import org.geotools.data.wfs.internal.Versions;
 import org.geotools.util.Version;
 import org.openstreetmap.josm.plugins.ods.InitializationException;
+import org.openstreetmap.josm.plugins.ods.OdsFeatureSource;
+import org.openstreetmap.josm.plugins.ods.ParameterType;
+import org.openstreetmap.josm.plugins.ods.geotools.GtFeatureSource;
 import org.openstreetmap.josm.plugins.ods.geotools.GtHost;
+import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.tools.I18n;
 
 //import net.opengis.ows11.CapabilitiesBaseType;
@@ -33,25 +37,47 @@ import org.openstreetmap.josm.tools.I18n;
  * @author Gertjan Idema
  *
  */
-public class WFSHost extends GtHost {
+public class WFSHost implements GtHost {
+    public final static ParameterType<Version> WFS_VERSION;
+    public final static ParameterType<String> STRATEGY;
+    public final static ParameterType<Boolean> PROTOCOL;
+
+    static
+    {
+        WFS_VERSION = new ParameterType<>(Version.class);
+        STRATEGY = ParameterType.STRING();
+        PROTOCOL = ParameterType.BOOLEAN();
+    }
+
     private static WFSDataStoreFactory wfsDataStoreFactory = new WFSDataStoreFactory();
+    private final static String TYPE = "WFS";
+
+    private final String name;
+    private final URL url;
+    private Version wfsVersion;
+    private final Integer maxFeatures;
+    private final Integer defaultPageSize;
+    private final String strategy;
+    private final Boolean protocol;
 
     private final Integer initTimeout;
     private final Integer dataTimeout;
-    // HTTP protocol true for POST, false for GET, null for AUTO
-    private final Boolean protocol;
-    // WFS server strategy.null for Autodetect
-    private final String strategy;
+    private Boolean initialized = false;
     //    private boolean pagingSupported = false;
-    //    private int defaultPageSize = 0;
 
-    public WFSHost(String name, String url, Integer maxFeatures, Integer initTimeout, Integer dataTimeout,
-            Boolean protocol, String strategy) {
-        super(name, url, maxFeatures);
+    public WFSHost(String name, URL url, Version wfsVersion,
+            Integer maxFeatures, Integer defaultPageSize, String strategy,
+            Boolean protocol, Integer initTimeout, Integer dataTimeout) {
+        super();
+        this.name = name;
+        this.url = url;
+        this.wfsVersion = wfsVersion;
+        this.maxFeatures = maxFeatures;
+        this.defaultPageSize = defaultPageSize;
+        this.strategy = strategy;
+        this.protocol = protocol;
         this.initTimeout = initTimeout;
         this.dataTimeout = dataTimeout;
-        this.protocol = protocol;
-        this.strategy = strategy;
     }
 
     //    public boolean isPagingSupported() {
@@ -67,21 +93,67 @@ public class WFSHost extends GtHost {
     ////        this.pagingCapabilities.setDefaultPageSize(defaultPageSize);
     //    }
 
+
+    //    public boolean isPagingSupported() {
+    //        return pagingSupported;
+    //    }
+    //
+    //    public int getDefaultPageSize() {
+    //        return defaultPageSize;
+    //    }
+    //
+    //    // TODO: Deprecate. Do this in a factory class
+    //    public void setDefaultPageSize(int defaultPageSize) {
+    ////        this.pagingCapabilities.setDefaultPageSize(defaultPageSize);
+    //    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public URL getUrl() {
+        return url;
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
+    }
+
+    @Override
+    public Integer getMaxFeatures() {
+        return maxFeatures;
+    }
+
+    @Override
+    public MetaData getMetaData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    @Override
+    public OdsFeatureSource getOdsFeatureSource(String feature) {
+        return new GtFeatureSource(this, feature, null);
+    }
+
     @Override
     public synchronized void initialize() throws InitializationException {
         try {
             if (!isInitialized()) {
-                super.initialize();
-                setInitialized(false);
-
-                WFSDataStore dataStore = createDataStore(initTimeout);
-                //                switch (serviceInfo.getVersion()) {
-                //                case "1.0.0":
-                //                case "1.1.0":
-                //                    break;
-                //                case "2.0.0":
-                //                }
-                setInitialized(true);
+                if (wfsVersion == null) {
+                    // Check the WFS version that is negotiated with the server
+                    // TODO
+                    WFSDataStore dataStore = createDataStore(initTimeout);
+                    wfsVersion = new Version(dataStore.getInfo().getVersion());
+                }
+                this.initialized = true;
             }
         } catch (IOException e) {
             throw new InitializationException(e);
@@ -95,16 +167,17 @@ public class WFSHost extends GtHost {
     }
 
     public Map<String, Serializable> getConnectionParameters(int timeOut) {
-        // TODO move to configuration phase
-        // TODO add possibilities to configure parameters
         URL capabilitiesUrl = WFSDataStoreFactory
-                .createGetCapabilitiesRequest(getUrl(), getWFSVersion(getUrl()));
+                .createGetCapabilitiesRequest(getUrl(), wfsVersion);
         Map<String, Serializable> connectionParameters = new HashMap<>();
         connectionParameters.put(WFSDataAccessFactory.URL.key, capabilitiesUrl);
         connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, timeOut);
-        connectionParameters.put(WFSDataAccessFactory.BUFFER_SIZE.key, 1000);
-        connectionParameters.put(WFSDataAccessFactory.WFS_STRATEGY.key, strategy);
-        connectionParameters.put(WFSDataAccessFactory.PROTOCOL.key, protocol);
+        if (protocol != null) {
+            connectionParameters.put(WFSDataAccessFactory.PROTOCOL.key, protocol);
+        }
+        if (strategy != null) {
+            connectionParameters.put(WFSDataAccessFactory.WFS_STRATEGY.key, strategy);
+        }
         return connectionParameters;
     }
 

@@ -21,7 +21,7 @@ public class GtFeatureSource implements OdsFeatureSource {
     private final String featureName;
     private SimpleFeatureType featureType;
     private final String idAttribute;
-    private final long maxFeatures;
+    private final Integer maxFeatures;
     private DataStore dataStore;
     SimpleFeatureSource featureSource;
     CoordinateReferenceSystem crs;

@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.test.util;
 //License: GPL. For details, see LICENSE file.
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.nio.file.Paths;

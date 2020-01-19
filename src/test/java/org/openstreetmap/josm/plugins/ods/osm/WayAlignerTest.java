@@ -1,35 +1,25 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.io.IllegalDataException;
 import org.openstreetmap.josm.plugins.ods.test.util.JOSMFixture;
 import org.openstreetmap.josm.plugins.ods.test.util.TestData;
 
 public class WayAlignerTest {
     private TestData testData;
-    
-    @BeforeClass
+
+    @BeforeAll
     public static void setUpBeforeClass() {
         JOSMFixture.createUnitTestFixture().init();
     }
 
-    @Before
-    public void init() throws IOException, IllegalDataException {
-        try {
-            testData = new TestData(this);
-        }
-        catch (FileNotFoundException e) {
-            Assert.fail(e.getMessage());
-        }
+    @BeforeEach
+    public void init() {
+        testData = new TestData(this);
     }
 
     @Test
