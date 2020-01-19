@@ -36,29 +36,36 @@ import org.openstreetmap.josm.tools.I18n;
 public class WFSHost extends GtHost {
     private static WFSDataStoreFactory wfsDataStoreFactory = new WFSDataStoreFactory();
 
-    private final int initTimeout;
-    private final int dataTimeout;
-//    private boolean pagingSupported = false;
-//    private int defaultPageSize = 0;
+    private final Integer initTimeout;
+    private final Integer dataTimeout;
+    // HTTP protocol true for POST, false for GET, null for AUTO
+    private final Boolean protocol;
+    // WFS server strategy.null for Autodetect
+    private final String strategy;
+    //    private boolean pagingSupported = false;
+    //    private int defaultPageSize = 0;
 
-    public WFSHost(String name, String url, Integer maxFeatures, int initTimeout, int dataTimeout) {
+    public WFSHost(String name, String url, Integer maxFeatures, Integer initTimeout, Integer dataTimeout,
+            Boolean protocol, String strategy) {
         super(name, url, maxFeatures);
         this.initTimeout = initTimeout;
         this.dataTimeout = dataTimeout;
+        this.protocol = protocol;
+        this.strategy = strategy;
     }
 
-//    public boolean isPagingSupported() {
-//        return pagingSupported;
-//    }
-//
-//    public int getDefaultPageSize() {
-//        return defaultPageSize;
-//    }
-//
-//    // TODO: Deprecate. Do this in a factory class
-//    public void setDefaultPageSize(int defaultPageSize) {
-////        this.pagingCapabilities.setDefaultPageSize(defaultPageSize);
-//    }
+    //    public boolean isPagingSupported() {
+    //        return pagingSupported;
+    //    }
+    //
+    //    public int getDefaultPageSize() {
+    //        return defaultPageSize;
+    //    }
+    //
+    //    // TODO: Deprecate. Do this in a factory class
+    //    public void setDefaultPageSize(int defaultPageSize) {
+    ////        this.pagingCapabilities.setDefaultPageSize(defaultPageSize);
+    //    }
 
     @Override
     public synchronized void initialize() throws InitializationException {
@@ -68,12 +75,12 @@ public class WFSHost extends GtHost {
                 setInitialized(false);
 
                 WFSDataStore dataStore = createDataStore(initTimeout);
-//                switch (serviceInfo.getVersion()) {
-//                case "1.0.0":
-//                case "1.1.0":
-//                    break;
-//                case "2.0.0":
-//                }
+                //                switch (serviceInfo.getVersion()) {
+                //                case "1.0.0":
+                //                case "1.1.0":
+                //                    break;
+                //                case "2.0.0":
+                //                }
                 setInitialized(true);
             }
         } catch (IOException e) {
@@ -96,7 +103,8 @@ public class WFSHost extends GtHost {
         connectionParameters.put(WFSDataAccessFactory.URL.key, capabilitiesUrl);
         connectionParameters.put(WFSDataAccessFactory.TIMEOUT.key, timeOut);
         connectionParameters.put(WFSDataAccessFactory.BUFFER_SIZE.key, 1000);
-//        connectionParameters.put(WFSDataAccessFactory.WFS_STRATEGY.key, "mapserver");
+        connectionParameters.put(WFSDataAccessFactory.WFS_STRATEGY.key, strategy);
+        connectionParameters.put(WFSDataAccessFactory.PROTOCOL.key, protocol);
         return connectionParameters;
     }
 
