@@ -32,6 +32,11 @@
     	<artifactId>commons-lang</artifactId>
     	<version>2.6</version>
     </dependency>
+    <dependency>
+      <groupId>josm-geotools-wfs</groupId>
+      <artifactId>josm-geotools-wfs</artifactId>
+      <version>22.0.1</version>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -62,6 +67,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <geotools.version>22.0</geotools.version>
+    <josm.version>15628</josm.version>
   </properties>
   <issueManagement>
     <system>Sourceforge</system>

@@ -32,7 +32,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         this.module = module;
         this.downloaders = new LinkedList<>();
     }
-    
+
     @Override
     public void setResponse(DownloadResponse response) {
         this.response = response;
@@ -64,9 +64,9 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         }
         executor.shutdown();
         try {
-            if (!executor.awaitTermination(1, TimeUnit.MINUTES)) {
-                // Timeout occurred
+            if (!executor.awaitTermination(5, TimeUnit.MINUTES)) {
                 status.setTimedOut(true);
+                return;
             }
         }
         catch (InterruptedException e) {
@@ -79,7 +79,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
             return;
         }
     }
-    
+
     @Override
     public void download() {
         executor = Executors.newFixedThreadPool(NTHREADS);
@@ -89,7 +89,10 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         }
         executor.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
+            if (!executor.awaitTermination(5, TimeUnit.MINUTES)) {
+                status.setTimedOut(true);
+                return;
+            }
         }
         catch (InterruptedException e) {
             executor.shutdownNow();
@@ -109,7 +112,7 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         }
         this.response = new DownloadResponse(request);
     }
-    
+
     @Override
     public void process() {
         executor = Executors.newFixedThreadPool(NTHREADS);
@@ -120,7 +123,10 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         }
         executor.shutdown();
         try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
+            if (!executor.awaitTermination(5, TimeUnit.MINUTES)) {
+                status.setTimedOut(true);
+                return;
+            }
         }
         catch (Exception e) {
             executor.shutdownNow();

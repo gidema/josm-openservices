@@ -119,7 +119,10 @@ public abstract class MainDownloader {
 
         executorService.shutdown();
         try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
+            if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
+                status.setTimedOut(true);
+                return;
+            }
         }
         catch (InterruptedException e) {
             executorService.shutdownNow();
@@ -146,7 +149,10 @@ public abstract class MainDownloader {
 
         executorService.shutdown();
         try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
+            if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
+                status.setTimedOut(true);
+                return;
+            }
         }
         catch (InterruptedException e) {
             executorService.shutdownNow();
@@ -211,7 +217,10 @@ public abstract class MainDownloader {
 
         executorService.shutdown();
         try {
-            executorService.awaitTermination(1, TimeUnit.MINUTES);
+            if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
+                status.setTimedOut(true);
+                return;
+            }
         }
         catch (InterruptedException e) {
             executorService.shutdownNow();

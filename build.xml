@@ -38,7 +38,7 @@
   <!-- enter the SVN commit message -->
   <property name="commit.message" value="Commit message" />
   <!-- enter the *lowest* JOSM version this plugin is currently compatible with -->
-  <property name="plugin.main.version" value="15390" />
+  <property name="plugin.main.version" value="${mypom.properties.josm.version}" />
   <property name="plugin.class" value="org.openstreetmap.josm.plugins.ods.OpenDataServicesPlugin" />
   <property name="plugin.version" value="${mypom.version}" />
   <property name="plugin.build.dir" value="build/deploy" />
@@ -118,7 +118,9 @@
     </tstamp>
     <echo message="creating ${ant.project.name}.jar ... " />
     <copy todir="${plugin.debug.build.dir}">
-      <fileset dir="${maven.target.dir}/classes" />
+        <fileset dir="${maven.target.dir}/classes/">
+            <filename name="./*.txt"/>
+        </fileset>
     </copy>
     <jar destfile="${plugin.debug.jar}" basedir="${plugin.debug.build.dir}">
       <!--
