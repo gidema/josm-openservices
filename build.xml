@@ -60,6 +60,7 @@
     -->
     <target name="init" depends="clean">
       <mkdir dir="${plugin.build.dir}"/>
+      <mkdir dir="${plugin.debug.build.dir}"/>
       <artifact:dependencies filesetId="dependency.fileset">
         <dependency groupId="commons-lang" artifactId="commons-lang" version="2.6"/>
         <dependency groupId="org.osgeo" artifactId="proj4j" version="0.1.0"/>
