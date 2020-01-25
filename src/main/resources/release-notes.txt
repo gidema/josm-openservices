@@ -1,4 +1,13 @@
+Version 0.6.19
+==============
+- Built with Josm 15628
+- Fixed incorrect handling of Mapserver empty XML elements
+- Added EntityFactory and EntityModifier for increased flexibility
+- Improved build process
+- Improved separation between core and modules
+
 Version 0.6.18
+==============
 - Fixed incompatibilities with Josm versions >= 15390
 - Fixed crash on addresses without postcode
 - Started to distinguish git tag names from branch names
