@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.wfs.WFSDataStore;
@@ -227,13 +228,14 @@ public class WFSHost implements GtHost {
      *
      * @param timeout A timeout in milliseconds
      * @return the DataStore object
-     * @throws OdsException
+     * @throws IOException
      */
     private WFSDataStore createDataStore(Integer timeout) throws IOException {
         Map<String, Serializable> connectionParameters = getConnectionParameters(timeout);
         WFSDataStore dataStore;
         try {
-            dataStore = wfsDataStoreFactory.createDataStore(connectionParameters);
+            dataStore = Optional.ofNullable(wfsDataStoreFactory.createDataStore(connectionParameters))
+                    .filter(WFSDataStore.class::isInstance).map(WFSDataStore.class::cast).orElse(null);
             if (dataStore == null) {
                 throw new IOException("No data store could be found");
             }

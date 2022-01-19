@@ -16,30 +16,30 @@ import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
 import org.openstreetmap.josm.plugins.ods.test.util.JOSMFixture;
 import org.openstreetmap.josm.plugins.ods.test.util.TestData;
 
-public class SegmentMatcherTest {
+class SegmentMatcherTest {
     private TestData testData;
     private final SegmentMatcher matcher = new SegmentMatcher(new NodeDWithinLatLon(0.05));
 
     @BeforeAll
-    public static void setUpBeforeClass() {
+    static void setUpBeforeClass() {
         JOSMFixture.createUnitTestFixture().init();
     }
 
     @BeforeEach
-    public void init() {
+    void setUp() {
         testData = new TestData(this, "segmentMatcher.osm");
     }
 
-    @org.junit.jupiter.api.Test
-    public void testPairA() {
+    @Test
+    void testPairA() {
         assertTrue(match("wayA1", "wayA2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.NodeToSegment, matcher.getStartMatch());
         assertEquals(MatchType.SegmentToNode, matcher.getEndMatch());
     }
 
-    @org.junit.jupiter.api.Test
-    public void testPairB() {
+    @Test
+    void testPairB() {
         assertTrue(match("wayB1", "wayB2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.NodeToSegment, matcher.getStartMatch());
@@ -47,7 +47,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairC() {
+    void testPairC() {
         assertTrue(match("wayC1", "wayC2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.NodeToSegment, matcher.getStartMatch());
@@ -55,7 +55,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairD() {
+    void testPairD() {
         assertTrue(match("wayD1", "wayD2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.NodeToNode, matcher.getStartMatch());
@@ -63,7 +63,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairE() {
+    void testPairE() {
         assertTrue(match("wayE1", "wayE2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.NodeToNode, matcher.getStartMatch());
@@ -71,7 +71,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairF() {
+    void testPairF() {
         assertTrue(match("wayF1", "wayF2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.NodeToNode, matcher.getStartMatch());
@@ -79,7 +79,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairG() {
+    void testPairG() {
         assertTrue(match("wayG1", "wayG2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.SegmentToNode, matcher.getStartMatch());
@@ -87,7 +87,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairH() {
+    void testPairH() {
         assertTrue(match("wayH1", "wayH2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.SegmentToNode, matcher.getStartMatch());
@@ -95,7 +95,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairI() {
+    void testPairI() {
         assertTrue(match("wayI1", "wayI2"));
         assertFalse(matcher.isreversed());
         assertEquals(MatchType.SegmentToNode, matcher.getStartMatch());
@@ -103,7 +103,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairAreversed() {
+    void testPairAreversed() {
         assertTrue(matchReversed("wayA1", "wayA2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.NodeToSegment, matcher.getStartMatch());
@@ -111,7 +111,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairBreversed() {
+    void testPairBreversed() {
         assertTrue(matchReversed("wayB1", "wayB2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.NodeToSegment, matcher.getStartMatch());
@@ -119,7 +119,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairCreversed() {
+    void testPairCreversed() {
         assertTrue(matchReversed("wayC1", "wayC2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.NodeToSegment, matcher.getStartMatch());
@@ -127,7 +127,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairDreversed() {
+    void testPairDreversed() {
         assertTrue(matchReversed("wayD1", "wayD2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.NodeToNode, matcher.getStartMatch());
@@ -135,7 +135,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairEreversed() {
+    void testPairEreversed() {
         assertTrue(matchReversed("wayE1", "wayE2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.NodeToNode, matcher.getStartMatch());
@@ -143,7 +143,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairFreversed() {
+    void testPairFreversed() {
         assertTrue(matchReversed("wayF1", "wayF2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.NodeToNode, matcher.getStartMatch());
@@ -151,7 +151,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairGreversed() {
+    void testPairGreversed() {
         assertTrue(matchReversed("wayG1", "wayG2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.SegmentToNode, matcher.getStartMatch());
@@ -159,7 +159,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairHreversed() {
+    void testPairHreversed() {
         assertTrue(matchReversed("wayH1", "wayH2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.SegmentToNode, matcher.getStartMatch());
@@ -167,7 +167,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testPairIreversed() {
+    void testPairIreversed() {
         assertTrue(matchReversed("wayI1", "wayI2"));
         assertTrue(matcher.isreversed());
         assertEquals(MatchType.SegmentToNode, matcher.getStartMatch());
@@ -175,7 +175,7 @@ public class SegmentMatcherTest {
     }
 
     @Test
-    public void testA1B1() {
+    void testA1B1() {
         assertFalse(match("wayA1", "wayB1"));
     }
 

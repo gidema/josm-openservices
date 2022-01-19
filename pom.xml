@@ -1,79 +1,116 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>opendataservices</artifactId>
-  <version>0.6.19</version>
+  <version>0.6.20</version>
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>          
-        </configuration>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.9.0</version>
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
   <dependencies>
     <dependency>
-    	<groupId>org.osgeo</groupId>
-    	<artifactId>proj4j</artifactId>
-    	<version>0.1.0</version>
+      <groupId>org.osgeo</groupId>
+      <artifactId>proj4j</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    <!-- JOSM plugins -->
+    <dependency>
+      <groupId>org.openstreetmap.josm.plugins</groupId>
+      <artifactId>apache-commons</artifactId>
+      <version>SNAPSHOT</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-    	<groupId>commons-lang</groupId>
-    	<artifactId>commons-lang</artifactId>
-    	<version>2.6</version>
+      <groupId>org.openstreetmap.josm.plugins</groupId>
+      <artifactId>jts</artifactId>
+      <version>SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openstreetmap.josm.plugins</groupId>
+      <artifactId>geotools</artifactId>
+      <version>SNAPSHOT</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>josm-geotools-wfs</groupId>
       <artifactId>josm-geotools-wfs</artifactId>
-      <version>22.0.1</version>
+      <version>26.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- JOSM and JOSM dependencies that (for whatever reason) need to be declared -->
+    <dependency>
+      <groupId>org.openstreetmap.josm</groupId>
+      <artifactId>josm</artifactId>
+      <version>${josm.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.json</groupId>
+      <artifactId>javax.json-api</artifactId>
+      <version>1.1.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.openstreetmap.josm</groupId>
+      <artifactId>josm-unittest</artifactId>
+      <version>SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.1.0</version>
+      <version>5.8.2</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.1.0</version>
+      <version>5.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.oss84.geotools</groupId>
+      <artifactId>gt-opengis</artifactId>
+      <version>24.2</version>
     </dependency>
   </dependencies>
   <repositories>
     <repository>
-      <id>gertjanidema</id>
-      <name>Gertjan's repository</name>
-      <url>http://maven.gertjanidema.nl</url>
+      <id>josm</id>
+      <name>Josm repository</name>
+      <url>https://josm.openstreetmap.de/nexus/content/repositories/releases/</url>
     </repository>
     <repository>
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net repository</name>
-      <url>http://download.java.net/maven/2</url>
+      <id>josm-snapshots</id>
+      <name>Josm Snapshot repository</name>
+      <url>https://josm.openstreetmap.de/nexus/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
     <repository>
       <id>osgeo</id>
       <name>Open Source Geospatial Foundation Repository</name>
-      <url>http://download.osgeo.org/webdav/geotools/</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>opengeo</id>
-      <name>OpenGeo Maven Repository</name>
-      <url>http://repo.opengeo.org</url>
+      <url>https://repo.osgeo.org/repository/release/</url>
     </repository>
   </repositories>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <geotools.version>22.0</geotools.version>
-    <josm.version>15628</josm.version>
+    <geotools.version>26.1</geotools.version>
+    <josm.version>17915</josm.version>
   </properties>
   <issueManagement>
     <system>Sourceforge</system>
@@ -83,7 +120,7 @@
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.1.1</version>
+        <version>1.2</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
