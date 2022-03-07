@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>josm-plugins</groupId>
   <artifactId>opendataservices</artifactId>
-  <version>0.6.19</version>
+  <version>0.6.19A</version>
   <build>
     <plugins>
       <plugin>
@@ -99,3 +99,4 @@
     </dependencies>
   </dependencyManagement>
 </project>
+
