@@ -50,7 +50,7 @@ public class NearestWayAction extends OdsAction {
         WaySegment nearestWaySegment = nearestWaySegment(osmDataLayer.getDataSet(), center);
         MainApplication.getLayerManager().setActiveLayer(osmDataLayer);
         if (nearestWaySegment != null) {
-            osmDataLayer.getDataSet().setSelected(nearestWaySegment.way);
+            osmDataLayer.getDataSet().setSelected(nearestWaySegment.getWay());
         }
     }
 

@@ -23,6 +23,11 @@
     	<version>0.1.0</version>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.13.0</version>
+    </dependency>
+    <dependency>
     	<groupId>commons-lang</groupId>
     	<artifactId>commons-lang</artifactId>
     	<version>2.6</version>
@@ -31,6 +36,12 @@
       <groupId>josm-geotools-wfs</groupId>
       <artifactId>josm-geotools-wfs</artifactId>
       <version>22.0.1</version>
+      <exclusions>
+      	<exclusion>
+      		<groupId>org.jdom</groupId>
+      		<artifactId>jdom2</artifactId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -72,8 +83,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <geotools.version>22.0</geotools.version>
-    <josm.version>15628</josm.version>
+    <geotools.version>26.1</geotools.version>
+    <josm.version>18360</josm.version>
   </properties>
   <issueManagement>
     <system>Sourceforge</system>
