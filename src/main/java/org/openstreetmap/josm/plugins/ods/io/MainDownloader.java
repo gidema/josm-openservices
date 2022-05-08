@@ -1,19 +1,22 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.util.LinkedList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.JOptionPane;
+import java.util.concurrent.FutureTask;
+import java.util.stream.Collectors;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.Matcher;
+import org.openstreetmap.josm.plugins.ods.ODS;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
+import org.openstreetmap.josm.plugins.ods.matching.Matchers;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
@@ -24,71 +27,63 @@ import org.openstreetmap.josm.tools.I18n;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public abstract class MainDownloader {
-    private static final int NTHREADS = 10;
-
-    private final OdsModule module;
-
-    private List<LayerDownloader> enabledDownloaders;
+public class MainDownloader {
+    private final OdsContext context;
 
     private ExecutorService executorService;
 
-    private Status status = new Status();
+    private List<LayerDownloader> layerDownloaders;
 
-    public abstract void initialize() throws Exception;
-
-    protected abstract LayerDownloader getOsmLayerDownloader();
-
-    protected abstract LayerDownloader getOpenDataLayerDownloader();
-
-    public MainDownloader(OdsModule module) {
+    public MainDownloader(OdsContext context) {
         super();
-        this.module = module;
+        this.context = context;
     }
 
-    public OdsModule getModule() {
-        return module;
+    public OdsContext getContext() {
+        return context;
     }
 
-    public void run(ProgressMonitor pm, DownloadRequest request) {
-        status.clear();
+    public void run(ProgressMonitor pm) {
+        String operationMode = context.getParameter(ODS.OPERATION_MODE);
+        
+        pm.indeterminateSubTask(I18n.tr("Setup"));
+        setup();
+        if (operationMode.equals("Update")) {
+            /*
+             * In Update mode, we first collect the modified entities only. These will be used to determine a collection of
+             * bounding boxes for the other download operations.
+             */
+            pm.indeterminateSubTask(I18n.tr("Download"));
+            setup();
+        }
         // Switch to the Open data layer before downloading.
         MainLayerManager layerManager = MainApplication.getLayerManager();
-        layerManager.setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
+        layerManager.setActiveLayer(getContext().getComponent(OdLayerManager.class).getOsmDataLayer());
 
-        pm.indeterminateSubTask(I18n.tr("Setup"));
-        setup(request);
-        if (status.isCancelled()) {
-            return;
-        }
         pm.indeterminateSubTask(I18n.tr("Preparing"));
-        prepare();
-        if (status.isCancelled()) {
+        TaskStatus status = prepare();
+        if (Downloader.checkErrors(status, pm)) {
+            pm.finishTask();
             return;
         }
+        
         pm.indeterminateSubTask(I18n.tr("Downloading"));
-        download();
-        if (status.isCancelled()) {
-            return;
-        }
-        if (!status.isSucces()) {
+        status = download();
+        if (Downloader.checkErrors(status, pm)) {
             pm.finishTask();
-            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr(
-                    "An error occurred: " + status.getMessage()));
             return;
         }
+        DownloadRequest request = context.getComponent(DownloadRequest.class);
+        context.register( DownloadResponse.class, new DownloadResponse(request), true);
+
         pm.indeterminateSubTask(I18n.tr("Processing data"));
-        DownloadResponse response = new DownloadResponse(request);
-        process(response);
-        if (!status.isSucces()) {
+        status = process();
+        if (Downloader.checkErrors(status, pm)) {
             pm.finishTask();
-            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr(
-                    "An error occurred: " + status.getMessage()));
             return;
         }
 
-        Bounds bounds = request.getBoundary().getBounds();
-        computeBboxAndCenterScale(bounds);
+        computeBboxAndCenterScale(request.getBoundary().getBounds());
         pm.finishTask();
     }
 
@@ -96,159 +91,46 @@ public abstract class MainDownloader {
      * Setup the download jobs. One job for the Osm data and one for imported data.
      * Setup the download tasks. Maybe more than 1 per job.
      */
-    private void setup(DownloadRequest request) {
-        status.clear();
-        enabledDownloaders = new LinkedList<>();
-        if (request.isGetOsm()) {
-            enabledDownloaders.add(getOsmLayerDownloader());
-        }
-        if (request.isGetOds()) {
-            enabledDownloaders.add(getOpenDataLayerDownloader());
-        }
-        for (LayerDownloader downloader : enabledDownloaders) {
-            downloader.setup(request);
-        }
+    private void setup() {
+        OsmLayerDownloader osmLayerDownloader = context.getComponent(OsmLayerDownloader.class);
+        OpenDataLayerDownloader openDataLayerDownloader = context.getComponent(OpenDataLayerDownloader.class);
+        this.layerDownloaders = Arrays.asList(osmLayerDownloader, openDataLayerDownloader);
+        layerDownloaders.forEach(ld -> ld.setup(context));
     }
 
-    private void prepare() {
-        status.clear();
-        executorService = Executors.newFixedThreadPool(NTHREADS);
-        for (final LayerDownloader downloader : enabledDownloaders) {
-            executorService.execute(downloader::prepare);
-        }
-
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
-                status.setTimedOut(true);
-                return;
-            }
-        }
-        catch (InterruptedException e) {
-            executorService.shutdownNow();
-            for (LayerDownloader downloader : enabledDownloaders) {
-                downloader.cancel();
-            }
-            status.setException(e);
-            status.setFailed(true);
-        }
-        for (LayerDownloader downloader : enabledDownloaders) {
-            Status st = downloader.getStatus();
-            if (!st.isSucces()) {
-                this.status = st;
-            }
-        }
+    private TaskStatus prepare() {
+        List<FutureTask<TaskStatus>> tasks = layerDownloaders.stream().map(LayerDownloader::getPrepareTask).collect(Collectors.toList());
+        return Downloader.runTasks(tasks);
     }
 
-    private void download() {
-        status.clear();
-        executorService = Executors.newFixedThreadPool(NTHREADS);
-        for (final LayerDownloader downloader : enabledDownloaders) {
-            executorService.execute(downloader::download);
-        }
-
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
-                status.setTimedOut(true);
-                return;
-            }
-        }
-        catch (InterruptedException e) {
-            executorService.shutdownNow();
-            for (LayerDownloader downloader : enabledDownloaders) {
-                downloader.cancel();
-            }
-            status.setException(e);
-            status.setFailed(true);
-        }
-        List<String> failureMessages = new LinkedList<>();
-        List<String> cancelMessages = new LinkedList<>();
-        boolean timedOut = false;
-        for (LayerDownloader downloader : enabledDownloaders) {
-            Status st = downloader.getStatus();
-            if (st.isFailed()) {
-                failureMessages.add(st.getMessage());
-            }
-            if (st.isCancelled()) {
-                cancelMessages.add(st.getMessage());
-            }
-            if (st.isTimedOut()) {
-                timedOut = true;
-            }
-        }
-        //                this.status.setMessage(this.status.getMessage() + "\n" + status.getMessage());
-        if (!failureMessages.isEmpty()) {
-            String message = String.join("\n", failureMessages);
-            this.status.setFailed(true);
-            this.status.setMessage(message);
-            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("The download failed because of the following reason(s):\n" +
-                    message));
-            cancel();
-        }
-        else if (timedOut) {
-            status.setTimedOut(true);
-            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("The download timed out"));
-        }
-        else if (!cancelMessages.isEmpty()) {
-            String message = String.join("\n", cancelMessages);
-            this.status.setCancelled(true);
-            this.status.setMessage(message);
-            JOptionPane.showMessageDialog(MainApplication.getMainFrame(), I18n.tr("The download was cancelled because of the following reason(s):\n" +
-                    message));
-
-        }
+    private TaskStatus download() {
+        List<FutureTask<TaskStatus>> tasks = layerDownloaders.stream().map(LayerDownloader::getDownloadTask).collect(Collectors.toList());
+        return Downloader.runTasks(tasks);
     }
 
     /**
      * Run the tasks that depend on more than one entity store.
      *
      */
-    protected void process(DownloadResponse response) {
-        if (status.isFailed()) {
-            return;
-        }
-        status.clear();
-        executorService = Executors.newFixedThreadPool(NTHREADS);
-        for (final LayerDownloader downloader : enabledDownloaders) {
-            downloader.setResponse(response);
-            executorService.execute(downloader::process);
-        }
-
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(5, TimeUnit.MINUTES)) {
-                status.setTimedOut(true);
-                return;
-            }
-        }
-        catch (InterruptedException e) {
-            executorService.shutdownNow();
-            //            for (LayerDownloader downloader : enabledDownloaders) {
-            //                downloader.cancel();
-            //            }
-            status.setException(e);
-            status.setFailed(true);
-        }
-        for (LayerDownloader downloader : enabledDownloaders) {
-            Status st = downloader.getStatus();
-            if (!st.isSucces()) {
-                this.status = st;
-            }
-        }
+    protected TaskStatus process() {
+        List<FutureTask<TaskStatus>> tasks = layerDownloaders.stream().map(LayerDownloader::getProcessTask).collect(Collectors.toList());
+        TaskStatus taskStatus = Downloader.runTasks(tasks);
+        Matchers matchers = context.getComponent(Matchers.class);
+        matchers.forEach(Matcher::run);
+        return taskStatus;
     }
 
-    protected static void computeBboxAndCenterScale(Bounds bounds) {
+    protected static void computeBboxAndCenterScale(Collection<Bounds> bounds) {
         BoundingXYVisitor v = new BoundingXYVisitor();
-        if (bounds != null) {
-            v.visit(bounds);
-            MainApplication.getMap().mapView.zoomTo(bounds);
+        
+        if (bounds != null && !bounds.isEmpty()) {
+            bounds.forEach(v::visit);
+            MainApplication.getMap().mapView.zoomTo(v.getBounds());
         }
     }
 
     public void cancel() {
-        status.setCancelled(true);
-        for (LayerDownloader downloader : enabledDownloaders) {
+        for (LayerDownloader downloader : layerDownloaders) {
             downloader.cancel();
         }
         executorService.shutdownNow();

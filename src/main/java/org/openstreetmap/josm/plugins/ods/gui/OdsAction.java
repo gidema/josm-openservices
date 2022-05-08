@@ -4,27 +4,27 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
 import org.openstreetmap.josm.gui.layer.Layer;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 
 public abstract class OdsAction extends AbstractAction {
 
     private static final long serialVersionUID = 1L;
 
-    private final OdsModule module;
+    private final OdsContext context;
     
-    public OdsAction(OdsModule module, String name, String description) {
+    public OdsAction(OdsContext context, String name, String description) {
         super(name);
         super.putValue("description", description);
-        this.module = module;
+        this.context = context;
     }
 
-    public OdsAction(OdsModule module, String name, ImageIcon imageIcon) {
+    public OdsAction(OdsContext context, String name, ImageIcon imageIcon) {
         super(name, imageIcon);
-        this.module = module;
+        this.context = context;
     }
 
-    public OdsModule getModule() {
-        return module;
+    public OdsContext getContext() {
+        return context;
     }
 
     @SuppressWarnings("unused")

@@ -18,8 +18,8 @@ import javax.json.JsonReader;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
-import org.geotools.data.DataStoreFinder;
 import org.openstreetmap.josm.actions.UploadAction;
+import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.download.DownloadDialog;
@@ -49,12 +49,13 @@ public class OpenDataServicesPlugin extends Plugin {
             throw new java.lang.RuntimeException(
                     I18n.tr("The Open Data Services plug-in has allready been started"));
         }
-        // TODO Check if the following hack is necessary
-        DataStoreFinder.scanForPlugins();
 
         INSTANCE = this;
-        readInfo();
-        checkVersion(info);
+        boolean debugMode = Preferences.main().getBoolean("josm.debug", false);
+        if (!debugMode) {
+            readInfo();
+            checkVersion(info);
+        }
         initializeMenu();
         addDownloadDialogListener();
         UploadAction.registerUploadHook(new DiscardOdsTagsHook());

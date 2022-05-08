@@ -7,7 +7,7 @@ import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Way;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.Notification;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
 import org.openstreetmap.josm.plugins.ods.osm.SmallSegmentRemover;
 import org.openstreetmap.josm.tools.I18n;
@@ -19,8 +19,8 @@ public class RemoveShortSegmentsAction extends OdsAction {
      */
     private static final long serialVersionUID = 1L;
 
-    public RemoveShortSegmentsAction(OdsModule module) {
-        super(module, "Remove short segments", "Remove short segments");
+    public RemoveShortSegmentsAction(OdsContext context) {
+        super(context, "Remove short segments", "Remove short segments");
     }
 
     @Override

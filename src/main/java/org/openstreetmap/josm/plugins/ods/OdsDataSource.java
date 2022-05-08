@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods;
 
-import org.geotools.data.Query;
+import javax.xml.namespace.QName;
+
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 
 /**
@@ -20,21 +21,9 @@ public interface OdsDataSource {
     // Time-out used when retrieving data from a dataSource
     public static ParameterType<Integer> DATA_TIMEOUT = new ParameterType<>(Integer.class);
 
-    public String getFeatureType();
+    public QName getFeatureType();
 
     public OdsFeatureSource getOdsFeatureSource();
-
-    public Query getQuery();
-
-    public void setIdFactory(DefaultIdFactory idFactory);
-
-    /**
-     * Get an IdFactory that can extract a unique Id for the features
-     * Retrieved from this dataSource.<br>
-     *
-     * @return The IdFactory
-     */
-    public IdFactory getIdFactory();
 
     public MetaData getMetaData();
 

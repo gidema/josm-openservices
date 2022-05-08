@@ -102,7 +102,7 @@
         <!--<attribute name="Plugin-Link" value="http://fixme.com"/>-->
         <attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
         <attribute name="Plugin-Version" value="${plugin.version}" />
-        <attribute name="Plugin-Requires" value="geotools-wfs" />
+<!--        <attribute name="Plugin-Requires" value="geotools" />-->
         <attribute name="Plugin-Stage" value="40" />
       </manifest>
     </jar>
@@ -142,7 +142,7 @@
         <attribute name="Plugin-Mainversion" value="${plugin.main.version}" />
         <attribute name="Plugin-Version" value="${plugin.version}" />
         <attribute name="Plugin-Stage" value="40" />
-        <!--<attribute name="Plugin-Requires" value="geotools"/>-->
+<!--        <attribute name="Plugin-Requires" value="geotools"/>-->
       </manifest>
     </jar>
   </target>

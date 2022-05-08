@@ -3,17 +3,6 @@ package org.openstreetmap.josm.plugins.ods.osm;
 import java.util.List;
 import java.util.Map;
 
-import org.openstreetmap.josm.data.coor.LatLon;
-import org.openstreetmap.josm.data.osm.BBox;
-import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.data.osm.Node;
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.data.osm.Relation;
-import org.openstreetmap.josm.data.osm.RelationMember;
-import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.plugins.ods.LayerManager;
-import org.openstreetmap.josm.plugins.ods.ODS;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
@@ -22,6 +11,15 @@ import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.BBox;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.Node;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.data.osm.Relation;
+import org.openstreetmap.josm.data.osm.RelationMember;
+import org.openstreetmap.josm.data.osm.Way;
+import org.openstreetmap.josm.plugins.ods.ODS;
 
 /**
  * The default implementation of PrimitiveBuilder.
@@ -30,33 +28,24 @@ import org.locationtech.jts.geom.Polygon;
  * 
  */
 public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
-    private final LayerManager layerManager;
 
-    public DefaultPrimitiveBuilder(LayerManager layerManager) {
-        this.layerManager = layerManager;
-    }
-
-    @Override
-    public LayerManager getLayerManager() {
-        return layerManager;
-    }
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Geometry)
      */
     @Override
-    public OsmPrimitive create(Geometry geometry, Map<String, String> tags) {
+    public OsmPrimitive create(DataSet dataSet, Geometry geometry, Map<String, String> tags) {
         tags.put(ODS.KEY.BASE, "true");
         switch (geometry.getGeometryType()) {
         case "Polygon":
-            return create((Polygon)geometry, tags);
+            return create(dataSet, (Polygon)geometry, tags);
         case "MultiPolygon":
-            return build((MultiPolygon)geometry, tags);
+            return build(dataSet, (MultiPolygon)geometry, tags);
         case "Point":
-            return build((Point)geometry, tags);
+            return build(dataSet, (Point)geometry, tags);
         case "LineString":
-            return build((LineString)geometry, tags);
+            return build(dataSet, (LineString)geometry, tags);
         case "MultiLineString":
-            return build((MultiLineString)geometry, tags);
+            return build(dataSet, (MultiLineString)geometry, tags);
         }
         return null;
     }
@@ -65,38 +54,38 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Polygon)
      */
     @Override
-    public OsmPrimitive create(Polygon polygon, Map<String, String> tags) {
-        return buildArea(polygon, tags);
+    public OsmPrimitive create(DataSet dataSet, Polygon polygon, Map<String, String> tags) {
+        return buildArea(dataSet, polygon, tags);
     }
 
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.MultiPolygon)
      */
     @Override
-    public OsmPrimitive build(MultiPolygon mpg, Map<String, String> tags) {
-        return buildArea(mpg, tags);
+    public OsmPrimitive build(DataSet dataSet, MultiPolygon mpg, Map<String, String> tags) {
+        return buildArea(dataSet, mpg, tags);
     }
 
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#build(com.vividsolutions.jts.geom.Point)
      */
     @Override
-    public OsmPrimitive build(Point point, Map<String, String> tags) {
-        OsmPrimitive node = buildNode(point, tags, false);
+    public OsmPrimitive build(DataSet dataSet, Point point, Map<String, String> tags) {
+        OsmPrimitive node = buildNode(dataSet, point, tags, false);
         return node;
     }
 
     @Override
-    public OsmPrimitive build(LineString ls, Map<String, String> tags) {
-        OsmPrimitive way = buildWay(ls, tags);
+    public OsmPrimitive build(DataSet dataSet, LineString ls, Map<String, String> tags) {
+        OsmPrimitive way = buildWay(dataSet, ls, tags);
         return way;
     }
     
     @Override
-    public OsmPrimitive build(MultiLineString mls, Map<String, String> tags) {
+    public OsmPrimitive build(DataSet dataSet, MultiLineString mls, Map<String, String> tags) {
         // TODO implement this by creating an OdsPrimitiveGroup relation
         //        OsmPrimitive primitive = build((LineString)mls.getGeometryN(i), tags));
-        return build((LineString)mls.getGeometryN(0), tags);
+        return build(dataSet, (LineString)mls.getGeometryN(0), tags);
     }
     
     
@@ -104,13 +93,13 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildArea(com.vividsolutions.jts.geom.MultiPolygon)
      */
     @Override
-    public OsmPrimitive buildArea(MultiPolygon mpg, Map<String, String> tags) {
+    public OsmPrimitive buildArea(DataSet dataSet, MultiPolygon mpg, Map<String, String> tags) {
         OsmPrimitive primitive;
         if (mpg.getNumGeometries() > 1) {
-            primitive = buildMultiPolygon(mpg, tags);
+            primitive = buildMultiPolygon(dataSet, mpg, tags);
             primitive.put("type", "multipolygon");
         } else {
-            primitive = buildArea((Polygon) mpg.getGeometryN(0), tags);
+            primitive = buildArea(dataSet, (Polygon) mpg.getGeometryN(0), tags);
         }
         return primitive;
     }
@@ -119,14 +108,14 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildArea(com.vividsolutions.jts.geom.Polygon)
      */
     @Override
-    public OsmPrimitive buildArea(Polygon polygon, Map<String, String> tags) {
+    public OsmPrimitive buildArea(DataSet dataSet, Polygon polygon, Map<String, String> tags) {
         OsmPrimitive primitive;
         if (polygon.getNumInteriorRing() > 0) {
-            primitive = buildMultiPolygon(polygon, tags);
+            primitive = buildMultiPolygon(dataSet, polygon, tags);
             primitive.put("type", "multipolygon");
         }
         else {
-            primitive = buildWay(polygon, tags);
+            primitive = buildWay(dataSet, polygon, tags);
         }
         return primitive;
     }
@@ -135,29 +124,29 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildMultiPolygon(com.vividsolutions.jts.geom.Polygon)
      */
     @Override
-    public Relation buildMultiPolygon(Polygon polygon, Map<String, String> tags) {
+    public Relation buildMultiPolygon(DataSet dataSet, Polygon polygon, Map<String, String> tags) {
         MultiPolygon multiPolygon = polygon.getFactory().createMultiPolygon(
                 new Polygon[] { polygon });
-        return buildMultiPolygon(multiPolygon, tags);
+        return buildMultiPolygon(dataSet, multiPolygon, tags);
     }
 
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildMultiPolygon(com.vividsolutions.jts.geom.MultiPolygon)
      */
     @Override
-    public Relation buildMultiPolygon(MultiPolygon mpg, Map<String, String> tags) {
+    public Relation buildMultiPolygon(DataSet dataSet, MultiPolygon mpg, Map<String, String> tags) {
         Relation relation = new Relation();
         for (int i = 0; i < mpg.getNumGeometries(); i++) {
             Polygon polygon = (Polygon) mpg.getGeometryN(i);
-            Way way = buildWay(polygon.getExteriorRing(), null);
+            Way way = buildWay(dataSet, polygon.getExteriorRing(), null);
             relation.addMember(new RelationMember("outer", way));
             for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
-                way = buildWay(polygon.getInteriorRingN(j), null);
+                way = buildWay(dataSet, polygon.getInteriorRingN(j), null);
                 relation.addMember(new RelationMember("inner", way));
             }
         }
         relation.setKeys(tags);
-        getDataSet().addPrimitive(relation);
+        dataSet.addPrimitive(relation);
         return relation;
     }
 
@@ -165,23 +154,23 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildWay(com.vividsolutions.jts.geom.Polygon)
      */
     @Override
-    public Way buildWay(Polygon polygon, Map<String, String> tags) {
-        return buildWay(polygon.getExteriorRing(), tags);
+    public Way buildWay(DataSet dataSet, Polygon polygon, Map<String, String> tags) {
+        return buildWay(dataSet, polygon.getExteriorRing(), tags);
     }
 
     /* (non-Javadoc)
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildWay(com.vividsolutions.jts.geom.LineString)
      */
     @Override
-    public Way buildWay(LineString line, Map<String, String> tags) {
-        return buildWay(line.getCoordinateSequence(), tags);
+    public Way buildWay(DataSet dataSet, LineString line, Map<String, String> tags) {
+        return buildWay(dataSet, line.getCoordinateSequence(), tags);
     }
 
-    private Way buildWay(CoordinateSequence points, Map<String, String> tags) {
+    private Way buildWay(DataSet dataSet, CoordinateSequence points, Map<String, String> tags) {
         Way way = new Way();
         Node previousNode = null;
         for (int i = 0; i < points.size(); i++) {
-            Node node = buildNode(points.getCoordinate(i), null, true);
+            Node node = buildNode(dataSet, points.getCoordinate(i), null, true);
             // Remove duplicate nodes in ways
             if (node != previousNode) {
                 way.addNode(node);
@@ -189,7 +178,7 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
             previousNode = node;
         }
         if (tags != null) way.setKeys(tags);
-        getDataSet().addPrimitive(way);
+        dataSet.addPrimitive(way);
         return way;
     }
 
@@ -197,19 +186,19 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildNode(com.vividsolutions.jts.geom.Coordinate, boolean)
      */
     @Override
-    public Node buildNode(Coordinate coordinate, Map<String, String> tags, boolean merge) {
+    public Node buildNode(DataSet dataSet, Coordinate coordinate, Map<String, String> tags, boolean merge) {
         LatLon latlon = new LatLon(coordinate.y, coordinate.x).getRoundedToOsmPrecision();
         Node node = new Node(latlon);
         if (merge) {
             BBox bbox = new BBox(node);
-            List<Node> existingNodes = getDataSet().searchNodes(bbox);
+            List<Node> existingNodes = dataSet.searchNodes(bbox);
             if (existingNodes.size() > 0) {
                 node = existingNodes.get(0);
                 return node;
             }
         }
         if (tags != null) node.setKeys(tags);
-        getDataSet().addPrimitive(node);
+        dataSet.addPrimitive(node);
         return node;
     }
 
@@ -217,13 +206,9 @@ public class DefaultPrimitiveBuilder implements OsmPrimitiveFactory {
      * @see org.openstreetmap.josm.plugins.ods.PrimitiveBuilder#buildNode(com.vividsolutions.jts.geom.Point, boolean)
      */
     @Override
-    public Node buildNode(Point point, Map<String, String> tags, boolean merge) {
+    public Node buildNode(DataSet dataSet, Point point, Map<String, String> tags, boolean merge) {
         if (point == null)
             return null;
-        return buildNode(point.getCoordinate(), tags, merge);
-    }
-
-    private DataSet getDataSet() {
-        return layerManager.getOsmDataLayer().getDataSet();
+        return buildNode(dataSet, point.getCoordinate(), tags, merge);
     }
 }

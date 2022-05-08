@@ -2,59 +2,19 @@ package org.openstreetmap.josm.plugins.ods.entities.impl;
 
 import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.locationtech.jts.geom.Geometry;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
-
-import org.locationtech.jts.geom.Geometry;
 
 public abstract class AbstractOdEntity implements OdEntity {
-    private Object primaryId;
-    private Object referenceId;
-    private DownloadResponse response;
     private String sourceDate;
     private String source;
     private Geometry geometry;
     private EntityStatus status = EntityStatus.UNKNOWN;
     private Entity.Completeness completeness = Unknown;
-    private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
-    //    private Match<?, ?> match;
-
-    @Override
-    public void setPrimaryId(Object primaryId) {
-        this.primaryId = primaryId;
-    }
-
-    @Override
-    public Object getPrimaryId() {
-        return primaryId;
-    }
-
-    @Override
-    public Object getReferenceId() {
-        return referenceId;
-    }
-
-    @Override
-    public void setReferenceId(Object referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    @Override
-    public void setDownloadResponse(DownloadResponse response) {
-        this.response = response;
-    }
-
-    @Override
-    public DownloadResponse getDownloadResponse() {
-        return response;
-    }
 
     @Override
     public void setSourceDate(String string) {
@@ -94,15 +54,6 @@ public abstract class AbstractOdEntity implements OdEntity {
     @Override
     public void setCompleteness(Completeness completeness) {
         this.completeness = completeness;
-    }
-
-    @Override
-    public Map<String, String> getOtherTags() {
-        return otherTags;
-    }
-
-    public void setOtherTags(Map<String, String> otherTags) {
-        this.otherTags = otherTags;
     }
 
     @Override

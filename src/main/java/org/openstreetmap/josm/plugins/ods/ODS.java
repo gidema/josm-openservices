@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods;
 
 public class ODS {
+    public static ParameterType<String> OPERATION_MODE = new ParameterType<>(String.class);
     
     public static class KEY {
         public static String BASE = "|ODS";

@@ -12,15 +12,6 @@ import org.openstreetmap.josm.plugins.ods.entities.Entity;
  */
 public interface OsmEntityBuilder<T extends Entity> {
 
-
-    /**
-     * Check if this builder can handle the provided primitive and create an Entity of
-     * type T
-     * @param primitive The primitive to check
-     * @return true if the primitive can be handled. False otherwise.
-     */
-    public boolean canHandle(OsmPrimitive primitive);
-
     /**
      * Create an Entity of type T from the given primitive.
      *

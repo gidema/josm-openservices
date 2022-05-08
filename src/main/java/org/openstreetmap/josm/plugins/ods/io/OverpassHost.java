@@ -1,10 +1,14 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.Preferences;
+import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OverpassDownloadReader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -30,10 +34,15 @@ public class OverpassHost implements OsmHost {
         return host;
     }
 
+    // TODO Currently, we create an extra server reader for each boundary.
+    // Check if we can replace this with a single multipolygon request.
     @Override
-    public OsmServerReader getServerReader(DownloadRequest request) throws MalformedURLException {
-        return new OverpassDownloadReader(request.getBoundary().getBounds(),
-                getHostString(), OVERPASS_QUERY);
+    public Collection<OsmServerReader> getServerReaders(DownloadRequest request) {
+        List<OsmServerReader> serverReaders = new ArrayList<>(request.getBoundary().getBounds().size());
+        request.getBoundary().getBounds().forEach(bounds -> {
+            serverReaders.add(new OverpassDownloadReader(bounds, getHostString(), OVERPASS_QUERY));
+        });
+        return serverReaders;
     }
 
     /**
@@ -54,7 +63,7 @@ public class OverpassHost implements OsmHost {
      */
     public static String getBoundary(Boundary boundary) {
         if (boundary.isRectangular()) {
-            return getBBox(boundary.getBounds());
+            return getBBox(boundary.getBounds().iterator().next());
         }
         return getBBox(boundary.getRing());
     }

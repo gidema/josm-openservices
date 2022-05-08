@@ -5,25 +5,26 @@ import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 import org.openstreetmap.josm.gui.MainApplication;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.tools.I18n;
 
 public class OdsResetAction extends OdsAction {
 
     private static final long serialVersionUID = 1L;
-    private final OdsModule module;
+    private final OdsContext context;
 
-    public OdsResetAction(OdsModule module) {
-        super(module, "Reset", "Reset");
+    public OdsResetAction(OdsContext context) {
+        super(context, "Reset", "Reset");
         super.putValue("description",
                 "Reset ODS.");
-        this.module = module;
+        this.context = context;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         boolean reset = true;
-        if (module.getOsmLayerManager().getOsmDataLayer().requiresUploadToServer()) {
+        if (context.getComponent(OsmLayerManager.class).getOsmDataLayer().requiresUploadToServer()) {
             String title = I18n.tr("Are you sure?");
             String message = I18n.tr(
                 "There are unsaved changes on the OSM layer.\n" +
@@ -33,7 +34,7 @@ public class OdsResetAction extends OdsAction {
             reset = (answer == JOptionPane.OK_OPTION);
         }
         if (reset) {
-            module.reset();
+            context.reset();
         }
     }
 }

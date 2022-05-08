@@ -3,11 +3,11 @@ package org.openstreetmap.josm.plugins.ods.tags;
 import java.util.List;
 import java.util.Map;
 
-import org.opengis.feature.Feature;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
 import org.openstreetmap.josm.plugins.ods.metadata.MetaDataException;
 import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
+import org.openstreetmap.josm.plugins.ods.saxparser.opengis.wfs.WfsFeature;
 
 /**
  * A FeatureMapper maps GeoTools features to a Collection of Josm primitives.
@@ -40,7 +40,7 @@ public interface FeatureMapper {
      * @param dataSet
      * @return
      */
-    public List<OsmPrimitive> mapFeature(Feature feature,
+    public List<OsmPrimitive> mapFeature(WfsFeature feature,
             OsmPrimitiveFactory builder);
 
     public Map<String, String> getKeys();

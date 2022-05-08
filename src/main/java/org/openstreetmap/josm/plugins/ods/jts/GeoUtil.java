@@ -96,6 +96,18 @@ public class GeoUtil {
     }
 
     @SuppressWarnings("static-method")
+    public Polygon toPolygon(Envelope envelope) {
+        Coordinate[] coords = new Coordinate[5];
+        coords[0] = new Coordinate(envelope.getMinX(), envelope.getMinY());
+        coords[1] = new Coordinate(envelope.getMaxX(), envelope.getMinY());
+        coords[2] = new Coordinate(envelope.getMaxX(), envelope.getMaxY());
+        coords[3] = new Coordinate(envelope.getMinX(), envelope.getMaxY());
+        coords[4] = new Coordinate(envelope.getMinX(), envelope.getMinY());
+        LinearRing shell = OSM_GEOMETRY_FACTORY.createLinearRing(coords);
+        return OSM_GEOMETRY_FACTORY.createPolygon(shell, null);
+    }
+
+    @SuppressWarnings("static-method")
     public LineSegment toSegment(Pair<Node, Node> nodePair) {
         return new LineSegment(toCoordinate(nodePair.a), toCoordinate(nodePair.b));
     }
@@ -227,22 +239,4 @@ public class GeoUtil {
         return new LineSegment(ll1.lon(), ll2.lon(), ll1.lat(), ll2.lat());
     }
 
-//    public Node toNode(Coordinate c) {
-//        return new Node(toLatLon(c));
-//    }
-
-
-//    public Polygon toPolygon(Relation relation) throws InvalidPolygonException {
-//        MultiPolygon mpg;
-//        try {
-//            mpg = toMultiPolygon(relation);
-//        } catch (InvalidMultiPolygonException e) {
-//            throw new InvalidPolygonException(e.getPrimitive(), e.getMessage());
-//        }
-//        if (mpg.getNumGeometries() == 1) {
-//            return (Polygon) mpg.getGeometryN(0);
-//        }
-//        throw new InvalidPolygonException(relation,
-//            "Can't create a polygon Object from a relation that represents a multipolygon");
-//    }
 }

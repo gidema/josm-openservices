@@ -1,9 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.io.BoundingBoxDownloader;
 import org.openstreetmap.josm.io.OsmServerReader;
-import org.openstreetmap.josm.tools.I18n;
 
 public class PlainOsmHost implements OsmHost {
 
@@ -22,14 +25,11 @@ public class PlainOsmHost implements OsmHost {
     }
 
     @Override
-    public OsmServerReader getServerReader(DownloadRequest request) {
-        if (!request.getBoundary().isRectangular()) {
-            throw new UnsupportedOperationException(I18n.tr(
-                    "Polygon downloads are not supported for this host: {0}",
-                    getHostString()));
-        }
-        return new BoundingBoxDownloader(request.getBoundary().getBounds());
+    public Collection<OsmServerReader> getServerReaders(DownloadRequest request) {
+        List<OsmServerReader> serverReaders = new ArrayList<>(request.getBoundary().getBounds().size());
+        request.getBoundary().getBounds().forEach(bounds -> {
+            serverReaders.add(new BoundingBoxDownloader(bounds));
+        });
+        return serverReaders;
     }
-
-
 }

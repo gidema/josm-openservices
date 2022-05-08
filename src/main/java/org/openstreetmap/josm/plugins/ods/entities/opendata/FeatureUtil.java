@@ -4,57 +4,45 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
 
-import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
+import org.openstreetmap.josm.plugins.ods.saxparser.opengis.wfs.WfsFeature;
 
 public class FeatureUtil {
-    public static Double getDouble(SimpleFeature feature, String name ) {
-        Property property = feature.getProperty(name);
-        if (property == null) return null;
-        return (Double) property.getValue();
+    public static Double getDouble(WfsFeature feature, String name ) {
+        String value = feature.getProperty(name);
+        return value == null ? null :Double.valueOf(feature.getProperty(name));
     }
 
-    public static BigDecimal getBigDecimal(SimpleFeature feature, String name ) {
-        Property property = feature.getProperty(name);
-        if (property == null || property.getValue() == null) return null;
-        return (BigDecimal) property.getValue();
+    public static BigDecimal getBigDecimal(WfsFeature feature, String name ) {
+        String value = feature.getProperty(name);
+        return value == null ? null : new BigDecimal(feature.getProperty(name));
     }
 
-    public static BigInteger getBigInteger(SimpleFeature feature, String name) {
-        Property property = feature.getProperty(name);
-        if (property == null || property.getValue() == null) return null;
-        return (BigInteger) property.getValue();
+    public static BigInteger getBigInteger(WfsFeature feature, String name) {
+        String value = feature.getProperty(name);
+        return value == null ? null : new BigInteger(feature.getProperty(name));
     }
 
-    public static String getString(SimpleFeature feature, String name ) {
-        Property property = feature.getProperty(name);
-        if (property == null) return null;
-        String s = (String) property.getValue();
-        return (s == null || s.isEmpty()) ? null : s;
+    public static String getString(WfsFeature feature, String name ) {
+        String value = feature.getProperty(name);
+        return (value == null || value.isEmpty()) ? null : value;
     }
     
-    public static Character getCharacter(SimpleFeature feature, String name) {
+    public static Character getCharacter(WfsFeature feature, String name) {
         String s = getString(feature, name);
-        return (s == null || s.isEmpty()) ? null : s.charAt(0);
+        return (s == null) ? null : s.charAt(0);
     }
     
-    public static Optional<String> getOptionalString(SimpleFeature feature, String name ) {
-        Property property = feature.getProperty(name);
-        if (property == null  || property.getValue() == null) return Optional.empty();
-        return Optional.of((String) property.getValue());
+    public static Optional<String> getOptionalString(WfsFeature feature, String name ) {
+        return Optional.ofNullable(getString(feature, name));
     }
     
-    public static Integer getInteger(SimpleFeature feature, String name ) {
-        Property property = feature.getProperty(name);
-        if (property == null || property.getValue() == null) return null;
-        Number number = (Number) property.getValue();
-        return number.intValue();
+    public static Integer getInteger(WfsFeature feature, String name ) {
+        String value = getString(feature, name);
+        return value == null ? null : Integer.valueOf(value);
     }
     
-    public static Long getLong(SimpleFeature feature, String name ) {
-        Property property = feature.getProperty(name);
-        if (property == null || property.getValue() == null) return null;
-        Number number = (Number) property.getValue();
-        return number.longValue();
+    public static Long getLong(WfsFeature feature, String name ) {
+        String value = getString(feature, name);
+        return value == null ? null : Long.valueOf(value);
     }
 }

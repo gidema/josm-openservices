@@ -2,7 +2,10 @@ package org.openstreetmap.josm.plugins.ods;
 
 import java.net.URL;
 
+import javax.xml.namespace.QName;
+
 import org.openstreetmap.josm.plugins.ods.metadata.MetaData;
+import org.openstreetmap.josm.plugins.ods.saxparser.gml.AxisOrder;
 
 public interface Host {
     public static ParameterType<String> HOST_TYPE = new ParameterType<>(String.class);
@@ -38,10 +41,6 @@ public interface Host {
     //        this.url = url;
     //    }
 
-    public String getType();
-
-    public Integer getMaxFeatures();
-
     //    public void addMetaDataLoader(MetaDataLoader metaDataLoader) {
     //        metaDataLoaders.add(metaDataLoader);
     //    }
@@ -52,6 +51,8 @@ public interface Host {
     //        this.initialized = initialized;
     //    }
 
+    public boolean isFesFilterCapable();
+
     public boolean isInitialized();
 
     //    public boolean equals(Host other) {
@@ -61,38 +62,4 @@ public interface Host {
     //    }
 
     public void initialize() throws InitializationException;
-    //    {
-    //        if (initialized) return;
-    //        try {
-    //            this.url = new URL(uncheckedUrl);
-    //        } catch (MalformedURLException e) {
-    //            throw new InitializationException(e);
-    //        }
-    //        metaData = new MetaData();
-    //        List<Exception> exceptions = new LinkedList<>();
-    //        for (MetaDataLoader loader : metaDataLoaders) {
-    //            try {
-    //                loader.populateMetaData(metaData);
-    //            } catch (MetaDataException e) {
-    //                exceptions.add(e);
-    //            }
-    //        }
-    //        if (!exceptions.isEmpty()) {
-    //            StringBuilder sb = new StringBuilder();
-    //            sb.append(
-    //                    "One or more error occured while initializing the dowload job(s):");
-    //            for (Exception e : exceptions) {
-    //                sb.append("\n").append(e.getMessage());
-    //            }
-    //            throw new InitializationException(sb.toString());
-    //        }
-    //        initialized = true;
-    //    }
-
-    //    public abstract boolean hasFeatureType(String feature)
-    //            throws ServiceException;
-
-    public OdsFeatureSource getOdsFeatureSource(String feature)
-            throws ServiceException;
-
 }

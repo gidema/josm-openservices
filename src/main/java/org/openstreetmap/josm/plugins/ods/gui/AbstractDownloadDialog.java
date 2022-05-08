@@ -26,7 +26,7 @@ import org.openstreetmap.josm.data.Preferences;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.help.ContextSensitiveHelpAction;
 import org.openstreetmap.josm.gui.util.WindowGeometry;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.openstreetmap.josm.tools.InputMapUtils;
 
@@ -46,13 +46,13 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     protected JCheckBox cbDownloadOSM;
     protected JCheckBox cbDownloadODS;
-    protected OdsModule module;
+    protected OdsContext context;
     /** the download button */
     protected JButton btnDownload;
 
-    public AbstractDownloadDialog(OdsModule module, String title) {
+    public AbstractDownloadDialog(OdsContext context, String title) {
         super(JOptionPane.getFrameForComponent(MainApplication.getMainPanel()), title, ModalityType.DOCUMENT_MODAL);
-        this.module = module;
+        this.context = context;
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(buildMainPanel(), BorderLayout.CENTER);
         getContentPane().add(buildButtonPanel(), BorderLayout.SOUTH);
@@ -179,11 +179,9 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
                 JOptionPane.showMessageDialog(
                         AbstractDownloadDialog.this,
                         tr("<html>Neither <strong>{0}</strong> nor <strong>{1}</strong> is enabled.<br>"
-                                + "Please choose to either download OSM data, or {2} data, or both.</html>",
+                                + "Please choose to either download OSM data, or Open data, or both.</html>",
                                 cbDownloadOSM.getText(),
-                                cbDownloadODS.getText(),
-                                module.getName()
-                                ),
+                                cbDownloadODS.getText()),
                         tr("Error"),
                         JOptionPane.ERROR_MESSAGE
                         );

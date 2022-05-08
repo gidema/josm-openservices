@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
@@ -16,19 +16,17 @@ import org.openstreetmap.josm.plugins.ods.matching.Match;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
+// TODO Split into ODS interface and BAG implementation
 public class OdsUpdater {
-    private final OdsModule module;
-    private final List<EntityUpdater> entityUpdaters = new LinkedList<>();
+    private final OdsContext context;
 
-    public OdsUpdater(OdsModule module) {
+    public OdsUpdater(OdsContext context) {
         super();
-        this.module = module;
-        // TODO improve configuration and generics for the entity updaters
-        this.entityUpdaters.add(new BuildingUpdater(module));
+        this.context = context;
     }
 
     public void doUpdate(Collection<OsmPrimitive> primitives) {
-        OdLayerManager layerManager = module.getOpenDataLayerManager();
+        OdLayerManager layerManager = context.getComponent(OdLayerManager.class);
         List<Match<?, ?>> updateableMatches = new LinkedList<>();
         for (OsmPrimitive primitive : primitives) {
             OdEntity entity = layerManager.getEntity(primitive);
@@ -37,6 +35,7 @@ public class OdsUpdater {
                 updateableMatches.add(entity.getMatch());
             }
         }
+        List<EntityUpdater> entityUpdaters = context.getComponents(EntityUpdater.class);
         for (EntityUpdater updater : entityUpdaters) {
             updater.update(updateableMatches);
         }

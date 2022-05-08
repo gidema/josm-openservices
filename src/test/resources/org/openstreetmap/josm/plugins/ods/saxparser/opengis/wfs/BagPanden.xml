@@ -1,0 +1,297 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:bag="http://bag.geonovum.nl"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://bag.geonovum.nl https://service.pdok.nl/lv/bag/wfs/v2_0?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=pand&amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B%20version%3D3.2 http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"
+   timeStamp="2022-03-15T18:38:53" numberMatched="unknown" numberReturned="10"
+   next="https://service.pdok.nl/lv/bag/wfs/v2_0?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=GetFeature&amp;TYPENAMES=pand&amp;OUTPUTFORMAT=text%2Fxml%3B%20subtype%3D%22gml%2F3.2.1%22&amp;FILTER=(%3CFilter%3E%0A%20%20%3CBBOX%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%0A%20%20%20%20%3CPropertyName%3Egeom%3C%2FPropertyName%3E%0A%20%20%20%20%3CBox%20srsName%3D%22urn%3Ax-ogc%3Adef%3Acrs%3AEPSG%3A28992%22%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%0A%20%20%20%20%20%20%3Ccoord%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%3E%0A%20%20%20%20%20%20%20%20%3CX%3E249940.987%3C%2FX%3E%0A%20%20%20%20%20%20%20%20%3CY%3E593452.236%3C%2FY%3E%0A%20%20%20%20%20%20%3C%2Fcoord%3E%0A%20%20%20%20%20%20%3Ccoord%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%3E%0A%20%20%20%20%20%20%20%20%3CX%3E253827.457%3C%2FX%3E%0A%20%20%20%20%20%20%20%20%3CY%3E593520.809%3C%2FY%3E%0A%20%20%20%20%20%20%3C%2Fcoord%3E%0A%20%20%20%20%3C%2FBox%3E%0A%20%20%3C%2FBBOX%3E%0A%3C%2FFilter%3E%0A)&amp;COUNT=10&amp;STARTINDEX=10">
+      <wfs:boundedBy>
+      	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+      		<gml:lowerCorner>249940.987000 593446.010000</gml:lowerCorner>
+      		<gml:upperCorner>253827.457000 593569.911000</gml:upperCorner>
+      	</gml:Envelope>
+      </wfs:boundedBy>
+    <wfs:member>
+      <bag:pand gml:id="pand.3ee6e7b5-3804-4344-a350-9219c91d7c01">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>253810.278000 593452.236000</gml:lowerCorner>
+        		<gml:upperCorner>253827.457000 593514.669000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.3ee6e7b5-3804-4344-a350-9219c91d7c01.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">253822.701000 593455.662000 253826.352000 593500.000000 253827.457000 593513.425000 253812.358000 593514.669000 253812.120000 593511.782000 253816.665000 593511.408000 253815.726000 593500.000000 253812.163000 593456.738000 253810.619000 593456.865000 253810.278000 593452.716000 253816.100000 593452.236000 253816.425000 593456.179000 253822.701000 593455.662000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117486</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117486</bag:rdf_seealso>
+        <bag:bouwjaar>1970</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:oppervlakte_min>107</bag:oppervlakte_min>
+        <bag:oppervlakte_max>107</bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>21</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.3ee6e7b5-3804-4344-a350-9219c91d7c01</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.345ed7ff-08f2-478a-9b7b-0860aa6d7eeb">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>249940.987000 593511.272000</gml:lowerCorner>
+        		<gml:upperCorner>249948.555000 593520.809000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.345ed7ff-08f2-478a-9b7b-0860aa6d7eeb.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">249943.307000 593511.272000 249948.555000 593512.791000 249946.234000 593520.809000 249940.987000 593519.290000 249943.307000 593511.272000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117487</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117487</bag:rdf_seealso>
+        <bag:bouwjaar>1994</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel></bag:gebruiksdoel>
+        <bag:oppervlakte_min></bag:oppervlakte_min>
+        <bag:oppervlakte_max></bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>0</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.345ed7ff-08f2-478a-9b7b-0860aa6d7eeb</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.44249c17-3c12-4c5d-8666-f2364c85f348">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252782.908000 593512.884000</gml:lowerCorner>
+        		<gml:upperCorner>252834.990000 593569.911000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.44249c17-3c12-4c5d-8666-f2364c85f348.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">252834.990000 593531.368000 252834.924000 593532.877000 252834.147000 593534.172000 252832.846000 593534.940000 252831.336000 593534.995000 252829.983000 593534.323000 252829.114000 593533.088000 252828.564000 593531.042000 252827.467000 593531.296000 252826.533000 593531.646000 252820.246000 593534.239000 252813.740000 593537.637000 252807.605000 593541.604000 252801.833000 593546.101000 252796.348000 593551.217000 252795.518000 593550.407000 252794.380000 593551.599000 252803.930000 593560.006000 252803.718000 593560.238000 252803.094000 593559.711000 252799.911000 593563.350000 252796.159000 593568.437000 252795.310000 593569.911000 252782.908000 593562.469000 252784.133000 593560.447000 252788.613000 593554.302000 252792.248000 593550.170000 252791.645000 593549.635000 252791.855000 593549.400000 252793.145000 593550.528000 252794.302000 593549.335000 252784.581000 593539.888000 252784.320000 593540.143000 252784.007000 593539.807000 252791.064000 593533.117000 252798.081000 593527.691000 252805.537000 593522.924000 252813.422000 593518.845000 252821.655000 593515.514000 252830.136000 593512.913000 252831.483000 593512.884000 252832.710000 593513.440000 252833.576000 593514.472000 252833.910000 593515.778000 252833.646000 593517.099000 252832.837000 593518.176000 252831.641000 593518.797000 252834.990000 593531.368000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117495</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117495</bag:rdf_seealso>
+        <bag:bouwjaar>2002</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:oppervlakte_min>90</bag:oppervlakte_min>
+        <bag:oppervlakte_max>145</bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>19</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.44249c17-3c12-4c5d-8666-f2364c85f348</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.04989189-cde7-4f29-b925-4a399f64c876">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252384.890000 593461.400000</gml:lowerCorner>
+        		<gml:upperCorner>252388.700000 593466.960000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.04989189-cde7-4f29-b925-4a399f64c876.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">252385.160000 593466.960000 252384.890000 593461.580000 252388.430000 593461.400000 252388.700000 593466.780000 252385.160000 593466.960000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117609</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117609</bag:rdf_seealso>
+        <bag:bouwjaar>1981</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel>overige gebruiksfunctie</bag:gebruiksdoel>
+        <bag:oppervlakte_min>17</bag:oppervlakte_min>
+        <bag:oppervlakte_max>17</bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>1</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.04989189-cde7-4f29-b925-4a399f64c876</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.2cf9bfd1-a23b-4e61-884d-b400058c5aed">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>249956.397000 593458.086000</gml:lowerCorner>
+        		<gml:upperCorner>249963.948000 593467.565000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.2cf9bfd1-a23b-4e61-884d-b400058c5aed.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">249958.674000 593458.086000 249963.948000 593459.591000 249961.671000 593467.565000 249956.397000 593466.059000 249958.674000 593458.086000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117610</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117610</bag:rdf_seealso>
+        <bag:bouwjaar>1994</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel></bag:gebruiksdoel>
+        <bag:oppervlakte_min></bag:oppervlakte_min>
+        <bag:oppervlakte_max></bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>0</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.2cf9bfd1-a23b-4e61-884d-b400058c5aed</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.24156eb6-72e7-455d-a586-04a39168de3c">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252212.420000 593471.440000</gml:lowerCorner>
+        		<gml:upperCorner>252214.720000 593472.660000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.24156eb6-72e7-455d-a586-04a39168de3c.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">252212.420000 593472.535000 252212.480000 593471.440000 252214.720000 593471.570000 252214.660000 593472.660000 252212.420000 593472.535000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117611</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117611</bag:rdf_seealso>
+        <bag:bouwjaar>1983</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel></bag:gebruiksdoel>
+        <bag:oppervlakte_min></bag:oppervlakte_min>
+        <bag:oppervlakte_max></bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>0</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.24156eb6-72e7-455d-a586-04a39168de3c</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.e5c44946-e5b0-4c59-a301-3ac9342bab51">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252211.750000 593483.365000</gml:lowerCorner>
+        		<gml:upperCorner>252214.050000 593484.580000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.e5c44946-e5b0-4c59-a301-3ac9342bab51.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">252214.050000 593483.485000 252213.990000 593484.580000 252211.750000 593484.460000 252211.815000 593483.365000 252214.050000 593483.485000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117613</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117613</bag:rdf_seealso>
+        <bag:bouwjaar>1983</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel></bag:gebruiksdoel>
+        <bag:oppervlakte_min></bag:oppervlakte_min>
+        <bag:oppervlakte_max></bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>0</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.e5c44946-e5b0-4c59-a301-3ac9342bab51</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.738ca6f6-6026-4f87-8e37-a2dec8aba48b">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>249949.006000 593483.696000</gml:lowerCorner>
+        		<gml:upperCorner>249956.618000 593493.262000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.738ca6f6-6026-4f87-8e37-a2dec8aba48b.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">249951.298000 593483.696000 249956.618000 593485.210000 249954.326000 593493.262000 249949.006000 593491.747000 249951.298000 593483.696000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117614</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117614</bag:rdf_seealso>
+        <bag:bouwjaar>1994</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel></bag:gebruiksdoel>
+        <bag:oppervlakte_min></bag:oppervlakte_min>
+        <bag:oppervlakte_max></bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>0</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.738ca6f6-6026-4f87-8e37-a2dec8aba48b</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.2e3e5438-1d80-4c08-8c6b-72291538cd61">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252222.760000 593446.010000</gml:lowerCorner>
+        		<gml:upperCorner>252234.260000 593497.630000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.2e3e5438-1d80-4c08-8c6b-72291538cd61.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">252232.120000 593446.387000 252234.260000 593446.510000 252231.450000 593495.490000 252231.240000 593495.480000 252231.120000 593497.630000 252229.620000 593497.544000 252229.748000 593495.338000 252222.760000 593494.930000 252225.550000 593446.010000 252227.700000 593446.130000 252227.701000 593446.116000 252232.120000 593446.387000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117616</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117616</bag:rdf_seealso>
+        <bag:bouwjaar>1983</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:oppervlakte_min>42</bag:oppervlakte_min>
+        <bag:oppervlakte_max>44</bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>18</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.2e3e5438-1d80-4c08-8c6b-72291538cd61</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+    <wfs:member>
+      <bag:pand gml:id="pand.ba92e917-5e38-478a-ad01-28df0bcb7bc4">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>250372.702000 593447.964000</gml:lowerCorner>
+        		<gml:upperCorner>250383.212000 593457.647000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Polygon gml:id="pand.ba92e917-5e38-478a-ad01-28df0bcb7bc4.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:exterior>
+              <gml:LinearRing>
+                <gml:posList srsDimension="2">250382.687000 593454.167000 250382.271000 593457.647000 250372.702000 593456.503000 250373.722000 593447.964000 250383.212000 593449.099000 250383.202000 593449.164000 250382.687000 593454.167000 </gml:posList>
+              </gml:LinearRing>
+            </gml:exterior>
+          </gml:Polygon>
+        </bag:geom>
+        <bag:identificatie>0003100000117768</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/pand/0003100000117768</bag:rdf_seealso>
+        <bag:bouwjaar>1962</bag:bouwjaar>
+        <bag:status>Pand in gebruik</bag:status>
+        <bag:gebruiksdoel></bag:gebruiksdoel>
+        <bag:oppervlakte_min></bag:oppervlakte_min>
+        <bag:oppervlakte_max></bag:oppervlakte_max>
+        <bag:aantal_verblijfsobjecten>0</bag:aantal_verblijfsobjecten>
+        <bag:fuuid>pand.ba92e917-5e38-478a-ad01-28df0bcb7bc4</bag:fuuid>
+      </bag:pand>
+    </wfs:member>
+</wfs:FeatureCollection>
+

@@ -1,0 +1,317 @@
+<?xml version='1.0' encoding="UTF-8" ?>
+<wfs:FeatureCollection
+   xmlns:bag="http://bag.geonovum.nl"
+   xmlns:gml="http://www.opengis.net/gml/3.2"
+   xmlns:wfs="http://www.opengis.net/wfs/2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://bag.geonovum.nl https://service.pdok.nl/lv/bag/wfs/v2_0?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;TYPENAME=verblijfsobject&amp;OUTPUTFORMAT=application%2Fgml%2Bxml%3B%20version%3D3.2 http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"
+   timeStamp="2022-03-18T18:48:50" numberMatched="unknown" numberReturned="10"
+   next="https://service.pdok.nl/lv/bag/wfs/v2_0?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=GetFeature&amp;TYPENAMES=verblijfsobject&amp;OUTPUTFORMAT=text%2Fxml%3B%20subtype%3D%22gml%2F3.2.1%22&amp;FILTER=(%3CFilter%3E%0A%20%20%3CBBOX%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%0A%20%20%20%20%3CPropertyName%3Egeom%3C%2FPropertyName%3E%0A%20%20%20%20%3CBox%20srsName%3D%22urn%3Ax-ogc%3Adef%3Acrs%3AEPSG%3A28992%22%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%0A%20%20%20%20%20%20%3Ccoord%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%3E%0A%20%20%20%20%20%20%20%20%3CX%3E249940.987%3C%2FX%3E%0A%20%20%20%20%20%20%20%20%3CY%3E593452.236%3C%2FY%3E%0A%20%20%20%20%20%20%3C%2Fcoord%3E%0A%20%20%20%20%20%20%3Ccoord%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22%3E%0A%20%20%20%20%20%20%20%20%3CX%3E253827.457%3C%2FX%3E%0A%20%20%20%20%20%20%20%20%3CY%3E593520.809%3C%2FY%3E%0A%20%20%20%20%20%20%3C%2Fcoord%3E%0A%20%20%20%20%3C%2FBox%3E%0A%20%20%3C%2FBBOX%3E%0A%3C%2FFilter%3E%0A)&amp;COUNT=10&amp;STARTINDEX=10">
+      <wfs:boundedBy>
+      	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+      		<gml:lowerCorner>252860.404000 593467.000000</gml:lowerCorner>
+      		<gml:upperCorner>253496.000000 593520.673000</gml:upperCorner>
+      	</gml:Envelope>
+      </wfs:boundedBy>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.14c83a5b-b5a0-4cbd-94ef-9e1febd7f17f">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252865.580000 593517.656000</gml:lowerCorner>
+        		<gml:upperCorner>252865.580000 593517.656000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.14c83a5b-b5a0-4cbd-94ef-9e1febd7f17f.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>252865.580000 593517.656000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128192</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128192</bag:rdf_seealso>
+        <bag:oppervlakte>111</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Borglaan</bag:openbare_ruimte>
+        <bag:huisnummer>19</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9901LD</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>2003</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000118521</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.14c83a5b-b5a0-4cbd-94ef-9e1febd7f17f</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.b6272880-f269-4111-99bd-c6f93ad60001">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252860.404000 593517.730000</gml:lowerCorner>
+        		<gml:upperCorner>252860.404000 593517.730000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.b6272880-f269-4111-99bd-c6f93ad60001.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>252860.404000 593517.730000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128193</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128193</bag:rdf_seealso>
+        <bag:oppervlakte>111</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Borglaan</bag:openbare_ruimte>
+        <bag:huisnummer>21</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9901LD</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>2003</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000118521</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.b6272880-f269-4111-99bd-c6f93ad60001</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.dc55412e-6c10-4e4d-91ca-e0b02131f382">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252865.538000 593519.227000</gml:lowerCorner>
+        		<gml:upperCorner>252865.538000 593519.227000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.dc55412e-6c10-4e4d-91ca-e0b02131f382.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>252865.538000 593519.227000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128195</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128195</bag:rdf_seealso>
+        <bag:oppervlakte>111</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Borglaan</bag:openbare_ruimte>
+        <bag:huisnummer>25</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9901LD</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>2003</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000118521</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.dc55412e-6c10-4e4d-91ca-e0b02131f382</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.e2622daf-c7f5-418f-934b-728b3313c208">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252860.509000 593519.507000</gml:lowerCorner>
+        		<gml:upperCorner>252860.509000 593519.507000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.e2622daf-c7f5-418f-934b-728b3313c208.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>252860.509000 593519.507000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128196</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128196</bag:rdf_seealso>
+        <bag:oppervlakte>111</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Borglaan</bag:openbare_ruimte>
+        <bag:huisnummer>27</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9901LD</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>2003</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000118521</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.e2622daf-c7f5-418f-934b-728b3313c208</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.9684d70b-6690-47dd-9644-9c94b483f5c3">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>252865.602000 593520.673000</gml:lowerCorner>
+        		<gml:upperCorner>252865.602000 593520.673000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.9684d70b-6690-47dd-9644-9c94b483f5c3.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>252865.602000 593520.673000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128198</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128198</bag:rdf_seealso>
+        <bag:oppervlakte>111</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Borglaan</bag:openbare_ruimte>
+        <bag:huisnummer>31</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9901LD</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>2003</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000118521</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.9684d70b-6690-47dd-9644-9c94b483f5c3</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.0adb6bea-c56d-454c-905a-8a0db227e0e4">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>253231.000000 593510.000000</gml:lowerCorner>
+        		<gml:upperCorner>253231.000000 593510.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.0adb6bea-c56d-454c-905a-8a0db227e0e4.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>253231.000000 593510.000000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128350</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128350</bag:rdf_seealso>
+        <bag:oppervlakte>413</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Woldweg</bag:openbare_ruimte>
+        <bag:huisnummer>29</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9902AA</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>1930</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000117967</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.0adb6bea-c56d-454c-905a-8a0db227e0e4</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.fd109547-6dd0-4301-bbeb-db9530a162df">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>253229.000000 593494.000000</gml:lowerCorner>
+        		<gml:upperCorner>253229.000000 593494.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.fd109547-6dd0-4301-bbeb-db9530a162df.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>253229.000000 593494.000000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128351</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128351</bag:rdf_seealso>
+        <bag:oppervlakte>196</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>industriefunctie,woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Woldweg</bag:openbare_ruimte>
+        <bag:huisnummer>33</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9902AA</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>1920</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000119545</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.fd109547-6dd0-4301-bbeb-db9530a162df</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.eaea8e93-cfba-4c6e-96af-8adae6ddc9f9">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>253218.000000 593473.000000</gml:lowerCorner>
+        		<gml:upperCorner>253218.000000 593473.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.eaea8e93-cfba-4c6e-96af-8adae6ddc9f9.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>253218.000000 593473.000000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128352</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128352</bag:rdf_seealso>
+        <bag:oppervlakte>142</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Woldweg</bag:openbare_ruimte>
+        <bag:huisnummer>41</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9902AB</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>1930</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000120953</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.eaea8e93-cfba-4c6e-96af-8adae6ddc9f9</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.ce4ce191-fd94-4b59-b610-4c34ff711a20">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>253216.000000 593467.000000</gml:lowerCorner>
+        		<gml:upperCorner>253216.000000 593467.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.ce4ce191-fd94-4b59-b610-4c34ff711a20.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>253216.000000 593467.000000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128353</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128353</bag:rdf_seealso>
+        <bag:oppervlakte>137</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Woldweg</bag:openbare_ruimte>
+        <bag:huisnummer>43</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9902AB</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>1930</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000120952</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.ce4ce191-fd94-4b59-b610-4c34ff711a20</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+    <wfs:member>
+      <bag:verblijfsobject gml:id="verblijfsobject.3a0b6a9a-4476-4d75-a690-7b90ada946f5">
+        <gml:boundedBy>
+        	<gml:Envelope srsName="urn:ogc:def:crs:EPSG::28992">
+        		<gml:lowerCorner>253496.000000 593488.000000</gml:lowerCorner>
+        		<gml:upperCorner>253496.000000 593488.000000</gml:upperCorner>
+        	</gml:Envelope>
+        </gml:boundedBy>
+        <bag:geom>
+          <gml:Point gml:id="verblijfsobject.3a0b6a9a-4476-4d75-a690-7b90ada946f5.1" srsName="urn:ogc:def:crs:EPSG::28992">
+            <gml:pos>253496.000000 593488.000000</gml:pos>
+          </gml:Point>
+        </bag:geom>
+        <bag:identificatie>0003010000128412</bag:identificatie>
+        <bag:rdf_seealso>http://bag.basisregistraties.overheid.nl/bag/id/verblijfsobject/0003010000128412</bag:rdf_seealso>
+        <bag:oppervlakte>102</bag:oppervlakte>
+        <bag:status>Verblijfsobject in gebruik</bag:status>
+        <bag:gebruiksdoel>woonfunctie</bag:gebruiksdoel>
+        <bag:openbare_ruimte>Emmastraat</bag:openbare_ruimte>
+        <bag:huisnummer>2</bag:huisnummer>
+        <bag:huisletter></bag:huisletter>
+        <bag:toevoeging></bag:toevoeging>
+        <bag:postcode>9902CS</bag:postcode>
+        <bag:woonplaats>Appingedam</bag:woonplaats>
+        <bag:bouwjaar>1918</bag:bouwjaar>
+        <bag:pandidentificatie>0003100000121558</bag:pandidentificatie>
+        <bag:pandstatus>Pand in gebruik</bag:pandstatus>
+        <bag:fuuid>verblijfsobject.3a0b6a9a-4476-4d75-a690-7b90ada946f5</bag:fuuid>
+      </bag:verblijfsobject>
+    </wfs:member>
+</wfs:FeatureCollection>
+

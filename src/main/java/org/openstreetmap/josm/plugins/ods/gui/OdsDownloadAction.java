@@ -14,8 +14,8 @@ import org.openstreetmap.josm.gui.PleaseWaitRunnable;
 import org.openstreetmap.josm.gui.layer.Layer;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.domains.buildings.OsmBuilding;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
@@ -32,16 +32,14 @@ public class OdsDownloadAction extends OdsAction {
     private LocalDateTime startDate;
     private boolean cancelled = false;
     private Boundary boundary;
-    private boolean downloadOsm;
-    private boolean downloadOpenData;
     private final SlippyMapDownloadDialog slippyDialog;
     private final FixedBoundsDownloadDialog fixedDialog;
 
-    public OdsDownloadAction(OdsModule module) {
-        super(module, "Download", ImageProvider.get("download"));
-        slippyDialog = new SlippyMapDownloadDialog(module);
-        fixedDialog = new FixedBoundsDownloadDialog(module);
-        this.downloader = module.getDownloader();
+    public OdsDownloadAction(OdsContext context) {
+        super(context, "Download", ImageProvider.get("download"));
+        slippyDialog = new SlippyMapDownloadDialog(context);
+        fixedDialog = new FixedBoundsDownloadDialog(context);
+        this.downloader = context.getComponent(MainDownloader.class);
     }
 
     @Override
@@ -54,7 +52,7 @@ public class OdsDownloadAction extends OdsAction {
         boundary = getBoundary();
         startDate = LocalDateTime.now();
         if (!cancelled) {
-            DownloadTask task = new DownloadTask();
+            DownloadTask task = new DownloadTask(getContext());
             MainApplication.worker.submit(task);
         }
     }
@@ -76,8 +74,8 @@ public class OdsDownloadAction extends OdsAction {
             return null;
         }
         dialog.rememberSettings();
-        downloadOsm = dialog.cbDownloadOSM.isSelected();
-        downloadOpenData = dialog.cbDownloadODS.isSelected();
+//        downloadOsm = dialog.cbDownloadOSM.isSelected();
+//        downloadOpenData = dialog.cbDownloadODS.isSelected();
         if (selectArea) {
             boundary = new Boundary(dialog.getSelectedDownloadArea());
         }
@@ -89,30 +87,28 @@ public class OdsDownloadAction extends OdsAction {
             return null;
         }
         Layer activeLayer = MainApplication.getLayerManager().getActiveLayer();
-        // Make sure the active layer is an Osm datalayer
-        if (!(activeLayer instanceof OsmDataLayer)) {
-            return null;
-        }
-        // Make sure only one object was selected
-        OsmDataLayer layer = (OsmDataLayer) activeLayer;
-        if (layer.getDataSet().getAllSelected().size() != 1) {
-            return null;
-        }
-        // If the selected object is a closed way and it is not a building
-        // than we can assume is was intended to be used as a polygon for
-        // the download area
-        OsmPrimitive primitive = layer.getDataSet().getAllSelected().iterator().next();
-        if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY
-                && !OsmBuilding.IsBuilding(primitive)) {
-            return new Boundary((Way)primitive);
+        // Check if the active layer is the Ods Polygon datalayer
+        if (activeLayer.getName().equals("ODS Polygons")) {
+            OsmDataLayer layer = (OsmDataLayer) activeLayer;
+            if (layer.getDataSet().getAllSelected().size() != 1) {
+                return null;
+            }
+            // If the selected object is a closed way than we can assume is was intended to be used as a polygon for
+            // the download area
+            OsmPrimitive primitive = layer.getDataSet().getAllSelected().iterator().next();
+            if (primitive.getDisplayType() == OsmPrimitiveType.CLOSEDWAY) {
+                return new Boundary((Way)primitive);
+            }
         }
         return null;
     }
 
     private class DownloadTask extends PleaseWaitRunnable {
+        private final OdsContext context;
 
-        public DownloadTask() {
+        public DownloadTask(OdsContext context) {
             super(tr("Downloading data"));
+            this.context = context;
         }
 
         @SuppressWarnings("synthetic-access")
@@ -125,20 +121,14 @@ public class OdsDownloadAction extends OdsAction {
         @Override
         protected void realRun() throws SAXException, IOException,
         OsmTransferException {
-            DownloadRequest request = new DownloadRequest(startDate, boundary,
-                    downloadOsm, downloadOpenData);
-            downloader.run(getProgressMonitor(), request);
+            DownloadRequest request = new DownloadRequest(startDate, boundary);
+            context.register(DownloadRequest.class, request, true);
+            downloader.run(getProgressMonitor());
         }
 
-        @SuppressWarnings("synthetic-access")
         @Override
         protected void finish() {
-            if (downloadOpenData) {
-                MainApplication.getLayerManager().setActiveLayer(getModule().getOpenDataLayerManager().getOsmDataLayer());
-            }
-            else {
-                MainApplication.getLayerManager().setActiveLayer(getModule().getOsmLayerManager().getOsmDataLayer());
-            }
+            MainApplication.getLayerManager().setActiveLayer(getContext().getComponent(OdLayerManager.class).getOsmDataLayer());
         }
     }
 }

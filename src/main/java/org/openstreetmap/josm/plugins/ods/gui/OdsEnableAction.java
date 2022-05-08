@@ -36,10 +36,12 @@ public class OdsEnableAction extends AbstractAction {
                 MainApplication.getLayerManager().setActiveLayer(activeLayer);
             }
             try {
-                Bounds bounds = new Bounds(
-                        Preferences.main().get("openservices.download.bounds"), ";");
+                String savedBounds = Preferences.main().get("openservices.download.bounds");
+                if (savedBounds != null) {
+                    Bounds bounds = new Bounds(savedBounds, ";");
+                    MainApplication.getMap().mapView.zoomTo(bounds);
+                }
                 // Zoom to the last used bounds
-                MainApplication.getMap().mapView.zoomTo(bounds);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

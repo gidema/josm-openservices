@@ -6,17 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openstreetmap.josm.data.osm.DataSet;
-import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
-
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.osm.OsmPrimitiveFactory;
 
 /**
  * Default GeometryMapper implementation.
@@ -52,28 +51,28 @@ public class DefaultGeometryMapper<T extends Entity> implements GeometryMapper<T
     OsmPrimitive primitive = null;
     if (targetPrimitive.equals("WAY")) {
       if (geometry instanceof LineString) {
-        primitive = primitiveBuilder.buildWay((LineString)geometry, tags);
+        primitive = primitiveBuilder.buildWay(dataSet, (LineString)geometry, tags);
       }
       else if (geometry instanceof Polygon) {
         Polygon polygon = (Polygon) geometry;
         if (polygon.getNumInteriorRing() == 0) {
-          primitive = primitiveBuilder.buildWay(polygon, tags);
+          primitive = primitiveBuilder.buildWay(dataSet, polygon, tags);
         }
         else {
-          primitive = primitiveBuilder.buildMultiPolygon(polygon, tags);
+          primitive = primitiveBuilder.buildMultiPolygon(dataSet, polygon, tags);
         }
       }
     } else if (targetPrimitive.equals("MULTIPOLYGON")) {
       if (geometry instanceof Polygon) {
-        primitive = primitiveBuilder.buildMultiPolygon((Polygon) geometry, tags);
+        primitive = primitiveBuilder.buildMultiPolygon(dataSet, (Polygon) geometry, tags);
       } else if (geometry instanceof MultiPolygon) {
-        primitive = primitiveBuilder.buildMultiPolygon((MultiPolygon) geometry, tags);
+        primitive = primitiveBuilder.buildMultiPolygon(dataSet, (MultiPolygon) geometry, tags);
       }
     }
     else if (targetPrimitive.equals("NODE")) {
-      primitive = primitiveBuilder.buildNode((Point)geometry, tags, merge);
+      primitive = primitiveBuilder.buildNode(dataSet, (Point)geometry, tags, merge);
     } else if (targetPrimitive.equals("POLYGON")) {
-      primitive = primitiveBuilder.buildArea((MultiPolygon)geometry, tags);
+      primitive = primitiveBuilder.buildArea(dataSet, (MultiPolygon)geometry, tags);
     }
     if (primitive != null) {
       for (Entry<String, String> entry : tags.entrySet()) {

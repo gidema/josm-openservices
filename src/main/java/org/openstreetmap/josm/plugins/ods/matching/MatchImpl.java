@@ -9,26 +9,13 @@ import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
-public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> implements Match<T1, T2> {
+public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> implements Match<T1, T2>, OsmMatch<T1>, OdMatch<T2> {
     private Object id;
     private final List<T1> osmEntities = new LinkedList<>();
     private final List<T2> openDataEntities = new LinkedList<>();
 
     public MatchImpl(T1 osmEntity, T2 openDataEntity) {
-        if (osmEntity != null && osmEntity.getReferenceId() != null) {
-            id = osmEntity.getReferenceId();
-            if (openDataEntity != null) {
-                assert openDataEntity.getReferenceId().equals(id);
-            }
-        }
-        else {
-            if (openDataEntity.getReferenceId() != null) {
-                id = openDataEntity.getReferenceId();
-            }
-        }
-        if (id == null) {
-            id = Match.generateUniqueId();
-        }
+        id = Match.generateUniqueId();
         osmEntities.add(osmEntity);
         openDataEntities.add(openDataEntity);
     }
@@ -81,7 +68,8 @@ public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> imple
 
     @Override
     public void updateMatchTags() {
-        OsmPrimitive osm = getOpenDataEntity().getPrimitive();
+        OdEntity odEntity = getOpenDataEntity();
+        OsmPrimitive osm = odEntity.getPrimitive();
         if (osm != null) {
             osm.put(ODS.KEY.BASE, "true");
             osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
@@ -92,12 +80,12 @@ public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> imple
                 osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
             }
         }
+        osm = getOsmEntity().getPrimitive();
     }
 
     @Override
     public Object getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return id;
     }
 
     @Override

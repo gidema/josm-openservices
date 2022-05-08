@@ -2,136 +2,151 @@ package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.data.osm.DataSet;
+import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.OsmApiException;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.OdsModule;
-import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntitiesBuilder;
+import org.openstreetmap.josm.plugins.ods.ODS;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
+import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilders;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
-import org.openstreetmap.josm.plugins.ods.jts.Boundary;
-import org.openstreetmap.josm.plugins.ods.jts.MultiPolygonFilter;
 import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
 public class OsmLayerDownloader implements LayerDownloader {
-    private DownloadRequest request;
-    @SuppressWarnings("unused")
-    private DownloadResponse response;
-    private Status status = new Status();
-    private DownloadSource downloadSource =  DownloadSource.OVERPASS;
-    private OsmServerReader osmServerReader;
-    private OsmLayerManager layerManager;
-    private OsmEntitiesBuilder entitiesBuilder;
+    DownloadSource downloadSource =  DownloadSource.OVERPASS;
+    private Collection<OsmServerReader> osmServerReaders;
+    OdsContext context;
+    DownloadRequest request;
 
-    private OsmHost host;
-    private DataSet dataSet;
+    DataSet dataSet;
 
     static enum DownloadSource {
         OSM,
         OVERPASS;
     }
     
-    public OsmLayerDownloader(OdsModule module) {
+    public OsmLayerDownloader() {
         super();
-        this.layerManager = module.getOsmLayerManager();
-        this.entitiesBuilder = layerManager.getEntitiesBuilder();
-        
     }
 
     @Override
-    public Status getStatus() {
-        return status;
-    }
-
-    @Override
-    public void setResponse(DownloadResponse response) {
-        this.response = response;
+    public void setup(OdsContext context) {
+        this.context = context;
+        this.request =context.getComponent(DownloadRequest.class);
     }
 
 
     @Override
-    public void setup(DownloadRequest request) {
-        this.request = request;
-        status.clear();
-        switch (downloadSource) {
-        case OSM:
-            host = new PlainOsmHost();
-            break;
-        case OVERPASS:
-            host = new OverpassHost();
-            break;
-        default:
-            return;
+    public FutureTask<TaskStatus> getPrepareTask() {
+        return null;
+    }
+
+    @Override
+    public FutureTask<TaskStatus> getDownloadTask() {
+        String operationMode = context.getParameter(ODS.OPERATION_MODE);
+        if (operationMode.equals("Update")) {
+            return null;
         }
-        try {
-            osmServerReader = host.getServerReader(request);
-        } catch (MalformedURLException e) {
-            status.setException(e);
-        }
+        return new FutureTask<>(new DownloadTask());
     }
 
     @Override
-    public void download() {
-        try {
-            dataSet = parseDataSet();
-            if (downloadSource == DownloadSource.OSM) {
-                MultiPolygonFilter filter = new MultiPolygonFilter(request.getBoundary().getMultiPolygon());
-                dataSet = filter.filter(dataSet);
+    public FutureTask<TaskStatus> getProcessTask() {
+        return new FutureTask<>(new ProcessTask());
+    }
+
+    public class DownloadTask implements Callable<TaskStatus> { 
+        @Override
+        public TaskStatus call() {
+            String operationMode = context.getParameter(ODS.OPERATION_MODE);
+            dataSet = new DataSet();
+            OsmHost host = getHost();
+            try {
+                // TODO We currently run the OSM requests sequentially.
+                // For Overpass this doesn't matter as we use a single request.
+                // If we use the OSM server, it would be nice if we would call parallel requests
+                for (OsmServerReader osmServerReader : host.getServerReaders(request)) {
+                    dataSet.mergeFrom(parseDataSet(osmServerReader));
+                }
+                return new TaskStatus();
+            } catch (MalformedURLException e) {
+                String error = I18n.tr("There is an error in the URL for the {0} server. The download has been cancelled.\n" +
+                        "The error message was: {1}", host.getHostString(), e.getMessage());
+                   return new TaskStatus(null, error, e);
             }
-        }
-        catch(OsmTransferException e) {
-            if (status.isCancelled()) {
-                Logging.info(I18n.tr("Ignoring exception because download has been canceled. Exception was: {0}", e.toString()));
-                return;
-            }
-            status.setFailed(true);
-            if (e instanceof OsmApiException) {
-                switch (((OsmApiException) e).getResponseCode()) {
+            catch (OsmApiException e) {
+                switch (e.getResponseCode()) {
                 case 400:
-                    status.setMessage(I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area."));
-                    return;
+                    String error = I18n.tr("You tried to download too much Openstreetmap data. Please select a smaller download area.");
+                    return new TaskStatus(null, error, e);
                 case 404:
-                    status.setMessage(I18n.tr("No OSM server could be found at this location: {0}", 
-                        host.getHostString().toString()));
-                    return;
+                    error = I18n.tr("No OSM server could be found at this location: {0}", 
+                        host.getHostString().toString());
+                    return new TaskStatus(null, error, e);
                 default:
-                    status.setMessage(I18n.tr(e.getMessage()));
-                    return;
+                    Logging.error(e);
+                    if (e.getCause() instanceof UnknownHostException) {
+                        error = I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString());
+                        return new TaskStatus(null, error, e.getCause());
+                    }
+                    return new TaskStatus(null, e.getMessage(), e);
                 }
             }
-            else if (e.getCause() instanceof UnknownHostException) {
-                status.setMessage(I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString()));
-                return;
+            catch(OsmTransferException e) {
+                Logging.error(e);
+                String error = I18n.tr("An Osm transfer exception occurred: {0}.", e.getMessage());
+                return new TaskStatus(null, error, e);
             }
-            status.setException(e);
+        }
+
+        private DataSet parseDataSet(OsmServerReader osmServerReader) throws OsmTransferException {
+            return osmServerReader.parseOsm(NullProgressMonitor.INSTANCE);
+        }
+
+        private OsmHost getHost() {
+            switch (downloadSource) {
+            case OSM:
+                return new PlainOsmHost();
+            case OVERPASS:
+                return new OverpassHost();
+            default:
+                throw new UnsupportedOperationException();
+            }
         }
     }
 
-    @Override
-    public void prepare() {
-        // Nothing to prepare
-    }
-
-
-    @Override
-    public void process() {
-        merge();
-        entitiesBuilder.build();
-    }
-
-    private void merge() {
-        layerManager.getOsmDataLayer().mergeFrom(dataSet);
-        Boundary boundary = request.getBoundary();
-        DataSource ds = new DataSource(boundary.getBounds(), "OSM");
-        layerManager.getOsmDataLayer().getDataSet().addDataSource(ds);
-
-    }
-    private DataSet parseDataSet() throws OsmTransferException {
-        return osmServerReader.parseOsm(NullProgressMonitor.INSTANCE);
+    public class ProcessTask implements Callable<TaskStatus> {
+        @Override
+        public TaskStatus call() {
+            merge();
+            buildOsmEntities();
+            return new TaskStatus();
+        }
+        
+        private void merge() {
+            OsmLayerManager layerManager = context.getComponent(OsmLayerManager.class);
+            layerManager.getOsmDataLayer().mergeFrom(dataSet);
+            DataSet layerDataset = layerManager.getOsmDataLayer().getDataSet();
+            request.getBoundary().getBounds().forEach(bounds -> {
+                DataSource ds = new DataSource(bounds, "OSM");
+                layerDataset.addDataSource(ds);
+            });
+        }
+        
+        private void buildOsmEntities() {
+            OsmEntityBuilders entityBuilders = context.getComponent(OsmEntityBuilders.class);
+            for (OsmPrimitive p : dataSet.getPrimitives(p -> true)) {
+                entityBuilders.forEach(builder -> builder.buildOsmEntity(p));
+            }
+        }
     }
 
     public DataSet getDataSet() {
@@ -140,7 +155,6 @@ public class OsmLayerDownloader implements LayerDownloader {
 
     @Override
     public void cancel() {
-        osmServerReader.cancel();
-        status.setCancelled(true);
+        osmServerReaders.forEach(OsmServerReader::cancel);
     }
 }

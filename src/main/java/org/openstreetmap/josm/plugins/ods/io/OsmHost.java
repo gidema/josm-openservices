@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
 import java.net.MalformedURLException;
+import java.util.Collection;
 
 import org.openstreetmap.josm.io.OsmServerReader;
 
@@ -28,5 +29,5 @@ public interface OsmHost {
      * @return an OsmServerReader for the request
      * @throws MalformedURLException 
      */
-    public OsmServerReader getServerReader(DownloadRequest request) throws MalformedURLException;
+    public Collection<OsmServerReader> getServerReaders(DownloadRequest request) throws MalformedURLException;
 }

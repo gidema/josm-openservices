@@ -1,0 +1,3 @@
+To debug in Eclipse, we need the following VM arguments:
+
+-Djosm.userdata="C:\Users\Idema\Documents\Gertjan\projecten\Josm debug" --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-opens=java.base/sun.security.x509=ALL-UNNAMED --add-opens=java.desktop/javax.imageio.spi=ALL-UNNAMED --add-opens=java.desktop/javax.swing.text.html=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED 

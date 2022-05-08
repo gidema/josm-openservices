@@ -1,11 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import java.util.Map;
-
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.matching.Match;
-
-import org.locationtech.jts.geom.Geometry;
 
 /**
  * ODS entities represent entities like buildings, address nodes,
@@ -26,13 +22,8 @@ public interface Entity {
     public Completeness getCompleteness();
     public void setStatus(EntityStatus status);
     public EntityStatus getStatus();
-    public void setPrimaryId(Object id);
-    public Object getPrimaryId();
-    public void setReferenceId(Object id);
-    public Object getReferenceId();
+
     public Long getPrimitiveId();
-    public Geometry getGeometry();
-    public void setGeometry(Geometry geometry);
 
     public Match<? extends OsmEntity, ? extends OdEntity> getMatch();
 
@@ -45,11 +36,6 @@ public interface Entity {
      *
      */
     public OsmPrimitive getPrimitive();
-
-    /**
-     * Get the tags that are not associated with any of the entity's properties.
-     */
-    public Map<String, String> getOtherTags();
 
     public void setPrimitive(OsmPrimitive primitive);
 

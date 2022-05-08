@@ -1,7 +1,5 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
-import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
-
 /**
  * An OdEntity is an Entity that has been derived from an external open data source.
  * There doesn't necessarily have to a 1 to 1 relation between an OdEntity and a feature
@@ -11,7 +9,7 @@ import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
  * @author Gertjan Idema
  *
  */
-public interface OdEntity extends Entity {
+public interface OdEntity extends Entity, GeoObject {
 
     /**
      * Get the <code>DownloadResponse</code> of the feature from which this Entity has
@@ -19,13 +17,13 @@ public interface OdEntity extends Entity {
      *
      * @return The download response, or null if this is a derived entity.
      */
-    public DownloadResponse getDownloadResponse();
+//    public DownloadResponse getDownloadResponse();
 
     /**
-     * Set the <code>downloadResponse</code> of the feature from which this Entity has
-     * been created.
-     *
-     * @param response
+     * Check if the OSM primitive related to this entity can safely be imported to the OSM layer
+     * if it doesn't exist there yet.
+     * 
+     * @return
      */
-    public void setDownloadResponse(DownloadResponse response);
+    boolean readyForImport();
 }

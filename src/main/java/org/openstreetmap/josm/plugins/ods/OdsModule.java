@@ -3,10 +3,6 @@ package org.openstreetmap.josm.plugins.ods;
 import static org.openstreetmap.josm.tools.I18n.tr;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
@@ -20,13 +16,11 @@ import org.openstreetmap.josm.gui.layer.LayerManager.LayerOrderChangeEvent;
 import org.openstreetmap.josm.gui.layer.LayerManager.LayerRemoveEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeEvent;
 import org.openstreetmap.josm.gui.layer.MainLayerManager.ActiveLayerChangeListener;
-import org.openstreetmap.josm.plugins.ods.crs.CRSUtil;
+import org.openstreetmap.josm.plugins.ods.context.OdsContext;
+import org.openstreetmap.josm.plugins.ods.context.OdsContextImpl;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
-import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilder;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
-import org.openstreetmap.josm.plugins.ods.gui.OdsAction;
-import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
-import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
+import org.openstreetmap.josm.plugins.ods.gui.MenuActions;
 
 /**
  * The OdsModule is the main component of the ODS plugin. It manages a pair of interrelated layers
@@ -40,14 +34,8 @@ import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
  */
 public abstract class OdsModule implements ActiveLayerChangeListener, LayerChangeListener {
     private OdsModulePlugin plugin;
-    private final List<OdsAction> actions = new LinkedList<>();
-    private final List<OsmEntityBuilder<?>> entityBuilders = new LinkedList<>();
 
-    private final Map<String, OdsDataSource> dataSources = new HashMap<>();
-    private OdLayerManager odLayerManager;
-    private PolygonLayerManager polygonDataLayer;
-    private OsmLayerManager osmLayerManager;
-    private MatcherManager matcherManager;
+    private OdsContext context = new OdsContextImpl();
 
     String osmQuery;
     private boolean active = false;
@@ -57,31 +45,13 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     }
 
     public void initialize() throws Exception {
-        this.osmLayerManager = createOsmLayerManager();
-        this.odLayerManager = createOpenDataLayerManager();
         MainApplication.getLayerManager().addActiveLayerChangeListener(this);
         MainApplication.getLayerManager().addLayerChangeListener(this);
     }
 
-    protected void addOsmEntityBuilder(OsmEntityBuilder<?> entityBuilder) {
-        this.entityBuilders.add(entityBuilder);
-    }
-
-    public List<OsmEntityBuilder<?>> getEntityBuilders() {
-        return entityBuilders;
-    }
-
-    public abstract GeoUtil getGeoUtil();
-
-    public abstract CRSUtil getCrsUtil();
-
     public abstract String getName();
 
     public abstract String getDescription();
-
-    public final Map<String, OdsDataSource> getDataSources() {
-        return dataSources;
-    }
 
     public void setOsmQuery(String query) {
         /**
@@ -104,32 +74,21 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
 
     protected abstract OsmLayerManager createOsmLayerManager();
 
-
-    public OdLayerManager getOpenDataLayerManager() {
-        return odLayerManager;
-    }
-
-    public OsmLayerManager getOsmLayerManager() {
-        return osmLayerManager;
-    }
-
-    public MatcherManager getMatcherManager() {
-        return matcherManager;
-    }
-
     public LayerManager getLayerManager(Layer activeLayer) {
         if (!isActive()) return null;
-        if (odLayerManager.getOsmDataLayer() == activeLayer) {
+        OdLayerManager odLayerManager = context.getComponent(OdLayerManager.class);
+        if (odLayerManager != null && odLayerManager.getOsmDataLayer() == activeLayer) {
             return odLayerManager;
         }
-        if (osmLayerManager.getOsmDataLayer() == activeLayer) {
+        OsmLayerManager osmLayerManager = context.getComponent(OsmLayerManager.class);
+        if (osmLayerManager != null && osmLayerManager.getOsmDataLayer() == activeLayer) {
             return osmLayerManager;
         }
+        PolygonLayerManager polygonLayerManager = context.getComponent(PolygonLayerManager.class);
+        if (polygonLayerManager != null && polygonLayerManager.getOsmDataLayer() == activeLayer) {
+            return polygonLayerManager;
+        }
         return null;
-    }
-
-    public void addDataSource(OdsDataSource dataSource) {
-        dataSources.put(dataSource.getFeatureType(), dataSource);
     }
 
     public boolean isActive() {
@@ -137,40 +96,38 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     }
 
     public boolean activate() {
+        context.clear();
+        OdLayerManager odLayerManager = createOpenDataLayerManager();
+        context.register(odLayerManager);
+        OsmLayerManager osmLayerManager = createOsmLayerManager();
+        context.register(osmLayerManager);
+        configureContext();
         JMenu menu = OpenDataServicesPlugin.INSTANCE.getMenu();
-        for (OdsAction action : getActions()) {
-            menu.add(action);
-        }
-        getOsmLayerManager().activate();
-        getOpenDataLayerManager().activate();
+        MenuActions menuActions = context.getComponent(MenuActions.class);
+        menuActions.forEach(action -> menu.add(action));
+        osmLayerManager.activate();
+        odLayerManager.activate();
         if (usePolygonFile()) {
-            polygonDataLayer = new PolygonLayerManager(this);
-            polygonDataLayer.activate();
+            PolygonLayerManager polygonLayerManager = new PolygonLayerManager(this);
+            context.register(polygonLayerManager);
+            polygonLayerManager.activate();
         }
-        this.matcherManager = new MatcherManager(this);
         active = true;
         return true;
     }
 
+    protected abstract void configureContext();
+
     public void deActivate() {
         if (isActive()) {
-            getOsmLayerManager().deActivate();
-            getOpenDataLayerManager().deActivate();
-            polygonDataLayer.deActivate();
+            context.clear();
             active = false;
         }
     }
 
-    public List<OdsAction> getActions() {
-        return actions;
-    }
-
-    public void addAction(OdsAction action) {
-        actions.add(action);
-    }
-
     void activateOsmLayer() {
-        MainApplication.getLayerManager().setActiveLayer(getOsmLayerManager().getOsmDataLayer());
+        OsmLayerManager osmLayerManager = context.getComponent(OsmLayerManager.class);
+        MainApplication.getLayerManager().setActiveLayer(osmLayerManager.getOsmDataLayer());
     }
 
 
@@ -180,9 +137,8 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
         Layer oldLayer = e.getPreviousActiveLayer();
         Layer newLayer = MainApplication.getLayerManager().getActiveLayer();
         if (!isActive()) return;
-        for (OdsAction action : actions) {
-            action.activeLayerChange(oldLayer, newLayer);
-        }
+        MenuActions menuActions = context.getComponent(MenuActions.class);
+        menuActions.forEach(action -> action.activeLayerChange(oldLayer, newLayer));
     }
 
     @Override
@@ -225,10 +181,12 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
 
     public abstract Bounds getBounds();
 
-    public abstract MainDownloader getDownloader();
-
     public boolean usePolygonFile() {
         return false;
+    }
+
+    public OdsContext getContext() {
+        return context;
     }
 
     public File getPluginDir() {
@@ -236,17 +194,7 @@ public abstract class OdsModule implements ActiveLayerChangeListener, LayerChang
     }
 
     public void reset() {
-        getOsmLayerManager().reset();
-        getOpenDataLayerManager().reset();
-        getMatcherManager().reset();
+        context.reset();
         MainApplication.getMap().mapView.repaint();
     }
-
-    /**
-     * Get the tolerance (in degrees) used to match nearby nodes and lines.
-     * TODO provide more versatile configuration option
-     *
-     * @return
-     */
-    public abstract Double getTolerance();
 }

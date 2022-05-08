@@ -5,15 +5,12 @@ import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Un
 import java.util.HashMap;
 import java.util.Map;
 
+import org.locationtech.jts.geom.Geometry;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
-import org.locationtech.jts.geom.Geometry;
-
 public abstract class AbstractOsmEntity implements OsmEntity {
-    private Object primaryId;
-    private Object referenceId;
     private String sourceDate;
     private String source;
     private Geometry geometry;
@@ -21,27 +18,6 @@ public abstract class AbstractOsmEntity implements OsmEntity {
     private Completeness completeness = Unknown;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
-    //    private Match<? extends OsmEntity, ? extends OdEntity> match;
-
-    @Override
-    public void setPrimaryId(Object primaryId) {
-        this.primaryId = primaryId;
-    }
-
-    @Override
-    public Object getPrimaryId() {
-        return primaryId;
-    }
-
-    @Override
-    public Object getReferenceId() {
-        return referenceId;
-    }
-
-    @Override
-    public void setReferenceId(Object referenceId) {
-        this.referenceId = referenceId;
-    }
 
     @Override
     public void setSourceDate(String string) {

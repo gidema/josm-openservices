@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Relation;
@@ -81,28 +82,40 @@ public class MultiPolygonBuilder {
         }
         @SuppressWarnings("unchecked")
         Collection<Polygon> outerPolygons = outerPolygonizer.getPolygons();
-        if (outerPolygons.size() == 0) {
-            Logging.warn(I18n.tr("The relation for building {0} contains no closed outer ring.", relation.getUniqueId()));
-            return;
-        }
-        if (outerPolygons.size() > 1) {
-            Logging.warn(I18n.tr("The relation for building {0} contains more than one closed outer rings.", relation.getUniqueId()));
-            return;
-        }
         @SuppressWarnings("unchecked")
         Collection<Polygon> innerPolygons = innerPolygonizer.getPolygons();
-        LinearRing outerRing = (LinearRing) outerPolygons.iterator().next().getExteriorRing();
-        List<LinearRing> innerRings = new ArrayList<>(innerPolygons.size());
-        for (Polygon innerPolygon : innerPolygons) {
-            innerRings.add((LinearRing) innerPolygon.getExteriorRing());
+        
+        switch (outerPolygons.size()) {
+        case 0:
+            Logging.warn(I18n.tr("The relation for building {0} contains no closed outer ring.", relation.getUniqueId()));
+            geometry = null;
+            break;
+        case 1:
+            LinearRing outerRing = outerPolygons.iterator().next().getExteriorRing();
+            List<LinearRing> innerRings = outerPolygons.stream().map(Polygon::getExteriorRing).collect(Collectors.toList());
+            geometry = geoUtil.createPolygon(outerRing, innerRings);
+            break;
+        default:
+            geometry = createMultiPolyon(outerPolygons, innerPolygons);
+            break;
         }
-        geometry = geoUtil.createPolygon(outerRing, innerRings);
     }
-     
-    public boolean isInComplete() {
-        return relation.isIncomplete();
-    }
+
     
+    private Geometry createMultiPolyon(Collection<Polygon> outerPolygons,
+            Collection<Polygon> innerPolygons) {
+        List<Polygon> polygons = new ArrayList<>(outerPolygons.size());
+        outerPolygons.forEach(outerPolygon -> {
+            polygons.add(createPolygon(outerPolygon, innerPolygons));
+        });
+        return geoUtil.createMultiPolygon(polygons);
+    }
+
+    private Polygon createPolygon(Polygon outerPolygon,
+            Collection<Polygon> innerPolygons) {
+        List<LinearRing> innerRings = innerPolygons.stream().filter(outerPolygon::covers).map(Polygon::getExteriorRing).collect(Collectors.toList());
+        return geoUtil.createPolygon(outerPolygon.getExteriorRing(), innerRings);
+    }
 
     public Geometry getGeometry() {
         return geometry;
