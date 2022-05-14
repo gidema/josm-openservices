@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.FutureTask;
-import java.util.stream.Collectors;
 
 import org.openstreetmap.josm.data.Bounds;
 import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
@@ -68,7 +66,7 @@ public class MainDownloader {
         }
         
         pm.indeterminateSubTask(I18n.tr("Downloading"));
-        status = download();
+        status = fetch();
         if (Downloader.checkErrors(status, pm)) {
             pm.finishTask();
             return;
@@ -99,13 +97,11 @@ public class MainDownloader {
     }
 
     private TaskStatus prepare() {
-        List<FutureTask<TaskStatus>> tasks = layerDownloaders.stream().map(LayerDownloader::getPrepareTask).collect(Collectors.toList());
-        return Downloader.runTasks(tasks);
+        return Downloader.runTasks(Downloader.getPrepareTasks(layerDownloaders));
     }
 
-    private TaskStatus download() {
-        List<FutureTask<TaskStatus>> tasks = layerDownloaders.stream().map(LayerDownloader::getDownloadTask).collect(Collectors.toList());
-        return Downloader.runTasks(tasks);
+    private TaskStatus fetch() {
+        return Downloader.runTasks(Downloader.getFetchTasks(layerDownloaders));
     }
 
     /**
@@ -113,8 +109,7 @@ public class MainDownloader {
      *
      */
     protected TaskStatus process() {
-        List<FutureTask<TaskStatus>> tasks = layerDownloaders.stream().map(LayerDownloader::getProcessTask).collect(Collectors.toList());
-        TaskStatus taskStatus = Downloader.runTasks(tasks);
+        TaskStatus taskStatus = Downloader.runTasks(Downloader.getProcessTasks(layerDownloaders));
         Matchers matchers = context.getComponent(Matchers.class);
         matchers.forEach(Matcher::run);
         return taskStatus;

@@ -20,11 +20,32 @@ public interface Downloader {
     
     public FutureTask<TaskStatus> getPrepareTask();
 
-    public FutureTask<TaskStatus> getDownloadTask();
+    public FutureTask<TaskStatus> getFetchTask();
 
     public FutureTask<TaskStatus> getProcessTask();
 
     public void cancel();
+    
+    public static List<FutureTask<TaskStatus>> getPrepareTasks(List<? extends Downloader> downloaders) {
+        return downloaders.stream()
+                .map(Downloader::getPrepareTask)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+    
+    public static List<FutureTask<TaskStatus>> getFetchTasks(List<? extends Downloader> downloaders) {
+        return downloaders.stream()
+                .map(Downloader::getFetchTask)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+    
+    public static List<FutureTask<TaskStatus>> getProcessTasks(List<? extends Downloader> downloaders) {
+        return downloaders.stream()
+                .map(Downloader::getProcessTask)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
     
     public static TaskStatus runTasks(List<FutureTask<TaskStatus>> tasks) {
         // Currently, tasks are allowed to be null. Make sure we handle only non-null tasks

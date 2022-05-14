@@ -28,39 +28,31 @@ public class FeatureDownloader {
     final WfsFeatureSource featureSource;
     final OdsContext context;
     WfsFeatureCollection downloadedFeatures = new WfsFeatureCollectionImpl();
-    private final PrepareTask prepareTask;
-    private final DownloadTask downloadTask;
+    private final FetchTask fetchTask;
     private final ProcessTask processTask;
 
     public FeatureDownloader(OdsContext context, WfsFeatureSource featureSource) {
         super();
         this.context = context;
         this.featureSource = featureSource;
-        this.prepareTask = new PrepareTask();
-        this.downloadTask = new DownloadTask();
+        this.fetchTask = new FetchTask();
         this.processTask = new ProcessTask();
     }
 
+    @SuppressWarnings("static-method")
     public FutureTask<TaskStatus> getPrepareTask() {
-        return new FutureTask<>(prepareTask);
+        return null;
     }
     
-    public FutureTask<TaskStatus> getDownloadTask() {
-        return new FutureTask<>(downloadTask);
+    public FutureTask<TaskStatus> getFetchTask() {
+        return new FutureTask<>(fetchTask);
     }
     
     public FutureTask<TaskStatus> getProcessTask() {
         return new FutureTask<>(processTask);
     }
 
-    class PrepareTask implements Callable<TaskStatus> {
-        @Override
-        public TaskStatus call() {
-            return new TaskStatus();
-        }
-    }
-    
-    class DownloadTask implements Callable<TaskStatus> {
+    class FetchTask implements Callable<TaskStatus> {
         @Override
         public TaskStatus call() {
             DownloadRequest request = context.getComponent(DownloadRequest.class);

@@ -1,17 +1,12 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import org.openstreetmap.josm.data.DataSource;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
-import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.context.ContextJobList;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.context.OdsContextJob;
@@ -22,14 +17,13 @@ import org.openstreetmap.josm.plugins.ods.wfs.WfsFeatureSources;
 
 // TODO decide upon and document Class lifecycle
 public class OpenDataLayerDownloader implements LayerDownloader {
-    private static final int NTHREADS = 10;
 
     OdsContext context;
     private final List<FeatureDownloader> downloaders = new LinkedList<>();
     final List<FutureTask<TaskStatus>> prepareTasks = new LinkedList<>();
-    final List<FutureTask<TaskStatus>> downloadTasks = new LinkedList<>();
+    final List<FutureTask<TaskStatus>> fetchTasks = new LinkedList<>();
     final List<FutureTask<TaskStatus>> processTasks = new LinkedList<>();
-    private Status status = new Status();
+    private boolean cancelled = false;
     
     public OpenDataLayerDownloader() {
     }
@@ -39,27 +33,24 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         this.context = context;
         this.downloaders.clear();
         this.prepareTasks.clear();
-        this.downloadTasks.clear();
+        this.fetchTasks.clear();
         this.processTasks.clear();
-        String operationMode = context.getParameter(ODS.OPERATION_MODE);
         WfsFeatureSources completeFeatureSources = context.getComponent(WfsFeatureSources.class, "Import");
         WfsFeatureSources modifiedFeatureSources = context.getComponent(WfsFeatureSources.class, "Update");
         modifiedFeatureSources.forEach(fs -> {
             FeatureDownloader downloader = new FeatureDownloader(context, fs);
             downloaders.add(downloader);
             prepareTasks.add(downloader.getPrepareTask());
-            downloadTasks.add(downloader.getDownloadTask());
+            fetchTasks.add(downloader.getFetchTask());
             processTasks.add(downloader.getProcessTask());
         });
-        if (operationMode.equals("Import")) {
-            completeFeatureSources.forEach(fs -> {
-                FeatureDownloader downloader = new FeatureDownloader(context, fs);
-                downloaders.add(downloader);
-                prepareTasks.add(downloader.getPrepareTask());
-                downloadTasks.add(downloader.getDownloadTask());
-                processTasks.add(downloader.getProcessTask());
-            });
-        }
+        completeFeatureSources.forEach(fs -> {
+            FeatureDownloader downloader = new FeatureDownloader(context, fs);
+            downloaders.add(downloader);
+            prepareTasks.add(downloader.getPrepareTask());
+            fetchTasks.add(downloader.getFetchTask());
+            processTasks.add(downloader.getProcessTask());
+        });
         this.context = context;
     }
 
@@ -71,8 +62,8 @@ public class OpenDataLayerDownloader implements LayerDownloader {
 
     
     @Override
-    public FutureTask<TaskStatus> getDownloadTask() {
-        return new FutureTask<>(new DownloadTask());
+    public FutureTask<TaskStatus> getFetchTask() {
+        return new FutureTask<>(new FetchTask());
     }
     
     @Override
@@ -87,20 +78,21 @@ public class OpenDataLayerDownloader implements LayerDownloader {
 
         @Override
         public TaskStatus call() {
-            return runTasks(prepareTasks);
+            return Downloader.runTasks(prepareTasks);
         }
     }
 
-    private class DownloadTask implements Callable<TaskStatus> {
-        public DownloadTask() {
+    private class FetchTask implements Callable<TaskStatus> {
+        public FetchTask() {
             // 
         }
 
         @Override
         public TaskStatus call() {
-            runTasks(downloadTasks);
+            TaskStatus status = Downloader.runTasks(fetchTasks);
+            // TODO isn't this a process task?
             updateStoreBoundaries();
-            return new TaskStatus();
+            return status;
         }
         
         /**
@@ -122,8 +114,12 @@ public class OpenDataLayerDownloader implements LayerDownloader {
 
         @Override
         public TaskStatus call() {
-            runTasks(processTasks);
+            TaskStatus status = Downloader.runTasks(processTasks);
+            if (status.hasErrors() || status.hasExceptions()) {
+                return status;
+            }
     
+            // TODO Isn't this just another process task?
             DownloadRequest request = context.getComponent(DownloadRequest.class);
             OsmDataLayer osmDataLayer = context.getComponent(OdLayerManager.class).getOsmDataLayer();
             request.getBoundary().getBounds().forEach(bounds -> {
@@ -136,48 +132,12 @@ public class OpenDataLayerDownloader implements LayerDownloader {
                 // TOOD add timing and show results in process monitor
                 job.run(context);
             }
-            return new TaskStatus();
-        }
-    }
-
-    static TaskStatus runTasks(List<FutureTask<TaskStatus>> tasks) {
-        ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
-        tasks.forEach(executor::execute);
-        try {
-            while (true) {
-                boolean allDone = true;
-                for (FutureTask<TaskStatus> task : tasks) {
-                    allDone &= task.isDone();
-                }
-                if (allDone) {
-                    executor.shutdown();
-                    List<TaskStatus> taskStatuses = new ArrayList<>(tasks.size());
-                    for (FutureTask<TaskStatus> task : tasks) {
-                        TaskStatus taskStatus;
-                        try {
-                            taskStatus = task.get();
-                        }
-                        catch (ExecutionException e) {
-                            taskStatus = new TaskStatus(null, null, e);
-                        }
-                        taskStatuses.add(taskStatus);
-                    }
-                    return new TaskStatus(taskStatuses);
-                }
-            }
-        }
-        catch (InterruptedException e) {
-            executor.shutdownNow();
-            tasks.forEach(task -> task.cancel(true));
-            return new TaskStatus(true);
+            return status;
         }
     }
 
     @Override
     public void cancel() {
-//        if (executor != null) {
-//            executor.shutdownNow();
-//        }
-        this.status.setCancelled(true);
+        this.cancelled = true;
     }
 }

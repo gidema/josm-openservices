@@ -76,7 +76,7 @@ public class ModificationsDownloader {
     }
 
     private TaskStatus download() {
-        List<FutureTask<TaskStatus>> tasks = Collections.singletonList(openDataLayerDownloader.getDownloadTask());
+        List<FutureTask<TaskStatus>> tasks = Collections.singletonList(openDataLayerDownloader.getFetchTask());
         return Downloader.runTasks(tasks);
     }
 

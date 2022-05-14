@@ -50,7 +50,7 @@ public class OsmLayerDownloader implements LayerDownloader {
     }
 
     @Override
-    public FutureTask<TaskStatus> getDownloadTask() {
+    public FutureTask<TaskStatus> getFetchTask() {
         String operationMode = context.getParameter(ODS.OPERATION_MODE);
         if (operationMode.equals("Update")) {
             return null;
