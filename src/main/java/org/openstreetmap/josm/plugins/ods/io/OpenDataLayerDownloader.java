@@ -19,39 +19,34 @@ import org.openstreetmap.josm.plugins.ods.wfs.WfsFeatureSources;
 public class OpenDataLayerDownloader implements LayerDownloader {
 
     OdsContext context;
-    private final List<FeatureDownloader> downloaders = new LinkedList<>();
     final List<FutureTask<TaskStatus>> prepareTasks = new LinkedList<>();
     final List<FutureTask<TaskStatus>> fetchTasks = new LinkedList<>();
     final List<FutureTask<TaskStatus>> processTasks = new LinkedList<>();
     private boolean cancelled = false;
     
-    public OpenDataLayerDownloader() {
+    public OpenDataLayerDownloader(OdsContext context, Downloader.Modus modus) {
+        this.context = context;
+        WfsFeatureSources actualFeatureSources = context.getComponent(WfsFeatureSources.class, "Import");
+        WfsFeatureSources modifiedFeatureSources = context.getComponent(WfsFeatureSources.class, "Update");
+        List<FeatureDownloader> downloaders = new LinkedList<>();
+        if (modus == Modus.FetchActual || modus == Modus.FetchAll) {
+            actualFeatureSources.forEach(fs -> downloaders.add(new FeatureDownloader(context, fs)));
+        }
+        if (modus == Modus.FetchModifications || modus == Modus.FetchAll) {
+            modifiedFeatureSources.forEach(fs -> downloaders.add(new FeatureDownloader(context, fs)));
+        }
+        downloaders.forEach(downloader -> {
+            prepareTasks.add(downloader.getPrepareTask());
+            fetchTasks.add(downloader.getFetchTask());
+            processTasks.add(downloader.getProcessTask());
+        });
+        this.context = context;
     }
 
+    
     @Override
     public void setup(OdsContext context) {
-        this.context = context;
-        this.downloaders.clear();
-        this.prepareTasks.clear();
-        this.fetchTasks.clear();
-        this.processTasks.clear();
-        WfsFeatureSources completeFeatureSources = context.getComponent(WfsFeatureSources.class, "Import");
-        WfsFeatureSources modifiedFeatureSources = context.getComponent(WfsFeatureSources.class, "Update");
-        modifiedFeatureSources.forEach(fs -> {
-            FeatureDownloader downloader = new FeatureDownloader(context, fs);
-            downloaders.add(downloader);
-            prepareTasks.add(downloader.getPrepareTask());
-            fetchTasks.add(downloader.getFetchTask());
-            processTasks.add(downloader.getProcessTask());
-        });
-        completeFeatureSources.forEach(fs -> {
-            FeatureDownloader downloader = new FeatureDownloader(context, fs);
-            downloaders.add(downloader);
-            prepareTasks.add(downloader.getPrepareTask());
-            fetchTasks.add(downloader.getFetchTask());
-            processTasks.add(downloader.getProcessTask());
-        });
-        this.context = context;
+        // TODO No action required
     }
 
 

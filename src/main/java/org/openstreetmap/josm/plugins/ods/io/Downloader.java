@@ -82,18 +82,24 @@ public interface Downloader {
             return new TaskStatus(true);
         }
     }
+    
+    public enum Modus {
+        FetchModifications, // Only fetch features where something has changed (Created, Updated or Deleted) 
+        FetchActual, // Only fetch actual features from the open data source
+        FetchAll;
+    }
 
-public static boolean checkErrors(TaskStatus status, ProgressMonitor pm) {
-    boolean errors = false;
-    if (status.hasErrors()) {
-        pm.indeterminateSubTask(status.getErrorString());
-        errors = true;
+    public static boolean checkErrors(TaskStatus status, ProgressMonitor pm) {
+        boolean errors = false;
+        if (status.hasErrors()) {
+            pm.indeterminateSubTask(status.getErrorString());
+            errors = true;
+        }
+        if (status.hasExceptions()) {
+            pm.indeterminateSubTask(status.getExceptionString());
+            errors = true;
+        }
+        return errors;
     }
-    if (status.hasExceptions()) {
-        pm.indeterminateSubTask(status.getExceptionString());
-        errors = true;
-    }
-    return errors;
-}
 
 }

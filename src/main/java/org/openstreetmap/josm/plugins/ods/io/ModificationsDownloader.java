@@ -1,43 +1,68 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.FutureTask;
 
+import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
+import org.openstreetmap.josm.gui.MainApplication;
+import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.plugins.ods.Matcher;
 import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
+import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
+import org.openstreetmap.josm.plugins.ods.matching.Matchers;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
- * Downloader that retrieves data from open data sources about modified (added / deleted) entities.. Currently only a OSM source
- * and a single OpenData source are supported.
- * The
- *
+ * Main downloader that only download modified areas.
+ * To do this, we go through these steps:
+ * 1. Collect modified features from a server that compares open data features with OSM objects.
+ * 2. Using a buffer around the modified features, create a set of bounding boxes that determines the download area for the
+ *    open data features and OSM objects, including nearby neighbors.
+ * The rest of the process is as usual:
+ * 3. Prepare the actual download
+ * 4. Download open data features an OSM object from the derived download area
+ * 5. Process the results
+ * 
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
 public class ModificationsDownloader {
-    private static final int NTHREADS = 10;
-
     private final OdsContext context;
 
     private ExecutorService executorService;
 
-    private OpenDataLayerDownloader openDataLayerDownloader;
+    private OsmLayerDownloader osmLayerDownloader;
+    private OpenDataLayerDownloader openDatalayerDownloader;
 
     public ModificationsDownloader(OdsContext context) {
         super();
         this.context = context;
     }
 
+    public OdsContext getContext() {
+        return context;
+    }
+
     public void run(ProgressMonitor pm) {
-        String operationMode = context.getParameter(ODS.OPERATION_MODE);
         
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup();
+        // Switch to the Open data layer before downloading.
+        MainLayerManager layerManager = MainApplication.getLayerManager();
+        layerManager.setActiveLayer(getContext().getComponent(OdLayerManager.class).getOsmDataLayer());
 
+        pm.indeterminateSubTask(I18n.tr("Fetching modification"));
+        TaskStatus status = fetchModifications();
+        if (Downloader.checkErrors(status, pm)) {
+            pm.finishTask();
+            return;
+        }
+        
         pm.indeterminateSubTask(I18n.tr("Preparing"));
         TaskStatus status = prepare();
         if (Downloader.checkErrors(status, pm)) {
@@ -46,7 +71,7 @@ public class ModificationsDownloader {
         }
         
         pm.indeterminateSubTask(I18n.tr("Downloading"));
-        status = download();
+        status = fetch();
         if (Downloader.checkErrors(status, pm)) {
             pm.finishTask();
             return;
@@ -60,6 +85,9 @@ public class ModificationsDownloader {
             pm.finishTask();
             return;
         }
+
+        computeBboxAndCenterScale(request.getBoundary().getBounds());
+        pm.finishTask();
     }
 
     /**
@@ -67,17 +95,24 @@ public class ModificationsDownloader {
      * Setup the download tasks. Maybe more than 1 per job.
      */
     private void setup() {
-        openDataLayerDownloader = context.getComponent(OpenDataLayerDownloader.class);
+        OsmLayerDownloader osmLayerDownloader = context.getComponent(OsmLayerDownloader.class);
+        OpenDataLayerDownloader openDataLayerDownloader = context.getComponent(OpenDataLayerDownloader.class);
+        this.layerDownloaders = Arrays.asList(osmLayerDownloader, openDataLayerDownloader);
+        layerDownloaders.forEach(ld -> ld.setup(context));
     }
 
+    private TaskStatus fetchModifications() {
+        return Downloader.runTasks(Downloader.getFetchTasks(layerDownloaders));
+    }
+
+
+    
     private TaskStatus prepare() {
-        List<FutureTask<TaskStatus>> tasks = Collections.singletonList(openDataLayerDownloader.getPrepareTask());
-        return Downloader.runTasks(tasks);
+        return Downloader.runTasks(Downloader.getPrepareTasks(layerDownloaders));
     }
 
-    private TaskStatus download() {
-        List<FutureTask<TaskStatus>> tasks = Collections.singletonList(openDataLayerDownloader.getFetchTask());
-        return Downloader.runTasks(tasks);
+    private TaskStatus fetch() {
+        return Downloader.runTasks(Downloader.getFetchTasks(layerDownloaders));
     }
 
     /**
@@ -85,12 +120,25 @@ public class ModificationsDownloader {
      *
      */
     protected TaskStatus process() {
-        List<FutureTask<TaskStatus>> tasks = Collections.singletonList(openDataLayerDownloader.getProcessTask());
-        return Downloader.runTasks(tasks);
+        TaskStatus taskStatus = Downloader.runTasks(Downloader.getProcessTasks(layerDownloaders));
+        Matchers matchers = context.getComponent(Matchers.class);
+        matchers.forEach(Matcher::run);
+        return taskStatus;
+    }
+
+    protected static void computeBboxAndCenterScale(Collection<Bounds> bounds) {
+        BoundingXYVisitor v = new BoundingXYVisitor();
+        
+        if (bounds != null && !bounds.isEmpty()) {
+            bounds.forEach(v::visit);
+            MainApplication.getMap().mapView.zoomTo(v.getBounds());
+        }
     }
 
     public void cancel() {
-        openDataLayerDownloader.cancel();
+        for (LayerDownloader downloader : layerDownloaders) {
+            downloader.cancel();
+        }
         executorService.shutdownNow();
     }
 }

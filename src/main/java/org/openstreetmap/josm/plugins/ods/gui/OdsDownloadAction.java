@@ -28,7 +28,7 @@ public class OdsDownloadAction extends OdsAction {
      */
     private static final long serialVersionUID = 1L;
 
-    private final MainDownloader downloader;
+    private MainDownloader downloader;
     private LocalDateTime startDate;
     private boolean cancelled = false;
     private Boundary boundary;
@@ -39,11 +39,11 @@ public class OdsDownloadAction extends OdsAction {
         super(context, "Download", ImageProvider.get("download"));
         slippyDialog = new SlippyMapDownloadDialog(context);
         fixedDialog = new FixedBoundsDownloadDialog(context);
-        this.downloader = context.getComponent(MainDownloader.class);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        this.downloader = new MainDownloader(getContext());
         run();
     }
 

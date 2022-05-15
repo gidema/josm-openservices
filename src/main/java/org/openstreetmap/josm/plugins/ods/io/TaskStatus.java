@@ -28,9 +28,9 @@ public class TaskStatus {
     public TaskStatus(String warning, String error, Throwable exception) {
         super();
         this.cancelled = false;
-        this.warnings = Collections.singletonList(warning);
-        this.errors = Collections.singletonList(error);
-        this.exceptions = Collections.singletonList(exception);
+        this.warnings = warning != null ? Collections.singletonList(warning) : Collections.emptyList();
+        this.errors = error != null ? Collections.singletonList(error) : Collections.emptyList();
+        this.exceptions = exception != null ? Collections.singletonList(exception) : Collections.emptyList();
     }
     
     public TaskStatus(List<String> warnings, List<String> errors,

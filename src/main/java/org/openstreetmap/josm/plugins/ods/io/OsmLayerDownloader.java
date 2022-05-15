@@ -21,26 +21,23 @@ import org.openstreetmap.josm.tools.I18n;
 import org.openstreetmap.josm.tools.Logging;
 
 public class OsmLayerDownloader implements LayerDownloader {
-    DownloadSource downloadSource =  DownloadSource.OVERPASS;
     private Collection<OsmServerReader> osmServerReaders;
-    OdsContext context;
-    DownloadRequest request;
+    final OdsContext context;
+    final DownloadRequest request;
+    final OsmHost osmHost;
 
     DataSet dataSet;
 
-    static enum DownloadSource {
-        OSM,
-        OVERPASS;
-    }
-    
-    public OsmLayerDownloader() {
+    public OsmLayerDownloader(OdsContext context) {
         super();
+        this.context = context;
+        this.request =context.getComponent(DownloadRequest.class);
+        this.osmHost = context.getComponent(OsmHost.class);
     }
 
     @Override
     public void setup(OdsContext context) {
-        this.context = context;
-        this.request =context.getComponent(DownloadRequest.class);
+        // No action required
     }
 
 
@@ -63,23 +60,21 @@ public class OsmLayerDownloader implements LayerDownloader {
         return new FutureTask<>(new ProcessTask());
     }
 
-    public class DownloadTask implements Callable<TaskStatus> { 
+    public class DownloadTask implements Callable<TaskStatus> {
         @Override
         public TaskStatus call() {
-            String operationMode = context.getParameter(ODS.OPERATION_MODE);
             dataSet = new DataSet();
-            OsmHost host = getHost();
             try {
                 // TODO We currently run the OSM requests sequentially.
                 // For Overpass this doesn't matter as we use a single request.
                 // If we use the OSM server, it would be nice if we would call parallel requests
-                for (OsmServerReader osmServerReader : host.getServerReaders(request)) {
+                for (OsmServerReader osmServerReader : osmHost.getServerReaders(request)) {
                     dataSet.mergeFrom(parseDataSet(osmServerReader));
                 }
                 return new TaskStatus();
             } catch (MalformedURLException e) {
                 String error = I18n.tr("There is an error in the URL for the {0} server. The download has been cancelled.\n" +
-                        "The error message was: {1}", host.getHostString(), e.getMessage());
+                        "The error message was: {1}", osmHost.getHostString(), e.getMessage());
                    return new TaskStatus(null, error, e);
             }
             catch (OsmApiException e) {
@@ -89,12 +84,12 @@ public class OsmLayerDownloader implements LayerDownloader {
                     return new TaskStatus(null, error, e);
                 case 404:
                     error = I18n.tr("No OSM server could be found at this location: {0}", 
-                        host.getHostString().toString());
+                            osmHost.getHostString().toString());
                     return new TaskStatus(null, error, e);
                 default:
                     Logging.error(e);
                     if (e.getCause() instanceof UnknownHostException) {
-                        error = I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.",  host.getHostString());
+                        error = I18n.tr("Could not connect to OSM server ({0}). Please check your Internet connection.", osmHost.getHostString());
                         return new TaskStatus(null, error, e.getCause());
                     }
                     return new TaskStatus(null, e.getMessage(), e);
@@ -109,17 +104,6 @@ public class OsmLayerDownloader implements LayerDownloader {
 
         private DataSet parseDataSet(OsmServerReader osmServerReader) throws OsmTransferException {
             return osmServerReader.parseOsm(NullProgressMonitor.INSTANCE);
-        }
-
-        private OsmHost getHost() {
-            switch (downloadSource) {
-            case OSM:
-                return new PlainOsmHost();
-            case OVERPASS:
-                return new OverpassHost();
-            default:
-                throw new UnsupportedOperationException();
-            }
         }
     }
 

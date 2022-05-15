@@ -11,7 +11,6 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.Matcher;
-import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.matching.Matchers;
@@ -35,6 +34,10 @@ public class MainDownloader {
     public MainDownloader(OdsContext context) {
         super();
         this.context = context;
+        OsmLayerDownloader osmLayerDownloader = new OsmLayerDownloader(context);
+        OpenDataLayerDownloader odLayerDownloader =
+                new OpenDataLayerDownloader(context, Downloader.Modus.FetchAll);
+        this.layerDownloaders = Arrays.asList(osmLayerDownloader, odLayerDownloader);
     }
 
     public OdsContext getContext() {
@@ -42,18 +45,10 @@ public class MainDownloader {
     }
 
     public void run(ProgressMonitor pm) {
-        String operationMode = context.getParameter(ODS.OPERATION_MODE);
         
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup();
-        if (operationMode.equals("Update")) {
-            /*
-             * In Update mode, we first collect the modified entities only. These will be used to determine a collection of
-             * bounding boxes for the other download operations.
-             */
-            pm.indeterminateSubTask(I18n.tr("Download"));
-            setup();
-        }
+
         // Switch to the Open data layer before downloading.
         MainLayerManager layerManager = MainApplication.getLayerManager();
         layerManager.setActiveLayer(getContext().getComponent(OdLayerManager.class).getOsmDataLayer());
@@ -65,7 +60,7 @@ public class MainDownloader {
             return;
         }
         
-        pm.indeterminateSubTask(I18n.tr("Downloading"));
+        pm.indeterminateSubTask(I18n.tr("Fetching data"));
         status = fetch();
         if (Downloader.checkErrors(status, pm)) {
             pm.finishTask();
@@ -90,9 +85,6 @@ public class MainDownloader {
      * Setup the download tasks. Maybe more than 1 per job.
      */
     private void setup() {
-        OsmLayerDownloader osmLayerDownloader = context.getComponent(OsmLayerDownloader.class);
-        OpenDataLayerDownloader openDataLayerDownloader = context.getComponent(OpenDataLayerDownloader.class);
-        this.layerDownloaders = Arrays.asList(osmLayerDownloader, openDataLayerDownloader);
         layerDownloaders.forEach(ld -> ld.setup(context));
     }
 
