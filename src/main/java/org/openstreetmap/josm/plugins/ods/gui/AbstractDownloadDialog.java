@@ -44,8 +44,7 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
 
     protected boolean canceled;
 
-    protected JCheckBox cbDownloadOSM;
-    protected JCheckBox cbDownloadODS;
+    protected JCheckBox cbDownloadModified;
     protected OdsContext context;
     /** the download button */
     protected JButton btnDownload;
@@ -58,12 +57,8 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
         getContentPane().add(buildButtonPanel(), BorderLayout.SOUTH);
     }
 
-    public boolean isDownloadOsmData() {
-        return cbDownloadOSM.isSelected();
-    }
-
-    public boolean isDownloadOdsData() {
-        return cbDownloadODS.isSelected();
+    public boolean isDownloadModifiedAreas() {
+        return cbDownloadModified.isSelected();
     }
 
     abstract protected JPanel buildMainPanel();
@@ -99,15 +94,12 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
      *
      */
     public void rememberSettings() {
-        Preferences.main().putBoolean("openservices.download.osm", cbDownloadOSM.isSelected());
-        Preferences.main().putBoolean("openservices.download.ods", cbDownloadODS.isSelected());
+        Preferences.main().putBoolean("openservices.download.modified", cbDownloadModified.isSelected());
     }
 
     public void restoreSettings() {
-        cbDownloadOSM.setSelected(Preferences.main().getBoolean(
-                "openservices.download.osm", true));
-        cbDownloadODS.setSelected(Preferences.main().getBoolean(
-                "openservices.download.ods", true));
+        cbDownloadModified.setSelected(Preferences.main().getBoolean(
+                "openservices.download.modified", true));
     }
 
     @Override
@@ -175,18 +167,6 @@ public abstract class AbstractDownloadDialog extends JDialog implements Property
         }
 
         public void run() {
-            if (!isDownloadOsmData() && !isDownloadOdsData()) {
-                JOptionPane.showMessageDialog(
-                        AbstractDownloadDialog.this,
-                        tr("<html>Neither <strong>{0}</strong> nor <strong>{1}</strong> is enabled.<br>"
-                                + "Please choose to either download OSM data, or Open data, or both.</html>",
-                                cbDownloadOSM.getText(),
-                                cbDownloadODS.getText()),
-                        tr("Error"),
-                        JOptionPane.ERROR_MESSAGE
-                        );
-                return;
-            }
             setCanceled(false);
             setVisible(false);
         }

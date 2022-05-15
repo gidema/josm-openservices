@@ -49,20 +49,15 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         JPanel pnl = new JPanel();
         pnl.setLayout(new GridBagLayout());
 
-        cbDownloadOSM = new JCheckBox(tr("Download OSM data"));
-        cbDownloadOSM.setToolTipText(tr("<html>Select to download OSM data.<br>"
-                + "Unselect to skip downloading of OSM data.</html>"));
-        cbDownloadODS = new JCheckBox(tr("Download Open data"));
-        cbDownloadODS.setToolTipText(tr("<html>Select to download {0}.<br>"
-                + "Unselect to skip downloading of Open data.</html>"));
+        cbDownloadModified = new JCheckBox(tr("Download modified areas."));
+        cbDownloadModified.setToolTipText(tr("<html>Select to download modified areas only.<br>"
+                + "Unselect to download all data.</html>"));
 
         slippyMap = new SlippyMapBBoxChooser();
         slippyMap.addPropertyChangeListener(this);
         pnl.add(slippyMap, GBC.eol().fill());
-        pnl.add(cbDownloadOSM,
+        pnl.add(cbDownloadModified,
                 GBC.std().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
-        pnl.add(cbDownloadODS,
-                GBC.eol().anchor(GridBagConstraints.SOUTHWEST).insets(5, 5, 5, 5));
 
         //        pnl.add(sizeCheck, GBC.eol().anchor(GBC.SOUTHEAST).insets(5, 5, 5, 2));
 
