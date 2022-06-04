@@ -97,6 +97,7 @@ public class SlippyMapDownloadDialog extends AbstractDownloadDialog {
         if (slippyMap != null) {
             slippyMap.setBoundingBox(bbox);
             slippyMap.repaint();
+            slippyMap.setBoundingBox(null);
         }
     }
 
