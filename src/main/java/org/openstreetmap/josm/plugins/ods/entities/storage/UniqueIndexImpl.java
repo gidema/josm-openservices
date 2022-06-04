@@ -18,6 +18,15 @@ public class UniqueIndexImpl<T extends Object> implements PrimaryIndex<T> {
     }
     
     @Override
+    public boolean contains(T entity) {
+        Object key = getter.apply(entity);
+        if (key != null) {
+            return map.containsKey(key);
+        }
+        throw new RuntimeException("Could not get an index key");
+    }
+
+    @Override
     public void insert(T entity) {
         Object key = getter.apply(entity);
         if (key != null) {

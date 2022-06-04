@@ -20,7 +20,7 @@ public abstract class AbstractEntityStore<T extends Object> implements Iterable<
     public abstract List<Index<T>> getAllIndexes();
     
     public void add(T entity) {
-        if (getPrimaryIndex().get(entity) == null) {
+        if (!getPrimaryIndex().contains(entity)) {
             for (Index<T> index : getAllIndexes()) {
                 index.insert(entity);
             }

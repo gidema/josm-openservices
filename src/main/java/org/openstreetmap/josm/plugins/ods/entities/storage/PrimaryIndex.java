@@ -21,8 +21,10 @@ public interface PrimaryIndex<T> extends Index<T>, Iterable<T> {
     default boolean isUnique() {
         return false;
     }
-    
-    public T get(Object primaryKey);
-    
+
+    public boolean contains(T entity);
+
+    public T get(Object Key);
+
     public Stream<T> stream();
 }
