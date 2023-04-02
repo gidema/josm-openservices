@@ -63,7 +63,7 @@ public class GmlXmlFactory {
         }
         Element mpElement = doc.createElementNS(NS_GML, "MultiPolygon");
         for (int i=0 ; i<multiPolygon.getNumGeometries(); i++) {
-            mpElement.appendChild(createPolygon(doc, (Polygon) multiPolygon.getGeometryN(0)));
+            mpElement.appendChild(createPolygon(doc, (Polygon) multiPolygon.getGeometryN(i)));
         }
         return mpElement;
     }

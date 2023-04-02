@@ -18,6 +18,8 @@ import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.MainDownloader;
+import org.openstreetmap.josm.plugins.ods.io.MainFetchDownloader;
+import org.openstreetmap.josm.plugins.ods.io.MainUpdateDownloader;
 import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 import org.openstreetmap.josm.tools.ImageProvider;
 import org.xml.sax.SAXException;
@@ -43,7 +45,13 @@ public class OdsDownloadAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.downloader = new MainDownloader(getContext());
+        boolean update = true;
+        if (update) {
+            this.downloader = new MainUpdateDownloader(getContext());
+        }
+        else {
+            this.downloader = new MainFetchDownloader(getContext());
+        }
         run();
     }
 

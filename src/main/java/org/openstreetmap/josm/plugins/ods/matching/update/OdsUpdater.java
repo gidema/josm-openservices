@@ -16,7 +16,6 @@ import org.openstreetmap.josm.plugins.ods.matching.Match;
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-// TODO Split into ODS interface and BAG implementation
 public class OdsUpdater {
     private final OdsContext context;
 

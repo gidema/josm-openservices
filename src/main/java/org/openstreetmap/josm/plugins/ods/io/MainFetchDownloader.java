@@ -11,58 +11,47 @@ import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.plugins.ods.Matcher;
-import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.matching.Matchers;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
- * Main downloader that only download modified areas.
- * To do this, we go through these steps:
- * 1. Collect modified features from a server that compares open data features with OSM objects.
- * 2. Using a buffer around the modified features, create a set of bounding boxes that determines the download area for the
- *    open data features and OSM objects, including nearby neighbors.
- * The rest of the process is as usual:
- * 3. Prepare the actual download
- * 4. Download open data features an OSM object from the derived download area
- * 5. Process the results
- * 
+ * MainDownloader implementation that retrieves all data for an area, regardless of changes.
+ *  *
  * @author Gertjan Idema <mail@gertjanidema.nl>
  *
  */
-public class ModificationsDownloader {
+public class MainFetchDownloader implements MainDownloader {
     private final OdsContext context;
 
     private ExecutorService executorService;
 
-    private OsmLayerDownloader osmLayerDownloader;
-    private OpenDataLayerDownloader openDatalayerDownloader;
+    private List<LayerDownloader> layerDownloaders;
 
-    public ModificationsDownloader(OdsContext context) {
+    public MainFetchDownloader(OdsContext context) {
         super();
         this.context = context;
+        OsmLayerDownloader osmLayerDownloader = new OsmLayerDownloader(context);
+        OpenDataLayerDownloader odLayerDownloader =
+                new OpenDataLayerDownloader(context, Downloader.Modus.FetchAll);
+        this.layerDownloaders = Arrays.asList(osmLayerDownloader, odLayerDownloader);
     }
 
     public OdsContext getContext() {
         return context;
     }
 
+    @Override
     public void run(ProgressMonitor pm) {
         
         pm.indeterminateSubTask(I18n.tr("Setup"));
         setup();
+
         // Switch to the Open data layer before downloading.
         MainLayerManager layerManager = MainApplication.getLayerManager();
         layerManager.setActiveLayer(getContext().getComponent(OdLayerManager.class).getOsmDataLayer());
 
-        pm.indeterminateSubTask(I18n.tr("Fetching modification"));
-        TaskStatus status = fetchModifications();
-        if (Downloader.checkErrors(status, pm)) {
-            pm.finishTask();
-            return;
-        }
-        
         pm.indeterminateSubTask(I18n.tr("Preparing"));
         TaskStatus status = prepare();
         if (Downloader.checkErrors(status, pm)) {
@@ -70,7 +59,7 @@ public class ModificationsDownloader {
             return;
         }
         
-        pm.indeterminateSubTask(I18n.tr("Downloading"));
+        pm.indeterminateSubTask(I18n.tr("Fetching data"));
         status = fetch();
         if (Downloader.checkErrors(status, pm)) {
             pm.finishTask();
@@ -95,18 +84,9 @@ public class ModificationsDownloader {
      * Setup the download tasks. Maybe more than 1 per job.
      */
     private void setup() {
-        OsmLayerDownloader osmLayerDownloader = context.getComponent(OsmLayerDownloader.class);
-        OpenDataLayerDownloader openDataLayerDownloader = context.getComponent(OpenDataLayerDownloader.class);
-        this.layerDownloaders = Arrays.asList(osmLayerDownloader, openDataLayerDownloader);
         layerDownloaders.forEach(ld -> ld.setup(context));
     }
 
-    private TaskStatus fetchModifications() {
-        return Downloader.runTasks(Downloader.getFetchTasks(layerDownloaders));
-    }
-
-
-    
     private TaskStatus prepare() {
         return Downloader.runTasks(Downloader.getPrepareTasks(layerDownloaders));
     }
@@ -135,6 +115,7 @@ public class ModificationsDownloader {
         }
     }
 
+    @Override
     public void cancel() {
         for (LayerDownloader downloader : layerDownloaders) {
             downloader.cancel();

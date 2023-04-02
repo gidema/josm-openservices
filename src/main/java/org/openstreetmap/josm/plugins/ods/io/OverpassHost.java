@@ -1,25 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.io;
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.Locale;
-
-import org.openstreetmap.josm.data.Bounds;
-import org.openstreetmap.josm.data.Preferences;
-import org.openstreetmap.josm.io.BoundingBoxDownloader;
-import org.openstreetmap.josm.io.OsmServerReader;
-import org.openstreetmap.josm.io.OverpassDownloadReader;
-import org.openstreetmap.josm.plugins.ods.jts.Boundary;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LinearRing;
+import org.openstreetmap.josm.data.Bounds;
+import org.openstreetmap.josm.data.Preferences;
+import org.openstreetmap.josm.io.OsmServerReader;
+import org.openstreetmap.josm.plugins.ods.jts.Boundary;
+import org.openstreetmap.josm.plugins.ods.osm.OverpassBoundaryDownloader;
 
 public class OverpassHost implements OsmHost {
-    private static final String OVERPASS_QUERY =
-            "(node({{bbox}});rel(bn)->.x;way({{bbox}});" +
-                    "node(w)->.x;rel(bw););out meta;";
 
     @Override
     public String getHostString() {
@@ -34,15 +27,10 @@ public class OverpassHost implements OsmHost {
         return host;
     }
 
-    // TODO Currently, we create an extra server reader for each boundary.
-    // Check if we can replace this with a single multipolygon request.
     @Override
     public Collection<OsmServerReader> getServerReaders(DownloadRequest request) {
-        List<OsmServerReader> serverReaders = new ArrayList<>(request.getBoundary().getBounds().size());
-        request.getBoundary().getBounds().forEach(bounds -> {
-            serverReaders.add(new OverpassDownloadReader(bounds, getHostString(), OVERPASS_QUERY));
-        });
-        return serverReaders;
+        OsmServerReader serverReader = new OverpassBoundaryDownloader(request.getBoundary());
+        return Collections.singletonList(serverReader);
     }
 
     /**
@@ -100,5 +88,20 @@ public class OverpassHost implements OsmHost {
 
     private static String formatCoordinate(Double lat, Double lon) {
         return String.format(Locale.ENGLISH, "%f %f ", lat, lon);
+    }
+    
+    public static String buildQlQuery(Boundary boundary) {
+        StringBuilder sb = new StringBuilder(5000);
+        sb.append("(\n");
+        boundary.getBounds().forEach(bounds -> {
+            sb.append("nwr(").append(bounds.getMinLat()).append(',').append(bounds.getMinLon()).append(',')
+                .append(bounds.getMaxLat()).append(',').append(bounds.getMaxLon()).append(");\n");
+        });
+        sb.append(");\n");
+        sb.append("out meta;\n");
+        sb.append(">;\n");
+        sb.append("out meta;\n");
+        
+        return sb.toString();
     }
 }

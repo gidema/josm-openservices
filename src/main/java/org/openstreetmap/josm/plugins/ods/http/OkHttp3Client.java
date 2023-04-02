@@ -1,12 +1,15 @@
 package org.openstreetmap.josm.plugins.ods.http;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.tools.Logging;
 
 import okhttp3.Call;
@@ -96,6 +99,46 @@ public class OkHttp3Client implements OdsHttpClient {
         }
     }
     
+    @Override
+    public InputStream getInputStream(String url, String postRequest,
+            ProgressMonitor progressMonitor) throws OsmTransferException {
+        OkHttpClient client = clientBuilder.build();
+
+        RequestBody formBody = RequestBody.create(postRequest, null);
+        Request request = new Request.Builder()
+            .url(url)
+            .post(formBody)
+            .build();
+        
+        Call call = client.newCall(request);
+        try {
+            @SuppressWarnings("resource")
+            Response response = call.execute();
+            Integer responseCode = response.code();
+            String contentType = response.header("content-type").split(";")[0];
+            if (responseCode != 200) {
+                System.err.println("The server returned an unexpexted response witch code " + responseCode.toString());
+                System.err.println(getResponseString(response));
+                response.close();
+                throw new IOException("Http error:" + Integer.toString(responseCode));
+            }
+            switch (contentType) {
+            case "text/xml":
+            case "application/gml+xml":
+            case "application/osm3s+xml":
+                return new ResponseStream(response);
+            default:
+                System.err.println("The server returned unexpexted content:\n");
+                System.err.println(response.body().string());
+                response.close();
+                throw new IOException("Unexpected content type: " + contentType);
+            }
+        }
+        catch (IOException e) {
+            throw new OsmTransferException(e);
+        }
+    }
+
     private static String buildHttpGetQuery(String url, Map<String, String> queryParameters) {
         StringBuilder sb = new StringBuilder();// TODO Auto-generated method stub
         sb.append(url).append('?');
@@ -139,6 +182,30 @@ public class OkHttp3Client implements OdsHttpClient {
         @Override
         public void close() throws IOException {
             if (reader != null) reader.close();
+            if (response != null) response.close();
+        }
+    }
+
+    public class ResponseStream extends InputStream {
+        private Response response;
+        private InputStream inputStream;
+        
+        @SuppressWarnings("resource")
+        public ResponseStream(Response response) {
+            super();
+            this.response = response;
+            this.inputStream = response.body().byteStream();
+        }
+
+        @Override
+        public int read() throws IOException {
+            // TODO Auto-generated method stub
+            return inputStream.read();
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (inputStream != null) inputStream.close();
             if (response != null) response.close();
         }
     }

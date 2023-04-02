@@ -1,6 +1,8 @@
 package org.openstreetmap.josm.plugins.ods.wfs;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -15,9 +17,6 @@ import org.openstreetmap.josm.plugins.ods.io.DataCutOffException;
 import org.openstreetmap.josm.plugins.ods.io.DownloadRequest;
 import org.openstreetmap.josm.plugins.ods.io.DownloadResponse;
 import org.openstreetmap.josm.plugins.ods.io.TaskStatus;
-import org.openstreetmap.josm.plugins.ods.opengis.fes.FesFilter;
-import org.openstreetmap.josm.plugins.ods.opengis.fes.FilterPredicate;
-import org.openstreetmap.josm.plugins.ods.opengis.fes.IntersectsPredicate;
 import org.openstreetmap.josm.plugins.ods.wfs.query.BboxWfsFilter;
 import org.openstreetmap.josm.plugins.ods.wfs.query.OdsQueryFilter;
 import org.openstreetmap.josm.plugins.ods.wfs.query.WfsQuery;
@@ -28,14 +27,12 @@ public class FeatureDownloader {
     final WfsFeatureSource featureSource;
     final OdsContext context;
     WfsFeatureCollection downloadedFeatures = new WfsFeatureCollectionImpl();
-    private final FetchTask fetchTask;
     private final ProcessTask processTask;
 
     public FeatureDownloader(OdsContext context, WfsFeatureSource featureSource) {
         super();
         this.context = context;
         this.featureSource = featureSource;
-        this.fetchTask = new FetchTask();
         this.processTask = new ProcessTask();
     }
 
@@ -44,39 +41,50 @@ public class FeatureDownloader {
         return null;
     }
     
-    public FutureTask<TaskStatus> getFetchTask() {
-        return new FutureTask<>(fetchTask);
+    public Collection<FutureTask<TaskStatus>> getFetchTasks() {
+        // Transform the request to the right coordinate system
+        // TODO Technical debt: Wouldn't it be better to transform the bounding box rather than the request?
+        final DownloadRequest request = transformRequest(context.getComponent(DownloadRequest.class));
+        WfsHost host = featureSource.getHost();
+        String url = host.getUrl().toString();
+        Integer pageSize = featureSource.getPageSize();
+        QName featureName = featureSource.getFeatureType();
+        QName geometryProperty = featureSource.getGeometryProperty();
+        List<FutureTask<TaskStatus>> tasks = new ArrayList<>(request.getBoundary().getBounds().size());
+        request.getBoundary().getBounds().forEach( bounds -> {
+            OdsQueryFilter filter = new BboxWfsFilter(geometryProperty, bounds, featureSource.getSrid());
+            WfsQuery query = new WfsQuery(featureName, filter, featureSource.getSrid(), null);
+            FutureTask<TaskStatus> task = new FutureTask<>(new FetchTask(url, query, pageSize));
+            tasks.add(task);
+        });
+        return tasks;
     }
     
     public FutureTask<TaskStatus> getProcessTask() {
         return new FutureTask<>(processTask);
     }
 
+    private DownloadRequest transformRequest(DownloadRequest request) {
+        if (featureSource.getSrid() == CRSUtil.OSM_SRID) return request;
+        CRSUtil crsUtil = context.getComponent(CRSUtil.class);
+        return request.transform(crsUtil, featureSource.getSrid());
+    }
+
     class FetchTask implements Callable<TaskStatus> {
+        private final String url;
+        private final WfsQuery query;
+        private final Integer pageSize;
+        
+
+        public FetchTask(String url, WfsQuery query, Integer pageSize) {
+            super();
+            this.url = url;
+            this.query = query;
+            this.pageSize = pageSize;
+        }
+
         @Override
         public TaskStatus call() {
-            DownloadRequest request = context.getComponent(DownloadRequest.class);
-            // Transform the request to the right coordinate system
-            request = transformRequest(request);
-            WfsHost host = featureSource.getHost();
-            String url = host.getUrl().toString();
-            Integer pageSize = featureSource.getPageSize();
-            QName featureName = featureSource.getFeatureType();
-            QName geometryProperty = featureSource.getGeometryProperty();
-            OdsQueryFilter filter;
-            if (host.isFesFilterCapable()) {
-                FilterPredicate intersects = new IntersectsPredicate(geometryProperty, request.getBoundary().getMultiPolygon());
-                filter = new FesFilter(intersects);
-            }
-            else {
-                if (request.getBoundary().getBounds().size() == 1) {
-                    filter = new BboxWfsFilter(request.getBoundary(), featureSource.getSrid());
-                }
-                else {
-                    throw new UnsupportedOperationException();
-                }
-            }
-            WfsQuery query = new WfsQuery(featureName, filter, featureSource.getSrid(), null);
             WfsRequest wfsRequest = new WfsRequest(url, query, 1, pageSize, featureSource.getSortBy());
             WfsFeatureReader reader;
             if (featureSource.getPageSize() > 0) {
@@ -113,12 +121,6 @@ public class FeatureDownloader {
                 Thread.currentThread().interrupt();
             }
            return taskStatus;
-        }
-
-        private DownloadRequest transformRequest(DownloadRequest request) {
-            if (featureSource.getSrid() == CRSUtil.OSM_SRID) return request;
-            CRSUtil crsUtil = context.getComponent(CRSUtil.class);
-            return request.transform(crsUtil, featureSource.getSrid());
         }
     }
     

@@ -1,6 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.http;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Map;
@@ -12,6 +13,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.io.OsmTransferException;
 import org.w3c.dom.Node;
 
 public interface OdsHttpClient {
@@ -19,6 +22,18 @@ public interface OdsHttpClient {
     public Reader doXmlPostRequest(String url, String postRequest) throws IOException;
 
     public Reader doGetRequest(String url, Map<String, String> queryParameters) throws IOException;
+
+    /**
+     * Open a POST connection to the given url and return a reader on the input stream
+     * from that connection. In case of user cancel, return <code>null</code>.
+     * Relative URL's are directed to API base URL.
+     * @param url The url to connect to.
+     * @param postRequest The HTTP post request to send to the server
+     * @param progressMonitor progress monitoring and abort handler
+     * @return A reader reading the input stream (servers answer) or <code>null</code>.
+     * @throws OsmTransferException if data transfer errors occur
+     */
+    public InputStream getInputStream(String url, String postRequest, ProgressMonitor progressMonitor) throws OsmTransferException;
 
     /**
      * Create an XML 5tring from a Dom Document.

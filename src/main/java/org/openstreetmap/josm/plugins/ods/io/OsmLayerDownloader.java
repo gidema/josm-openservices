@@ -23,7 +23,6 @@ import org.openstreetmap.josm.tools.Logging;
 public class OsmLayerDownloader implements LayerDownloader {
     private Collection<OsmServerReader> osmServerReaders;
     final OdsContext context;
-    final DownloadRequest request;
     final OsmHost osmHost;
 
     DataSet dataSet;
@@ -31,7 +30,6 @@ public class OsmLayerDownloader implements LayerDownloader {
     public OsmLayerDownloader(OdsContext context) {
         super();
         this.context = context;
-        this.request =context.getComponent(DownloadRequest.class);
         this.osmHost = context.getComponent(OsmHost.class);
     }
 
@@ -68,6 +66,8 @@ public class OsmLayerDownloader implements LayerDownloader {
                 // TODO We currently run the OSM requests sequentially.
                 // For Overpass this doesn't matter as we use a single request.
                 // If we use the OSM server, it would be nice if we would call parallel requests
+                DownloadRequest request =context.getComponent(DownloadRequest.class);
+
                 for (OsmServerReader osmServerReader : osmHost.getServerReaders(request)) {
                     dataSet.mergeFrom(parseDataSet(osmServerReader));
                 }
@@ -119,6 +119,7 @@ public class OsmLayerDownloader implements LayerDownloader {
             OsmLayerManager layerManager = context.getComponent(OsmLayerManager.class);
             layerManager.getOsmDataLayer().mergeFrom(dataSet);
             DataSet layerDataset = layerManager.getOsmDataLayer().getDataSet();
+            DownloadRequest request = context.getComponent(DownloadRequest.class);
             request.getBoundary().getBounds().forEach(bounds -> {
                 DataSource ds = new DataSource(bounds, "OSM");
                 layerDataset.addDataSource(ds);
@@ -139,6 +140,8 @@ public class OsmLayerDownloader implements LayerDownloader {
 
     @Override
     public void cancel() {
-        osmServerReaders.forEach(OsmServerReader::cancel);
+        if (osmServerReaders != null) {
+            osmServerReaders.forEach(OsmServerReader::cancel);
+        }
     }
 }

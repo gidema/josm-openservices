@@ -35,10 +35,10 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         if (modus == Modus.FetchModifications || modus == Modus.FetchAll) {
             modifiedFeatureSources.forEach(fs -> downloaders.add(new FeatureDownloader(context, fs)));
         }
-        downloaders.forEach(downloader -> {
-            prepareTasks.add(downloader.getPrepareTask());
-            fetchTasks.add(downloader.getFetchTask());
-            processTasks.add(downloader.getProcessTask());
+        downloaders.forEach(featureDownloader -> {
+            prepareTasks.add(featureDownloader.getPrepareTask());
+            fetchTasks.addAll(featureDownloader.getFetchTasks());
+            processTasks.add(featureDownloader.getProcessTask());
         });
         this.context = context;
     }
@@ -49,13 +49,11 @@ public class OpenDataLayerDownloader implements LayerDownloader {
         // TODO No action required
     }
 
-
     @Override
     public FutureTask<TaskStatus> getPrepareTask() {
         return new FutureTask<>(new PrepareTask());
     }
 
-    
     @Override
     public FutureTask<TaskStatus> getFetchTask() {
         return new FutureTask<>(new FetchTask());
