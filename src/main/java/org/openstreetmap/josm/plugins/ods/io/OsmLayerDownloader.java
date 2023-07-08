@@ -13,7 +13,6 @@ import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.io.OsmApiException;
 import org.openstreetmap.josm.io.OsmServerReader;
 import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.plugins.ods.ODS;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmEntityBuilders;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
@@ -46,10 +45,6 @@ public class OsmLayerDownloader implements LayerDownloader {
 
     @Override
     public FutureTask<TaskStatus> getFetchTask() {
-        String operationMode = context.getParameter(ODS.OPERATION_MODE);
-        if (operationMode.equals("Update")) {
-            return null;
-        }
         return new FutureTask<>(new DownloadTask());
     }
 

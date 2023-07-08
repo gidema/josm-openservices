@@ -24,17 +24,11 @@ public class OpenDataLayerDownloader implements LayerDownloader {
     final List<FutureTask<TaskStatus>> processTasks = new LinkedList<>();
     private boolean cancelled = false;
     
-    public OpenDataLayerDownloader(OdsContext context, Downloader.Modus modus) {
+    public OpenDataLayerDownloader(OdsContext context) {
         this.context = context;
-        WfsFeatureSources actualFeatureSources = context.getComponent(WfsFeatureSources.class, "Import");
-        WfsFeatureSources modifiedFeatureSources = context.getComponent(WfsFeatureSources.class, "Update");
+        WfsFeatureSources actualFeatureSources = context.getComponent(WfsFeatureSources.class);
         List<FeatureDownloader> downloaders = new LinkedList<>();
-        if (modus == Modus.FetchActual || modus == Modus.FetchAll) {
-            actualFeatureSources.forEach(fs -> downloaders.add(new FeatureDownloader(context, fs)));
-        }
-        if (modus == Modus.FetchModifications || modus == Modus.FetchAll) {
-            modifiedFeatureSources.forEach(fs -> downloaders.add(new FeatureDownloader(context, fs)));
-        }
+        actualFeatureSources.forEach(fs -> downloaders.add(new FeatureDownloader(context, fs)));
         downloaders.forEach(featureDownloader -> {
             prepareTasks.add(featureDownloader.getPrepareTask());
             fetchTasks.addAll(featureDownloader.getFetchTasks());
@@ -120,7 +114,6 @@ public class OpenDataLayerDownloader implements LayerDownloader {
                 osmDataLayer.getDataSet().addDataSource(ds);
             });
             ContextJobList jobs = context.getComponent(ContextJobList.class, "postDownloadJobs");
-            new ModifiedAreasFactory().run(context);
             for (OdsContextJob job : jobs) {
                 // TOOD add timing and show results in process monitor
                 job.run(context);

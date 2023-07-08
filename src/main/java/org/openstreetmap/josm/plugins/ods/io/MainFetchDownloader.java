@@ -33,8 +33,7 @@ public class MainFetchDownloader implements MainDownloader {
         super();
         this.context = context;
         OsmLayerDownloader osmLayerDownloader = new OsmLayerDownloader(context);
-        OpenDataLayerDownloader odLayerDownloader =
-                new OpenDataLayerDownloader(context, Downloader.Modus.FetchAll);
+        OpenDataLayerDownloader odLayerDownloader = new OpenDataLayerDownloader(context);
         this.layerDownloaders = Arrays.asList(osmLayerDownloader, odLayerDownloader);
     }
 

@@ -33,9 +33,9 @@ public class MainUpdateDownloader implements MainDownloader {
 
     @Override
     public void run(ProgressMonitor pm) {
-        FetchModificationsDownloader modificationsDownloader = new FetchModificationsDownloader(context);
-        
-        modificationsDownloader.run(pm);
+//        FetchModificationsDownloader modificationsDownloader = new FetchModificationsDownloader(context);
+//        
+//        modificationsDownloader.run(pm);
         
         // Determine download area(s) and download request
         MainFetchDownloader mainDownloader = new MainFetchDownloader(context);

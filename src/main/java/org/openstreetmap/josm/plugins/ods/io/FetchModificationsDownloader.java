@@ -23,7 +23,7 @@ public class FetchModificationsDownloader {
     public FetchModificationsDownloader(OdsContext context) {
         super();
         this.context = context;
-        OpenDataLayerDownloader odlayerDownloader = new OpenDataLayerDownloader(context, Downloader.Modus.FetchModifications);
+        OpenDataLayerDownloader odlayerDownloader = new OpenDataLayerDownloader(context);
         this.layerDownloaders = Collections.singletonList(odlayerDownloader);
     }
 
