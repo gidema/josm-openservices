@@ -113,6 +113,7 @@ public class OsmLayerDownloader implements LayerDownloader {
         private void merge() {
             OsmLayerManager layerManager = context.getComponent(OsmLayerManager.class);
             layerManager.getOsmDataLayer().mergeFrom(dataSet);
+            dataSet.clear();
             DataSet layerDataset = layerManager.getOsmDataLayer().getDataSet();
             DownloadRequest request = context.getComponent(DownloadRequest.class);
             request.getBoundary().getBounds().forEach(bounds -> {
@@ -123,7 +124,9 @@ public class OsmLayerDownloader implements LayerDownloader {
         
         private void buildOsmEntities() {
             OsmEntityBuilders entityBuilders = context.getComponent(OsmEntityBuilders.class);
-            for (OsmPrimitive p : dataSet.getPrimitives(p -> true)) {
+            OsmLayerManager layerManager = context.getComponent(OsmLayerManager.class);
+            DataSet layerDataset = layerManager.getOsmDataLayer().getDataSet();
+            for (OsmPrimitive p : layerDataset.getPrimitives(p -> true)) {
                 entityBuilders.forEach(builder -> builder.buildOsmEntity(p));
             }
         }
