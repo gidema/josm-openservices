@@ -1,7 +1,11 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
+
 import org.openstreetmap.josm.data.coor.LatLon;
+import org.openstreetmap.josm.data.osm.BBox;
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
+import static java.lang.Math.sqrt;
 
 /**
  * NodeDWithin implementation that uses LatLon coordinates to calculate the
@@ -116,4 +120,34 @@ public class NodeDWithinLatLon implements NodeDWithin {
     private double getMaxDx(double lat) {
         return maxDy / Math.sin(Math.toRadians(lat));
     }
+
+    @Override
+    public Node findNode(DataSet dataSet, Node node) {
+        double maxDx;
+        if (fixedLatitude) {
+            maxDx = maxDxFixed;
+        }
+        else {
+            maxDx = getMaxDx(node.getCoor().lat());
+        }
+        double minX = node.lon() - maxDx;
+        double maxX = node.lon() + maxDx;
+        double minY = node.lon() - maxDy;
+        double maxY = node.lon() + maxDy;
+        BBox bbox = new BBox(minX, minY, maxX, maxY);
+        bbox.addPrimitive(node, 1e-5);
+        Node found = null;
+        // Keep track of the minimal squared distance to determine the nearest node
+        double minDSquared = Double.POSITIVE_INFINITY;
+        for (Node candidate : dataSet.searchNodes(bbox)) {
+            if (!candidate.equals(node) && check(candidate, node)) {
+                double dSquared = sqrt(node.lat() - candidate.lat()) + sqrt(node.lon() - candidate.lon());
+                if (dSquared < minDSquared) {
+                    found = candidate;
+                    minDSquared = dSquared;
+                }
+            }
+        }
+        return found;
+    }   
 }

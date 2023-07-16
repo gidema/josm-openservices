@@ -1,5 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.osm;
 
+import org.openstreetmap.josm.data.osm.DataSet;
 import org.openstreetmap.josm.data.osm.Node;
 
 /**
@@ -36,4 +37,15 @@ public interface NodeDWithin {
      * @return
      */
     public boolean check(Node n, Node node1, Node node2);
+    
+    /**
+     * Find the nearest node in a dataset that is within the tolerated distance from a node
+     * 
+     * @param dataset The dataset to search
+     * @param node The node to search for
+     * 
+     * @return The nearest node in the dataset to the given node that doesn't equal the given node
+     *     Or null if no (other) node is within the given distance
+     */
+    public Node findNode(DataSet dataSet, Node node);
 }
