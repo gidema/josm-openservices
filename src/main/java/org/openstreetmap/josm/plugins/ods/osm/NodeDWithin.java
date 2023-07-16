@@ -40,6 +40,7 @@ public interface NodeDWithin {
     
     /**
      * Find the nearest node in a dataset that is within the tolerated distance from a node
+     * This method shouldn't return deleted nodes.
      * 
      * @param dataset The dataset to search
      * @param node The node to search for

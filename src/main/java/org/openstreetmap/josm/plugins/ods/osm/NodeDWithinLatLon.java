@@ -140,7 +140,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
         // Keep track of the minimal squared distance to determine the nearest node
         double minDSquared = Double.POSITIVE_INFINITY;
         for (Node candidate : dataSet.searchNodes(bbox)) {
-            if (!candidate.equals(node) && check(candidate, node)) {
+            if (!candidate.equals(node) && !candidate.isDeleted() && check(candidate, node)) {
                 double dSquared = sqrt(node.lat() - candidate.lat()) + sqrt(node.lon() - candidate.lon());
                 if (dSquared < minDSquared) {
                     found = candidate;
