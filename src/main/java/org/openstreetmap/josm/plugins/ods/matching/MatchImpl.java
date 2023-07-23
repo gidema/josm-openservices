@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.ODS;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 
@@ -73,12 +72,12 @@ public abstract class MatchImpl<T1 extends OsmEntity, T2 extends OdEntity> imple
         if (osm != null) {
             osm.put(ODS.KEY.BASE, "true");
             osm.put(ODS.KEY.GEOMETRY_MATCH, getGeometryMatch().toString());
-            osm.put(ODS.KEY.STATUS, getOpenDataEntity().getStatus().toString());
+            osm.put(ODS.KEY.STATUS, odEntity.getStatusTag());
             osm.put(ODS.KEY.STATUS_MATCH, getStatusMatch().toString());
             osm.put(ODS.KEY.TAG_MATCH, getAttributeMatch().toString());
-            if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
-                osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
-            }
+//            if (getOpenDataEntity().getStatus() == EntityStatus.REMOVAL_DUE) {
+//                osm.put(ODS.KEY.STATUS, EntityStatus.REMOVAL_DUE.toString());
+//            }
         }
         osm = getOsmEntity().getPrimitive();
     }

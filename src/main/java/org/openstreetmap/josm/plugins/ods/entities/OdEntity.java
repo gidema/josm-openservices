@@ -26,4 +26,6 @@ public interface OdEntity extends Entity, GeoObject {
      * @return
      */
     boolean readyForImport();
+
+    String getStatusTag();
 }

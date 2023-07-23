@@ -5,14 +5,12 @@ import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Un
 import org.locationtech.jts.geom.Geometry;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.entities.Entity;
-import org.openstreetmap.josm.plugins.ods.entities.EntityStatus;
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 
 public abstract class AbstractOdEntity implements OdEntity {
     private String sourceDate;
     private String source;
     private Geometry geometry;
-    private EntityStatus status = EntityStatus.UNKNOWN;
     private Entity.Completeness completeness = Unknown;
     private OsmPrimitive primitive;
 
@@ -61,15 +59,15 @@ public abstract class AbstractOdEntity implements OdEntity {
         this.primitive = primitive;
     }
 
-    @Override
-    public void setStatus(EntityStatus status) {
-        this.status = status;
-    }
-
-    @Override
-    public EntityStatus getStatus() {
-        return status;
-    }
+//    @Override
+//    public void setStatus(EntityStatus status) {
+//        this.status = status;
+//    }
+//
+//    @Override
+//    public EntityStatus getStatus() {
+//        return status;
+//    }
 
     @Override
     public Long getPrimitiveId() {
