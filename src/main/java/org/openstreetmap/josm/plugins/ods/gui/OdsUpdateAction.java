@@ -13,6 +13,19 @@ import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporter;
 import org.openstreetmap.josm.plugins.ods.matching.update.OdsUpdater;
 
+/**
+ * The OdsUpdateAction updates the Osm layer with the selected objects from the opendata layer.
+ * 
+ * There are three types of updates that should be performed in the right order.
+ * 
+ *  1. Removals should be performed first, to prevent new or modified entities from snapping to old nodes.
+ *  2. Modifications should be performed before additions, to prevent newly added entities form snapping to
+ *     moved or deleted nodes of modified entities
+ *  3. Additions of new entities should be performed at last. 
+ * 
+ * @author gertjan
+ *
+ */
 public class OdsUpdateAction extends OdsAction {
     /**
      * 
