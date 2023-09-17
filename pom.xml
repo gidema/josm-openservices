@@ -90,7 +90,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <josm.version> 18789</josm.version>
+    <josm.version>18822</josm.version>
   </properties>
   <issueManagement>
     <system>Sourceforge</system>
