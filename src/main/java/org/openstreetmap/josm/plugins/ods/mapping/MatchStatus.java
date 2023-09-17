@@ -1,9 +1,9 @@
-package org.openstreetmap.josm.plugins.ods.matching;
+package org.openstreetmap.josm.plugins.ods.mapping;
 
 import java.util.Objects;
 
 public enum MatchStatus {
-    NO_MATCH, COMPARABLE, MATCH;
+    NO_MATCH, COMPARABLE, MATCH, NULL;
     
     public static MatchStatus combine(MatchStatus... msArr) {
         for (MatchStatus ms : msArr) {
@@ -24,6 +24,7 @@ public enum MatchStatus {
 
     @Override
     public String toString() {
+        if (this == NULL) return null;
         return super.toString().toLowerCase();
     }
 }

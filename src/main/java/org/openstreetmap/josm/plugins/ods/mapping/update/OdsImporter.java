@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.matching.update;
+package org.openstreetmap.josm.plugins.ods.mapping.update;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -44,14 +44,14 @@ public class OdsImporter {
         Set<OdEntity> entitiesToImport = new HashSet<>();
         for (OsmPrimitive primitive : primitives) {
             OdEntity entity = layerManager.getEntity(primitive);
-            if (entity != null && entity.getMatch() == null
+            if (entity != null && entity.getMapping() == null
                     && entity.readyForImport()) {
                 entitiesToImport.add(entity);
             }
             for (OsmPrimitive referrer : primitive.getReferrers()) {
                 if (referrer.getType().equals(OsmPrimitiveType.RELATION)) {
                     OdEntity referrerEntity = layerManager.getEntity(referrer);
-                    if (referrerEntity != null && referrerEntity.getMatch() == null
+                    if (referrerEntity != null && referrerEntity.getMapping() == null
                             && referrerEntity.readyForImport()) {
                         entitiesToImport.add(referrerEntity);
                     }

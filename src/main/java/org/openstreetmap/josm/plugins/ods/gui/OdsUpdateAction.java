@@ -10,8 +10,8 @@ import org.openstreetmap.josm.plugins.ods.LayerManager;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
-import org.openstreetmap.josm.plugins.ods.matching.update.OdsImporter;
-import org.openstreetmap.josm.plugins.ods.matching.update.OdsUpdater;
+import org.openstreetmap.josm.plugins.ods.mapping.update.OdsImporter;
+import org.openstreetmap.josm.plugins.ods.mapping.update.OdsUpdater;
 
 /**
  * The OdsUpdateAction updates the Osm layer with the selected objects from the opendata layer.
@@ -38,8 +38,6 @@ public class OdsUpdateAction extends OdsAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO retrieve updater and importer from module context
-        OdsImporter importer = new OdsImporter(getContext());
         OdsUpdater updater = new OdsUpdater(getContext());
 
         Layer layer = MainApplication.getLayerManager().getActiveLayer();
@@ -49,7 +47,6 @@ public class OdsUpdateAction extends OdsAction {
         assert (odLayerManager != null);
         
         OsmDataLayer osmLayer = (OsmDataLayer) layer;
-        importer.doImport(osmLayer.getDataSet().getAllSelected());
         updater.doUpdate(osmLayer.getDataSet().getAllSelected());
         odLayerManager.getOsmDataLayer().getDataSet().clearSelection();
         MainApplication.getLayerManager().setActiveLayer(osmLayerManager.getOsmDataLayer());

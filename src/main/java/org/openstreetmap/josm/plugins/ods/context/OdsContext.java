@@ -18,6 +18,8 @@ public interface OdsContext {
 
     public <T, U extends T> void register(Class<T> componentType, U implementation, String label, boolean overwrite);
 
+    public <T, U extends T> void register(Class<T> componentType, Class<U> implType);
+
     /**
      * Get a component that implements the requested component type, or null if not present
      * @param <T>

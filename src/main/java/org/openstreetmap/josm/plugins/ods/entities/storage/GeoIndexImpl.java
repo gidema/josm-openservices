@@ -1,25 +1,18 @@
 package org.openstreetmap.josm.plugins.ods.entities.storage;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.index.quadtree.Quadtree;
-import org.openstreetmap.josm.plugins.ods.entities.Entity;
+import org.openstreetmap.josm.plugins.ods.entities.GeoEntity;
 
-public class GeoIndexImpl<T extends Entity, V extends T> implements GeoIndex<T>  {
+public class GeoIndexImpl<T extends GeoEntity> implements GeoIndex<T>  {
     private Quadtree quadTree = new Quadtree();
-    private Class<V> clazz;
-    private Method getGeometryMethod;
-    private String property;
     
-    public GeoIndexImpl(Class<V> clazz, String property) {
+    public GeoIndexImpl() {
         super();
-        this.clazz = clazz;
-        this.property = property;
-        getGeometryMethod = createGetGeometryMethod();
     }
     
     @Override
@@ -32,20 +25,20 @@ public class GeoIndexImpl<T extends Entity, V extends T> implements GeoIndex<T> 
      */
     @Override
     public void insert(T entity) {
-        Geometry geom = getGeometry(entity);
+        Geometry geom = entity.getGeometry();
         if (geom != null) {
             quadTree.insert(geom.getEnvelopeInternal(), entity);
         }
     }
     
-    private Method createGetGeometryMethod() {
-        try {
-            return clazz.getMethod(getGetterName());
-        } catch (NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
-    }
+//    private Method createGetGeometryMethod() {
+//        try {
+//            return clazz.getMethod(getGetterName());
+//        } catch (NoSuchMethodException | SecurityException e) {
+//            e.printStackTrace();
+//            throw new RuntimeException();
+//        }
+//    }
     
     @Override
     public List<T> getAll(Object id) {
@@ -60,8 +53,9 @@ public class GeoIndexImpl<T extends Entity, V extends T> implements GeoIndex<T> 
         List<T> entities = new LinkedList<>();
         List<?> candidates = quadTree.query(geometry.getEnvelopeInternal());
         for (Object object : candidates) {
-            T entity = clazz.cast(object);
-            if (getGeometry(entity).intersects(geometry)) {
+            @SuppressWarnings("unchecked")
+            T entity = (T)object;
+            if (entity.getGeometry().intersects(geometry)) {
                 entities.add(entity);
             }
         }
@@ -70,26 +64,27 @@ public class GeoIndexImpl<T extends Entity, V extends T> implements GeoIndex<T> 
     
     @Override
     public void remove(T entity) {
-        quadTree.remove(getGeometry(entity).getEnvelopeInternal(), entity);
+        Envelope envelope = entity.getGeometry().getEnvelopeInternal();
+        quadTree.remove(envelope, entity);
     }
 
-    private Geometry getGeometry(T entity) {
-        try {
-            return (Geometry)getGeometryMethod.invoke(entity);
-        } catch (IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    private Geometry getGeometry(T entity) {
+//        try {
+//            return (Geometry)getGeometryMethod.invoke(entity);
+//        } catch (IllegalAccessException | IllegalArgumentException
+//                | InvocationTargetException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
     
     @Override
     public void clear() {
         quadTree = new Quadtree();
     }
 
-    private String getGetterName() {
-        return "get" + property.substring(0, 1).toUpperCase() +
-                    property.substring(1);
-    }
+//    private String getGetterName() {
+//        return "get" + property.substring(0, 1).toUpperCase() +
+//                    property.substring(1);
+//    }
 }

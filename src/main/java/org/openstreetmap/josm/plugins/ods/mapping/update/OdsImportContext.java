@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.matching.update;
+package org.openstreetmap.josm.plugins.ods.mapping.update;
 
 import java.util.List;
 

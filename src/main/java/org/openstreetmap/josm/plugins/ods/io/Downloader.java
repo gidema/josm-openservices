@@ -81,6 +81,9 @@ public interface Downloader {
             realTasks.forEach(task -> task.cancel(true));
             return new TaskStatus(true);
         }
+        catch (Exception e) {
+            return new TaskStatus(null, e.getMessage(), e);
+        }
     }
     
     public enum Modus {

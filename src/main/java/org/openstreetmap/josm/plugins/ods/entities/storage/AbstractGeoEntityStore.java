@@ -1,7 +1,6 @@
 package org.openstreetmap.josm.plugins.ods.entities.storage;
 
 import java.util.Collections;
-import java.util.Iterator;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -13,7 +12,7 @@ import org.openstreetmap.josm.plugins.ods.entities.GeoObject;
  * @author gertjan
  *
  */
-public abstract class AbstractGeoEntityStore<T extends GeoObject> extends AbstractEntityStore<T> {
+public abstract class AbstractGeoEntityStore<T extends GeoObject> implements EntityStore<T> {
     private Geometry boundary;
 
     public AbstractGeoEntityStore() {
@@ -36,10 +35,5 @@ public abstract class AbstractGeoEntityStore<T extends GeoObject> extends Abstra
     }
 
     public abstract GeoIndex<T> getGeoIndex();
-
-    @Override
-    public Iterator<T> iterator() {
-        return getPrimaryIndex().iterator();
-    }
 
 }

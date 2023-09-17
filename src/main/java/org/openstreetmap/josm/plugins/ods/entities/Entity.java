@@ -1,7 +1,7 @@
 package org.openstreetmap.josm.plugins.ods.entities;
 
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
-import org.openstreetmap.josm.plugins.ods.matching.Match;
+import org.openstreetmap.josm.plugins.ods.mapping.Mapping;
 
 /**
  * ODS entities represent entities like buildings, address nodes,
@@ -18,16 +18,12 @@ public interface Entity {
     public String getSource();
     public void setSourceDate(String sourceDate);
     public String getSourceDate();
-    public void setCompleteness(Completeness completeness);
-    public Completeness getCompleteness();
-//    public void setStatus(EntityStatus status);
-//    public EntityStatus getStatus();
 
     public Long getPrimitiveId();
 
-    public Match<? extends OsmEntity, ? extends OdEntity> getMatch();
+    public Mapping<? extends OsmEntity, ? extends OdEntity> getMapping();
 
-    //    public <E1 extends OsmEntity, E2 extends OdEntity> void setMatch(Match<E1, E2> match);
+    //    public <E1 extends OsmEntity, E2 extends OdEntity> void setMatch(Mapping<E1, E2> match);
 
     /**
      * Get the OSM primitive(s) from which this entity was constructed,

@@ -1,21 +1,21 @@
 package org.openstreetmap.josm.plugins.ods.entities.impl;
 
-import static org.openstreetmap.josm.plugins.ods.entities.Entity.Completeness.Unknown;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Geometry;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
+import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
+import org.openstreetmap.josm.plugins.ods.mapping.Mapping;
 
 public abstract class AbstractOsmEntity implements OsmEntity {
     private String sourceDate;
     private String source;
     private Geometry geometry;
-    private Completeness completeness = Unknown;
     private Map<String, String> otherTags = new HashMap<>();
     private OsmPrimitive primitive;
+    private Mapping<? extends OsmEntity, ? extends OdEntity> mapping;
 
     @Override
     public void setSourceDate(String string) {
@@ -48,16 +48,6 @@ public abstract class AbstractOsmEntity implements OsmEntity {
     }
 
     @Override
-    public Completeness getCompleteness() {
-        return completeness;
-    }
-
-    @Override
-    public void setCompleteness(Completeness completeness) {
-        this.completeness = completeness;
-    }
-
-    @Override
     public Map<String, String> getOtherTags() {
         return otherTags;
     }
@@ -71,16 +61,6 @@ public abstract class AbstractOsmEntity implements OsmEntity {
         this.primitive = primitive;
     }
 
-//    @Override
-//    public void setStatus(EntityStatus status) {
-//        this.status = status;
-//    }
-//
-//    @Override
-//    public EntityStatus getStatus() {
-//        return status;
-//    }
-
     @Override
     public Long getPrimitiveId() {
         return (primitive == null ? null : primitive.getUniqueId());
@@ -90,14 +70,19 @@ public abstract class AbstractOsmEntity implements OsmEntity {
     public OsmPrimitive getPrimitive() {
         return primitive;
     }
+    
+    @Override
+    public void setMapping(Mapping<? extends OsmEntity, ? extends OdEntity> mapping) {
+        this.mapping = mapping;
+    }
 
-    //    @Override
-    //    public Match<? extends Entity> getMatch() {
-    //        return match;
-    //    }
-    //
-    //    @Override
-    //    public <E extends Entity> void setMatch(Match<E> match) {
-    //        this.match = match;
-    //    }
+    @Override
+    public Mapping<? extends OsmEntity, ? extends OdEntity> getMapping() {
+        return mapping;
+    }
+
+    @Override
+    public boolean isMapped() {
+        return mapping != null;
+    }    
 }

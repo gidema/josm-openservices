@@ -3,7 +3,7 @@ package org.openstreetmap.josm.plugins.ods.entities.osm;
 import org.openstreetmap.josm.data.osm.OsmPrimitive;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
-import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractGeoEntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.storage.OsmEntityStore;
 import org.openstreetmap.josm.plugins.ods.jts.GeoUtil;
 
 public abstract class AbstractOsmEntityBuilder<T extends OsmEntity> implements OsmEntityBuilder<T> {
@@ -23,7 +23,7 @@ public abstract class AbstractOsmEntityBuilder<T extends OsmEntity> implements O
         return entityClass;
     }
 
-    abstract public AbstractGeoEntityStore<T> getEntityStore();
+    abstract public OsmEntityStore<T> getEntityStore();
 
     public GeoUtil getGeoUtil() {
         return geoUtil;

@@ -9,7 +9,7 @@ public class ODS {
         public static String STATUS_MATCH = BASE + ":statusMatch";
         public static String GEOMETRY_MATCH = BASE + ":geometryMatch";
         public static String TAG_MATCH = BASE + ":tagMatch";
-        
+        public static String UPDATED = BASE + ":updated";       
     }
     
 //    public static String[] KEYS = {KEY.BASE, KEY.IDMATCH, KEY.STATUS, KEY.STATUS_MATCH, 

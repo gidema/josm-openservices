@@ -11,6 +11,7 @@ public class OdsContextImpl implements OdsContext {
     private static String NO_LABEL = "NO_LABEL";
     
     private Map<Class<?>, Map<String, Object>> components = new HashMap<>();
+    private Map<Class<?>, Provider<?>> providers = new HashMap<>();
     private Map<ParameterType<?>, Object> parameters = new HashMap<>();
 
 
@@ -19,7 +20,6 @@ public class OdsContextImpl implements OdsContext {
         register(component, NO_LABEL);
     }
 
-    
     @Override
     public <U> void register(U component, String label) {
         @SuppressWarnings("unchecked")
@@ -54,6 +54,16 @@ public class OdsContextImpl implements OdsContext {
     }
 
     @Override
+    public <T, U extends T> void register(Class<T> componentType, Class<U> implType) {
+        if (getComponent(componentType) != null) {
+            throw new RuntimeException(String.format("A component for type %s has already been registered", componentType.toString()));          
+        }
+        Provider<T> provider = NewInstanceProvider.getProvider(implType);
+        providers.put(componentType, provider);
+    }
+
+
+    @Override
     public <T, U extends T> U getComponent(Class<T> componentType) {
         return getComponent(componentType, NO_LABEL);
     }
@@ -62,8 +72,12 @@ public class OdsContextImpl implements OdsContext {
     @Override
     public <T, U extends T> U getComponent(Class<T> componentType, String label) {
         Map<String, Object> map = components.get(componentType);
-        if (map == null) return null;
-        return (U) map.get(label);
+        if (map != null) return (U) map.get(label);
+        Provider<U> provider = (Provider<U>) providers.get(componentType);
+        if (provider != null) {
+            return provider.getComponent(this);
+        }
+        return null;
     }
 
     // TODO consider a form of caching

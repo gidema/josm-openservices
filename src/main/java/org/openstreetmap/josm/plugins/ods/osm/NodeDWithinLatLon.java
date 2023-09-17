@@ -118,7 +118,7 @@ public class NodeDWithinLatLon implements NodeDWithin {
      * @return
      */
     private double getMaxDx(double lat) {
-        return maxDy / Math.sin(Math.toRadians(lat));
+        return maxDy * Math.cos(Math.toRadians(lat));
     }
 
     @Override
@@ -132,10 +132,10 @@ public class NodeDWithinLatLon implements NodeDWithin {
         }
         double minX = node.lon() - maxDx;
         double maxX = node.lon() + maxDx;
-        double minY = node.lon() - maxDy;
-        double maxY = node.lon() + maxDy;
+        double minY = node.lat() - maxDy;
+        double maxY = node.lat() + maxDy;
         BBox bbox = new BBox(minX, minY, maxX, maxY);
-        bbox.addPrimitive(node, 1e-5);
+        bbox.addPrimitive(node, maxDy);
         Node found = null;
         // Keep track of the minimal squared distance to determine the nearest node
         double minDSquared = Double.POSITIVE_INFINITY;

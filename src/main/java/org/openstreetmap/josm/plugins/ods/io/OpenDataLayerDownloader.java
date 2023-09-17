@@ -11,7 +11,8 @@ import org.openstreetmap.josm.plugins.ods.context.ContextJobList;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.context.OdsContextJob;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
-import org.openstreetmap.josm.plugins.ods.entities.storage.AbstractGeoEntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.storage.EntityStore;
+import org.openstreetmap.josm.plugins.ods.entities.storage.GeoCapable;
 import org.openstreetmap.josm.plugins.ods.wfs.FeatureDownloader;
 import org.openstreetmap.josm.plugins.ods.wfs.WfsFeatureSources;
 
@@ -87,9 +88,13 @@ public class OpenDataLayerDownloader implements LayerDownloader {
          * This method updates the boundaries for all entity stores.
          */
         private void updateStoreBoundaries() {
-            List<AbstractGeoEntityStore<?>> entityStores = context.getComponents(AbstractGeoEntityStore.class);
+            List<EntityStore<?>> entityStores = context.getComponents(EntityStore.class);
             DownloadRequest request = context.getComponent(DownloadRequest.class);
-            entityStores.forEach(store -> store.extendBoundary(request.getBoundary().getMultiPolygon()));
+            entityStores.forEach(store -> {
+                if (store instanceof GeoCapable<?> geoCapable) {
+                    geoCapable.extendBoundary(request.getBoundary().getMultiPolygon());
+                }
+            });
         }
     }
     

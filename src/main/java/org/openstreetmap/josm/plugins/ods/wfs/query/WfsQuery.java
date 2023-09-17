@@ -54,6 +54,9 @@ public class WfsQuery {
         if (filter != null) {
              parameters.put(filter.getQueryParameterName(), filter.toString());
         }
+        if (selectedProperties != null && selectedProperties.size() > 0) {
+            parameters.put("propertyName", String.join(",", selectedProperties));
+        }
         return parameters;
     }
     

@@ -10,10 +10,10 @@ import org.openstreetmap.josm.data.osm.visitor.BoundingXYVisitor;
 import org.openstreetmap.josm.gui.MainApplication;
 import org.openstreetmap.josm.gui.layer.MainLayerManager;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.plugins.ods.Matcher;
+import org.openstreetmap.josm.plugins.ods.Mapper;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
 import org.openstreetmap.josm.plugins.ods.entities.opendata.OdLayerManager;
-import org.openstreetmap.josm.plugins.ods.matching.Matchers;
+import org.openstreetmap.josm.plugins.ods.mapping.Mappers;
 import org.openstreetmap.josm.tools.I18n;
 
 /**
@@ -100,8 +100,8 @@ public class MainFetchDownloader implements MainDownloader {
      */
     protected TaskStatus process() {
         TaskStatus taskStatus = Downloader.runTasks(Downloader.getProcessTasks(layerDownloaders));
-        Matchers matchers = context.getComponent(Matchers.class);
-        matchers.forEach(Matcher::run);
+        Mappers matchers = context.getComponent(Mappers.class);
+        matchers.forEach(Mapper::run);
         return taskStatus;
     }
 
