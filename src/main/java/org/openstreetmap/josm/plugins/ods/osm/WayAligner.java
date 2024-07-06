@@ -19,14 +19,14 @@ import org.openstreetmap.josm.plugins.ods.osm.SegmentMatcher.MatchType;
 public class WayAligner {
     private Way way1;
     private Way way2;
-    private NodeDWithin dWithin;
+    private BufferOps dWithin;
     private boolean undoable;
     private NodeIterator it1;
     private NodeIterator it2;
     private SegmentMatcher matcher;
 
     public WayAligner(Way way1, Way way2,
-            NodeDWithin dWithin, boolean undoable) {
+            BufferOps dWithin, boolean undoable) {
         this.way1 = way1;
         this.way2 = way2;
         this.dWithin = dWithin;

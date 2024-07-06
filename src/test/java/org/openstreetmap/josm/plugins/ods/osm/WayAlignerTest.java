@@ -26,7 +26,7 @@ public class WayAlignerTest {
     public void building3_4() {
         Way building3 = testData.getWay("building3");
         Way building4 = testData.getWay("building4");
-        NodeDWithin dWithin = new NodeDWithinLatLon(0.05);
+        BufferOps dWithin = new GCBufferOps(0.05);
         WayAligner aligner = new WayAligner(building3, building4, dWithin, false);
         aligner.run();
         for (int i=0; i<2; i++) {

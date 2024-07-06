@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.openstreetmap.josm.plugins.ods.entities.OdEntity;
 import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
-import org.openstreetmap.josm.plugins.ods.update.UpdateTaskType;
 
 /**
  * A Mapping registers a mapping between 1 or more OpenData entities and 1 or more Osm entities.
@@ -69,6 +68,8 @@ public interface Mapping<T1 extends OsmEntity, T2 extends OdEntity> {
     public List<? extends T2> getOpenDataEntities();
 
     public <E extends T1> void addOsmEntity(E entity);
+
+    public <E extends T1> void remove(OsmEntity osmEntity);
 
     public <E extends T2> void addOpenDataEntity(E entity);
     

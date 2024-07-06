@@ -66,6 +66,14 @@ public abstract class AbstractMapping<T1 extends OsmEntity, T2 extends OdEntity>
     }
 
     @Override
+    public <E extends T1> void remove(OsmEntity entity) {
+        entity.setMapping(null);
+        osmEntities.remove(entity);
+        this.analyze();
+        this.refreshUpdateTags();
+    }
+
+    @Override
     public <E extends T2> void addOpenDataEntity(E entity) {
         openDataEntities.add(entity);
         entity.setMapping(this);

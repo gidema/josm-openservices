@@ -1,4 +1,4 @@
-package org.openstreetmap.josm.plugins.ods.osm;
+package org.openstreetmap.josm.plugins.ods.osm.alignment;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -6,36 +6,25 @@ import java.util.List;
 
 import org.openstreetmap.josm.command.ChangeNodesCommand;
 import org.openstreetmap.josm.command.Command;
-import org.openstreetmap.josm.command.DeleteCommand;
 import org.openstreetmap.josm.command.MoveCommand;
-import org.openstreetmap.josm.command.SequenceCommand;
-import org.openstreetmap.josm.data.UndoRedoHandler;
 import org.openstreetmap.josm.data.coor.EastNorth;
-import org.openstreetmap.josm.data.coor.LatLon;
 import org.openstreetmap.josm.data.osm.Node;
 import org.openstreetmap.josm.data.osm.Way;
-import org.openstreetmap.josm.gui.MainApplication;
 
-public class NodeIterator {
+public class NodeIterator2 {
     private final Way way;
     private final List<Node> nodes;
     private int index;
     private final boolean closed;
-    private boolean reversed;
     private boolean modified = false;
     private final List<Command> movedNodes = new LinkedList<>();
 
-    public NodeIterator(Way way, int startIndex, boolean reversed) {
+    public NodeIterator2(Way way) {
         this.way = way;
-        this.index = startIndex;
-        this.reversed = reversed;
+        this.index = 1;
         this.nodes = new ArrayList<>(way.getNodesCount() + 5);
         this.nodes.addAll(way.getNodes());
         this.closed = way.isClosed();
-    }
-
-    public void reset() {
-        index = (reversed ? nodes.size() - 1 : 0);
     }
 
 
@@ -45,53 +34,12 @@ public class NodeIterator {
      * @return true if there is at least one next node. false otherwise
      */
     public boolean hasNextNode() {
-        return hasNextNodes(1);
-    }
-
-    /**
-     * Check if there are at least n nodes after the current node.
-     *
-     * @return true if there are at least n next nodes. false otherwise
-     */
-    public boolean hasNextNodes(int n) {
-        if (reversed) {
-            return index > n - 1;
-        }
-        return index + n < nodes.size();
-    }
-
-    /**
-     * Check if there is at least 1 node before the current node.
-     *
-     * @return true if there is at least one previous node. false otherwise
-     */
-    public boolean hasPreviousNode() {
-        return hasPreviousNodes(1);
-    }
-
-    /**
-     * Check if there are at least n nodes before the current node.
-     *
-     * @return true if there are at least n previous nodes. false otherwise
-     */
-    public boolean hasPreviousNodes(int n) {
-        if (reversed) {
-            return index + n < nodes.size();
-        }
-        return index > n - 1;
+        return index  < nodes.size() - 1;
     }
 
     public Node next() {
         if(hasNextNode()) {
-            index = (reversed ? index - 1 : index + 1);
-            return nodes.get(index);
-        }
-        return null;
-    }
-
-    public Node previous() {
-        if(hasPreviousNode()) {
-            index = (reversed ? index + 1 : index - 1);
+            index = index + 1;
             return nodes.get(index);
         }
         return null;
@@ -103,18 +51,10 @@ public class NodeIterator {
 
     public Node peekNext() {
         if (hasNextNode()) {
-            return (reversed ? nodes.get(index - 1) : nodes.get(index + 1));
+            return nodes.get(index + 1);
         }
         return null;
     }
-
-    public Node peekPrevious() {
-        if (hasPreviousNode()) {
-            return (reversed ? nodes.get(index + 1) : nodes.get(index - 1));
-        }
-        return null;
-    }
-
 
     /**
      * Insert the given node to list of nodes after the current index;
@@ -125,12 +65,9 @@ public class NodeIterator {
      */
     public boolean insertNodeAfter(Node node) {
         if (!hasNextNode() && closed) return false;
-        int pos = (reversed ? index : index+1);
-        nodes.add(pos, node);
+        nodes.add(index + 1, node);
         modified = true;
-        if (!reversed) {
-            next();
-        }
+        next();
         return true;
     }
 
@@ -158,41 +95,19 @@ public class NodeIterator {
         return modified;
     }
 
-    protected void setReversed(boolean reversed) {
-        this.reversed = reversed;
-        if (index == 0) {
-            index = nodes.size() - 1;
-        }
-    }
-
     protected int getIndex() {
         return index;
     }
 
     public Integer nextIndex() {
         if (hasNextNode()) {
-            return (reversed ? index - 1 : index + 1);
-        }
-        return null;
-    }
-
-    public Integer previousIndex() {
-        if (hasPreviousNode()) {
-            return (reversed ? index - 1 : index + 1);
+            return index + 1;
         }
         return null;
     }
 
     protected Node getNode(int idx) {
         return nodes.get(idx);
-    }
-
-    public boolean dWithin(BufferOps dWithin, Node n) {
-        return dWithin.check(peek(), n);
-    }
-
-    public boolean dSegmentWithin(BufferOps dWithin, Node n) {
-        return dWithin.check(n, peek(), peekNext());
     }
 
     /**
@@ -227,61 +142,9 @@ public class NodeIterator {
     /*
      * Close the iterator and perform the necessary updates.
      */
-    public void close(boolean undoable) {
-        if (!modified) return;
-        List<Command> commands = new LinkedList<>();
-        List<Node> oldNodes = way.getNodes();
-        Command command = new ChangeNodesCommand(way, nodes);
-        //        command.executeCommand();
-        commands.add(command);
-        if (!movedNodes.isEmpty()) {
-            command = new SequenceCommand("Move nodes", movedNodes);
-            //            command.executeCommand();
-            commands.add(command);
-        }
-        List<Node> orphanNodes = new LinkedList<>();
-        // Check for nodes that are not relevant anymore
-        for (Node node : oldNodes) {
-            if (node.getReferrers().isEmpty() && !node.hasKeys()) {
-                orphanNodes.add(node);
-            }
-        }
-        if (!orphanNodes.isEmpty()) {
-            command = new DeleteCommand(orphanNodes);
-            //            command.executeCommand();
-            commands.add(command);
-        }
-        // If undoable, undo the commands in reverse order and the execute them as 1 SequenceCommand.
-        if (!commands.isEmpty()) {
-            if (undoable) {
-                UndoRedoHandler.getInstance().add(new SequenceCommand("Align buildings", commands));
-            }
-            else {
-                for (Command cmd : commands) {
-                    cmd.executeCommand();
-                }
-            }
-            if (MainApplication.getMap() != null) {
-                MainApplication.getMap().mapView.repaint();
-            }
-        }
-    }
-
-    /*
-     * Move the node at index to the given coordinates.
-     */
-    public void moveNode(int idx, LatLon coor) {
-        Node node = nodes.get(idx);
-        moveNode(node, coor);
-    }
-
-    public void moveNode(Node node, LatLon coor) {
-        movedNodes.add(new MoveCommand(node, coor));
-    }
-
-    public void moveNode(int idx, EastNorth en) {
-        Node node = nodes.get(idx);
-        moveNode(node, en);
+    public Command close() {
+        if (!modified) return null;
+        return new ChangeNodesCommand(way, nodes);
     }
 
     public void moveNode(Node node, EastNorth en) {
@@ -305,12 +168,12 @@ public class NodeIterator {
 
     /**
      * Calculate the angle between the current segment and the current segment
-     * of the provide NodeIterator
+     * of the provide NodeIterator2
      *
      * @param it
      * @return
      */
-    public Double angle(NodeIterator it) {
+    public Double angle(NodeIterator2 it) {
         return angle() - it.angle();
     }
     /**
