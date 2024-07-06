@@ -5,6 +5,7 @@ dist
 
 # backup files #
 *~
-/C:\nppdf32Log\debuglog.txt
-/lib-josm/
+
+# Eclipse files
 /.settings/
+/.classpath
