@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.openstreetmap.josm.command.Command;
 import org.openstreetmap.josm.command.SequenceCommand;
 import org.openstreetmap.josm.plugins.ods.context.OdsContext;
+import org.openstreetmap.josm.plugins.ods.entities.OsmEntity;
 import org.openstreetmap.josm.plugins.ods.entities.osm.OsmLayerManager;
 import org.openstreetmap.josm.tools.I18n;
 
@@ -23,9 +24,11 @@ public class AdditionsCommand extends SequenceCommand {
         super.undoCommand();
         var osmLayerManager = context.getComponent(OsmLayerManager.class);
         this.getParticipatingPrimitives().stream().filter(p -> p.hasKeys()).forEach(p -> {
-            var osmEntity = osmLayerManager.getEntity(p);
+            OsmEntity osmEntity = osmLayerManager.getEntity(p);
             if (osmEntity != null) {
-                osmEntity.getMapping().getOpenDataEntities().forEach(odEntity -> {
+                var mapping = osmEntity.getMapping();
+                mapping.remove(osmEntity);
+                mapping.getOpenDataEntities().forEach(odEntity -> {
                     odEntity.setUpdateStatus(Addition);
                     odEntity.getMapping().refreshUpdateTags();
                 });

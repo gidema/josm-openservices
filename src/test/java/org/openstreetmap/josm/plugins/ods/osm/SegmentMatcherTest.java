@@ -18,7 +18,7 @@ import org.openstreetmap.josm.plugins.ods.test.util.TestData;
 
 public class SegmentMatcherTest {
     private TestData testData;
-    private final SegmentMatcher matcher = new SegmentMatcher(new NodeDWithinLatLon(0.05));
+    private final SegmentMatcher matcher = new SegmentMatcher(new GCBufferOps(0.05));
 
     @BeforeAll
     public static void setUpBeforeClass() {

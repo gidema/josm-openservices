@@ -4,12 +4,12 @@ import org.openstreetmap.josm.data.osm.Node;
 
 public class SegmentMatcher {
     private static double HALF_PI = Math.PI / 2;
-    private NodeDWithin dWithin;
+    private BufferOps dWithin;
     private boolean reversed;
     private MatchType startMatch;
     private MatchType endMatch;
     
-    public SegmentMatcher(NodeDWithin dWithin) {
+    public SegmentMatcher(BufferOps dWithin) {
         super();
         this.dWithin = dWithin;
     }
