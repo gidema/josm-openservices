@@ -164,7 +164,7 @@
     -->
   <target name="install" depends="dist">
     <property environment="env" />
-    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.config/JOSM/plugins">
+    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM/plugins" else="${user.home}/.local/share/JOSM/plugins">
       <and>
         <os family="windows" />
       </and>
@@ -179,7 +179,7 @@
     -->
   <target name="install4debug" depends="dist4debug">
     <property environment="env" />
-    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM_ECLIPSE_ODS7/plugins" else="${user.home}/.config/JOSM-dev/plugins">
+    <condition property="josm.plugins.dir" value="${env.APPDATA}/JOSM_ECLIPSE_ODS7/plugins" else="${user.home}/.local/share/JOSM-dev/plugins">
       <and>
         <os family="windows" />
       </and>
